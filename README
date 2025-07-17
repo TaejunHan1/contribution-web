@@ -1,0 +1,400 @@
+# 💎 정담 - 부조 웹 (토스 스타일)
+
+> **간편하고 안전한 모바일 부조 시스템**  
+> QR코드로 스캔하고, 토스처럼 간편하게 부조하세요
+
+[![Next.js](https://img.shields.io/badge/Next.js-14.0-black?logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-18.2-blue?logo=react)](https://reactjs.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.3-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-2.38-3ecf8e?logo=supabase)](https://supabase.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.2-blue?logo=typescript)](https://www.typescriptlang.org/)
+
+## 🎯 프로젝트 소개
+
+**정담**은 전통적인 종이 방명록을 디지털로 혁신한 모바일 부조 시스템입니다.  
+토스의 직관적이고 세련된 UI/UX를 모바일 웹에 적용하여, 누구나 쉽게 사용할 수 있는 부조 서비스를 제공합니다.
+
+### ✨ 주요 특징
+
+- 🎨 **토스 스타일 디자인**: 깔끔하고 직관적인 인터페이스
+- 📱 **모바일 최적화**: 터치 친화적이고 반응형 디자인
+- 📷 **QR코드 연동**: 스캔 한 번으로 바로 부조 페이지 접속
+- ⚡ **실시간 동기화**: 부조 즉시 앱에서 실시간 확인
+- 🔒 **안전한 보안**: Supabase 기반의 안전한 데이터 관리
+- 💳 **간편한 입력**: 이름과 금액만으로 완료되는 심플한 플로우
+
+## 📸 스크린샷
+
+<div align="center">
+  <img src="./docs/screenshots/home.png" width="250" alt="홈 화면" />
+  <img src="./docs/screenshots/contribute.png" width="250" alt="부조 입력" />
+  <img src="./docs/screenshots/complete.png" width="250" alt="완료 화면" />
+</div>
+
+## 🚀 빠른 시작
+
+### 필요 조건
+
+- **Node.js** 18.0.0 이상
+- **npm** 8.0.0 이상
+- **Supabase** 프로젝트
+
+### 1. 저장소 클론
+
+```bash
+git clone https://github.com/jeongdam/contribution-web.git
+cd contribution-web
+```
+
+### 2. 의존성 설치
+
+```bash
+npm install
+```
+
+### 3. 환경변수 설정
+
+```bash
+# 환경변수 파일 복사
+cp .env.local.example .env.local
+
+# 환경변수 편집
+nano .env.local
+```
+
+**필수 환경변수:**
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### 4. 개발 서버 실행
+
+```bash
+npm run dev
+```
+
+브라우저에서 [http://localhost:3000](http://localhost:3000) 접속
+
+## 🏗️ 아키텍처
+
+```mermaid
+graph TB
+    A[모바일 사용자] -->|QR스캔| B[Next.js 웹앱]
+    B -->|API 호출| C[Supabase]
+    C -->|실시간 동기화| D[React Native 앱]
+    D -->|QR 생성| A
+    
+    B --> E[Vercel 배포]
+    C --> F[PostgreSQL DB]
+    C --> G[실시간 구독]
+```
+
+### 기술 스택
+
+| 분야 | 기술 | 버전 | 역할 |
+|------|------|------|------|
+| **프론트엔드** | Next.js | 14.0 | React 프레임워크 |
+| **UI 프레임워크** | Tailwind CSS | 3.3 | 토스 스타일 디자인 시스템 |
+| **상태 관리** | React Hooks | 18.2 | 컴포넌트 상태 관리 |
+| **백엔드** | Supabase | 2.38 | BaaS (Database + Auth + Realtime) |
+| **데이터베이스** | PostgreSQL | 15 | 부조 데이터 저장 |
+| **배포** | Vercel | - | 자동 배포 및 CDN |
+| **알림** | React Hot Toast | 2.4 | 토스트 메시지 |
+
+## 📁 프로젝트 구조
+
+```
+contribution-web/
+├── 📂 pages/                  # Next.js 페이지
+│   ├── 📄 index.js           # 홈페이지 (토스 스타일)
+│   ├── 📄 _app.js            # 앱 설정 및 글로벌 스타일
+│   ├── 📄 error.js           # 에러 페이지
+│   └── 📂 contribute/
+│       └── 📄 [eventId].js   # 부조 입력 페이지
+├── 📂 lib/                    # 유틸리티 및 헬퍼
+│   └── 📄 supabase.js        # Supabase 클라이언트 및 헬퍼
+├── 📂 styles/                 # 스타일시트
+│   └── 📄 globals.css        # 토스 스타일 글로벌 CSS
+├── 📂 public/                 # 정적 파일
+│   ├── 📄 manifest.json      # PWA 매니페스트
+│   └── 📂 images/            # 이미지 자산
+├── 📄 tailwind.config.js     # Tailwind 설정 (토스 컬러 시스템)
+├── 📄 next.config.js         # Next.js 설정
+├── 📄 package.json           # 프로젝트 설정
+└── 📄 .env.local.example     # 환경변수 예시
+```
+
+## 💻 개발 가이드
+
+### 개발 명령어
+
+```bash
+# 개발 서버 실행
+npm run dev
+
+# 프로덕션 빌드
+npm run build
+
+# 프로덕션 서버 실행
+npm run start
+
+# 코드 린팅
+npm run lint
+
+# 코드 포맷팅
+npm run format
+
+# 타입 체크
+npm run type-check
+
+# 번들 분석
+npm run analyze
+```
+
+### 코드 스타일
+
+이 프로젝트는 **토스의 디자인 철학**을 따릅니다:
+
+- **간결함**: 불필요한 요소 제거, 핵심 기능에 집중
+- **직관성**: 사용자가 생각하지 않아도 자연스럽게 사용 가능
+- **일관성**: 통일된 컬러, 타이포그래피, 컴포넌트 사용
+- **접근성**: 모든 사용자가 편리하게 이용 가능
+
+### 토스 스타일 가이드
+
+#### 컬러 시스템
+```css
+/* 메인 컬러 */
+--color-primary: #3182F6;
+--color-primary-light: #4A90E2;
+--color-primary-dark: #2171E5;
+
+/* 그레이스케일 */
+--color-gray-50: #F9FAFB;
+--color-gray-900: #111827;
+
+/* 상태 컬러 */
+--color-success: #10B981;
+--color-warning: #F59E0B;
+--color-error: #EF4444;
+```
+
+#### 타이포그래피
+```css
+/* 헤딩 */
+.text-display-1 { font-size: 2.5rem; font-weight: 700; }
+.text-title-1 { font-size: 1.5rem; font-weight: 600; }
+
+/* 본문 */
+.text-body-1 { font-size: 1rem; font-weight: 400; }
+.text-body-2 { font-size: 0.875rem; font-weight: 400; }
+```
+
+#### 컴포넌트
+```css
+/* 버튼 */
+.btn-toss {
+  min-height: 56px;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 250ms ease-out;
+}
+
+/* 카드 */
+.card-toss {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+}
+
+/* 입력 필드 */
+.input-toss {
+  min-height: 56px;
+  border-radius: 12px;
+  border: 2px solid var(--color-gray-200);
+}
+```
+
+## 🔧 설정 및 커스터마이징
+
+### Tailwind CSS 커스터마이징
+
+`tailwind.config.js`에서 토스 스타일에 맞는 컬러와 컴포넌트를 정의했습니다:
+
+```javascript
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          500: '#3182F6',
+          600: '#2171E5',
+          // ...
+        },
+        wedding: {
+          500: '#EC4899',
+          // ...
+        },
+        funeral: {
+          500: '#64748B',
+          // ...
+        }
+      }
+    }
+  }
+}
+```
+
+### Supabase 스키마
+
+데이터베이스 테이블 구조:
+
+```sql
+-- 경조사 테이블
+CREATE TABLE events (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  event_name TEXT NOT NULL,
+  event_type TEXT NOT NULL CHECK (event_type IN ('wedding', 'funeral', 'birthday')),
+  event_date DATE NOT NULL,
+  ceremony_time TIME,
+  location TEXT,
+  family_relations TEXT[],
+  preset_amounts INTEGER[],
+  allow_messages BOOLEAN DEFAULT false,
+  status TEXT DEFAULT 'active'
+);
+
+-- 부조 테이블
+CREATE TABLE contributions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  event_id UUID REFERENCES events(id),
+  contributor_name TEXT NOT NULL,
+  amount INTEGER NOT NULL CHECK (amount > 0),
+  relation_to TEXT,
+  notes TEXT,
+  is_confirmed BOOLEAN DEFAULT false,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 메시지 테이블 (선택사항)
+CREATE TABLE event_messages (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  event_id UUID REFERENCES events(id),
+  sender_name TEXT NOT NULL,
+  message TEXT NOT NULL,
+  message_type TEXT DEFAULT 'congratulation',
+  is_anonymous BOOLEAN DEFAULT false,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+## 🚀 배포 가이드
+
+### Vercel 배포 (권장)
+
+1. **Vercel 계정 연동**
+```bash
+npm i -g vercel
+vercel login
+```
+
+2. **프로젝트 배포**
+```bash
+vercel --prod
+```
+
+3. **환경변수 설정**
+```bash
+vercel env add NEXT_PUBLIC_SUPABASE_URL
+vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY
+```
+
+### Docker 배포
+
+```bash
+# Docker 이미지 빌드
+docker build -t jeongdam-web .
+
+# 컨테이너 실행
+docker run -p 3000:3000 -e NEXT_PUBLIC_SUPABASE_URL=your_url jeongdam-web
+```
+
+### 성능 최적화
+
+- ✅ **이미지 최적화**: Next.js Image 컴포넌트 사용
+- ✅ **번들 분석**: `npm run analyze`로 번들 크기 체크
+- ✅ **코드 스플리팅**: 동적 import 활용
+- ✅ **PWA**: 오프라인 지원 및 앱 설치 가능
+- ✅ **CDN**: Vercel Edge Network 활용
+
+## 📱 모바일 최적화
+
+### 터치 최적화
+- 최소 터치 영역: 44x44px
+- 터치 피드백: 시각적 반응 제공
+- 스와이프 제스처: 직관적인 조작
+
+### 반응형 디자인
+- 모바일 우선 설계
+- 안전 영역 지원 (iPhone X 이상)
+- 가로/세로 모드 모두 지원
+
+### 성능 최적화
+- 빠른 로딩: 2초 이내 초기 로딩
+- 부드러운 애니메이션: 60fps 유지
+- 오프라인 지원: 기본 기능 오프라인 사용 가능
+
+## 🔗 관련 프로젝트
+
+- 📱 **정담 모바일 앱**: React Native 기반 경조사 관리 앱
+- 🖥️ **정담 관리자 대시보드**: 통계 및 관리 기능
+- 🤖 **정담 API**: 백엔드 API 서버
+
+## 🤝 기여하기
+
+기여를 환영합니다! 다음 가이드를 따라주세요:
+
+1. **이슈 생성**: 버그나 기능 요청 시 이슈 먼저 생성
+2. **Fork & Clone**: 저장소 포크 후 로컬에 클론
+3. **브랜치 생성**: `feature/새기능` 또는 `fix/버그수정` 형식
+4. **코드 작성**: 기존 코드 스타일 준수
+5. **테스트**: 변경사항 테스트 완료
+6. **Pull Request**: 명확한 설명과 함께 PR 생성
+
+### 코드 리뷰 가이드라인
+
+- 토스 디자인 시스템 준수
+- 모바일 최적화 고려
+- 접근성 기준 충족
+- 성능 영향 최소화
+
+## 📞 지원 및 문의
+
+- 📧 **이메일**: support@jeongdam.com
+- 🐛 **버그 리포트**: [GitHub Issues](https://github.com/jeongdam/contribution-web/issues)
+- 💬 **기능 요청**: [GitHub Discussions](https://github.com/jeongdam/contribution-web/discussions)
+- 📖 **문서**: [Wiki](https://github.com/jeongdam/contribution-web/wiki)
+
+## 📄 라이선스
+
+이 프로젝트는 MIT 라이선스 하에 배포됩니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
+
+## 🙏 감사의 말
+
+- **토스**: 훌륭한 UX/UI 디자인 영감
+- **Vercel**: 뛰어난 배포 플랫폼 제공
+- **Supabase**: 강력한 백엔드 서비스
+- **Next.js 팀**: 최고의 React 프레임워크
+
+---
+
+<div align="center">
+  <p>💎 <strong>정담</strong>과 함께 더 나은 경조사 문화를 만들어가요</p>
+  <p>
+    <a href="https://contribute.jeongdam.com">웹사이트</a> •
+    <a href="https://apps.apple.com/app/jeongdam">App Store</a> •
+    <a href="https://play.google.com/store/apps/details?id=com.jeongdam">Google Play</a>
+  </p>
+</div>
