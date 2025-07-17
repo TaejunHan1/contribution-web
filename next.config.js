@@ -41,16 +41,7 @@ const nextConfig = {
     ];
   },
   
-  // 리다이렉트 설정
-  async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/contribute',
-        permanent: false,
-      },
-    ];
-  },
+  // 리다이렉트 설정 제거 (index.js가 있으므로)
 };
 
 module.exports = nextConfig;
