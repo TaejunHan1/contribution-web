@@ -4,20 +4,20 @@ const nextConfig = {
   experimental: {
     // 앱 디렉토리 사용 (Next.js 13+)
     appDir: false,
-    
+
     // 서버 컴포넌트 최적화
     serverComponentsExternalPackages: ['@supabase/supabase-js'],
-    
+
     // 이미지 최적화
     optimizePackageImports: ['@supabase/supabase-js'],
   },
 
   // 리액트 설정
   reactStrictMode: true,
-  
+
   // SWC 설정 (Babel 대신 사용)
   swcMinify: true,
-  
+
   // 이미지 최적화 설정
   images: {
     // 외부 이미지 도메인 허용
@@ -26,14 +26,14 @@ const nextConfig = {
       'fonts.googleapis.com',
       'images.unsplash.com',
     ],
-    
+
     // 이미지 형식 설정
     formats: ['image/webp', 'image/avif'],
-    
+
     // 이미지 크기 설정
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    
+
     // 최적화 설정
     minimumCacheTTL: 60,
     dangerouslyAllowSVG: true,
@@ -44,7 +44,7 @@ const nextConfig = {
   compiler: {
     // 프로덕션에서 console.log 제거
     removeConsole: process.env.NODE_ENV === 'production',
-    
+
     // React Developer Tools 설정
     reactRemoveProperties: process.env.NODE_ENV === 'production',
   },
@@ -104,28 +104,28 @@ const nextConfig = {
           // 보안 헤더들
           {
             key: 'X-DNS-Prefetch-Control',
-            value: 'on'
+            value: 'on',
           },
           {
             key: 'X-XSS-Protection',
-            value: '1; mode=block'
+            value: '1; mode=block',
           },
           {
             key: 'X-Frame-Options',
-            value: 'SAMEORIGIN'
+            value: 'SAMEORIGIN',
           },
           {
             key: 'X-Content-Type-Options',
-            value: 'nosniff'
+            value: 'nosniff',
           },
           {
             key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin'
+            value: 'origin-when-cross-origin',
           },
           // 캐시 제어
           {
             key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable'
+            value: 'public, max-age=31536000, immutable',
           },
         ],
       },
@@ -465,7 +465,7 @@ if (process.env.NODE_ENV === 'production') {
       buildExcludes: [/middleware-manifest\.json$/],
       disable: process.env.NODE_ENV === 'development',
     });
-    
+
     finalConfig = withPWA(nextConfig);
   } catch (error) {
     console.warn('PWA plugin not available, continuing without PWA features');

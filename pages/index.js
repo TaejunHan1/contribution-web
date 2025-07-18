@@ -18,46 +18,50 @@ export default function HomePage() {
       icon: '📷',
       title: 'QR코드 스캔',
       description: '휴대폰으로 QR코드를 스캔하면\n바로 부조 페이지로 이동해요',
-      gradient: 'gradient-primary'
+      gradient: 'gradient-primary',
     },
     {
       icon: '💳',
       title: '간편한 부조',
       description: '이름과 금액만 입력하면\n부조가 자동으로 기록돼요',
-      gradient: 'gradient-wedding'
+      gradient: 'gradient-wedding',
     },
     {
       icon: '📊',
       title: '실시간 관리',
       description: '부조 내역이 실시간으로\n앱에서 확인 가능해요',
-      gradient: 'gradient-funeral'
-    }
+      gradient: 'gradient-funeral',
+    },
   ];
 
   return (
     <>
       <Head>
         <title>정담 - 간편한 모바일 부조 시스템</title>
-        <meta name="description" content="QR코드로 간편하게 부조하고, 디지털로 경조사를 관리하세요" />
+        <meta
+          name="description"
+          content="QR코드로 간편하게 부조하고, 디지털로 경조사를 관리하세요"
+        />
       </Head>
-      
+
       <div className="min-h-screen-mobile bg-gradient-to-br from-blue-50 via-white to-purple-50">
         {/* 상단 안전 영역 */}
         <div className="safe-area-top">
-          
           {/* 메인 헤더 */}
           <header className="text-center px-6 pt-12 pb-8">
             <div className="mb-6">
-              <div className="icon-wrapper icon-primary mx-auto mb-4" style={{width: '80px', height: '80px', fontSize: '40px'}}>
+              <div
+                className="icon-wrapper icon-primary mx-auto mb-4"
+                style={{ width: '80px', height: '80px', fontSize: '40px' }}
+              >
                 💎
               </div>
             </div>
-            
-            <h1 className="text-display-1 text-gray-900 mb-4">
-              정담
-            </h1>
+
+            <h1 className="text-display-1 text-gray-900 mb-4">정담</h1>
             <p className="text-body-1 text-gray-600 leading-relaxed max-w-sm mx-auto">
-              QR코드로 간편하게 부조하고<br />
+              QR코드로 간편하게 부조하고
+              <br />
               디지털로 경조사를 관리하세요
             </p>
           </header>
@@ -66,7 +70,11 @@ export default function HomePage() {
           <section className="px-6 mb-8">
             <div className="space-y-4">
               {features.map((feature, index) => (
-                <div key={index} className="card-toss slide-up" style={{animationDelay: `${index * 100}ms`}}>
+                <div
+                  key={index}
+                  className="card-toss slide-up"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
                   <div className="flex items-start gap-4">
                     <div className={`icon-wrapper ${feature.gradient}`}>
                       {feature.icon}
@@ -96,17 +104,17 @@ export default function HomePage() {
                   경조사 ID를 직접 입력해서 접속하세요
                 </p>
               </div>
-              
+
               <div className="space-y-4">
                 <input
                   type="text"
                   value={eventId}
-                  onChange={(e) => setEventId(e.target.value)}
+                  onChange={e => setEventId(e.target.value)}
                   placeholder="경조사 ID를 입력해주세요"
                   className="input-toss text-center"
-                  onKeyPress={(e) => e.key === 'Enter' && handleDirectAccess()}
+                  onKeyPress={e => e.key === 'Enter' && handleDirectAccess()}
                 />
-                
+
                 <button
                   onClick={handleDirectAccess}
                   disabled={!eventId.trim()}
@@ -117,7 +125,6 @@ export default function HomePage() {
               </div>
             </div>
           </section>
-
 
           {/* 푸터 */}
           <footer className="px-6 pb-8 text-center">
@@ -134,9 +141,8 @@ export default function HomePage() {
               </button>
             </div>
           </footer>
-
         </div>
-        
+
         {/* 하단 안전 영역 */}
         <div className="safe-area-bottom"></div>
       </div>

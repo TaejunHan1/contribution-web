@@ -23,15 +23,15 @@ function MyApp({ Component, pageProps }) {
     const handleResize = () => {
       setTimeout(setVH, 100);
     };
-    
+
     window.addEventListener('load', setVH);
     window.addEventListener('scroll', handleResize);
 
     // 터치 스크롤 최적화
     document.body.style.overscrollBehavior = 'none';
-    
+
     // iOS 줌 방지
-    document.addEventListener('gesturestart', (e) => {
+    document.addEventListener('gesturestart', e => {
       e.preventDefault();
     });
 
@@ -54,68 +54,103 @@ function MyApp({ Component, pageProps }) {
       <Head>
         <title>정담 - 부조하기</title>
         <meta name="description" content="간편하고 안전한 모바일 부조 시스템" />
-        
+
         {/* 뷰포트 설정 */}
-        <meta 
-          name="viewport" 
-          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" 
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
         />
-        
+
         {/* 테마 컬러 */}
         <meta name="theme-color" content="#3182F6" />
         <meta name="msapplication-navbutton-color" content="#3182F6" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        
+
         {/* PWA 설정 */}
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-title" content="정담" />
         <meta name="application-name" content="정담" />
-        
+
         {/* 오픈 그래프 */}
         <meta property="og:type" content="website" />
         <meta property="og:title" content="정담 - 부조하기" />
-        <meta property="og:description" content="간편하고 안전한 모바일 부조 시스템" />
+        <meta
+          property="og:description"
+          content="간편하고 안전한 모바일 부조 시스템"
+        />
         <meta property="og:image" content="/images/og-image.jpg" />
         <meta property="og:url" content="https://contribute.jeongdam.com" />
-        
+
         {/* 트위터 카드 */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="정담 - 부조하기" />
-        <meta name="twitter:description" content="간편하고 안전한 모바일 부조 시스템" />
+        <meta
+          name="twitter:description"
+          content="간편하고 안전한 모바일 부조 시스템"
+        />
         <meta name="twitter:image" content="/images/twitter-card.jpg" />
-        
+
         {/* 파비콘 */}
         <link rel="icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png" />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/images/apple-touch-icon.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/images/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/images/favicon-16x16.png"
+        />
         <link rel="manifest" href="/manifest.json" />
-        
+
         {/* 프리커넥트 및 DNS 프리페치 */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://cdn.jsdelivr.net" />
         <link rel="dns-prefetch" href="https://api.jeongdam.com" />
-        
+
         {/* 폰트 프리로드 */}
-        <link 
-          rel="preload" 
-          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" 
-          as="style" 
+        <link
+          rel="preload"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css"
+          as="style"
         />
-        
+
         {/* 스플래시 스크린 (iOS) */}
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <link rel="apple-touch-startup-image" href="/images/splash-640x1136.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" />
-        <link rel="apple-touch-startup-image" href="/images/splash-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" />
-        <link rel="apple-touch-startup-image" href="/images/splash-1242x2208.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)" />
-        
+        <link
+          rel="apple-touch-startup-image"
+          href="/images/splash-640x1136.png"
+          media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/images/splash-750x1334.png"
+          media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/images/splash-1242x2208.png"
+          media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)"
+        />
+
         {/* 성능 최적화 */}
         <link rel="prefetch" href="/api/health" />
       </Head>
 
       {/* 메인 컨텐츠 */}
-      <main className="min-h-screen" style={{background: 'var(--color-background-secondary)'}}>
+      <main
+        className="min-h-screen"
+        style={{ background: 'var(--color-background-secondary)' }}
+      >
         <Component {...pageProps} />
       </main>
 
@@ -145,7 +180,7 @@ function MyApp({ Component, pageProps }) {
             boxShadow: 'var(--shadow-lg)',
             border: '1px solid var(--color-gray-100)',
           },
-          
+
           // 성공 토스트
           success: {
             style: {
@@ -159,7 +194,7 @@ function MyApp({ Component, pageProps }) {
             },
             duration: 2500,
           },
-          
+
           // 에러 토스트
           error: {
             style: {
@@ -173,7 +208,7 @@ function MyApp({ Component, pageProps }) {
             },
             duration: 4000,
           },
-          
+
           // 로딩 토스트
           loading: {
             style: {
@@ -186,7 +221,7 @@ function MyApp({ Component, pageProps }) {
               secondary: 'var(--color-primary)',
             },
           },
-          
+
           // 정보 토스트
           custom: {
             style: {
@@ -204,7 +239,7 @@ function MyApp({ Component, pageProps }) {
         :root {
           --vh: 1vh;
         }
-        
+
         /* 모바일 스크롤 최적화 */
         html {
           scroll-behavior: smooth;
@@ -212,24 +247,24 @@ function MyApp({ Component, pageProps }) {
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
         }
-        
+
         body {
           overflow-x: hidden;
           -webkit-overflow-scrolling: touch;
           overscroll-behavior: none;
         }
-        
+
         /* 터치 최적화 */
         * {
           -webkit-tap-highlight-color: transparent;
           -webkit-touch-callout: none;
         }
-        
+
         /* 입력 필드 줌 방지 (iOS) */
-        input[type="text"],
-        input[type="number"],
-        input[type="tel"],
-        input[type="email"],
+        input[type='text'],
+        input[type='number'],
+        input[type='tel'],
+        input[type='email'],
         textarea,
         select {
           font-size: 16px;
@@ -237,7 +272,7 @@ function MyApp({ Component, pageProps }) {
           -webkit-appearance: none;
           -webkit-border-radius: 0;
         }
-        
+
         /* 버튼 터치 최적화 */
         button {
           -webkit-appearance: none;
@@ -246,7 +281,7 @@ function MyApp({ Component, pageProps }) {
           touch-action: manipulation;
           user-select: none;
         }
-        
+
         /* 이미지 최적화 */
         img {
           -webkit-user-drag: none;
@@ -255,7 +290,7 @@ function MyApp({ Component, pageProps }) {
           -o-user-drag: none;
           user-drag: none;
         }
-        
+
         /* 선택 방지 */
         .no-select {
           -webkit-user-select: none;
@@ -263,58 +298,58 @@ function MyApp({ Component, pageProps }) {
           -ms-user-select: none;
           user-select: none;
         }
-        
+
         /* 토스트 컨테이너 최적화 */
         .toast-container {
           z-index: 9999;
           pointer-events: none;
         }
-        
+
         .toast-container > div {
           pointer-events: auto;
         }
-        
+
         /* 안전 영역 지원 */
         .safe-area-inset-top {
           padding-top: max(20px, env(safe-area-inset-top));
         }
-        
+
         .safe-area-inset-bottom {
           padding-bottom: max(20px, env(safe-area-inset-bottom));
         }
-        
+
         .safe-area-inset-left {
           padding-left: max(20px, env(safe-area-inset-left));
         }
-        
+
         .safe-area-inset-right {
           padding-right: max(20px, env(safe-area-inset-right));
         }
-        
+
         /* 스크롤바 숨김 (웹킷) */
         .hide-scrollbar {
           -webkit-overflow-scrolling: touch;
           scrollbar-width: none;
           -ms-overflow-style: none;
         }
-        
+
         .hide-scrollbar::-webkit-scrollbar {
           display: none;
         }
-        
+
         /* 포커스 최적화 */
         .focus-visible:focus {
           outline: 2px solid var(--color-primary);
           outline-offset: 2px;
         }
-        
+
         /* 다크 모드 지원 (미래 대비) */
         @media (prefers-color-scheme: dark) {
           :root {
             color-scheme: dark;
           }
         }
-        
+
         /* 리듀스 모션 지원 */
         @media (prefers-reduced-motion: reduce) {
           *,
@@ -325,37 +360,42 @@ function MyApp({ Component, pageProps }) {
             transition-duration: 0.01ms !important;
           }
         }
-        
+
         /* 프린트 최적화 */
         @media print {
           body {
             background: white !important;
             color: black !important;
           }
-          
+
           .no-print {
             display: none !important;
           }
-          
+
           .card-toss {
             box-shadow: none !important;
             border: 1px solid #ddd !important;
           }
-          
+
           .btn-toss {
             background: transparent !important;
             color: black !important;
             border: 1px solid black !important;
           }
         }
-        
+
         /* 로딩 최적화 */
         .loading-skeleton {
-          background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+          background: linear-gradient(
+            90deg,
+            #f0f0f0 25%,
+            #e0e0e0 50%,
+            #f0f0f0 75%
+          );
           background-size: 200% 100%;
           animation: loading 1.5s infinite;
         }
-        
+
         @keyframes loading {
           0% {
             background-position: 200% 0;
