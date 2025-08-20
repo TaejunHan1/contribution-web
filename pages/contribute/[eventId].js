@@ -162,12 +162,12 @@ export default function ContributePage() {
     }
   }, [eventId, loadEventData]);
 
-  // 이미지 자동 슬라이드 (3초마다)
+  // 이미지 자동 슬라이드 (5초마다) - 모바일 청첩장/부고장 최적화
   useEffect(() => {
     if (eventStorageImages.length > 1) {
       const interval = setInterval(() => {
         setCurrentImageIndex(prev => (prev + 1) % eventStorageImages.length);
-      }, 3000);
+      }, 5000); // 3초 → 5초로 증가 (모바일에서 더 여유있게)
       return () => clearInterval(interval);
     }
   }, [eventStorageImages.length]);
@@ -512,7 +512,7 @@ export default function ContributePage() {
         alignItems: 'center',
         justifyContent: 'center',
         background: '#F9FAFB',
-        fontFamily: "'SF Pro Display', -apple-system, sans-serif"
+        fontFamily: "'Pretendard', -apple-system, sans-serif"
       }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{
@@ -541,7 +541,7 @@ export default function ContributePage() {
         justifyContent: 'center',
         background: '#F9FAFB',
         padding: '0 24px',
-        fontFamily: "'SF Pro Display', -apple-system, sans-serif"
+        fontFamily: "'Pretendard', -apple-system, sans-serif"
       }}>
         <div style={{
           background: 'white',
@@ -594,7 +594,7 @@ export default function ContributePage() {
           justifyContent: 'center',
           background: '#F9FAFB',
           padding: '0 24px',
-          fontFamily: "'SF Pro Display', -apple-system, sans-serif"
+          fontFamily: "'Pretendard', -apple-system, sans-serif"
         }}>
           <div style={{
             background: 'white',
@@ -725,7 +725,7 @@ export default function ContributePage() {
       <div style={{
         minHeight: '100vh',
         background: '#F9FAFB',
-        fontFamily: "'SF Pro Display', -apple-system, sans-serif",
+        fontFamily: "'Pretendard', -apple-system, sans-serif",
         paddingBottom: '100px'
       }}>
         {/* 메인 헤더 */}

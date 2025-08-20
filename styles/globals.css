@@ -533,6 +533,97 @@ body {
   min-height: calc(var(--vh, 1vh) * 100);
 }
 
+/* 모바일 청첩장/부고장 전용 스타일링 */
+.mobile-invitation {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 0 16px;
+  background: #fff;
+}
+
+@media (max-width: 480px) {
+  .mobile-invitation {
+    padding: 0 12px;
+  }
+  
+  /* 모바일에서 더 작은 패딩 */
+  .card-toss {
+    padding: 20px;
+    border-radius: 12px;
+  }
+  
+  /* 모바일 터치 최적화 */
+  .select-button {
+    min-height: 48px;
+    font-size: 14px;
+  }
+  
+  .input-toss {
+    min-height: 48px;
+    font-size: 16px; /* iOS에서 줌 방지 */
+  }
+  
+  .btn-toss {
+    min-height: 48px;
+    font-size: 15px;
+  }
+}
+
+/* 모바일 이미지 슬라이더 최적화 */
+.mobile-image-slider {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #f0f0f0;
+  aspect-ratio: 1; /* 정사각형 비율 유지 */
+}
+
+/* 모바일 메시지 카드 스타일 */
+.mobile-message-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 24px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.mobile-message-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* 모바일 네비게이션 최적화 */
+.mobile-nav-safe {
+  padding-bottom: max(20px, env(safe-area-inset-bottom));
+}
+
+/* 모바일 타이핑 효과 */
+.typing-effect {
+  overflow: hidden;
+  border-right: 2px solid transparent;
+  white-space: nowrap;
+  animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent; }
+  50% { border-color: currentColor; }
+}
+
 /* 토스 스타일 터치 최적화 */
 .touch-optimized {
   min-height: 44px;

@@ -2,9 +2,6 @@
 const nextConfig = {
   // 실험적 기능들
   experimental: {
-    // 앱 디렉토리 사용 (Next.js 13+)
-    appDir: false,
-
     // 서버 컴포넌트 최적화
     serverComponentsExternalPackages: ['@supabase/supabase-js'],
 
@@ -25,6 +22,7 @@ const nextConfig = {
       'cdn.jsdelivr.net',
       'fonts.googleapis.com',
       'images.unsplash.com',
+      'ofshqvrldcesvjtredxo.supabase.co', // Supabase 스토리지
     ],
 
     // 이미지 형식 설정
@@ -51,7 +49,7 @@ const nextConfig = {
 
   // 환경 변수
   env: {
-    CUSTOM_KEY: process.env.CUSTOM_KEY,
+    CUSTOM_KEY: process.env.CUSTOM_KEY || 'default-key',
   },
 
   // 퍼블릭 런타임 설정
@@ -234,7 +232,7 @@ const nextConfig = {
   i18n: {
     locales: ['ko', 'en'],
     defaultLocale: 'ko',
-    localeDetection: true,
+    localeDetection: false, // true → false로 변경
   },
 
   // 성능 분석 설정
