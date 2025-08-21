@@ -1,5 +1,6 @@
 // components/templates/RomanticPinkTemplate.js
 import React, { useState, useEffect, useRef } from 'react';
+import GoogleMapEmbed from '../MapComponent';
 import styles from './RomanticPinkTemplate.module.css';
 
 // 떨어지는 꽃잎 애니메이션 컴포넌트 (모바일과 동일)
@@ -857,20 +858,41 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
         </div>
       </section>
 
-      {/* 방명록 메시지 섹션 */}
-      {allowMessages && (
-        <section className={styles.messagesSection}>
-          <h2 className={styles.messagesTitle}>Messages</h2>
-          <p className={styles.messagesSubtitle}>
-            {messageSettings?.placeholder || '저희 둘에게 따뜻한 방명록을 남겨주세요'}
-          </p>
-          
-          <GuestBookMessages 
-            messages={guestMessages}
-            onAddMessage={openMessageModal}
-          />
-        </section>
-      )}
+      {/* 방명록 섹션 */}
+      <section className={styles.messagesSection}>
+        <div className={styles.sectionTitle}>
+          <span className={styles.titleDecoration}>🌸</span>
+          <h2>Messages</h2>
+          <span className={styles.titleDecoration}>🌸</span>
+        </div>
+        <p className={styles.messagesSubtitle}>
+          저희 둘에게 따뜻한 방명록을 남겨주세요
+        </p>
+        
+        {/* 기존 방명록 메시지 목록 */}
+        <div className={styles.messagesList}>
+          {guestMessages?.length > 0 ? (
+            guestMessages.map((message, index) => (
+              <div key={index} className={styles.messageItem}>
+                <div className={styles.messageHeader}>
+                  <span className={styles.messageFrom}>{message.from}</span>
+                  <span className={styles.messageDate}>{message.date}</span>
+                </div>
+                <div className={styles.messageContent}>
+                  {message.content.split('\n').map((line, lineIndex) => (
+                    <span key={lineIndex}>
+                      {line}
+                      {lineIndex < message.content.split('\n').length - 1 && <br />}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className={styles.noMessages}>첫 번째 방명록을 남겨주세요! 💕</p>
+          )}
+        </div>
+      </section>
 
       {/* 오시는 길 */}
       <section className={styles.locationSection}>
@@ -886,8 +908,12 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
         </div>
         
         <div className={styles.mapContainer}>
-          <div className={styles.mapPlaceholder}>🗺️</div>
-          <p className={styles.mapText}>지도 영역</p>
+          <GoogleMapEmbed
+            address={eventData?.detailed_address || eventData?.detailedAddress || eventData?.location}
+            venueName={eventData?.venue_name || eventData?.venueName}
+            width="100%"
+            height="300px"
+          />
         </div>
         
         <div className={styles.transportCard}>
@@ -903,10 +929,6 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
           </div>
         </div>
         
-        <button className={styles.navigationButton}>
-          <span>📍</span>
-          <span>길찾기</span>
-        </button>
       </section>
 
       {/* 공유 섹션 */}
