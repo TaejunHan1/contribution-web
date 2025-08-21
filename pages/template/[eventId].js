@@ -2,7 +2,12 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import { getTemplateEventData, supabase } from '../../lib/supabase';
+import { getEventDetails, supabase } from '../../lib/supabase';
+import KoreanElegantTemplate from '../../components/templates/KoreanElegantTemplate';
+import VintageTemplate from '../../components/templates/VintageTemplate';
+import ModernMinimalTemplate from '../../components/templates/ModernMinimalTemplate';
+import RomanticPinkTemplate from '../../components/templates/RomanticPinkTemplate';
+import ElegantGardenTemplate from '../../components/templates/ElegantGardenTemplate';
 
 // 템플릿 컴포넌트들 (나중에 구현)
 const ModernTemplate = ({ eventData }) => (
@@ -201,54 +206,7 @@ const GardenTemplate = ({ eventData }) => (
   </div>
 );
 
-const VintageTemplate = ({ eventData }) => (
-  <div className="min-h-screen bg-gradient-to-br from-purple-100 via-indigo-100 to-purple-100">
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-md mx-auto bg-white rounded-3xl shadow-xl p-8 border border-purple-200">
-        <div className="text-center mb-8">
-          <div className="text-6xl mb-4">💜</div>
-          <h1 className="text-2xl font-serif text-purple-800 mb-2">
-            {eventData.groom_name || '신랑'} & {eventData.bride_name || '신부'}
-          </h1>
-          <p className="text-purple-600">빈티지 템플릿</p>
-        </div>
-        
-        {/* 날짜 정보 */}
-        <div className="text-center mb-8 p-4 bg-purple-50 rounded-2xl border border-purple-100">
-          <p className="text-lg text-purple-800 mb-2">
-            {new Date(eventData.event_date).toLocaleDateString('ko-KR', {
-              year: 'numeric',
-              month: 'long', 
-              day: 'numeric',
-              weekday: 'long'
-            })}
-          </p>
-          <p className="text-purple-700">
-            {eventData.ceremony_time || '오후 2시'}
-          </p>
-        </div>
-        
-        {/* 장소 정보 */}
-        <div className="text-center mb-8">
-          <p className="text-lg text-purple-800 mb-2">{eventData.location || '웨딩홀'}</p>
-          {eventData.detailed_address && (
-            <p className="text-sm text-purple-600">{eventData.detailed_address}</p>
-          )}
-        </div>
-        
-        {/* 부조 참여 버튼 */}
-        <div className="text-center">
-          <a 
-            href={`/contribute/${eventData.id}`}
-            className="inline-block bg-purple-600 text-white px-8 py-3 rounded-full font-medium hover:bg-purple-700 transition-colors"
-          >
-            방명록 작성하기
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-);
+// VintageTemplate은 이미 import됨 - 중복 제거
 
 export default function TemplatePage() {
   const router = useRouter();
@@ -268,7 +226,7 @@ export default function TemplatePage() {
   const loadEventData = async () => {
     try {
       setLoading(true);
-      const result = await getTemplateEventData(eventId);
+      const result = await getEventDetails(eventId);
 
       if (result.success) {
         setEvent(result.data);
@@ -286,17 +244,20 @@ export default function TemplatePage() {
   const getTemplateComponent = () => {
     if (!event) return null;
     
+    // 이미지 데이터 구성
+    const categorizedImages = event.additional_info?.categorized_images || {};
+    
     switch (template) {
       case 'modern':
-        return <ModernTemplate eventData={event} />;
+        return <ModernMinimalTemplate eventData={event} categorizedImages={categorizedImages} />;
       case 'romantic':
-        return <RomanticTemplate eventData={event} />;
+        return <RomanticPinkTemplate eventData={event} categorizedImages={categorizedImages} />;
       case 'korean':
-        return <KoreanTemplate eventData={event} />;
+        return <KoreanElegantTemplate eventData={event} categorizedImages={categorizedImages} />;
       case 'garden':
-        return <GardenTemplate eventData={event} />;
+        return <ElegantGardenTemplate eventData={event} categorizedImages={categorizedImages} />;
       case 'vintage':
-        return <VintageTemplate eventData={event} />;
+        return <VintageTemplate eventData={event} categorizedImages={categorizedImages} />;
       default:
         return <ModernTemplate eventData={event} />;
     }

@@ -1,0 +1,730 @@
+/* components/templates/VintageTemplate.module.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Crimson+Text:wght@400;600&display=swap');
+
+.container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #F4E8DC 0%, #E8D5C4 50%, #F4E8DC 100%);
+  position: relative;
+  overflow-x: hidden;
+  font-family: 'Crimson Text', serif;
+}
+
+/* 빈티지 패턴 오버레이 */
+.vintagePattern {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.03;
+  background-image: 
+    repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(139, 90, 43, 0.5) 35px, rgba(139, 90, 43, 0.5) 70px),
+    repeating-linear-gradient(-45deg, transparent, transparent 35px, rgba(139, 90, 43, 0.5) 35px, rgba(139, 90, 43, 0.5) 70px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 빈티지 프레임 */
+.vintageFrame {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  border: 2px solid #8B5A2B;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.frameCorner {
+  position: absolute;
+  font-size: 24px;
+  color: #8B5A2B;
+}
+
+.frameCorner[data-position="top-left"] {
+  top: -12px;
+  left: -12px;
+}
+
+.frameCorner[data-position="top-right"] {
+  top: -12px;
+  right: -12px;
+}
+
+.frameCorner[data-position="bottom-left"] {
+  bottom: -12px;
+  left: -12px;
+}
+
+.frameCorner[data-position="bottom-right"] {
+  bottom: -12px;
+  right: -12px;
+}
+
+/* 메인 헤더 섹션 */
+.heroSection {
+  padding: 80px 20px 60px;
+  text-align: center;
+  position: relative;
+}
+
+.ornamentalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.ornament {
+  font-size: 24px;
+  color: #8B5A2B;
+  font-family: 'Playfair Display', serif;
+}
+
+.weddingTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 36px;
+  font-weight: 400;
+  color: #5D4037;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+/* 메인 사진 */
+.mainPhotoContainer {
+  max-width: 400px;
+  margin: 0 auto 40px;
+}
+
+.photoFrame {
+  position: relative;
+  padding: 15px;
+  background: white;
+  box-shadow: 
+    0 0 0 1px #8B5A2B,
+    0 0 0 10px white,
+    0 0 0 11px #8B5A2B,
+    0 10px 30px rgba(139, 90, 43, 0.3);
+  margin-bottom: 15px;
+}
+
+.slideshow {
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%;
+  overflow: hidden;
+}
+
+.slideshowImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
+  filter: sepia(10%);
+}
+
+.slideshowImage.active {
+  opacity: 1;
+}
+
+.placeholderImage {
+  width: 100%;
+  padding-bottom: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #F4E8DC, #E8D5C4);
+  font-size: 80px;
+}
+
+.photoCaption {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  color: #8B5A2B;
+  font-size: 14px;
+}
+
+/* 이름 섹션 */
+.namesSection {
+  margin-bottom: 40px;
+}
+
+.coupleNames {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.groomName, .brideName {
+  font-family: 'Playfair Display', serif;
+  font-size: 42px;
+  font-weight: 700;
+  color: #5D4037;
+}
+
+.ampersand {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  font-style: italic;
+  color: #8B5A2B;
+}
+
+.subtitle {
+  font-size: 18px;
+  font-style: italic;
+  color: #795548;
+  letter-spacing: 1px;
+}
+
+/* 날짜 섹션 */
+.dateSection {
+  padding: 40px 20px;
+  background: rgba(255, 255, 255, 0.5);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.dateDivider {
+  font-size: 14px;
+  color: #8B5A2B;
+  letter-spacing: 10px;
+  margin: 20px 0;
+}
+
+.dateDisplay {
+  margin: 30px 0;
+}
+
+.monthName {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: #8B5A2B;
+  margin-bottom: 10px;
+}
+
+.dayNumber {
+  font-family: 'Playfair Display', serif;
+  font-size: 72px;
+  font-weight: 700;
+  color: #5D4037;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.yearText {
+  font-size: 20px;
+  color: #795548;
+  letter-spacing: 2px;
+}
+
+.timeText {
+  font-size: 18px;
+  font-style: italic;
+  color: #795548;
+  margin-top: 20px;
+}
+
+/* 섹션 헤더 공통 */
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 40px;
+  padding: 0 20px;
+}
+
+.vintageLine {
+  flex: 1;
+  max-width: 100px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #8B5A2B, transparent);
+}
+
+.sectionTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 400;
+  color: #5D4037;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  white-space: nowrap;
+}
+
+/* 카운트다운 섹션 */
+.countdownSection {
+  padding: 60px 20px;
+  background: white;
+}
+
+.countdownContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.countdownItem {
+  text-align: center;
+}
+
+.countdownCircle {
+  width: 80px;
+  height: 80px;
+  border: 2px solid #8B5A2B;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F4E8DC;
+  margin-bottom: 10px;
+}
+
+.countdownNumber {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #5D4037;
+}
+
+.countdownLabel {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #795548;
+}
+
+.countdownSeparator {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  color: #8B5A2B;
+}
+
+.celebrationMessage {
+  text-align: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  font-style: italic;
+  color: #5D4037;
+  padding: 40px;
+}
+
+/* 인사말 섹션 */
+.messageSection {
+  padding: 60px 20px;
+  background: linear-gradient(180deg, #F4E8DC 0%, #E8D5C4 100%);
+  text-align: center;
+}
+
+.quoteMark {
+  font-family: 'Playfair Display', serif;
+  font-size: 48px;
+  color: #8B5A2B;
+  opacity: 0.3;
+  line-height: 0.5;
+}
+
+.customMessage {
+  max-width: 600px;
+  margin: 20px auto;
+  font-size: 20px;
+  font-style: italic;
+  line-height: 32px;
+  color: #5D4037;
+  white-space: pre-line;
+}
+
+/* 신랑신부 소개 */
+.coupleSection {
+  padding: 60px 20px;
+  background: white;
+}
+
+.coupleCards {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  max-width: 800px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
+.personCard {
+  flex: 1;
+  min-width: 250px;
+  text-align: center;
+}
+
+.personPhotoFrame {
+  width: 180px;
+  height: 180px;
+  margin: 0 auto 20px;
+  padding: 10px;
+  background: white;
+  box-shadow: 
+    0 0 0 1px #8B5A2B,
+    0 0 0 8px white,
+    0 0 0 9px #8B5A2B;
+  transform: rotate(-2deg);
+  transition: transform 0.3s;
+}
+
+.personCard:nth-child(3) .personPhotoFrame {
+  transform: rotate(2deg);
+}
+
+.personPhotoFrame:hover {
+  transform: rotate(0deg);
+}
+
+.personPhoto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: sepia(10%);
+}
+
+.personPhotoPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F4E8DC;
+  font-size: 60px;
+}
+
+.personName {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #5D4037;
+  margin-bottom: 5px;
+}
+
+.personTitle {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #8B5A2B;
+  margin-bottom: 10px;
+}
+
+.parentNames {
+  font-size: 16px;
+  font-style: italic;
+  color: #795548;
+  margin-bottom: 20px;
+}
+
+.coupleConnector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heartIcon {
+  font-size: 32px;
+  color: #8B5A2B;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+}
+
+/* 버튼 스타일 */
+.vintageButton {
+  background: #8B5A2B;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  font-family: 'Crimson Text', serif;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 2px 5px rgba(139, 90, 43, 0.3);
+}
+
+.vintageButton:hover {
+  background: #5D4037;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(139, 90, 43, 0.4);
+}
+
+.vintageButtonOutline {
+  background: transparent;
+  color: #8B5A2B;
+  border: 2px solid #8B5A2B;
+  padding: 12px 30px;
+  font-family: 'Crimson Text', serif;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.vintageButtonOutline:hover {
+  background: #8B5A2B;
+  color: white;
+}
+
+/* 예식 정보 섹션 */
+.ceremonySection {
+  padding: 60px 20px;
+  background: linear-gradient(180deg, #F4E8DC 0%, #E8D5C4 100%);
+}
+
+.ceremonyCard {
+  max-width: 600px;
+  margin: 0 auto;
+  background: white;
+  padding: 40px;
+  box-shadow: 
+    0 0 0 1px #8B5A2B,
+    0 0 0 10px white,
+    0 0 0 11px #8B5A2B;
+}
+
+.ceremonyDetail {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.ceremonyDetail:last-child {
+  margin-bottom: 0;
+}
+
+.detailIcon {
+  font-size: 32px;
+  width: 50px;
+  text-align: center;
+}
+
+.detailContent h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #8B5A2B;
+  margin-bottom: 10px;
+}
+
+.detailMain {
+  font-size: 18px;
+  color: #5D4037;
+  margin-bottom: 5px;
+}
+
+.detailSub {
+  font-size: 16px;
+  color: #795548;
+  font-style: italic;
+}
+
+/* 갤러리 섹션 */
+.gallerySection {
+  padding: 60px 20px;
+  background: white;
+}
+
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.galleryFrame {
+  padding: 10px;
+  background: white;
+  box-shadow: 
+    0 0 0 1px #8B5A2B,
+    0 0 0 8px white,
+    0 0 0 9px #8B5A2B;
+  transform: rotate(-1deg);
+  transition: transform 0.3s;
+}
+
+.galleryFrame:nth-child(even) {
+  transform: rotate(1deg);
+}
+
+.galleryFrame:hover {
+  transform: rotate(0deg) scale(1.05);
+}
+
+.galleryFrame img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  filter: sepia(10%);
+}
+
+/* 지도 섹션 */
+.mapSection {
+  padding: 60px 20px;
+  background: linear-gradient(180deg, #F4E8DC 0%, #E8D5C4 100%);
+}
+
+.mapFrame {
+  max-width: 600px;
+  margin: 0 auto 30px;
+  padding: 15px;
+  background: white;
+  box-shadow: 
+    0 0 0 1px #8B5A2B,
+    0 0 0 10px white,
+    0 0 0 11px #8B5A2B;
+}
+
+.mapPlaceholder {
+  padding: 80px 20px;
+  text-align: center;
+  background: #F4E8DC;
+}
+
+.mapPlaceholder span {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 20px;
+}
+
+.mapPlaceholder p {
+  font-size: 18px;
+  color: #5D4037;
+  margin-bottom: 10px;
+}
+
+.mapAddress {
+  font-size: 16px;
+  color: #795548;
+  font-style: italic;
+}
+
+.mapButtons {
+  display: flex;
+  gap: 15px;
+  max-width: 400px;
+  margin: 0 auto;
+  justify-content: center;
+}
+
+/* 공유 섹션 */
+.shareSection {
+  padding: 60px 20px;
+  background: white;
+  text-align: center;
+}
+
+.shareButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 15px;
+  padding: 18px 40px;
+  background: linear-gradient(135deg, #8B5A2B, #5D4037);
+  color: white;
+  border: none;
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(139, 90, 43, 0.3);
+  transition: all 0.3s;
+}
+
+.shareButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(139, 90, 43, 0.4);
+}
+
+.shareIcon {
+  font-size: 24px;
+}
+
+/* 푸터 */
+.footer {
+  padding: 80px 20px;
+  background: linear-gradient(180deg, #E8D5C4 0%, #F4E8DC 100%);
+  text-align: center;
+}
+
+.footerOrnament {
+  font-size: 18px;
+  color: #8B5A2B;
+  letter-spacing: 10px;
+  margin-bottom: 30px;
+}
+
+.footerMessage {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-style: italic;
+  color: #5D4037;
+  margin-bottom: 20px;
+}
+
+.footerNames {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #5D4037;
+  margin-bottom: 10px;
+}
+
+.footerDate {
+  font-size: 16px;
+  color: #795548;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .weddingTitle {
+    font-size: 28px;
+  }
+  
+  .groomName, .brideName {
+    font-size: 32px;
+  }
+  
+  .dayNumber {
+    font-size: 56px;
+  }
+  
+  .coupleCards {
+    flex-direction: column;
+  }
+  
+  .mapButtons {
+    flex-direction: column;
+  }
+  
+  .galleryGrid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}

@@ -1,0 +1,601 @@
+/* Modern Minimal Template CSS */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+.container {
+  min-height: 100vh;
+  background: #000;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+.navigation {
+  position: fixed;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 12px 24px;
+  border-radius: 25px;
+}
+
+.navItem {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.navItem:hover {
+  opacity: 0.7;
+}
+
+.navDivider {
+  opacity: 0.3;
+}
+
+.heroSection {
+  height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.heroBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+}
+
+.heroImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 2s ease-in-out;
+}
+
+.heroImage.active {
+  opacity: 1;
+}
+
+.heroOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: -1;
+}
+
+.heroContent {
+  z-index: 1;
+}
+
+.heroDate {
+  font-size: 14px;
+  font-weight: 300;
+  letter-spacing: 4px;
+  margin-bottom: 30px;
+  opacity: 0.8;
+}
+
+.heroNames {
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 300;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.groomName, .brideName {
+  letter-spacing: 3px;
+}
+
+.ampersand {
+  font-size: 0.5em;
+  opacity: 0.6;
+  font-weight: 400;
+}
+
+.heroSubtitle {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 3px;
+  opacity: 0.7;
+}
+
+.scrollIndicator {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.scrollLine {
+  width: 1px;
+  height: 40px;
+  background: #fff;
+  opacity: 0.3;
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+.scrollText {
+  font-size: 10px;
+  letter-spacing: 2px;
+  opacity: 0.6;
+  writing-mode: vertical-rl;
+}
+
+.countdownSection {
+  padding: 100px 20px;
+  background: #111;
+}
+
+.countdownContent {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.countdownTitle {
+  font-size: 32px;
+  font-weight: 300;
+  letter-spacing: 4px;
+  margin-bottom: 60px;
+}
+
+.countdownGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.countdownBlock {
+  text-align: center;
+}
+
+.countdownNumber {
+  font-size: 48px;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.countdownLabel {
+  font-size: 12px;
+  letter-spacing: 2px;
+  opacity: 0.6;
+}
+
+.marriedMessage {
+  text-align: center;
+}
+
+.marriedText {
+  font-size: 18px;
+  opacity: 0.7;
+  margin-top: 20px;
+}
+
+.messageSection {
+  padding: 120px 20px;
+  background: #000;
+  text-align: center;
+}
+
+.messageContent {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.quoteMark {
+  font-size: 72px;
+  opacity: 0.1;
+  line-height: 0.5;
+  font-family: Georgia, serif;
+}
+
+.message {
+  font-size: 24px;
+  font-weight: 300;
+  line-height: 1.6;
+  margin: 40px 0;
+  white-space: pre-line;
+}
+
+.infoSection {
+  padding: 120px 20px;
+  background: #111;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 60px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.infoCard {
+  text-align: center;
+  padding: 40px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: border-color 0.3s;
+}
+
+.infoCard:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.infoIcon {
+  font-size: 32px;
+  margin-bottom: 20px;
+  opacity: 0.8;
+}
+
+.infoTitle {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+  opacity: 0.8;
+}
+
+.infoMain {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.infoSub {
+  font-size: 16px;
+  opacity: 0.7;
+  margin-bottom: 15px;
+}
+
+.infoDetail {
+  font-size: 14px;
+  opacity: 0.6;
+  line-height: 1.5;
+}
+
+.coupleSection {
+  padding: 120px 20px;
+  background: #000;
+}
+
+.sectionTitle {
+  font-size: 32px;
+  font-weight: 300;
+  letter-spacing: 4px;
+  text-align: center;
+  margin-bottom: 80px;
+}
+
+.coupleGrid {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 80px;
+  max-width: 800px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
+.personCard {
+  text-align: center;
+  flex: 1;
+  min-width: 200px;
+}
+
+.personImageContainer {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 30px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.personImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(20%);
+}
+
+.personPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #111;
+  font-size: 60px;
+}
+
+.personName {
+  font-size: 28px;
+  font-weight: 300;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+
+.personParents {
+  font-size: 14px;
+  opacity: 0.6;
+  line-height: 1.5;
+}
+
+.coupleAnd {
+  font-size: 24px;
+  opacity: 0.4;
+  font-weight: 300;
+}
+
+.gallerySection {
+  padding: 120px 20px;
+  background: #111;
+}
+
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.galleryItem {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.galleryItem:hover {
+  transform: scale(1.05);
+}
+
+.galleryItem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(30%);
+  transition: filter 0.3s;
+}
+
+.galleryItem:hover img {
+  filter: grayscale(0%);
+}
+
+.galleryOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.galleryItem:hover .galleryOverlay {
+  opacity: 1;
+}
+
+.galleryNumber {
+  font-size: 24px;
+  font-weight: 300;
+  color: #fff;
+}
+
+.locationSection {
+  padding: 120px 20px;
+  background: #000;
+}
+
+.mapContainer {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.mapPlaceholder {
+  aspect-ratio: 16/9;
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.mapIcon {
+  font-size: 48px;
+  margin-bottom: 20px;
+  opacity: 0.6;
+}
+
+.mapLocation {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.mapAddress {
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+.mapButtons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.mapButton, .mapButtonOutline {
+  padding: 15px 30px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: none;
+  background: none;
+  color: #fff;
+}
+
+.mapButton {
+  background: #fff;
+  color: #000;
+}
+
+.mapButton:hover {
+  background: #ddd;
+}
+
+.mapButtonOutline {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.mapButtonOutline:hover {
+  border-color: #fff;
+}
+
+.rsvpSection {
+  padding: 120px 20px;
+  background: #111;
+  text-align: center;
+}
+
+.rsvpContent {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.rsvpTitle {
+  font-size: 32px;
+  font-weight: 300;
+  letter-spacing: 4px;
+  margin-bottom: 30px;
+}
+
+.rsvpText {
+  font-size: 18px;
+  opacity: 0.7;
+  margin-bottom: 50px;
+  line-height: 1.6;
+}
+
+.shareButton {
+  padding: 18px 40px;
+  background: #fff;
+  color: #000;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.shareButton:hover {
+  background: #ddd;
+  transform: translateY(-2px);
+}
+
+.footer {
+  padding: 80px 20px;
+  background: #000;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footerContent {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.footerNames {
+  font-size: 24px;
+  font-weight: 300;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+
+.footerDate {
+  font-size: 16px;
+  opacity: 0.6;
+  margin-bottom: 30px;
+}
+
+.footerDivider {
+  font-size: 20px;
+  opacity: 0.3;
+  margin-bottom: 30px;
+}
+
+.footerMessage {
+  font-size: 12px;
+  letter-spacing: 3px;
+  opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+  .heroNames {
+    font-size: 2.5rem;
+  }
+  
+  .countdownGrid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  
+  .coupleGrid {
+    flex-direction: column;
+    gap: 50px;
+  }
+  
+  .mapButtons {
+    flex-direction: column;
+  }
+}

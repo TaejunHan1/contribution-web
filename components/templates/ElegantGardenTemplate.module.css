@@ -1,0 +1,742 @@
+/* ElegantGardenTemplate.module.css - 모바일과 동일한 디자인 */
+@import url('https://fonts.googleapis.com/css2?family=Didot&family=Avenir:wght@300;400;500;600;700&display=swap');
+
+.container {
+  min-height: 100vh;
+  background: #fff;
+  font-family: 'Avenir', sans-serif;
+  overflow-x: hidden;
+}
+
+/* 꽃잎 떨어지는 애니메이션 (모바일과 동일) */
+.fallingFlowersContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.fallingFlower {
+  position: absolute;
+  animation: flowerFall linear infinite;
+}
+
+@keyframes flowerFall {
+  0% { 
+    transform: translateY(-100px) translateX(0px) rotate(0deg); 
+    opacity: 0; 
+  }
+  2% { opacity: 0.7; }
+  30% { 
+    transform: translateY(25vh) translateX(10px) rotate(54deg); 
+    opacity: 0.7; 
+  }
+  70% { 
+    transform: translateY(55vh) translateX(-8px) rotate(126deg); 
+    opacity: 0.7; 
+  }
+  98% { 
+    transform: translateY(calc(75vh + 100px)) translateX(5px) rotate(180deg); 
+    opacity: 0.7; 
+  }
+  100% { 
+    transform: translateY(calc(75vh + 100px)) translateX(5px) rotate(180deg); 
+    opacity: 0; 
+  }
+}
+
+/* 히어로 섹션 */
+.heroSection {
+  height: 75vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.heroImageContainer {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.mainPhotoSlideshow {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.heroImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+}
+
+.heroImage.active {
+  opacity: 1;
+}
+
+.heroImagePlaceholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #5B8BA0, #4A7A8F);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.placeholderIcon {
+  font-size: 80px;
+  color: white;
+  opacity: 0.8;
+}
+
+.heroOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: column;
+  padding-bottom: 60px;
+}
+
+.heroContent {
+  width: 100%;
+  padding: 0 30px;
+  color: white;
+}
+
+.heroTopInfo {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 40px;
+  font-size: 15px;
+  font-weight: 300;
+  letter-spacing: 1px;
+}
+
+.heroMainText {
+  font-family: 'Didot', serif;
+  font-size: 32px;
+  font-style: italic;
+  text-align: center;
+  margin-bottom: 30px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.heroNamesContainer {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 40px;
+}
+
+.heroName {
+  font-size: 20px;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* 섹션 타이틀 */
+.sectionWrapper {
+  margin: 0 -30px;
+}
+
+.sectionTitleContainer {
+  height: 120px;
+  width: 100%;
+  position: relative;
+  margin-bottom: 30px;
+  overflow: hidden;
+}
+
+.sectionTitleBg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 3s ease;
+}
+
+.sectionTitleBg.active {
+  opacity: 1;
+}
+
+.sectionTitleOverlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.75);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.sectionTitle {
+  font-family: 'Didot', serif;
+  font-size: 28px;
+  font-weight: 300;
+  color: #333;
+  text-align: center;
+  margin: 0 0 8px 0;
+}
+
+.sectionSubtitle {
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+  margin: 0;
+}
+
+/* Invitation 섹션 */
+.invitationSection {
+  padding: 60px 30px 80px;
+  background: #FAFAF8;
+}
+
+.invitationContent {
+  background: #fff;
+  border-radius: 12px;
+  padding: 30px;
+  margin-bottom: 40px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.invitationText {
+  font-size: 15px;
+  line-height: 28px;
+  color: #444;
+  text-align: center;
+  letter-spacing: 0.5px;
+  white-space: pre-line;
+}
+
+.parentsInfo {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.parentRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0;
+}
+
+.parentNames {
+  font-size: 14px;
+  color: #666;
+}
+
+.parentRelation {
+  font-size: 14px;
+  color: #666;
+  margin: 0 8px;
+}
+
+.parentChild {
+  font-size: 15px;
+  color: #333;
+  font-weight: 600;
+}
+
+/* Gallery 섹션 */
+.gallerySection {
+  padding: 60px 0 80px;
+  background: #fff;
+}
+
+.gallerySectionWrapper {
+  margin: 0 -30px;
+}
+
+.galleryContainer {
+  position: relative;
+}
+
+.galleryScroll {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 0 30px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.galleryScroll::-webkit-scrollbar {
+  display: none;
+}
+
+.galleryItem {
+  flex: 0 0 75%;
+  height: 350px;
+  margin-right: 15px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  scroll-snap-align: start;
+}
+
+.galleryImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.galleryPagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.galleryDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background: #ddd;
+  margin: 0 4px;
+  transition: all 0.3s ease;
+}
+
+.galleryDotActive {
+  background: #5B8BA0;
+  width: 24px;
+}
+
+/* Wedding Day 섹션 */
+.weddingDaySection {
+  padding: 60px 30px 80px;
+  background: #FAFAF8;
+}
+
+.calendarContainer {
+  background: #fff;
+  border-radius: 16px;
+  padding: 25px;
+  margin-bottom: 40px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.calendarMonth {
+  font-size: 20px;
+  font-weight: 500;
+  color: #333;
+  text-align: center;
+  margin: 0 0 20px 0;
+}
+
+.calendarWeekDays {
+  display: flex;
+  margin-bottom: 15px;
+}
+
+.calendarWeekDay {
+  flex: 1;
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+  font-weight: 500;
+}
+
+.calendarSunday {
+  color: #FF6B6B;
+}
+
+.calendarGrid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.calendarDayWrapper {
+  width: 14.28%;
+  aspect-ratio: 1;
+  padding: 3px;
+}
+
+.calendarDay {
+  font-size: 14px;
+  color: #444;
+  text-align: center;
+  line-height: 35px;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.calendarDayInactive {
+  color: #ccc;
+}
+
+.calendarSundayText {
+  color: #FF6B6B;
+}
+
+.calendarTargetDay {
+  width: 100%;
+  height: 100%;
+  border-radius: 18px;
+  background: #5B8BA0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendarTargetDayText {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.countdownContainer {
+  text-align: center;
+  background: #fff;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.countdownTitle {
+  font-size: 32px;
+  font-weight: 300;
+  color: #5B8BA0;
+  margin: 0 0 25px 0;
+}
+
+.countdownBoxes {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.countdownBox {
+  background: rgba(91, 139, 160, 0.1);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  flex: 1;
+  max-width: 80px;
+}
+
+.countdownValueWrapper {
+  display: flex;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+}
+
+.countdownValue {
+  font-size: 22px;
+  font-weight: 300;
+  color: #333;
+  letter-spacing: 2px;
+}
+
+.countdownLabel {
+  font-size: 10px;
+  color: #666;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+.countdownExpired {
+  font-size: 24px;
+  color: #5B8BA0;
+  text-align: center;
+}
+
+/* Location 섹션 */
+.locationSection {
+  padding: 60px 30px 80px;
+  background: #fff;
+}
+
+.locationCard {
+  background: #fff;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.locationName {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 10px 0;
+}
+
+.locationAddress {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 25px 0;
+}
+
+.mapButton {
+  background: #5B8BA0;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 auto 20px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.mapButton:hover {
+  background: #4A7A8F;
+}
+
+.mapIcon, .mapButtonText {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.parkingInfo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.parkingIcon {
+  font-size: 20px;
+  color: #666;
+}
+
+.parkingText {
+  font-size: 13px;
+  color: #666;
+}
+
+/* Account 섹션 */
+.accountSection {
+  padding: 60px 30px 80px;
+  background: #FAFAF8;
+}
+
+.accountCards {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.accountCard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.accountCard:hover {
+  transform: translateY(-2px);
+}
+
+.accountHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.accountRole {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+.accountChevron {
+  font-size: 14px;
+  color: #666;
+}
+
+.accountDetails {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.accountBank {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 5px 0;
+}
+
+.accountNumber {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  margin: 0 0 5px 0;
+}
+
+.accountHolder {
+  font-size: 13px;
+  color: #666;
+  margin: 0 0 15px 0;
+}
+
+.copyButton {
+  background: #5B8BA0;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 20px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.copyButton:hover {
+  background: #4A7A8F;
+}
+
+/* Footer 섹션 */
+.footerSection {
+  padding: 100px 0;
+  background: linear-gradient(135deg, #5B8BA0, #4A7A8F);
+  position: relative;
+}
+
+.footerContent {
+  text-align: center;
+  color: white;
+}
+
+.shareButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 12px 30px;
+  margin: 0 auto 40px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.shareButton:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.shareIcon {
+  font-size: 24px;
+}
+
+.shareButtonText {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.footerDivider {
+  width: 50px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.3);
+  margin: 0 auto 30px;
+}
+
+.footerTitle {
+  font-family: 'Didot', serif;
+  font-size: 28px;
+  font-weight: 300;
+  margin: 0 0 15px 0;
+}
+
+.footerMessage {
+  font-size: 14px;
+  line-height: 24px;
+  opacity: 0.9;
+  white-space: pre-line;
+  margin: 0;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .heroMainText {
+    font-size: 28px;
+  }
+  
+  .heroName {
+    font-size: 18px;
+  }
+  
+  .sectionTitle {
+    font-size: 24px;
+  }
+  
+  .countdownBoxes {
+    gap: 4px;
+  }
+  
+  .countdownBox {
+    padding: 8px;
+    max-width: 70px;
+  }
+  
+  .countdownValue {
+    font-size: 18px;
+  }
+  
+  .galleryItem {
+    flex: 0 0 85%;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroContent {
+    padding: 0 20px;
+  }
+  
+  .invitationSection,
+  .weddingDaySection,
+  .locationSection,
+  .accountSection {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  
+  .heroTopInfo {
+    font-size: 13px;
+  }
+  
+  .heroMainText {
+    font-size: 24px;
+  }
+  
+  .heroNamesContainer {
+    padding: 0 20px;
+  }
+  
+  .sectionWrapper {
+    margin: 0 -20px;
+  }
+}

@@ -1,0 +1,1640 @@
+/* RomanticPinkTemplate.module.css - 모바일과 동일한 디자인 */
+@import url('https://fonts.googleapis.com/css2?family=Snell+Roundhand&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Serif+KR:wght@300;400;500;600&family=Dancing+Script:wght@400;500;600;700&display=swap');
+
+.container {
+  min-height: 100vh;
+  background: #ffffff;
+  font-family: 'Noto Serif KR', serif;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* 오프닝 오버레이 */
+.openingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 1.5s ease;
+}
+
+.openingText {
+  text-align: center;
+}
+
+.animatedSvgText {
+  font-family: 'Snell Roundhand', cursive;
+  font-size: 48px;
+  color: white;
+  font-style: italic;
+  animation: textAppear 1.2s ease-out;
+}
+
+@keyframes textAppear {
+  0% { opacity: 0; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* 떨어지는 꽃잎 애니메이션 */
+.fallingPetalsContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.fallingPetal {
+  position: absolute;
+  animation: petalFall linear infinite;
+  animation-fill-mode: both;
+}
+
+@keyframes petalFall {
+  0% { 
+    transform: translateY(-100px) translateX(0px) rotate(0deg); 
+    opacity: 0; 
+  }
+  2% { 
+    opacity: 0.7; 
+  }
+  20% { 
+    transform: translateY(20vh) translateX(15px) rotate(45deg); 
+    opacity: 0.8; 
+  }
+  40% { 
+    transform: translateY(40vh) translateX(-10px) rotate(90deg); 
+    opacity: 0.7; 
+  }
+  60% { 
+    transform: translateY(60vh) translateX(20px) rotate(135deg); 
+    opacity: 0.6; 
+  }
+  80% { 
+    transform: translateY(80vh) translateX(-5px) rotate(180deg); 
+    opacity: 0.5; 
+  }
+  100% { 
+    transform: translateY(calc(100vh + 100px)) translateX(10px) rotate(225deg); 
+    opacity: 0; 
+  }
+}
+
+/* 인트로 섹션 */
+.introSection {
+  min-height: 100vh;
+  padding: 20px;
+  background: linear-gradient(135deg, #F8F5F2, #F3EFEC);
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.introContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+  width: 100%;
+  max-width: 800px;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: #C2B0A2;
+  letter-spacing: 3px;
+  margin-bottom: 10px;
+  font-weight: 300;
+}
+
+.loveText {
+  font-family: 'Dancing Script', cursive;
+  font-size: 64px;
+  color: #9B8D82;
+  margin: 15px 0 20px 0;
+  font-weight: 400;
+}
+
+.mainImageContainer {
+  position: relative;
+  width: 92%;
+  max-width: 600px;
+  height: 75vh;
+  max-height: 700px;
+  margin: 20px auto 0;
+  border-radius: 50% 50% 0 0;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(194, 176, 162, 0.3);
+  z-index: 1;
+}
+
+.mainPhotoContainer {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.mainPhoto {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+}
+
+.mainPhoto.active {
+  opacity: 1;
+}
+
+.photoPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: #F0EBE6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 80px;
+}
+
+.heroBackground {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.mainPhotoSlideshow {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.heroImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
+}
+
+.heroImage.active {
+  opacity: 1;
+}
+
+.heroImagePlaceholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #ff6b9d 0%, #c44569 50%, #f8b500 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.placeholderIcon {
+  font-size: 120px;
+  color: white;
+  opacity: 0.9;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.heroOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 107, 157, 0.4) 0%,
+    rgba(196, 69, 105, 0.3) 30%,
+    rgba(248, 181, 0, 0.2) 60%,
+    rgba(255, 107, 157, 0.3) 100%
+  );
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 40px;
+  text-align: center;
+}
+
+.heroContent {
+  color: white;
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+}
+
+.englishNames {
+  font-family: 'Dancing Script', cursive;
+  font-size: 42px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.englishName {
+  font-style: italic;
+}
+
+.ampersand {
+  font-size: 32px;
+  color: #ffb6c1;
+  font-weight: 400;
+}
+
+.koreanNames {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.groomName, .brideName {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.heartDivider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 25px;
+}
+
+.heartIcon {
+  font-size: 24px;
+  animation: heartPulse 2s ease-in-out infinite;
+}
+
+@keyframes heartPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.dateTimeInfo {
+  margin-bottom: 25px;
+}
+
+.weddingDate {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.weddingTime {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.weddingVenue {
+  font-size: 16px;
+  font-weight: 300;
+}
+
+.romanticMessage {
+  margin-top: 15px;
+}
+
+.messageText {
+  font-family: 'Dancing Script', cursive;
+  font-size: 24px;
+  font-weight: 500;
+  font-style: italic;
+  color: #ffb6c1;
+}
+
+/* 섹션 타이틀 */
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 50px 0 30px;
+  gap: 15px;
+}
+
+.sectionTitle h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: #c44569;
+  margin: 0;
+}
+
+.titleDecoration {
+  font-size: 20px;
+}
+
+/* 카운트다운 섹션 */
+.countdownSection {
+  padding: 60px 30px;
+  background: white;
+  text-align: center;
+}
+
+.countdownCards {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.countdownCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  color: #333;
+  min-width: auto;
+  text-align: center;
+}
+
+.countdownNumber {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 300;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.countdownLabel {
+  font-size: 10px;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.weddingComplete {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.completeIcon {
+  font-size: 60px;
+  margin-bottom: 20px;
+}
+
+.completeMessage {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  color: #c44569;
+  margin: 0;
+}
+
+/* 인사말 섹션 */
+.greetingSection {
+  padding: 60px 30px;
+  background: #fff;
+}
+
+.greetingSectionTitle {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.greetingTitle {
+  font-size: 28px;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.greetingSubtitle {
+  font-size: 16px;
+  color: #9B8D82;
+  font-weight: 300;
+  margin: 0;
+}
+
+.poem {
+  font-size: 15px;
+  line-height: 28px;
+  color: #444;
+  text-align: center;
+  letter-spacing: 0.5px;
+  white-space: pre-line;
+  margin: 30px 0;
+}
+
+.divider {
+  width: 50px;
+  height: 1px;
+  background: #E0D5C7;
+  margin: 30px auto;
+}
+
+.coupleNamesSection {
+  text-align: center;
+  padding: 30px;
+  background: rgba(252, 248, 245, 0.8);
+  border-radius: 15px;
+  margin-top: 35px;
+}
+
+.coupleNames {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+.groomInfo, .brideInfo {
+  text-align: center;
+}
+
+.roleLabel {
+  font-size: 11px;
+  color: #C2B0A2;
+  letter-spacing: 2px;
+  margin-bottom: 5px;
+  font-weight: 300;
+  display: block;
+}
+
+.nameKorean {
+  font-size: 20px;
+  color: #333;
+  font-weight: 600;
+  font-family: 'Noto Serif KR', serif;
+}
+
+.heartBeat {
+  font-size: 22px;
+  color: #FFC0CB;
+  animation: heartbeat 2s ease-in-out infinite;
+  align-self: flex-end;
+  /* margin-bottom: 1px; */
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.coupleSubtext {
+  margin-top: 15px;
+  padding: 0 30px;
+}
+
+.coupleSubtext span {
+  font-size: 13px;
+  color: #9B8D82;
+  font-style: italic;
+  letter-spacing: 0.5px;
+}
+
+.greetingCard {
+  background: white;
+  border-radius: 20px;
+  padding: 40px 30px;
+  box-shadow: 0 10px 30px rgba(196, 69, 105, 0.15);
+  border: 2px solid #ffb6c1;
+}
+
+.greetingContent {
+  text-align: center;
+}
+
+.greetingText {
+  font-size: 16px;
+  line-height: 32px;
+  color: #555;
+  white-space: pre-line;
+  font-weight: 400;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+/* 신랑신부 소개 */
+.coupleIntroSection {
+  padding: 60px 30px;
+  background: white;
+}
+
+.coupleIntroCards {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.introCard {
+  background: linear-gradient(135deg, #fff5f8 0%, #ffe8f2 100%);
+  border-radius: 20px;
+  padding: 30px 25px;
+  text-align: center;
+  box-shadow: 0 8px 25px rgba(196, 69, 105, 0.1);
+  flex: 1;
+  max-width: 200px;
+}
+
+.personPhotoArea {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto 20px;
+  border: 3px solid #ff6b9d;
+}
+
+.personPhoto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.personPhotoPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #ff6b9d, #c44569);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  color: white;
+}
+
+.personName {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: #c44569;
+  margin: 0 0 8px 0;
+}
+
+.personRole {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 15px 0;
+}
+
+.parentInfo {
+  font-size: 13px;
+  color: #888;
+  line-height: 18px;
+  margin: 0;
+}
+
+.coupleConnector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.connectorHeart {
+  font-size: 24px;
+  animation: heartPulse 2s ease-in-out infinite;
+}
+
+/* 예식 정보 */
+.weddingInfoSection {
+  padding: 60px 30px;
+  background: linear-gradient(135deg, #fff5f8 0%, #ffe8f2 100%);
+}
+
+.infoCards {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.infoCard {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 5px 15px rgba(196, 69, 105, 0.1);
+}
+
+.infoIcon {
+  font-size: 30px;
+  min-width: 50px;
+  text-align: center;
+}
+
+.infoDetails h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #c44569;
+  margin: 0 0 8px 0;
+}
+
+.infoMain {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  margin: 0 0 5px 0;
+}
+
+.infoSub {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+/* 갤러리 섹션 */
+.gallerySection {
+  padding: 80px 0;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.galleryTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 40px;
+  color: #333;
+  font-style: italic;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.gallerySubtitle {
+  font-size: 14px;
+  color: #999;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.galleryContainer {
+  position: relative;
+}
+
+.gallerySlider {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  padding-left: 40px;
+  padding-bottom: 20px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.gallerySlider::-webkit-scrollbar {
+  display: none;
+}
+
+.galleryItem {
+  flex: 0 0 75%;
+  height: 500px;
+  border-radius: 15px;
+  overflow: hidden;
+  background: #F0EBE6;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+}
+
+.galleryItem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.galleryDots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background: #ddd;
+  transition: all 0.3s ease;
+}
+
+.dotActive {
+  background: #9B8D82;
+  width: 24px;
+}
+
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 0 30px;
+  margin-top: 30px;
+}
+
+.galleryItem {
+  position: relative;
+  border-radius: 15px;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  box-shadow: 0 8px 25px rgba(196, 69, 105, 0.15);
+  transition: transform 0.3s ease;
+}
+
+.galleryItem:hover {
+  transform: translateY(-5px);
+}
+
+.galleryFrame {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.galleryFrame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 오시는 길 섹션 */
+.locationSection {
+  padding: 80px 35px;
+  background: white;
+  text-align: center;
+}
+
+.locationTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 40px;
+  color: #333;
+  font-style: italic;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.venueInfo {
+  margin-bottom: 40px;
+}
+
+.venueName {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 10px 0;
+}
+
+.venueAddress {
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+}
+
+.mapContainer {
+  background: #F5F5F5;
+  border-radius: 15px;
+  padding: 60px 30px;
+  margin: 40px 0;
+  text-align: center;
+}
+
+.mapPlaceholder {
+  font-size: 40px;
+  margin-bottom: 15px;
+}
+
+.mapText {
+  font-size: 16px;
+  color: #999;
+  margin: 0;
+}
+
+.transportCard {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  margin: 30px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  text-align: left;
+}
+
+.transportIcon {
+  font-size: 24px;
+  min-width: 30px;
+}
+
+.transportContent {
+  flex: 1;
+}
+
+.transportTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 8px 0;
+}
+
+.transportText {
+  font-size: 14px;
+  color: #666;
+  line-height: 20px;
+  margin: 0;
+  white-space: pre-line;
+}
+
+.navigationButton {
+  background: #9B8D82;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 15px 40px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 auto;
+  transition: all 0.3s ease;
+}
+
+.navigationButton:hover {
+  background: #7a6f6a;
+  transform: translateY(-2px);
+}
+
+/* 공유 섹션 */
+.shareSection {
+  padding: 30px 20px;
+  background: white;
+}
+
+.shareButton {
+  width: 100%;
+  border: none;
+  border-radius: 15px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.shareButton:hover {
+  transform: translateY(-2px);
+}
+
+.shareButtonGradient {
+  background: linear-gradient(135deg, #C2B0A2, #9B8D82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  gap: 10px;
+}
+
+.shareIcon {
+  font-size: 24px;
+  color: white;
+}
+
+.shareButtonText {
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* 푸터 */
+.footer {
+  padding: 60px 0;
+  background: linear-gradient(135deg, #9B8D82, #C2B0A2);
+  color: white;
+  text-align: center;
+  position: relative;
+}
+
+.footerContent {
+  max-width: 400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.footerTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  color: #ffffff;
+  margin: 0 0 20px 0;
+  font-weight: 400;
+}
+
+.footerDivider {
+  width: 60px;
+  height: 1px;
+  background: #ffffff;
+  opacity: 0.5;
+  margin-bottom: 20px;
+}
+
+.footerMessage {
+  font-size: 16px;
+  color: #ffffff;
+  opacity: 0.9;
+  text-align: center;
+  line-height: 26px;
+  margin: 0;
+}
+
+/* 날짜 섹션 */
+.dateSection {
+  padding: 80px 0;
+  background: linear-gradient(135deg, #9B8D82, #C2B0A2);
+  text-align: center;
+}
+
+.dateBackground {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+}
+
+.animatedDate {
+  font-family: 'Snell Roundhand', cursive;
+  font-size: 48px;
+  color: white;
+  font-style: italic;
+}
+
+/* Wedding Day 섹션 */
+.weddingDaySection {
+  padding: 60px 30px;
+  background: #fff;
+  text-align: center;
+}
+
+.weddingDayTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  font-style: italic;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.dateInfo {
+  margin-bottom: 30px;
+}
+
+.dateMain {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.dateSub {
+  font-size: 14px;
+  color: #9B8D82;
+}
+
+/* 로맨틱 달력 */
+.romanticCalendar {
+  background: #fff;
+  border-radius: 16px;
+  padding: 25px;
+  margin: 30px auto;
+  max-width: 300px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.calendarMonth {
+  font-size: 20px;
+  font-weight: 500;
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.calendarWeekDays {
+  display: flex;
+  margin-bottom: 15px;
+}
+
+.calendarWeekDay {
+  flex: 1;
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+  font-weight: 500;
+}
+
+.calendarWeekDay.sunday {
+  color: #FF6B6B;
+}
+
+.calendarGrid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.calendarDayWrapper {
+  width: 14.28%;
+  aspect-ratio: 1;
+  padding: 3px;
+}
+
+.calendarDay {
+  font-size: 14px;
+  color: #444;
+  text-align: center;
+  line-height: 35px;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.calendarDay.inactive {
+  color: #ccc;
+}
+
+.calendarDay.sunday {
+  color: #FF6B6B;
+}
+
+.calendarTargetDay {
+  width: 100%;
+  height: 100%;
+  border-radius: 18px;
+  background: #9B8D82;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendarTargetDayText {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* 카운트다운 */
+.countdown {
+  margin: 30px 0;
+}
+
+.countdownMessage {
+  font-size: 14px;
+  color: #666;
+  margin-top: 20px;
+}
+
+.heartText {
+  color: #FFC0CB;
+}
+
+/* 이미지 뷰어 모달 */
+.imageViewerModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+}
+
+.imageViewerContent {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.closeButton {
+  position: absolute;
+  top: -50px;
+  right: 0;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 36px;
+  cursor: pointer;
+  z-index: 10001;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  transition: background 0.3s ease;
+}
+
+.closeButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.imageViewerSlider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 80vh;
+}
+
+.viewerImage {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.imageViewerNavigation {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 20px;
+  padding: 15px 25px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 25px;
+  backdrop-filter: blur(10px);
+}
+
+.navButton {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease;
+}
+
+.navButton:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.imageCounter {
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  min-width: 60px;
+  text-align: center;
+}
+
+.countdownDays {
+  color: #9B8D82;
+  font-weight: 600;
+}
+
+/* 신랑신부 섹션 */
+.coupleSection {
+  padding: 60px 30px;
+  background: linear-gradient(135deg, #F8F5F2, #F5F3F2);
+}
+
+.coupleTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  font-style: italic;
+  color: #333;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.coupleCards {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.coupleCard {
+  background: #fff;
+  border-radius: 15px;
+  padding: 30px 25px;
+  text-align: center;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.couplePhoto {
+  width: 100%;
+  height: 200px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 25px;
+  background: #F0EBE6;
+}
+
+.couplePhoto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.coupleRole {
+  font-size: 12px;
+  color: #9B8D82;
+  margin-bottom: 8px;
+}
+
+.coupleName {
+  font-size: 20px;
+  color: #333;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.coupleEngName {
+  font-size: 14px;
+  color: #9B8D82;
+  font-style: italic;
+  margin: 0 0 15px 0;
+}
+
+.coupleParents {
+  font-size: 13px;
+  color: #666;
+  line-height: 18px;
+  margin: 0;
+}
+
+/* 태블릿 및 데스크톱 큰 화면 */
+@media (min-width: 768px) {
+  /* 인사말 섹션 */
+  .greetingSection {
+    padding: 120px 80px;
+    min-height: 70vh;
+  }
+  
+  .greetingTitle {
+    font-size: 48px;
+    margin-bottom: 20px;
+  }
+  
+  .greetingSubtitle {
+    font-size: 20px;
+    margin-bottom: 40px;
+  }
+  
+  .poem {
+    font-size: 22px;
+    line-height: 38px;
+    max-width: 1000px;
+    margin: 50px auto;
+  }
+  
+  .greetingCard {
+    padding: 60px 50px;
+    margin: 40px auto;
+    max-width: 900px;
+  }
+  
+  /* 갤러리 섹션 */
+  .gallerySection {
+    padding: 150px 60px;
+    min-height: 100vh;
+  }
+  
+  .galleryTitle {
+    font-size: 64px;
+    margin-bottom: 20px;
+  }
+  
+  .gallerySubtitle {
+    font-size: 20px;
+    margin-bottom: 60px;
+  }
+  
+  .galleryItem {
+    height: 800px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  
+  .galleryItem:hover {
+    transform: translateY(-10px);
+  }
+  
+  /* Meet The Couple - 가로 배치 */
+  .coupleSection {
+    padding: 120px 80px;
+  }
+  
+  .coupleTitle {
+    font-size: 48px;
+    margin-bottom: 60px;
+  }
+  
+  .coupleCards {
+    flex-direction: row;
+    gap: 60px;
+    justify-content: center;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  
+  .coupleCard {
+    flex: 1;
+    max-width: 400px;
+    padding: 50px 40px;
+  }
+  
+  .couplePhoto {
+    height: 250px;
+    margin-bottom: 30px;
+  }
+  
+  .coupleName {
+    font-size: 24px;
+  }
+  
+  .coupleRole {
+    font-size: 16px;
+  }
+  
+  .coupleParents {
+    font-size: 15px;
+  }
+  
+  /* 달력 섹션 */
+  .weddingDaySection {
+    padding: 120px 80px;
+  }
+  
+  .weddingDayTitle {
+    font-size: 40px;
+    margin-bottom: 50px;
+  }
+  
+  .romanticCalendar {
+    max-width: 500px;
+    padding: 50px;
+    margin: 50px auto;
+  }
+  
+  .calendarMonth {
+    font-size: 32px;
+    margin-bottom: 30px;
+  }
+  
+  .calendarWeekDay {
+    font-size: 16px;
+  }
+  
+  .calendarDay {
+    font-size: 18px;
+    line-height: 45px;
+  }
+  
+  .calendarTargetDayText {
+    font-size: 20px;
+  }
+  
+  /* 카운트다운 */
+  .countdownSection {
+    padding: 120px 80px;
+  }
+  
+  .countdownCards {
+    gap: 30px;
+    margin-bottom: 50px;
+  }
+  
+  .countdownNumber {
+    font-size: 48px;
+  }
+  
+  .countdownLabel {
+    font-size: 14px;
+  }
+  
+  /* 섹션 타이틀 */
+  .sectionTitle {
+    margin: 80px 0 50px;
+  }
+  
+  .sectionTitle h2 {
+    font-size: 48px;
+  }
+  
+  /* 예식 정보 */
+  .weddingInfoSection {
+    padding: 120px 80px;
+  }
+  
+  .infoCard {
+    padding: 40px;
+    margin-bottom: 30px;
+  }
+  
+  .infoIcon {
+    font-size: 40px;
+  }
+  
+  .infoDetails h4 {
+    font-size: 24px;
+  }
+  
+  .infoMain {
+    font-size: 20px;
+  }
+  
+  .infoSub {
+    font-size: 18px;
+  }
+  
+  /* 오시는 길 */
+  .locationSection {
+    padding: 120px 80px;
+  }
+  
+  .locationTitle {
+    font-size: 56px;
+    margin-bottom: 60px;
+  }
+  
+  .venueName {
+    font-size: 28px;
+  }
+  
+  .venueAddress {
+    font-size: 20px;
+  }
+  
+  .transportCard {
+    padding: 40px;
+    margin: 40px 0;
+  }
+  
+  .transportTitle {
+    font-size: 20px;
+  }
+  
+  .transportText {
+    font-size: 18px;
+  }
+  
+  /* 공유 섹션 */
+  .shareSection {
+    padding: 60px 40px;
+  }
+  
+  .shareButtonGradient {
+    padding: 25px;
+  }
+  
+  .shareButtonText {
+    font-size: 20px;
+  }
+  
+  /* 푸터 */
+  .footer {
+    padding: 120px 0;
+  }
+  
+  .footerTitle {
+    font-size: 48px;
+    margin-bottom: 30px;
+  }
+  
+  .footerMessage {
+    font-size: 20px;
+    line-height: 32px;
+  }
+}
+
+
+/* 모바일 (768px 이하) */
+@media (max-width: 768px) {
+  .mainImageContainer {
+    width: 95%;
+    max-width: 500px;
+    height: 70vh;
+    max-height: 600px;
+  }
+  
+  .mainPhoto {
+    object-fit: contain;
+    background: #F8F5F2;
+  }
+  
+  .galleryItem {
+    flex: 0 0 85%;
+    height: 450px;
+  }
+  
+  .countdownCards {
+    gap: 15px;
+  }
+  
+  .countdownCard {
+    padding: 20px 15px;
+    min-width: 70px;
+  }
+  
+  .countdownNumber {
+    font-size: 28px;
+  }
+  
+  .coupleIntroCards {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .introCard {
+    max-width: 300px;
+  }
+  
+  .galleryGrid {
+    grid-template-columns: 1fr;
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroOverlay {
+    padding: 0 20px;
+  }
+  
+  .englishNames {
+    font-size: 32px;
+  }
+  
+  .groomName, .brideName {
+    font-size: 20px;
+  }
+  
+  .weddingDate {
+    font-size: 18px;
+  }
+  
+  .messageText {
+    font-size: 20px;
+  }
+  
+  .sectionTitle h2 {
+    font-size: 24px;
+  }
+  
+  .greetingCard {
+    padding: 30px 20px;
+  }
+  
+  .greetingText {
+    font-size: 15px;
+    line-height: 28px;
+  }
+  
+  .countdownCards {
+    gap: 10px;
+  }
+  
+  .countdownCard {
+    padding: 15px 10px;
+    min-width: 60px;
+  }
+  
+  .countdownNumber {
+    font-size: 24px;
+  }
+  
+  .mapButtons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .mapButton, .mapButtonSecondary {
+    width: 200px;
+  }
+}
