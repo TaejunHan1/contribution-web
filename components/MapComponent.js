@@ -14,8 +14,25 @@ const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }
   };
   
   const openTmap = () => {
-    const tmapUrl = `https://tmap.life/route/search?rGoName=${searchQuery}`;
-    window.open(tmapUrl, '_blank');
+    // T맵 웹 검색 URL
+    const searchTerm = encodeURIComponent(venueName || fullAddress);
+    const tmapWebUrl = `https://www.tmap.co.kr/tmap2/mobile/route.jsp?name=${searchTerm}`;
+    
+    // 모바일에서는 앱 스토어로, PC에서는 웹으로
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+      // 모바일에서는 앱 스토어로 이동
+      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+      if (isIOS) {
+        window.open('https://apps.apple.com/kr/app/t-map/id431589174', '_blank');
+      } else {
+        window.open('https://play.google.com/store/apps/details?id=com.skt.tmap.ku', '_blank');
+      }
+    } else {
+      // PC에서는 웹 버전으로
+      window.open(tmapWebUrl, '_blank');
+    }
   };
   
   const openKakaoMap = () => {

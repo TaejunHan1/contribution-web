@@ -1,6 +1,12 @@
 // components/templates/RomanticPinkTemplate.js
 import React, { useState, useEffect, useRef } from 'react';
+import { createClient } from '@supabase/supabase-js';
 import GoogleMapEmbed from '../MapComponent';
+import GuestbookModal from '../GuestbookModal';
+import EditGuestbookModal from '../EditGuestbookModal';
+import ArrivalConfirmModal from '../ArrivalConfirmModal';
+import ContributionModal from '../ContributionModal';
+import CompletionModal from '../CompletionModal';
 import styles from './RomanticPinkTemplate.module.css';
 
 // 떨어지는 꽃잎 애니메이션 컴포넌트 (모바일과 동일)
@@ -432,6 +438,17 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [galleryScrollIndex, setGalleryScrollIndex] = useState(0);
   const [showDateAnimation, setShowDateAnimation] = useState(false);
+  const [showGuestbookModal, setShowGuestbookModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingMessage, setEditingMessage] = useState(null);
+  
+  // 결혼식장 도착 및 축의금 모달 상태
+  const [showArrivalModal, setShowArrivalModal] = useState(false);
+  const [showContributionModal, setShowContributionModal] = useState(false);
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [contributionData, setContributionData] = useState(null);
+  const [arrivalDismissed, setArrivalDismissed] = useState(false); // 도착 확인 모달 닫음 여부
+  const [guestMessages, setGuestMessages] = useState([]);
   
   // 이미지 URL 처리 함수 - EventDisplayScreen과 동일한 방식
   const getImageSrc = (image) => {
@@ -610,11 +627,11 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
   ];
 
   // 방명록 메시지 데이터
-  const guestMessages = eventData.guestMessages || [
+  const defaultMessages = [
     {
       from: "민나",
       date: "2025.04.24 18:52",
-      content: "하윤아❤️ 결혼을 진심으로 축하한다!\n민호 오빠랑 둘이 지금처럼 행복하게 백년해로 하기\n항상 웃음 가득한 하루하루 보내길 바랄게!\nHappy Wedding💜"
+      content: `${eventData.bride_name || '하윤'}아❤️ 결혼을 진심으로 축하한다!\n${eventData.groom_name || '민호'} 오빠랑 둘이 지금처럼 행복하게 백년해로 하기\n항상 웃음 가득한 하루하루 보내길 바랄게!\nHappy Wedding💜`
     },
     {
       from: "sooyeon",
@@ -624,9 +641,148 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
     {
       from: "지현",
       date: "2025.04.22 14:23",
-      content: "하윤아 결혼 진심으로 축하해!\n웨딩스냅, 청첩장 모두 너무 예쁘다!💚\n남은 결혼식 준비도 잘 마무리하고!\n행복한 결혼생활 되기를 바래✨"
+      content: `${eventData.bride_name || '하윤'}아 결혼 진심으로 축하해!\n웨딩스냅, 청첩장 모두 너무 예쁘다!💚\n남은 결혼식 준비도 잘 마무리하고!\n행복한 결혼생활 되기를 바래✨`
+    },
+    {
+      from: "유진",
+      date: "2025.04.21 16:35",
+      content: `두 분의 아름다운 사랑이 결실을 맺게 되어 정말 축하드려요🎉\n서로를 아끼고 사랑하는 마음으로\n평생 함께하는 행복한 부부가 되시길 바랍니다\n새로운 시작을 진심으로 응원합니다!`
     }
   ];
+  
+  // 페이지 로드 시 방명록 데이터 불러오기 및 실시간 구독
+  useEffect(() => {
+    const fetchGuestbook = async () => {
+      if (!eventData?.id) return;
+      
+      try {
+        const response = await fetch(`/api/get-guestbook?eventId=${eventData.id}`);
+        const result = await response.json();
+        
+        if (result.success && result.messages) {
+          setGuestMessages(result.messages);
+        }
+      } catch (error) {
+        console.error('방명록 로드 오류:', error);
+      }
+    };
+    
+    // 초기 데이터 로드
+    fetchGuestbook();
+    
+    // Supabase 실시간 구독 설정
+    let subscription = null;
+    if (eventData?.id) {
+      // Supabase 클라이언트 생성
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+      
+      if (supabaseUrl && supabaseAnonKey) {
+        const supabase = createClient(supabaseUrl, supabaseAnonKey);
+        
+        // guest_book 테이블의 실시간 변경 사항 구독
+        subscription = supabase
+          .channel('guestbook-changes')
+          .on(
+            'postgres_changes',
+            {
+              event: 'INSERT',
+              schema: 'public',
+              table: 'guest_book',
+              filter: `event_id=eq.${eventData.id}`
+            },
+            (payload) => {
+              console.log('새 방명록이 등록되었습니다:', payload.new);
+              
+              // 새로운 메시지를 state에 추가
+              const newMessage = {
+                id: payload.new.id,
+                from: payload.new.guest_name || '익명',
+                phone: payload.new.guest_phone,
+                date: new Date(payload.new.created_at).toLocaleDateString('ko-KR', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                }).replace(/\./g, '.').replace(/\s/g, ' '),
+                content: payload.new.message || ''
+              };
+              
+              setGuestMessages(prevMessages => [newMessage, ...prevMessages]);
+            }
+          )
+          .on(
+            'postgres_changes',
+            {
+              event: 'UPDATE',
+              schema: 'public',
+              table: 'guest_book',
+              filter: `event_id=eq.${eventData.id}`
+            },
+            (payload) => {
+              console.log('방명록이 수정되었습니다:', payload.new);
+              
+              // 수정된 메시지로 업데이트
+              const updatedMessage = {
+                id: payload.new.id,
+                from: payload.new.guest_name || '익명',
+                phone: payload.new.guest_phone,
+                date: new Date(payload.new.created_at).toLocaleDateString('ko-KR', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                }).replace(/\./g, '.').replace(/\s/g, ' '),
+                content: payload.new.message || ''
+              };
+              
+              setGuestMessages(prevMessages => 
+                prevMessages.map(msg => 
+                  msg.id === payload.new.id ? updatedMessage : msg
+                )
+              );
+            }
+          )
+          .on(
+            'postgres_changes',
+            {
+              event: 'DELETE',
+              schema: 'public',
+              table: 'guest_book',
+              filter: `event_id=eq.${eventData.id}`
+            },
+            (payload) => {
+              console.log('방명록이 삭제되었습니다:', payload.old);
+              
+              // 삭제된 메시지 제거
+              setGuestMessages(prevMessages => 
+                prevMessages.filter(msg => msg.id !== payload.old.id)
+              );
+            }
+          )
+          .subscribe();
+      }
+    }
+    
+    // 클린업 함수
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe();
+      }
+    };
+  }, [eventData?.id]);
+  
+  // 실제 메시지 또는 기본 메시지 선택 (state와 통합)
+  const hasRealMessages = (eventData.guestMessages && eventData.guestMessages.length > 0) || guestMessages.length > 0;
+  const displayMessages = hasRealMessages ? [...(eventData.guestMessages || []), ...guestMessages] : defaultMessages;
+  
+  // 페이지네이션 상태
+  const [currentPage, setCurrentPage] = useState(0);
+  const messagesPerPage = 3;
+  const totalPages = Math.ceil(displayMessages.length / messagesPerPage);
+  const currentMessages = displayMessages.slice(currentPage * messagesPerPage, (currentPage + 1) * messagesPerPage);
 
   // 인사말 결정
   let greetingMessage = '';
@@ -670,9 +826,156 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
     alert('메시지 작성 기능은 준비 중입니다.');
   };
 
+  // 방명록 모달 열기
+  const handleGuestbookModalOpen = () => {
+    setShowGuestbookModal(true);
+  };
+
+  // 방명록 제출 핸들러
+  const handleGuestbookSubmit = async (guestbookData) => {
+    try {
+      // 실시간 구독으로 자동 추가되므로 여기서는 첫 페이지로만 이동
+      setCurrentPage(0);
+
+      // 서버 저장은 이미 GuestbookModal에서 처리됨
+      // 추가 처리 필요 없음
+
+    } catch (error) {
+      console.error('방명록 제출 오류:', error);
+      throw error; // 모달에서 에러 처리
+    }
+  };
+
+  // 방명록 수정 모달 열기
+  const handleEditMessage = (message) => {
+    setEditingMessage(message);
+    setShowEditModal(true);
+  };
+
+  // 방명록 수정 완료 핸들러
+  const handleEditUpdate = async () => {
+    // 실시간 구독으로 자동 업데이트됨
+    await fetchGuestbook();
+  };
+
+  // 방명록 삭제 완료 핸들러  
+  const handleEditDelete = async () => {
+    // 실시간 구독으로 자동 업데이트됨
+    await fetchGuestbook();
+  };
+
+  // 수정 권한 확인 (본인 전화번호와 일치하는지 체크)
+  const canEditMessage = (message) => {
+    const verifiedPhone = localStorage.getItem('verifiedPhone');
+    console.log('Debug - Local Storage Phone:', verifiedPhone);
+    console.log('Debug - Message Phone:', message.phone);
+    console.log('Debug - Can Edit:', verifiedPhone && message.phone === verifiedPhone);
+    return verifiedPhone && message.phone === verifiedPhone;
+  };
+
+  // 방명록 데이터 새로고침 함수
+  const fetchGuestbook = async () => {
+    if (!eventData?.id) return;
+    
+    try {
+      const response = await fetch(`/api/get-guestbook?eventId=${eventData.id}`);
+      const result = await response.json();
+      
+      if (result.success && result.messages) {
+        setGuestMessages(result.messages);
+      }
+    } catch (error) {
+      console.error('방명록 로드 오류:', error);
+    }
+  };
+
+  // 도착 확인 모달 트리거 핸들러
+  const handleTriggerArrival = () => {
+    setShowArrivalModal(true);
+  };
+
+  // 도착 확인 핸들러
+  const handleArrivalConfirm = async () => {
+    setShowArrivalModal(false);
+    // 잠시 후 축의금 모달 표시
+    setTimeout(() => {
+      setShowContributionModal(true);
+    }, 300);
+  };
+
+  // 축의금 제출 핸들러
+  const handleContributionSubmit = async (contributionFormData) => {
+    try {
+      const response = await fetch('/api/submit-contribution', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(contributionFormData),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setContributionData(contributionFormData);
+        setShowContributionModal(false);
+        
+        // 잠시 후 완료 모달 표시
+        setTimeout(() => {
+          setShowCompletionModal(true);
+        }, 300);
+      } else {
+        throw new Error(result.error || '축의금 등록에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('축의금 제출 오류:', error);
+      throw error;
+    }
+  };
+
   const handleOpeningComplete = () => {
     setShowOpening(false);
+    
+    // 오프닝 완료 후 LocalStorage 체크하여 도착 확인 모달 표시
+    const verifiedPhone = localStorage.getItem('verifiedPhone');
+    if (verifiedPhone && !arrivalDismissed) {
+      // 0.5초 후 도착 확인 모달 표시
+      setTimeout(() => {
+        setShowArrivalModal(true);
+      }, 500);
+    }
   };
+
+  // 페이지 직접 접근 시 LocalStorage 체크 (오프닝 애니메이션 없이 바로 진입하는 경우)
+  useEffect(() => {
+    // 오프닝이 이미 false인 경우 (새로고침 등) 바로 체크
+    if (!showOpening) {
+      const verifiedPhone = localStorage.getItem('verifiedPhone');
+      if (verifiedPhone && !arrivalDismissed) {
+        setTimeout(() => {
+          setShowArrivalModal(true);
+        }, 1000); // 1초 후 표시
+      }
+    }
+  }, [showOpening, arrivalDismissed]);
+
+  // 컴포넌트 마운트 시 LocalStorage 체크 (오프닝 스킵 시)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // 4초 후에도 오프닝이 true면 강제로 체크
+      if (showOpening) {
+        const verifiedPhone = localStorage.getItem('verifiedPhone');
+        if (verifiedPhone && !arrivalDismissed) {
+          setShowOpening(false);
+          setTimeout(() => {
+            setShowArrivalModal(true);
+          }, 500);
+        }
+      }
+    }, 4000);
+
+    return () => clearTimeout(timer);
+  }, [showOpening, arrivalDismissed]);
 
   return (
     <div className={styles.container}>
@@ -860,38 +1163,164 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
 
       {/* 방명록 섹션 */}
       <section className={styles.messagesSection}>
-        <div className={styles.sectionTitle}>
-          <span className={styles.titleDecoration}>🌸</span>
-          <h2>Messages</h2>
-          <span className={styles.titleDecoration}>🌸</span>
-        </div>
-        <p className={styles.messagesSubtitle}>
-          저희 둘에게 따뜻한 방명록을 남겨주세요
-        </p>
+        <h2 className={styles.locationTitle}>Messages</h2>
         
-        {/* 기존 방명록 메시지 목록 */}
+        {/* 방명록 메시지 목록 */}
         <div className={styles.messagesList}>
-          {guestMessages?.length > 0 ? (
-            guestMessages.map((message, index) => (
-              <div key={index} className={styles.messageItem}>
-                <div className={styles.messageHeader}>
-                  <span className={styles.messageFrom}>{message.from}</span>
-                  <span className={styles.messageDate}>{message.date}</span>
+          {(!hasRealMessages && guestMessages?.length === 0) ? (
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              padding: '40px 20px',
+              backgroundColor: 'white',
+              borderRadius: '15px',
+              marginBottom: '20px'
+            }}>
+              <div style={{ fontSize: '48px', color: '#DDD', marginBottom: '12px' }}>💬</div>
+              <p style={{ fontSize: '16px', color: '#999', margin: '0 0 8px 0' }}>
+                아직 축하 메시지가 없습니다
+              </p>
+            </div>
+          ) : (
+            currentMessages.map((message, index) => (
+              <div key={index} style={{
+                backgroundColor: 'white',
+                borderRadius: '15px',
+                padding: '25px',
+                marginBottom: '20px',
+                boxShadow: '0 5px 15px rgba(0, 0, 0, 0.05)',
+                textAlign: 'left'
+              }}>
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '15px'
+                }}>
+                  <span style={{ color: '#999', fontSize: '13px' }}>
+                    From. {message.from}
+                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    {canEditMessage(message) && (
+                      <button
+                        onClick={() => handleEditMessage(message)}
+                        style={{
+                          backgroundColor: '#3182f6',
+                          color: 'white',
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontSize: '12px',
+                          fontWeight: '600',
+                          padding: '4px 12px',
+                          borderRadius: '12px',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.backgroundColor = '#2563eb';
+                          e.target.style.transform = 'translateY(-1px)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.backgroundColor = '#3182f6';
+                          e.target.style.transform = 'translateY(0)';
+                        }}
+                      >
+                        수정
+                      </button>
+                    )}
+                    <span style={{ color: '#DDD', fontSize: '12px' }}>
+                      {message.date}
+                    </span>
+                  </div>
                 </div>
-                <div className={styles.messageContent}>
-                  {message.content.split('\n').map((line, lineIndex) => (
+                <div style={{
+                  lineHeight: '24px',
+                  color: '#555',
+                  fontSize: '14px'
+                }}>
+                  {message.content ? message.content.split('\n').map((line, lineIndex) => (
                     <span key={lineIndex}>
                       {line}
                       {lineIndex < message.content.split('\n').length - 1 && <br />}
                     </span>
-                  ))}
+                  )) : ''}
                 </div>
               </div>
             ))
-          ) : (
-            <p className={styles.noMessages}>첫 번째 방명록을 남겨주세요! 💕</p>
           )}
         </div>
+        
+        {/* 페이지네이션 */}
+        {totalPages > 1 && (
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '20px',
+            margin: '30px 0'
+          }}>
+            <button 
+              onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
+              disabled={currentPage === 0}
+              style={{
+                backgroundColor: 'transparent',
+                color: currentPage === 0 ? '#DDD' : '#9B8D82',
+                border: 'none',
+                fontSize: '20px',
+                cursor: currentPage === 0 ? 'not-allowed' : 'pointer',
+                transition: 'all 0.3s ease',
+                opacity: currentPage === 0 ? 0.3 : 1
+              }}
+            >
+              ‹
+            </button>
+            
+            <div style={{
+              display: 'flex',
+              gap: '8px',
+              alignItems: 'center'
+            }}>
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentPage(i)}
+                  style={{
+                    width: currentPage === i ? '24px' : '8px',
+                    height: '8px',
+                    backgroundColor: currentPage === i ? '#9B8D82' : '#E0D5D1',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    padding: 0
+                  }}
+                  aria-label={`페이지 ${i + 1}`}
+                />
+              ))}
+            </div>
+            
+            <button 
+              onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))}
+              disabled={currentPage === totalPages - 1}
+              style={{
+                backgroundColor: 'transparent',
+                color: currentPage === totalPages - 1 ? '#DDD' : '#9B8D82',
+                border: 'none',
+                fontSize: '20px',
+                cursor: currentPage === totalPages - 1 ? 'not-allowed' : 'pointer',
+                transition: 'all 0.3s ease',
+                opacity: currentPage === totalPages - 1 ? 0.3 : 1
+              }}
+            >
+              ›
+            </button>
+          </div>
+        )}
+        
+        {/* 방명록 작성 버튼 */}
+        <button className={styles.navigationButton} onClick={handleGuestbookModalOpen}>
+          방명록 남기기
+        </button>
       </section>
 
       {/* 오시는 길 */}
@@ -992,6 +1421,58 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
           </div>
         </div>
       )}
+
+      {/* 방명록 작성 모달 */}
+      <GuestbookModal
+        isOpen={showGuestbookModal}
+        onClose={() => setShowGuestbookModal(false)}
+        onSubmit={handleGuestbookSubmit}
+        eventData={eventData}
+        onTriggerArrival={handleTriggerArrival}
+      />
+
+      {/* 방명록 수정 모달 */}
+      <EditGuestbookModal
+        isOpen={showEditModal}
+        onClose={() => {
+          setShowEditModal(false);
+          setEditingMessage(null);
+        }}
+        message={editingMessage}
+        eventData={eventData}
+        onUpdate={handleEditUpdate}
+        onDelete={handleEditDelete}
+      />
+
+      {/* 결혼식장 도착 확인 모달 */}
+      <ArrivalConfirmModal
+        isOpen={showArrivalModal}
+        onClose={() => {
+          setShowArrivalModal(false);
+          setArrivalDismissed(true); // "아직 도착 전이에요" 클릭 시 닫음 상태로 설정
+        }}
+        onConfirm={handleArrivalConfirm}
+        eventData={eventData}
+      />
+
+      {/* 축의금 입력 모달 */}
+      <ContributionModal
+        isOpen={showContributionModal}
+        onClose={() => setShowContributionModal(false)}
+        onSubmit={handleContributionSubmit}
+        eventData={eventData}
+      />
+
+      {/* 축의금 완료 모달 */}
+      <CompletionModal
+        isOpen={showCompletionModal}
+        onClose={() => {
+          setShowCompletionModal(false);
+          setContributionData(null);
+        }}
+        contributionData={contributionData}
+        eventData={eventData}
+      />
     </div>
   );
 };
