@@ -226,53 +226,20 @@ export default function TemplatePage() {
   const loadEventData = async () => {
     try {
       setLoading(true);
-      
-      // 먼저 API 경로로 시도
-      const response = await fetch(`/api/template-data?eventId=${eventId}`);
-      
-      if (response.ok) {
-        const result = await response.json();
-        if (result.success) {
-          setEvent(result.data);
-        } else {
-          // 데이터가 없으면 기본 샘플 데이터 사용
-          setEvent(createSampleEventData(eventId));
-        }
+      const result = await getEventDetails(eventId);
+
+      if (result.success) {
+        setEvent(result.data);
       } else {
-        // API 에러 시 기본 샘플 데이터 사용
-        console.warn('API error, using sample data:', response.status);
-        setEvent(createSampleEventData(eventId));
+        setError(result.error);
       }
     } catch (error) {
       console.error('Event loading error:', error);
-      // 에러 발생 시에도 기본 샘플 데이터 사용
-      setEvent(createSampleEventData(eventId));
+      setError('경조사 정보를 불러올 수 없습니다.');
     } finally {
       setLoading(false);
     }
   };
-
-  // 샘플 데이터 생성 함수
-  const createSampleEventData = (id) => ({
-    id: id,
-    event_name: '모바일 청첩장',
-    event_type: 'wedding',
-    event_date: new Date().toISOString().split('T')[0],
-    ceremony_time: '14:00',
-    location: '웨딩홀',
-    detailed_address: '',
-    groom_name: '신랑',
-    bride_name: '신부',
-    groom_father_name: '신랑 아버지',
-    groom_mother_name: '신랑 어머니', 
-    bride_father_name: '신부 아버지',
-    bride_mother_name: '신부 어머니',
-    primary_contact: '010-0000-0000',
-    secondary_contact: null,
-    custom_message: '저희 두 사람의 소중한 순간에 함께해 주세요.',
-    template_style: template,
-    status: 'active'
-  });
 
   const getTemplateComponent = () => {
     if (!event) return null;
