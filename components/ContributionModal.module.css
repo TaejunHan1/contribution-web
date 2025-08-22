@@ -1,4 +1,4 @@
-/* components/ContributionModal.module.css */
+/* components/ContributionModal.module.css - 토스 스타일 */
 .overlay {
   position: fixed;
   top: 0;
@@ -18,7 +18,7 @@
   background: white;
   border-radius: 20px;
   width: 100%;
-  max-width: 450px;
+  max-width: 420px;
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
@@ -38,278 +38,847 @@
 }
 
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 25px 30px 15px;
-  border-bottom: 1px solid #eee;
-}
-
-.title {
-  font-size: 22px;
-  font-weight: 700;
-  color: #2d3748;
-  margin: 0;
+  position: relative;
+  padding: 20px 20px 0;
+  z-index: 1000;
 }
 
 .closeButton {
-  background: none;
-  border: none;
-  font-size: 24px;
-  color: #999;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #e2e8f0;
+  font-size: 20px;
+  color: #666;
   cursor: pointer;
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   transition: all 0.2s ease;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-weight: bold;
 }
 
 .closeButton:hover {
-  background: #f5f5f5;
+  background: rgba(255, 255, 255, 1);
   color: #333;
+  border-color: #cbd5e0;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.closeButton:active {
+  transform: scale(0.95);
 }
 
 .content {
-  padding: 25px 30px 30px;
+  padding: 15px 30px 25px;
 }
 
-/* 정보 박스 */
-.infoBox {
-  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-  border-radius: 16px;
-  padding: 25px;
-  margin-bottom: 25px;
+/* 메인 텍스트 섹션 - 두 텍스트가 같은 위치에서 교체 */
+.mainTextSection {
   text-align: center;
+  margin-bottom: 10px;
+  margin-top: 15px;
+  position: relative;
+  min-height: 140px;
+}
+
+.bookTextContainer,
+.welcomeContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.5s ease;
+}
+
+.bookTextContainer.fadeIn,
+.welcomeContainer.fadeIn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.bookTextContainer.fadeOut,
+.welcomeContainer.fadeOut {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.bookTextContainer h2,
+.bookTextContainer p,
+.welcomeContainer h2,
+.welcomeContainer p {
+  opacity: inherit;
+  transform: inherit;
+  transition: inherit;
+}
+
+.bookMainTitle {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 0 0 10px 0;
+  color: #2d3748;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.welcomeMainTitle {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 0 0 15px 0;
+  color: #2d3748;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bookSubtext {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.4;
+  margin: 0;
+  color: #4a5568;
+  opacity: 0.9;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #718096;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.pageContent {
+  text-align: center;
+  color: #2d3748;
+  line-height: 1.4;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.pageContent h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 10px;
+  color: #1a202c;
+}
+
+.pageContent p {
+  font-size: 13px;
+  color: #4a5568;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.guestNames {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.nameColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.guestName {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-size: 12px;
+  font-weight: 500;
+  color: #2d3748;
+  padding: 2px 4px;
+  border-radius: 2px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* 책자 애니메이션 */
+.bookContainer {
+  margin: 15px 0 20px 0;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease;
+  position: relative;
+}
+
+.bookContainer.showBook {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.book {
+  width: 320px;
+  height: 200px;
+  position: relative;
+  perspective: 1500px;
+  margin: 0 auto;
+  background: #f5f5f5;
+  border-radius: 4px;
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.3),
+    0 0 0 1px #8b2020;
+  transform-style: preserve-3d;
+}
+
+.book::before {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #8b2020 0%, #c53030 50%, #8b2020 100%);
+  border-radius: 0 0 4px 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.book::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -2px;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(180deg, #8b2020 0%, #c53030 50%, #8b2020 100%);
+  border-radius: 2px 0 0 2px;
+  box-shadow: -1px 0 3px rgba(0, 0, 0, 0.2);
+}
+
+.bookCover {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+  z-index: 20;
+}
+
+.bookCover.coverOpen {
+  transform: rotateY(-150deg);
+}
+
+.coverFront,
+.coverBack {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 4px;
+}
+
+.coverFront {
+  background: linear-gradient(135deg, #c53030 0%, #9b2c2c 100%);
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    inset 0 2px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.3),
+    inset 2px 0 4px rgba(0, 0, 0, 0.2),
+    inset -2px 0 4px rgba(0, 0, 0, 0.2);
+  border: 2px solid #8b2020;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
   overflow: hidden;
 }
 
-.bookAnimation {
-  position: relative;
-  margin-bottom: 15px;
-}
-
-.bookIcon {
-  font-size: 40px;
-  display: inline-block;
-  animation: bookFlip 3s ease-in-out infinite;
-}
-
-@keyframes bookFlip {
-  0%, 100% { transform: rotateY(0deg); }
-  25% { transform: rotateY(-15deg); }
-  50% { transform: rotateY(0deg); }
-  75% { transform: rotateY(15deg); }
-}
-
-.pages {
+.coverFront::before {
+  content: '';
   position: absolute;
-  top: 50%;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  border: 2px solid #d4af37;
+  border-radius: 4px;
+  opacity: 0.6;
+}
+
+.coverFront::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60px;
+  height: 60px;
+  background: 
+    linear-gradient(135deg, transparent 40%, #d4af37 40%, #d4af37 60%, transparent 60%);
+  opacity: 0.3;
+}
+
+.coverBack {
+  transform: rotateY(180deg);
+  background: #f8f8f8;
+  border: 1px solid #e2e8f0;
+}
+
+.coverContent {
+  text-align: center;
+  color: #d4af37;
+  padding: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.coverTitle {
+  margin-bottom: 20px;
+}
+
+.coverIcon {
+  font-size: 36px;
+  display: block;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+}
+
+.coverTitle h3 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 5px;
+  text-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    0 0 10px rgba(212, 175, 55, 0.3);
+  color: #d4af37;
+  font-family: 'Georgia', serif;
+}
+
+.coverTitle p {
+  font-size: 14px;
+  margin: 0;
+  font-style: italic;
+  color: #e5c973;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  font-family: 'Georgia', serif;
+}
+
+.coverDecor {
+  font-size: 12px;
+  color: #d4af37;
+  letter-spacing: 4px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.coverBackContent {
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.fixedLeftPage {
+  width: 50%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px 0 0 4px;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fixedRightPage {
+  width: 50%;
+  height: 100%;
+  position: absolute;
+  top: 0;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: 30px;
-  height: 20px;
+  z-index: 1;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0 4px 4px 0;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .page {
+  width: 50%;
+  height: 100%;
   position: absolute;
+  top: 0;
+  left: 50%;
+  transform-origin: left center;
+  transition: transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1);
+  transform-style: preserve-3d;
+  z-index: 2;
+  transform: rotateY(0deg);
+}
+
+/* 연속 페이지 플립을 위한 빠른 애니메이션 */
+.bookContainer .page {
+  transition: transform 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.page.normalSpeed {
+  transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1) !important;
+}
+
+.page.flipped {
+  transform: rotateY(-180deg);
+}
+
+/* 연속 플립을 위한 여러 페이지 레이어 - 앞에서부터 뒤로 */
+.page:nth-child(4) { z-index: 15; } /* 페이지 1 - 가장 앞 */
+.page:nth-child(5) { z-index: 14; } /* 페이지 2 */
+.page:nth-child(6) { z-index: 13; } /* 페이지 3 */
+.page:nth-child(7) { z-index: 12; } /* 페이지 4 */
+.page:nth-child(8) { z-index: 11; } /* 페이지 5 */
+.page:nth-child(9) { z-index: 10; } /* 페이지 6 */
+.page:nth-child(10) { z-index: 9; } /* 페이지 7 */
+.page:nth-child(11) { z-index: 8; } /* 페이지 8 - 가장 뒤 */
+
+/* 플립 애니메이션 중에는 더 자연스러운 속도로 - 후루룩 효과 */
+.book.flipping .page {
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+
+/* 연속 플립 효과 - 각 페이지가 자연스럽게 연속으로 넘어감 */
+.book.flipping .page:nth-child(4) {
+  transition-delay: 0s;
+}
+
+.book.flipping .page:nth-child(5) {
+  transition-delay: 0.1s;
+}
+
+.book.flipping .page:nth-child(6) {
+  transition-delay: 0.2s;
+}
+
+.book.flipping .page:nth-child(7) {
+  transition-delay: 0.3s;
+}
+
+.book.flipping .page:nth-child(8) {
+  transition-delay: 0.4s;
+}
+
+.book.flipping .page:nth-child(9) {
+  transition-delay: 0.5s;
+}
+
+.book.flipping .page:nth-child(10) {
+  transition-delay: 0.6s;
+}
+
+.book.flipping .page:nth-child(11) {
+  transition-delay: 0.7s;
+}
+
+/* 플립 중일 때 페이지에 자연스러운 그림자 효과 */
+.book.flipping .page.flipped {
+  box-shadow: 
+    -3px 0 12px rgba(0, 0, 0, 0.15),
+    -1px 0 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 페이지가 넘어가는 동안 자연스러운 휘어짐 효과 */
+.book.flipping .page {
+  transform-style: preserve-3d;
+}
+
+.book.flipping .page.flipped {
+  transform: rotateY(-180deg);
+}
+
+/* 플립 중간 상태에서의 부드러운 효과 */
+.book.flipping .page {
+  transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* 페이지 넘김 시 살짝의 원근감 효과 */
+.page.flipped .front {
+  opacity: 0.95;
+}
+
+.page.flipped .back {
+  opacity: 1;
+}
+
+.page .front,
+.page .back {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 2px;
-  animation: pageFlip 3s ease-in-out infinite;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  backface-visibility: hidden;
+  overflow: hidden;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0 4px 4px 0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
 
-.page:nth-child(1) { animation-delay: 0s; z-index: 3; }
-.page:nth-child(2) { animation-delay: 0.5s; z-index: 2; }
-.page:nth-child(3) { animation-delay: 1s; z-index: 1; }
-
-@keyframes pageFlip {
-  0%, 50% { transform: rotateY(0deg); opacity: 1; }
-  75% { transform: rotateY(-90deg); opacity: 0; }
-  100% { transform: rotateY(0deg); opacity: 1; }
+.page .back {
+  transform: rotateY(180deg);
+  border-radius: 4px 0 0 4px;
+  background: #fafafa;
 }
 
-.infoText {
-  font-size: 16px;
-  font-weight: 600;
-  color: #8b4513;
+.touchArea {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  cursor: pointer;
+  z-index: 100;
+  opacity: 0;
+  animation: fadeInTouch 0.8s ease 0.5s forwards;
+  transition: opacity 0.3s ease;
+}
+
+.touchArea.touchFading {
+  opacity: 0 !important;
+  animation: none;
+}
+
+.touchAreaRight {
+  top: -15px;
+  right: 5px;
+}
+
+.touchAreaLeft {
+  top: -15px;
+  left: 5px;
+}
+
+.touchGradient {
+  position: absolute;
+  top: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, 
+    rgba(102, 126, 234, 0.3) 0%, 
+    rgba(102, 126, 234, 0.5) 50%, 
+    rgba(102, 126, 234, 0.7) 100%);
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.touchAreaRight .touchGradient {
+  right: 0;
+}
+
+.touchAreaLeft .touchGradient {
+  left: 0;
+}
+
+.touchBadge {
+  position: absolute;
+  top: 45px;
+  font-size: 10px;
+  font-weight: 500;
+  color: #4c51bf;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 4px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.touchAreaRight .touchBadge {
+  right: 0;
+}
+
+.touchAreaLeft .touchBadge {
+  left: 0;
+}
+
+@keyframes fadeInTouch {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { 
+    opacity: 0.6;
+  }
+  50% { 
+    opacity: 1;
+  }
+}
+
+.touchArea:hover .touchGradient {
+  background: radial-gradient(circle at center, 
+    rgba(102, 126, 234, 0.5) 0%, 
+    rgba(102, 126, 234, 0.7) 50%, 
+    rgba(102, 126, 234, 0.9) 100%);
+  animation-play-state: paused;
+  opacity: 1;
+}
+
+.touchArea:hover .touchBadge {
+  background: rgba(102, 126, 234, 0.95);
+  color: white;
+  border-color: #667eea;
+  transform: translateY(-2px);
+}
+
+.touchArea:active .touchGradient {
+  transform: scale(0.9);
+}
+
+/* 메인 메시지 */
+.mainMessage {
+  opacity: 0;
+  transition: opacity 0.3s ease 0.2s;
+}
+
+.mainMessage.fadeIn {
+  opacity: 1;
+}
+
+.mainMessage h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #000;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.5px;
+}
+
+.mainMessage p {
+  font-size: 14px;
+  color: #8b95a1;
   margin: 0;
-  line-height: 1.4;
 }
 
-/* 입력 그룹 */
+/* 폼 섹션 */
+.formSection {
+  margin-top: 24px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease 0.4s;
+}
+
+.formSection.showContent {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 입력 필드 */
 .inputGroup {
-  margin-bottom: 24px;
-}
-
-.label {
-  display: block;
-  font-size: 15px;
-  font-weight: 600;
-  color: #2d3748;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .input {
   width: 100%;
-  padding: 14px 16px;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
+  height: 52px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 8px;
+  background: #f2f4f6;
   font-size: 16px;
-  background: white;
-  transition: all 0.2s ease;
-  box-sizing: border-box;
+  color: #000;
+  outline: none;
+  transition: background 0.2s;
 }
 
 .input:focus {
-  outline: none;
-  border-color: #3182f6;
-  box-shadow: 0 0 0 3px rgba(49, 130, 246, 0.1);
+  background: #e5e8eb;
 }
 
 .input::placeholder {
-  color: #a0aec0;
+  color: #8b95a1;
 }
 
-/* 금액 컨테이너 */
-.amountContainer {
+/* 금액 입력 */
+.amountInputWrapper {
   position: relative;
 }
 
-.currency {
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
+.amountInput {
+  width: 100%;
+  height: 52px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 8px;
+  background: #f2f4f6;
   font-size: 16px;
-  color: #718096;
   font-weight: 600;
+  color: #000;
+  outline: none;
+  text-align: center;
+  transition: background 0.2s;
 }
 
-/* 신랑측/신부측 선택 */
-.sideSelection {
+.amountInput:focus {
+  background: #e5e8eb;
+}
+
+.amountInput::placeholder {
+  color: #8b95a1;
+  font-weight: 400;
+}
+
+/* 신랑/신부 선택 */
+.sideButtonGroup {
   display: flex;
-  gap: 10px;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 .sideButton {
   flex: 1;
-  padding: 14px 16px;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
-  background: white;
+  height: 48px;
+  border: none;
+  border-radius: 8px;
+  background: #f2f4f6;
   font-size: 15px;
-  font-weight: 600;
-  color: #4a5568;
+  font-weight: 500;
+  color: #4e5968;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
 }
 
 .sideButton:hover {
-  border-color: #cbd5e0;
-  background: #f7fafc;
+  background: #e5e8eb;
 }
 
 .sideButton.active {
-  border-color: #3182f6;
-  background: #3182f6;
+  background: #000;
   color: white;
 }
 
-/* 관계 선택 그리드 */
-.relationshipGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+/* 관계 선택 */
+.relationshipGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
 }
 
-.relationshipButton {
-  padding: 12px 16px;
-  border: 2px solid #e2e8f0;
-  border-radius: 10px;
-  background: white;
+.relationshipChip {
+  height: 40px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 20px;
+  background: #f2f4f6;
   font-size: 14px;
-  font-weight: 600;
-  color: #4a5568;
+  font-weight: 500;
+  color: #4e5968;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
 }
 
-.relationshipButton:hover {
-  border-color: #cbd5e0;
-  background: #f7fafc;
+.relationshipChip:hover {
+  background: #e5e8eb;
 }
 
-.relationshipButton.active {
-  border-color: #10b981;
-  background: #10b981;
+.relationshipChip.active {
+  background: #000;
   color: white;
 }
 
 /* 에러 메시지 */
 .error {
-  background: #fee2e2;
-  border: 1px solid #fecaca;
-  color: #dc2626;
-  padding: 12px 16px;
+  margin: 12px 0;
+  padding: 12px;
+  background: #fff0f0;
   border-radius: 8px;
+  color: #ff5555;
   font-size: 14px;
-  margin-bottom: 20px;
   text-align: center;
 }
 
 /* 제출 버튼 */
 .submitButton {
   width: 100%;
-  padding: 18px 24px;
-  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
-  color: white;
+  height: 56px;
+  margin-top: 16px;
   border: none;
-  border-radius: 14px;
-  font-size: 18px;
+  border-radius: 12px;
+  background: #000;
+  color: white;
+  font-size: 16px;
   font-weight: 700;
   cursor: pointer;
+  transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  transition: all 0.3s ease;
-  box-shadow: 0 6px 20px rgba(238, 90, 82, 0.4);
+  gap: 8px;
+  opacity: 0;
+  transform: translateY(10px);
 }
 
-.submitButton:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(238, 90, 82, 0.5);
+.submitButton.show {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.6s ease 0.6s;
+}
+
+.submitButton:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
 .submitButton:disabled {
-  opacity: 0.6;
+  background: #e5e8eb;
+  color: #8b95a1;
   cursor: not-allowed;
-  transform: none;
-  box-shadow: 0 6px 20px rgba(238, 90, 82, 0.2);
-}
-
-.buttonIcon {
-  font-size: 20px;
 }
 
 /* 스피너 */
 .spinner {
   width: 18px;
   height: 18px;
-  border: 2px solid transparent;
-  border-top: 2px solid currentColor;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: spin 0.6s linear infinite;
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
+  to { transform: rotate(360deg); }
+}
+
+/* 데스크톱 최적화 */
+@media (min-width: 768px) {
+  .overlay {
+    align-items: center;
+  }
+  
+  .modal {
+    border-radius: 16px;
+    max-height: 600px;
   }
 }
 
@@ -321,52 +890,85 @@
   
   .modal {
     border-radius: 16px;
-  }
-  
-  .header {
-    padding: 20px 25px 12px;
+    max-width: 100%;
   }
   
   .content {
-    padding: 20px 25px 25px;
+    padding: 15px 20px 25px;
   }
   
-  .title {
+  .mainTextSection {
+    min-height: 120px;
+  }
+  
+  .bookMainTitle {
+    font-size: 22px;
+  }
+  
+  .welcomeMainTitle {
     font-size: 20px;
   }
   
-  .infoText {
+  .bookSubtext,
+  .subtitle {
     font-size: 15px;
   }
   
-  .input {
-    padding: 12px 14px;
-    font-size: 15px;
+  .book {
+    width: 280px;
+    height: 180px;
   }
   
-  .sideButton {
-    padding: 12px 14px;
+  .coverIcon {
+    font-size: 30px;
+    margin-bottom: 8px;
+  }
+  
+  .coverTitle h3 {
+    font-size: 20px;
+  }
+  
+  .coverTitle p {
+    font-size: 12px;
+  }
+  
+  .coverDecor {
+    font-size: 10px;
+  }
+  
+  .fixedLeftPage,
+  .fixedRightPage,
+  .page .front,
+  .page .back {
+    padding: 15px;
+  }
+  
+  .pageContent h3 {
     font-size: 14px;
   }
   
-  .relationshipButton {
-    padding: 10px 12px;
-    font-size: 13px;
+  .pageContent p {
+    font-size: 12px;
   }
   
-  .relationshipGrid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
+  .touchArea {
+    width: 60px;
+    height: 60px;
   }
   
-  .submitButton {
-    padding: 16px 20px;
-    font-size: 16px;
+  .touchGradient {
+    width: 30px;
+    height: 30px;
   }
-}
-
-@media (max-width: 380px) {
-  .relationshipGrid {
-    grid-template-columns: 1fr;
+  
+  .touchBadge {
+    font-size: 9px;
+    top: 35px;
+    padding: 3px 6px;
+  }
+  
+  
+  .sideButtonGroup {
+    flex-direction: column;
   }
 }

@@ -53,38 +53,37 @@ const ArrivalConfirmModal = ({ isOpen, onClose, onConfirm, eventData }) => {
   const startContinuousFlip = () => {
     setIsFlipping(true);
     
-    // 여러 장의 빈 페이지가 천천히 연속으로 넘어가는 애니메이션
-    const pages = [1, 2, 3, 4, 5];
+    // 더 자연스럽고 빠른 연속 페이지 플립 효과 - 후루룩!
+    const flipSequence = [1, 2, 3, 4, 5, 6, 7, 8]; // 8장의 페이지가 연속으로 넘어감
     
-    pages.forEach((page, index) => {
+    // 각 페이지를 빠르게 연속으로 넘김 - 후루룩 효과
+    flipSequence.forEach((pageNum, index) => {
       setTimeout(() => {
-        setCurrentPage(page);
-      }, index * 400); // 400ms 간격으로 천천히 넘김
+        setCurrentPage(pageNum);
+        
+        // 마지막 페이지가 넘어간 후
+        if (index === flipSequence.length - 1) {
+          setTimeout(() => {
+            setCurrentPage(0); // 첫 페이지로 돌아가기
+            setIsFlipping(false);
+            setShowText(true);
+            
+            // 먼저 책자 텍스트 페이드아웃
+            setShowBookText(false);
+            
+            // 잠시 후 웰컴 텍스트 페이드인
+            setTimeout(() => {
+              setShowWelcomeText(true);
+            }, 500);
+            
+            // 콘텐츠 표시
+            setTimeout(() => {
+              setShowContent(true);
+            }, 1000);
+          }, 300); // 마지막 페이지 후 잠시 기다림
+        }
+      }, index * 200); // 200ms 간격으로 빠르게 넘김 (후루룩!)
     });
-    
-    // 페이지 넘김 완료 후 텍스트 교체와 콘텐츠 표시
-    const textTimer = setTimeout(() => {
-      setCurrentPage(0); // 첫 페이지로 돌아가기
-      setIsFlipping(false);
-      setShowText(true);
-      
-      // 먼저 책자 텍스트 페이드아웃
-      setShowBookText(false);
-      
-      // 잠시 후 웰컴 텍스트 페이드인
-      setTimeout(() => {
-        setShowWelcomeText(true);
-      }, 500); // 페이드아웃이 완료된 후 페이드인 (transition 시간에 맞춤)
-    }, 2000); // 페이지 넘김 완료 시점
-    
-    const contentTimer = setTimeout(() => {
-      setShowContent(true);
-    }, 3000); // 웰컴 텍스트 페이드인 완료 후 나머지 콘텐츠 표시
-    
-    return () => {
-      clearTimeout(textTimer);
-      clearTimeout(contentTimer);
-    };
   };
 
   const handleConfirm = async () => {
@@ -218,10 +217,12 @@ const ArrivalConfirmModal = ({ isOpen, onClose, onConfirm, eventData }) => {
                 </div>
               </div>
 
-              {/* 1-2 페이지 (첫 번째 장의 오른쪽 - 넘어가는 페이지) */}
+              {/* 연속으로 넘어가는 여러 페이지들 - 후루룩 효과! */}
+              
+              {/* 페이지 1 */}
               <div 
-                className={`${styles.page} ${currentPage > 0 ? styles.flipped : ''}`}
-                style={{ zIndex: 10 }}
+                className={`${styles.page} ${currentPage >= 1 ? styles.flipped : ''}`}
+                style={{ zIndex: 15 }}
               >
                 <div className={styles.front}>
                   <div className={styles.pageContent}>
@@ -235,7 +236,108 @@ const ArrivalConfirmModal = ({ isOpen, onClose, onConfirm, eventData }) => {
                 </div>
                 <div className={styles.back}>
                   <div className={styles.pageContent}>
-                    {/* 1-2의 뒷면 = 2-1 (두 번째 장의 왼쪽 방문자 명단) */}
+                    {/* 빈 페이지 */}
+                  </div>
+                </div>
+              </div>
+
+              {/* 페이지 2 */}
+              <div 
+                className={`${styles.page} ${currentPage >= 2 ? styles.flipped : ''}`}
+                style={{ zIndex: 14 }}
+              >
+                <div className={styles.front}>
+                  <div className={styles.pageContent}>
+                    {/* 빈 페이지 */}
+                  </div>
+                </div>
+                <div className={styles.back}>
+                  <div className={styles.pageContent}>
+                    {/* 빈 페이지 */}
+                  </div>
+                </div>
+              </div>
+
+              {/* 페이지 3 */}
+              <div 
+                className={`${styles.page} ${currentPage >= 3 ? styles.flipped : ''}`}
+                style={{ zIndex: 13 }}
+              >
+                <div className={styles.front}>
+                  <div className={styles.pageContent}>
+                    {/* 빈 페이지 */}
+                  </div>
+                </div>
+                <div className={styles.back}>
+                  <div className={styles.pageContent}>
+                    {/* 빈 페이지 */}
+                  </div>
+                </div>
+              </div>
+
+              {/* 페이지 4 */}
+              <div 
+                className={`${styles.page} ${currentPage >= 4 ? styles.flipped : ''}`}
+                style={{ zIndex: 12 }}
+              >
+                <div className={styles.front}>
+                  <div className={styles.pageContent}>
+                    {/* 빈 페이지 */}
+                  </div>
+                </div>
+                <div className={styles.back}>
+                  <div className={styles.pageContent}>
+                    {/* 빈 페이지 */}
+                  </div>
+                </div>
+              </div>
+
+              {/* 페이지 5 */}
+              <div 
+                className={`${styles.page} ${currentPage >= 5 ? styles.flipped : ''}`}
+                style={{ zIndex: 11 }}
+              >
+                <div className={styles.front}>
+                  <div className={styles.pageContent}>
+                    {/* 빈 페이지 */}
+                  </div>
+                </div>
+                <div className={styles.back}>
+                  <div className={styles.pageContent}>
+                    {/* 빈 페이지 */}
+                  </div>
+                </div>
+              </div>
+
+              {/* 페이지 6 */}
+              <div 
+                className={`${styles.page} ${currentPage >= 6 ? styles.flipped : ''}`}
+                style={{ zIndex: 10 }}
+              >
+                <div className={styles.front}>
+                  <div className={styles.pageContent}>
+                    {/* 빈 페이지 */}
+                  </div>
+                </div>
+                <div className={styles.back}>
+                  <div className={styles.pageContent}>
+                    {/* 빈 페이지 */}
+                  </div>
+                </div>
+              </div>
+
+              {/* 페이지 7 */}
+              <div 
+                className={`${styles.page} ${currentPage >= 7 ? styles.flipped : ''}`}
+                style={{ zIndex: 9 }}
+              >
+                <div className={styles.front}>
+                  <div className={styles.pageContent}>
+                    {/* 빈 페이지 */}
+                  </div>
+                </div>
+                <div className={styles.back}>
+                  <div className={styles.pageContent}>
                     {showText && (
                       <div className={styles.guestNames}>
                         <div className={styles.nameColumn}>
@@ -255,6 +357,23 @@ const ArrivalConfirmModal = ({ isOpen, onClose, onConfirm, eventData }) => {
                         </div>
                       </div>
                     )}
+                  </div>
+                </div>
+              </div>
+
+              {/* 페이지 8 */}
+              <div 
+                className={`${styles.page} ${currentPage >= 8 ? styles.flipped : ''}`}
+                style={{ zIndex: 8 }}
+              >
+                <div className={styles.front}>
+                  <div className={styles.pageContent}>
+                    {/* 빈 페이지 */}
+                  </div>
+                </div>
+                <div className={styles.back}>
+                  <div className={styles.pageContent}>
+                    {/* 빈 페이지 */}
                   </div>
                 </div>
               </div>
