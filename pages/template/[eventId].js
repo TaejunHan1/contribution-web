@@ -226,23 +226,16 @@ export default function TemplatePage() {
   const loadEventData = async () => {
     try {
       setLoading(true);
-      
-      // API 호출로 직접 데이터 가져오기 
-      const response = await fetch(`/api/template-data?eventId=${eventId}`);
-      
-      if (response.ok) {
-        const result = await response.json();
-        if (result.success && result.data) {
-          setEvent(result.data);
-        } else {
-          setError(result.message || '경조사 정보를 찾을 수 없습니다.');
-        }
+      const result = await getEventDetails(eventId);
+
+      if (result.success) {
+        setEvent(result.data);
       } else {
-        setError('서버에서 데이터를 불러올 수 없습니다.');
+        setError(result.error);
       }
     } catch (error) {
       console.error('Event loading error:', error);
-      setError('경조사 정보를 불러오는 중 오류가 발생했습니다.');
+      setError('경조사 정보를 불러올 수 없습니다.');
     } finally {
       setLoading(false);
     }
