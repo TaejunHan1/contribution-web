@@ -437,6 +437,7 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
   const [showImageViewer, setShowImageViewer] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [galleryScrollIndex, setGalleryScrollIndex] = useState(0);
+  const [galleryPairIndex, setGalleryPairIndex] = useState(0); // 갤러리 페어 인덱스 추가
   const [showDateAnimation, setShowDateAnimation] = useState(false);
   const [showGuestbookModal, setShowGuestbookModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -1044,7 +1045,19 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
           <p className={styles.gallerySubtitle}>우리의 특별한 순간들</p>
           
           <div className={styles.galleryContainer}>
-            <div className={styles.gallerySlider}>
+            <div 
+              className={styles.gallerySlider}
+              onScroll={(e) => {
+                const scrollLeft = e.target.scrollLeft;
+                const itemWidth = e.target.scrollWidth / safeImages.gallery.length;
+                const newIndex = Math.round(scrollLeft / itemWidth);
+                setGalleryScrollIndex(newIndex);
+                
+                // 페어 인덱스 계산 (2개씩 묶어서)
+                const pairIndex = Math.floor(newIndex / 2);
+                setGalleryPairIndex(pairIndex);
+              }}
+            >
               {safeImages.gallery.map((image, index) => {
                 const imageSrc = getImageSrc(image);
                 return imageSrc ? (
@@ -1062,11 +1075,29 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
               })}
             </div>
             
+            {/* 페이지 인디케이터 */}
+            <div className={styles.galleryIndicator}>
+              <span className={styles.currentPage}>
+                {galleryScrollIndex + 1} / {safeImages.gallery.length}
+              </span>
+            </div>
+            
+            {/* 도트 인디케이터 */}
             <div className={styles.galleryDots}>
-              {safeImages.gallery.slice(0, 6).map((_, index) => (
+              {safeImages.gallery.map((_, index) => (
                 <div 
                   key={index}
                   className={`${styles.dot} ${galleryScrollIndex === index ? styles.dotActive : ''}`}
+                  onClick={() => {
+                    const slider = document.querySelector(`.${styles.gallerySlider}`);
+                    if (slider) {
+                      const itemWidth = slider.scrollWidth / safeImages.gallery.length;
+                      slider.scrollTo({
+                        left: itemWidth * index,
+                        behavior: 'smooth'
+                      });
+                    }
+                  }}
                 />
               ))}
             </div>

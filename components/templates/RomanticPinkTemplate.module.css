@@ -701,6 +701,8 @@
   padding-bottom: 20px;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
 }
 
 .gallerySlider::-webkit-scrollbar {
@@ -715,6 +717,8 @@
   background: #F0EBE6;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
   cursor: pointer;
+  scroll-snap-align: center;
+  transition: transform 0.3s ease;
 }
 
 .galleryItem img {
@@ -723,19 +727,37 @@
   object-fit: cover;
 }
 
+.galleryIndicator {
+  text-align: center;
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+.currentPage {
+  font-size: 14px;
+  color: #9B8D82;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
 .galleryDots {
   display: flex;
   justify-content: center;
   gap: 8px;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .dot {
   width: 8px;
   height: 8px;
   border-radius: 4px;
-  background: #ddd;
+  background: #E0D5D1;
   transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.dot:hover {
+  background: #C2B0A2;
 }
 
 .dotActive {
