@@ -216,12 +216,47 @@ export default function TemplatePage() {
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [fontsLoaded, setFontsLoaded] = useState(false);
 
   useEffect(() => {
     if (eventId) {
       loadEventData();
     }
   }, [eventId]);
+
+  // 웹폰트 로딩 감지
+  useEffect(() => {
+    const loadFonts = async () => {
+      try {
+        // 웹폰트가 로딩될 때까지 기다림
+        await document.fonts.ready;
+        
+        // 추가로 특정 폰트들이 로딩되었는지 확인
+        const fontChecks = [
+          new FontFace('Great Vibes', 'url(https://fonts.gstatic.com/s/greatvibes/v18/RWmMoKWR9v4ksMfaWd_JN-XCg6UKDXlq.woff2)'),
+          new FontFace('Dancing Script', 'url(https://fonts.gstatic.com/s/dancingscript/v25/If2cXTr6YS-zF4S-kcSWSVi_sxjsohD9F50Ruu7BMSoHTeB9ptDqpw.woff2)')
+        ];
+
+        await Promise.all(fontChecks.map(font => {
+          document.fonts.add(font);
+          return font.load();
+        }));
+
+        // 모든 폰트가 로딩된 후 1초 더 기다려서 확실하게 함
+        setTimeout(() => {
+          setFontsLoaded(true);
+        }, 1000);
+      } catch (error) {
+        console.log('Font loading error:', error);
+        // 폰트 로딩 실패해도 3초 후에는 표시
+        setTimeout(() => {
+          setFontsLoaded(true);
+        }, 3000);
+      }
+    };
+
+    loadFonts();
+  }, []);
 
   const loadEventData = async () => {
     try {
@@ -263,7 +298,7 @@ export default function TemplatePage() {
     }
   };
 
-  if (loading) {
+  if (loading || !fontsLoaded) {
     return (
       <>
         <Head>
@@ -281,7 +316,9 @@ export default function TemplatePage() {
             
             {/* 로딩 텍스트 */}
             <div>
-              <h2 className="text-lg font-medium text-gray-700 mb-2">청첩장을 불러오는 중...</h2>
+              <h2 className="text-lg font-medium text-gray-700 mb-2">
+                {!fontsLoaded ? '청첩장을 준비하는 중...' : '청첩장을 불러오는 중...'}
+              </h2>
               <p className="text-sm text-gray-500">잠시만 기다려주세요</p>
             </div>
           </div>
