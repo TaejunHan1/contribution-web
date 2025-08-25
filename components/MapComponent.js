@@ -1,11 +1,42 @@
 // components/GoogleMapEmbed.js - 구글 지도 임베드 컴포넌트
 const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }) => {
-  // API 키 없이도 작동하는 Google Maps 임베드 URL 사용
+  // 전달받은 주소 또는 기본 주소 사용
   const fullAddress = address || '서울시 중구 소공로 119';
-  const searchQuery = encodeURIComponent(fullAddress);
   
-  // Google Maps 임베드 URL (API 키 불필요)
-  const mapUrl = `https://www.google.com/maps?q=${searchQuery}&output=embed`;
+  // 주소에서 불필요한 정보 제거 함수 (호수, 층수, 세부 위치 등)
+  const cleanAddress = (addr) => {
+    // 한국 주소 패턴 분석: 시도 구군 도로명 건물번호까지만 남기기
+    let cleaned = addr
+      // 호수 제거 (숫자+호, 영문+숫자+호)
+      .replace(/\s+[A-Z]?\d+호\b/g, '') 
+      .replace(/\s+\d+호\b/g, '') 
+      // 층수 제거 (숫자+층, B+숫자)
+      .replace(/\s+\d+층\b/g, '') 
+      .replace(/\s+B\d+\b/g, '') 
+      // 층수 + 기타 (3층매점, 2층카페 등)
+      .replace(/\s+\d+층[가-힣]+/g, '') 
+      .replace(/\s+B\d+[가-힣]+/g, '') 
+      // 상호명이나 기타 세부사항 제거
+      .replace(/\s+[가-힣]{2,}\s*$/g, '') // 끝에 있는 한글 상호명
+      .replace(/\s{2,}/g, ' ') // 여러 공백 정리
+      .trim();
+    
+    return cleaned;
+  };
+  
+  // 정제된 주소만 사용 (venueName 사용하지 않음)
+  const cleanedAddress = cleanAddress(fullAddress);
+  const searchQuery = encodeURIComponent(cleanedAddress);
+  
+  // Google Maps Embed API URL (정확한 위치 표시)
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  
+  // API key 확인 (에러는 조용히 처리)
+  
+  // API key 문제 시 fallback URL 사용
+  const mapUrl = apiKey 
+    ? `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${searchQuery}&zoom=16&maptype=roadmap&language=ko&region=KR`
+    : `https://www.google.com/maps?q=${searchQuery}&output=embed&hl=ko`;
   
   // 각 지도 앱으로 연결하는 함수들
   const openNaverMap = () => {
@@ -14,9 +45,8 @@ const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }
   };
   
   const openTmap = () => {
-    // T맵 웹 검색 URL
-    const searchTerm = encodeURIComponent(venueName || fullAddress);
-    const tmapWebUrl = `https://www.tmap.co.kr/tmap2/mobile/route.jsp?name=${searchTerm}`;
+    // T맵 웹 검색 URL - 정제된 주소 사용
+    const tmapWebUrl = `https://www.tmap.co.kr/tmap2/mobile/route.jsp?name=${searchQuery}`;
     
     // 모바일에서는 앱 스토어로, PC에서는 웹으로
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -66,6 +96,10 @@ const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
           title="Location Map"
+          onError={(e) => {
+            // fallback으로 일반 Google Maps URL 사용
+            e.target.src = `https://www.google.com/maps?q=${searchQuery}&output=embed&hl=ko`;
+          }}
         />
       </div>
       

@@ -1,5 +1,5 @@
 // components/ArrivalConfirmModal.js - 결혼식장 도착 확인 모달
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './ArrivalConfirmModal.module.css';
 
 const ArrivalConfirmModal = ({ isOpen, onClose, onConfirm, eventData }) => {
@@ -13,31 +13,64 @@ const ArrivalConfirmModal = ({ isOpen, onClose, onConfirm, eventData }) => {
   const [showBookText, setShowBookText] = useState(false);  // "요즘 누가 책자에 이름을 쓰나요?" 
   const [showWelcomeText, setShowWelcomeText] = useState(false); // "신랑신부 결혼식장에 도착하셨나요?"
   const [touchFading, setTouchFading] = useState(false); // 터치 영역 페이드아웃 상태
+  const [isClosing, setIsClosing] = useState(false); // 모달 닫히는 중 상태
+  
+  // 모든 타이머를 관리하기 위한 ref
+  const timersRef = useRef([]);
+  
+  // 안전한 상태 변경 함수 (모달이 닫히는 중이 아닐 때만)
+  const safeSetState = (setterFn) => {
+    if (!isClosing) {
+      setterFn();
+    }
+  };
+  
+  // 타이머 추가 함수
+  const addTimer = (timer) => {
+    timersRef.current.push(timer);
+  };
+  
+  // 모든 타이머 정리 함수
+  const clearAllTimers = () => {
+    timersRef.current.forEach(timer => clearTimeout(timer));
+    timersRef.current = [];
+  };
 
   useEffect(() => {
     if (isOpen) {
+      setIsClosing(false); // 모달 열리면 닫기 상태 해제
+      
       // 모달이 열리면 잠시 후 책과 책자 텍스트를 동시에 페이드인
       const bookTimer = setTimeout(() => {
-        setShowBook(true);
-        setShowBookText(true); // 책자와 함께 "요즘 누가 책자에 이름을 쓰나요?" 텍스트 동시 표시
+        safeSetState(() => {
+          setShowBook(true);
+          setShowBookText(true); // 책자와 함께 "요즘 누가 책자에 이름을 쓰나요?" 텍스트 동시 표시
+        });
       }, 500);
+      addTimer(bookTimer);
       
       // 책이 나타난 후 덮개 열기 (책자 텍스트와 함께 1초 정도 유지)
       const coverTimer = setTimeout(() => {
-        setCoverOpen(true);
+        safeSetState(() => setCoverOpen(true));
       }, 1200);
+      addTimer(coverTimer);
       
       // 덮개가 열린 후 잠깐 기다렸다가 페이지 넘김 시작
       const flipTimer = setTimeout(() => {
-        startContinuousFlip();
+        if (!isClosing) {
+          startContinuousFlip();
+        }
       }, 2000);
+      addTimer(flipTimer);
       
       return () => {
-        clearTimeout(bookTimer);
-        clearTimeout(coverTimer);
-        clearTimeout(flipTimer);
+        clearAllTimers();
       };
     } else {
+      // 모달 닫힐 때 즉시 상태 초기화
+      setIsClosing(true);
+      clearAllTimers();
+      
       setShowBook(false);
       setShowContent(false);
       setShowText(false);
@@ -48,41 +81,47 @@ const ArrivalConfirmModal = ({ isOpen, onClose, onConfirm, eventData }) => {
       setShowWelcomeText(false);
       setTouchFading(false);
     }
-  }, [isOpen]);
+  }, [isOpen, isClosing]);
 
   const startContinuousFlip = () => {
-    setIsFlipping(true);
+    if (isClosing) return; // 모달 닫히는 중이면 실행하지 않음
+    
+    safeSetState(() => setIsFlipping(true));
     
     // 더 자연스럽고 빠른 연속 페이지 플립 효과 - 후루룩!
     const flipSequence = [1, 2, 3, 4, 5, 6, 7, 8]; // 8장의 페이지가 연속으로 넘어감
     
     // 각 페이지를 빠르게 연속으로 넘김 - 후루룩 효과
     flipSequence.forEach((pageNum, index) => {
-      setTimeout(() => {
-        setCurrentPage(pageNum);
+      const timer = setTimeout(() => {
+        safeSetState(() => setCurrentPage(pageNum));
         
         // 마지막 페이지가 넘어간 후
         if (index === flipSequence.length - 1) {
-          setTimeout(() => {
-            setCurrentPage(0); // 첫 페이지로 돌아가기
-            setIsFlipping(false);
-            setShowText(true);
-            
-            // 먼저 책자 텍스트 페이드아웃
-            setShowBookText(false);
+          const finalTimer = setTimeout(() => {
+            safeSetState(() => {
+              setCurrentPage(0); // 첫 페이지로 돌아가기
+              setIsFlipping(false);
+              setShowText(true);
+              setShowBookText(false); // 먼저 책자 텍스트 페이드아웃
+            });
             
             // 잠시 후 웰컴 텍스트 페이드인
-            setTimeout(() => {
-              setShowWelcomeText(true);
+            const welcomeTimer = setTimeout(() => {
+              safeSetState(() => setShowWelcomeText(true));
             }, 500);
+            addTimer(welcomeTimer);
             
             // 콘텐츠 표시
-            setTimeout(() => {
-              setShowContent(true);
+            const contentTimer = setTimeout(() => {
+              safeSetState(() => setShowContent(true));
             }, 1000);
+            addTimer(contentTimer);
           }, 300); // 마지막 페이지 후 잠시 기다림
+          addTimer(finalTimer);
         }
       }, index * 200); // 200ms 간격으로 빠르게 넘김 (후루룩!)
+      addTimer(timer);
     });
   };
 
@@ -95,23 +134,36 @@ const ArrivalConfirmModal = ({ isOpen, onClose, onConfirm, eventData }) => {
     }
   };
 
+  // 안전한 닫기 핸들러
+  const handleClose = () => {
+    setIsClosing(true);
+    clearAllTimers();
+    onClose();
+  };
+
   const nextPage = () => {
-    if (currentPage === 0 && !isFlipping) {
-      setTouchFading(true); // 터치 영역 페이드아웃 시작
-      setTimeout(() => {
-        setCurrentPage(1); // 첫 번째 페이지 넘김
-        setTouchFading(false); // 새 터치 영역 페이드인
+    if (currentPage === 0 && !isFlipping && !isClosing) {
+      safeSetState(() => setTouchFading(true)); // 터치 영역 페이드아웃 시작
+      const timer = setTimeout(() => {
+        safeSetState(() => {
+          setCurrentPage(1); // 첫 번째 페이지 넘김
+          setTouchFading(false); // 새 터치 영역 페이드인
+        });
       }, 300); // 0.3초 후 페이지 전환
+      addTimer(timer);
     }
   };
 
   const prevPage = () => {
-    if (currentPage === 1 && !isFlipping) {
-      setTouchFading(true); // 터치 영역 페이드아웃 시작
-      setTimeout(() => {
-        setCurrentPage(0); // 첫 번째 페이지로 돌아가기
-        setTouchFading(false); // 새 터치 영역 페이드인
+    if (currentPage === 1 && !isFlipping && !isClosing) {
+      safeSetState(() => setTouchFading(true)); // 터치 영역 페이드아웃 시작
+      const timer = setTimeout(() => {
+        safeSetState(() => {
+          setCurrentPage(0); // 첫 번째 페이지로 돌아가기
+          setTouchFading(false); // 새 터치 영역 페이드인
+        });
       }, 300); // 0.3초 후 페이지 전환
+      addTimer(timer);
     }
   };
 
@@ -122,10 +174,10 @@ const ArrivalConfirmModal = ({ isOpen, onClose, onConfirm, eventData }) => {
   const groomName = eventData?.groom_name || '민호';
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
+    <div className={styles.overlay} onClick={handleClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <button className={styles.closeButton} onClick={onClose}>×</button>
+          <button className={styles.closeButton} onClick={handleClose} disabled={isLoading}>×</button>
         </div>
 
         <div className={styles.content}>

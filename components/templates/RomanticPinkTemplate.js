@@ -693,7 +693,7 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
               filter: `event_id=eq.${eventData.id}`
             },
             (payload) => {
-              console.log('새 방명록이 등록되었습니다:', payload.new);
+              // 새 방명록 등록됨
               
               // 새로운 메시지를 state에 추가
               const newMessage = {
@@ -722,7 +722,7 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
               filter: `event_id=eq.${eventData.id}`
             },
             (payload) => {
-              console.log('방명록이 수정되었습니다:', payload.new);
+              // 방명록 수정됨
               
               // 수정된 메시지로 업데이트
               const updatedMessage = {
@@ -755,7 +755,7 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
               filter: `event_id=eq.${eventData.id}`
             },
             (payload) => {
-              console.log('방명록이 삭제되었습니다:', payload.old);
+              // 방명록 삭제됨
               
               // 삭제된 메시지 제거
               setGuestMessages(prevMessages => 
@@ -814,7 +814,7 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
         alert('링크가 복사되었습니다.');
       }
     } catch (error) {
-      console.log('Share error:', error);
+      // Share error (조용히 처리)
     }
   };
 
@@ -827,9 +827,45 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
     alert('메시지 작성 기능은 준비 중입니다.');
   };
 
-  // 방명록 모달 열기
+  // 모달 상태 관리를 위한 ref 추가
+  const modalOpeningRef = useRef(false);
+  const modalClosingRef = useRef(false);
+
+  // 방명록 모달 열기 (중복 방지)
   const handleGuestbookModalOpen = () => {
+    console.log('🟢 모달 열기 시도:', { modalOpeningRef: modalOpeningRef.current, showGuestbookModal });
+    
+    if (modalOpeningRef.current || showGuestbookModal) {
+      console.log('🟢 모달 열기 차단됨');
+      return;
+    }
+    
+    modalOpeningRef.current = true;
+    console.log('🟢 모달 열기 실행');
     setShowGuestbookModal(true);
+    
+    setTimeout(() => {
+      modalOpeningRef.current = false;
+    }, 500);
+  };
+
+  // 방명록 모달 닫기 (안전한 닫기)
+  const handleGuestbookModalClose = () => {
+    console.log('🔴 템플릿에서 모달 닫기 호출됨:', { modalClosingRef: modalClosingRef.current, showGuestbookModal });
+    
+    if (modalClosingRef.current) {
+      console.log('🔴 템플릿 모달 닫기 차단됨');
+      return;
+    }
+    
+    modalClosingRef.current = true;
+    console.log('🔴 템플릿 모달 닫기 실행');
+    setShowGuestbookModal(false);
+    
+    setTimeout(() => {
+      modalClosingRef.current = false;
+      console.log('🔴 템플릿 모달 닫기 상태 해제');
+    }, 300);
   };
 
   // 방명록 제출 핸들러
@@ -868,9 +904,7 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
   // 수정 권한 확인 (본인 전화번호와 일치하는지 체크)
   const canEditMessage = (message) => {
     const verifiedPhone = localStorage.getItem('verifiedPhone');
-    console.log('Debug - Local Storage Phone:', verifiedPhone);
-    console.log('Debug - Message Phone:', message.phone);
-    console.log('Debug - Can Edit:', verifiedPhone && message.phone === verifiedPhone);
+    // 편집 권한 체크
     return verifiedPhone && message.phone === verifiedPhone;
   };
 
@@ -890,18 +924,77 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
     }
   };
 
-  // 도착 확인 모달 트리거 핸들러
-  const handleTriggerArrival = () => {
+  // 도착 확인 모달 상태 관리를 위한 ref
+  const arrivalTimersRef = useRef([]);
+  const arrivalModalOpeningRef = useRef(false);
+  const arrivalModalCheckedRef = useRef(false); // 이미 체크했는지 추적
+
+  // 도착 확인 모달 타이머 정리 함수
+  const clearArrivalTimers = () => {
+    arrivalTimersRef.current.forEach(timer => clearTimeout(timer));
+    arrivalTimersRef.current = [];
+  };
+
+  // 통합된 도착 확인 모달 체크 함수
+  const checkAndShowArrivalModal = () => {
+    // 이미 체크했거나 모달이 열려있으면 즉시 종료
+    if (arrivalModalCheckedRef.current || arrivalModalOpeningRef.current || showArrivalModal) {
+      console.log('🟡 도착 모달 이미 처리됨');
+      return false;
+    }
+    
+    const verifiedPhone = localStorage.getItem('verifiedPhone');
+    
+    if (!verifiedPhone || arrivalDismissed) {
+      return false;
+    }
+    
+    // 체크 완료 표시
+    arrivalModalCheckedRef.current = true;
+    arrivalModalOpeningRef.current = true;
+    
+    console.log('🟡 도착 모달 조건 만족 - 트리거됨');
     setShowArrivalModal(true);
+    
+    setTimeout(() => {
+      arrivalModalOpeningRef.current = false;
+    }, 1000);
+    
+    return true;
+  };
+
+  // 도착 확인 모달 트리거 핸들러 (방명록 완료 후 호출용)
+  const handleTriggerArrival = () => {
+    if (arrivalModalOpeningRef.current || showArrivalModal) {
+      console.log('🟡 도착 모달 중복 트리거 차단됨 (방명록 후)');
+      return;
+    }
+    
+    console.log('🟡 도착 모달 트리거됨 (방명록 후)');
+    arrivalModalOpeningRef.current = true;
+    setShowArrivalModal(true);
+    
+    setTimeout(() => {
+      arrivalModalOpeningRef.current = false;
+    }, 1000);
   };
 
   // 도착 확인 핸들러
   const handleArrivalConfirm = async () => {
+    clearArrivalTimers(); // 모든 대기 중인 타이머 정리
     setShowArrivalModal(false);
     // 잠시 후 축의금 모달 표시
     setTimeout(() => {
       setShowContributionModal(true);
     }, 300);
+  };
+
+  // 안전한 도착 모달 닫기
+  const handleArrivalModalClose = () => {
+    clearArrivalTimers(); // 모든 대기 중인 타이머 정리
+    arrivalModalCheckedRef.current = true; // 다시 체크하지 않도록 표시
+    setShowArrivalModal(false);
+    setArrivalDismissed(true);
   };
 
   // 축의금 제출 핸들러
@@ -937,46 +1030,52 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
   const handleOpeningComplete = () => {
     setShowOpening(false);
     
-    // 오프닝 완료 후 LocalStorage 체크하여 도착 확인 모달 표시
-    const verifiedPhone = localStorage.getItem('verifiedPhone');
-    if (verifiedPhone && !arrivalDismissed) {
-      // 0.5초 후 도착 확인 모달 표시
-      setTimeout(() => {
-        setShowArrivalModal(true);
-      }, 500);
-    }
+    // 0.5초 후 도착 확인 모달 체크
+    const timer = setTimeout(() => {
+      checkAndShowArrivalModal();
+    }, 500);
+    arrivalTimersRef.current.push(timer);
   };
 
-  // 페이지 직접 접근 시 LocalStorage 체크 (오프닝 애니메이션 없이 바로 진입하는 경우)
+  // 통합된 도착 모달 체크 useEffect
   useEffect(() => {
-    // 오프닝이 이미 false인 경우 (새로고침 등) 바로 체크
-    if (!showOpening) {
-      const verifiedPhone = localStorage.getItem('verifiedPhone');
-      if (verifiedPhone && !arrivalDismissed) {
-        setTimeout(() => {
-          setShowArrivalModal(true);
-        }, 1000); // 1초 후 표시
-      }
+    // 이미 체크했거나 dismissed 상태면 실행하지 않음
+    if (arrivalModalCheckedRef.current || arrivalDismissed) {
+      return;
     }
-  }, [showOpening, arrivalDismissed]);
-
-  // 컴포넌트 마운트 시 LocalStorage 체크 (오프닝 스킵 시)
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      // 4초 후에도 오프닝이 true면 강제로 체크
-      if (showOpening) {
-        const verifiedPhone = localStorage.getItem('verifiedPhone');
-        if (verifiedPhone && !arrivalDismissed) {
+    
+    let checkTimer;
+    
+    if (!showOpening) {
+      // 오프닝이 이미 false인 경우 (새로고침 등) 1초 후 체크
+      checkTimer = setTimeout(() => {
+        checkAndShowArrivalModal();
+      }, 1000);
+    } else {
+      // 오프닝이 진행 중인 경우 4초 후 체크
+      checkTimer = setTimeout(() => {
+        if (showOpening) {
           setShowOpening(false);
           setTimeout(() => {
-            setShowArrivalModal(true);
+            checkAndShowArrivalModal();
           }, 500);
         }
-      }
-    }, 4000);
-
-    return () => clearTimeout(timer);
+      }, 4000);
+    }
+    
+    arrivalTimersRef.current.push(checkTimer);
+    
+    return () => {
+      clearTimeout(checkTimer);
+    };
   }, [showOpening, arrivalDismissed]);
+
+  // 컴포넌트 언마운트 시 모든 도착 타이머 정리
+  useEffect(() => {
+    return () => {
+      clearArrivalTimers();
+    };
+  }, []);
 
   // additional_info JSON 파싱
   const additionalInfo = (() => {
@@ -1528,7 +1627,11 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
         )}
         
         {/* 방명록 작성 버튼 */}
-        <button className={styles.navigationButton} onClick={handleGuestbookModalOpen}>
+        <button 
+          className={styles.navigationButton} 
+          onClick={handleGuestbookModalOpen}
+          disabled={showGuestbookModal}
+        >
           방명록 남기기
         </button>
       </section>
@@ -1548,7 +1651,7 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
         
         <div className={styles.mapContainer}>
           <GoogleMapEmbed
-            address={eventData?.detailed_address || eventData?.detailedAddress || eventData?.location}
+            address={`${eventData?.location || '서울시 중구 소공로 119'} ${eventData?.detailed_address || eventData?.detailedAddress || ''}`.trim()}
             venueName={eventData?.venue_name || eventData?.venueName}
             width="100%"
             height="300px"
@@ -1635,7 +1738,7 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
       {/* 방명록 작성 모달 */}
       <GuestbookModal
         isOpen={showGuestbookModal}
-        onClose={() => setShowGuestbookModal(false)}
+        onClose={handleGuestbookModalClose}
         onSubmit={handleGuestbookSubmit}
         eventData={eventData}
         onTriggerArrival={handleTriggerArrival}
@@ -1657,10 +1760,7 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
       {/* 결혼식장 도착 확인 모달 */}
       <ArrivalConfirmModal
         isOpen={showArrivalModal}
-        onClose={() => {
-          setShowArrivalModal(false);
-          setArrivalDismissed(true); // "아직 도착 전이에요" 클릭 시 닫음 상태로 설정
-        }}
+        onClose={handleArrivalModalClose}
         onConfirm={handleArrivalConfirm}
         eventData={eventData}
       />

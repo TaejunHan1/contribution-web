@@ -3,6 +3,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import styles from './GuestbookModal.module.css';
 
 const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival }) => {
+  // 모달 고유 ID 생성 (디버깅용)
+  const modalId = useRef(Math.random().toString(36).substr(2, 9));
+  
   const [step, setStep] = useState('info'); // 'info', 'verification', 'message'
   const [mode, setMode] = useState('create'); // 'create' 또는 'edit'
   const [existingGuestbook, setExistingGuestbook] = useState(null);
@@ -333,8 +336,58 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
 
   if (!isOpen) return null;
 
+  console.log('🔵 GuestbookModal 렌더링됨:', { modalId: modalId.current, isOpen, step, mode });
+
+  // 모달 닫기 상태 관리
+  const [isClosing, setIsClosing] = useState(false);
+  const closeTimeoutRef = useRef(null);
+
+  // 모달 닫기 핸들러 (중복 실행 방지)
+  const handleClose = (e) => {
+    console.log('🔴 모달 닫기 시도:', { modalId: modalId.current, isLoading, isClosing, event: e?.type });
+    
+    e?.preventDefault();
+    e?.stopPropagation();
+    
+    if (isLoading || isClosing) {
+      console.log('🔴 모달 닫기 차단됨:', { modalId: modalId.current, isLoading, isClosing });
+      return;
+    }
+    
+    console.log('🔴 모달 닫기 실행:', { modalId: modalId.current });
+    setIsClosing(true);
+    
+    // 즉시 닫기 실행
+    onClose();
+    
+    // 300ms 후에 닫기 상태 해제 (다음 열기를 위해)
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+    }
+    closeTimeoutRef.current = setTimeout(() => {
+      setIsClosing(false);
+      console.log('🔴 모달 닫기 상태 해제:', { modalId: modalId.current });
+    }, 300);
+  };
+
+  // 컴포넌트 언마운트 시 타이머 정리
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
-    <div className={styles.overlay} onClick={onClose}>
+    <div 
+      className={styles.overlay} 
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          handleClose(e);
+        }
+      }}
+    >
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
           <h3 className={styles.title}>
@@ -342,7 +395,14 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
             {step === 'verification' && '인증번호 확인'}
             {step === 'message' && (mode === 'edit' ? '방명록 수정하기' : '방명록 남기기')}
           </h3>
-          <button className={styles.closeButton} onClick={onClose}>×</button>
+          <button 
+            className={styles.closeButton} 
+            onClick={handleClose}
+            disabled={isLoading || isClosing}
+            type="button"
+          >
+            ×
+          </button>
         </div>
 
         <div className={styles.content}>
