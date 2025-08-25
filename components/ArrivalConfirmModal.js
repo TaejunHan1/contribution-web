@@ -206,14 +206,10 @@ const ArrivalConfirmModal = ({ isOpen, onClose, onConfirm, eventData }) => {
               </div>
 
               {/* 오른쪽 고정 페이지 - 2-2 (두 번째 장의 오른쪽) */}
-              <div className={styles.fixedRightPage} style={{display: currentPage === 1 ? 'flex' : 'none', zIndex: 1}}>
+              <div className={styles.fixedRightPage} style={{display: currentPage === 1 && !isFlipping ? 'flex' : 'none', zIndex: 25}}>
                 <div className={styles.pageContent}>
-                  {showText && currentPage === 1 && (
-                    <>
-                      <h3>QR 찍고<br />바로 축하하기</h3>
-                      <p>모든 축하가<br />하나의 링크에</p>
-                    </>
-                  )}
+                  <h3 style={{color: '#333', fontSize: '16px', lineHeight: '1.4', marginBottom: '10px'}}>QR 찍고<br />바로 축하하기</h3>
+                  <p style={{color: '#666', fontSize: '14px', lineHeight: '1.5'}}>모든 축하가<br />하나의 링크에</p>
                 </div>
               </div>
 
@@ -236,7 +232,26 @@ const ArrivalConfirmModal = ({ isOpen, onClose, onConfirm, eventData }) => {
                 </div>
                 <div className={styles.back}>
                   <div className={styles.pageContent}>
-                    {/* 빈 페이지 */}
+                    {/* 2-1: 두 번째 장의 왼쪽 */}
+                    {showText && currentPage === 1 && (
+                      <div className={styles.guestNames}>
+                        <div className={styles.nameColumn}>
+                          <span className={styles.guestName}>조현우</span>
+                          <span className={styles.guestName}>신예은</span>
+                          <span className={styles.guestName}>김태현</span>
+                        </div>
+                        <div className={styles.nameColumn}>
+                          <span className={styles.guestName}>이서현</span>
+                          <span className={styles.guestName}>오민석</span>
+                          <span className={styles.guestName}>황지우</span>
+                        </div>
+                        <div className={styles.nameColumn}>
+                          <span className={styles.guestName}>전소영</span>
+                          <span className={styles.guestName}>김도영</span>
+                          <span className={styles.guestName}>나은하</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
