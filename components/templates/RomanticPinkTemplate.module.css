@@ -1677,3 +1677,297 @@
     width: 200px;
   }
 }
+
+/* 축의금 전달 섹션 - 토스 앱 스타일 */
+.giftSection {
+  background-color: #f8f9fa;
+  padding: 32px 20px;
+  margin: 0;
+}
+
+.giftHeader {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.giftTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #191f28;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+
+.giftSubtitle {
+  font-size: 16px;
+  color: #8b95a1;
+  font-weight: 400;
+  margin: 0;
+}
+
+.giftDescription {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.giftDescriptionText {
+  font-size: 15px;
+  color: #4e5968;
+  line-height: 22px;
+  font-weight: 400;
+  margin: 0;
+}
+
+.toggleContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.toggleButtons {
+  display: flex;
+  background-color: #f2f4f6;
+  border-radius: 12px;
+  padding: 4px;
+  position: relative;
+}
+
+.toggleButton {
+  flex: 1;
+  padding: 12px 24px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #8b95a1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  z-index: 1;
+  min-width: 80px;
+}
+
+.toggleButtonActive {
+  background-color: white;
+  color: #191f28;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.toggleButton:hover:not(.toggleButtonActive) {
+  color: #4e5968;
+}
+
+.accountsContainer {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.accountGroup {
+  background-color: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.accountCards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.accountCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #e5e8eb;
+}
+
+.accountCard:hover {
+  background-color: #f2f4f6;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.accountCard:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.accountInfo {
+  flex: 1;
+}
+
+.accountName {
+  font-size: 16px;
+  font-weight: 600;
+  color: #191f28;
+  margin-bottom: 8px;
+}
+
+.bankInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bankName {
+  font-size: 13px;
+  font-weight: 500;
+  color: #8b95a1;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.accountNumber {
+  font-size: 15px;
+  font-weight: 600;
+  color: #4e5968;
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+  letter-spacing: 1px;
+}
+
+.copyButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  background-color: #3182f6;
+  border-radius: 8px;
+  min-width: 60px;
+  height: 36px;
+  transition: background-color 0.2s ease;
+}
+
+.copyButton:hover {
+  background-color: #2563eb;
+}
+
+.copyIcon {
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  letter-spacing: -0.3px;
+}
+
+/* 반응형 디자인 */
+@media (min-width: 768px) {
+  .giftSection {
+    padding: 48px 40px;
+  }
+  
+  .giftTitle {
+    font-size: 28px;
+  }
+  
+  .giftSubtitle {
+    font-size: 18px;
+  }
+  
+  .giftDescriptionText {
+    font-size: 16px;
+    line-height: 24px;
+  }
+  
+  .toggleButton {
+    padding: 14px 28px;
+    font-size: 16px;
+    min-width: 100px;
+  }
+  
+  .accountGroup {
+    padding: 24px;
+  }
+  
+  .accountCard {
+    padding: 24px;
+  }
+  
+  .accountName {
+    font-size: 17px;
+    margin-bottom: 10px;
+  }
+  
+  .bankName {
+    font-size: 14px;
+  }
+  
+  .accountNumber {
+    font-size: 16px;
+  }
+  
+  .copyButton {
+    padding: 10px 20px;
+    height: 40px;
+    min-width: 70px;
+  }
+  
+  .copyIcon {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .giftSection {
+    padding: 24px 16px;
+  }
+  
+  .giftTitle {
+    font-size: 22px;
+  }
+  
+  .giftSubtitle {
+    font-size: 15px;
+  }
+  
+  .giftDescriptionText {
+    font-size: 14px;
+    line-height: 20px;
+  }
+  
+  .toggleButton {
+    padding: 10px 20px;
+    font-size: 14px;
+    min-width: 70px;
+  }
+  
+  .accountGroup {
+    padding: 16px;
+  }
+  
+  .accountCards {
+    gap: 8px;
+  }
+  
+  .accountCard {
+    padding: 16px;
+  }
+  
+  .accountName {
+    font-size: 15px;
+    margin-bottom: 6px;
+  }
+  
+  .bankName {
+    font-size: 12px;
+  }
+  
+  .accountNumber {
+    font-size: 14px;
+  }
+  
+  .copyButton {
+    padding: 6px 12px;
+    height: 32px;
+    min-width: 50px;
+  }
+  
+  .copyIcon {
+    font-size: 12px;
+  }
+}
