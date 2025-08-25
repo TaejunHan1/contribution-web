@@ -1107,10 +1107,8 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
 
       {/* 날짜 섹션 */}
       <section className={styles.dateSection}>
-        <div className={styles.dateBackground}>
-          <div className={styles.animatedDate}>
-            {getEnglishDate()}
-          </div>
+        <div className={styles.animatedDate}>
+          {getEnglishDate()}
         </div>
       </section>
 

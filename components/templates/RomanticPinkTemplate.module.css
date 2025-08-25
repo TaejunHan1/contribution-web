@@ -1,5 +1,5 @@
 /* RomanticPinkTemplate.module.css - 모바일과 동일한 디자인 */
-@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Serif+KR:wght@300;400;500;600&family=Dancing+Script:wght@400;500;600;700&family=Pacifico&family=Sacramento&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Serif+KR:wght@300;400;500;600&family=Dancing+Script:wght@400;500;600;700&family=Pacifico&family=Sacramento&display=optional');
 
 .container {
   min-height: 100vh;

@@ -269,10 +269,21 @@ export default function TemplatePage() {
         <Head>
           <title>청첩장 로딩 중...</title>
         </Head>
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-          <div className="text-center">
-            <div className="loading-spinner mb-4"></div>
-            <p className="text-gray-600">청첩장을 불러오는 중...</p>
+        <div className="min-h-screen flex items-center justify-center" style={{
+          background: 'linear-gradient(135deg, #F8F5F2, #F3EFEC)',
+          fontFamily: 'Noto Serif KR, serif'
+        }}>
+          <div className="text-center px-6">
+            {/* 심플한 로딩 스피너 */}
+            <div className="mb-6 flex justify-center">
+              <div className="w-12 h-12 border-3 border-gray-200 border-t-rose-300 rounded-full animate-spin"></div>
+            </div>
+            
+            {/* 로딩 텍스트 */}
+            <div>
+              <h2 className="text-lg font-medium text-gray-700 mb-2">청첩장을 불러오는 중...</h2>
+              <p className="text-sm text-gray-500">잠시만 기다려주세요</p>
+            </div>
           </div>
         </div>
       </>
@@ -326,7 +337,7 @@ export default function TemplatePage() {
           as="style"
         />
         <link 
-          href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Dancing+Script:wght@400;500;600;700&family=Sacramento&family=Pacifico&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Serif+KR:wght@300;400;500;600&display=swap" 
+          href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Dancing+Script:wght@400;500;600;700&family=Sacramento&family=Pacifico&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Serif+KR:wght@300;400;500;600&display=block" 
           rel="stylesheet"
         />
         
