@@ -180,10 +180,11 @@ const ArrivalConfirmModal = ({ isOpen, onClose, onConfirm, eventData }) => {
                 </div>
               </div>
 
-              {/* 왼쪽 고정 페이지 - 1-1 (첫 번째 장의 왼쪽) */}
-              <div className={styles.fixedLeftPage} style={{display: currentPage === 0 ? 'flex' : 'none', zIndex: currentPage === 0 ? 2 : 0}}>
+              {/* 왼쪽 고정 페이지 - 페이지에 따라 다른 내용 표시 */}
+              <div className={styles.fixedLeftPage} style={{zIndex: 2}}>
                 <div className={styles.pageContent}>
-                  {showText && (
+                  {/* currentPage === 0일 때: 1-1 (첫 번째 장의 왼쪽) */}
+                  {showText && currentPage === 0 && (
                     <div className={styles.guestNames}>
                       <div className={styles.nameColumn}>
                         <span className={styles.guestName}>김민수</span>
@@ -202,6 +203,27 @@ const ArrivalConfirmModal = ({ isOpen, onClose, onConfirm, eventData }) => {
                       </div>
                     </div>
                   )}
+                  
+                  {/* currentPage === 1일 때: 2-1 (두 번째 장의 왼쪽) */}
+                  {showText && currentPage === 1 && (
+                    <>
+                      <h3>특별한 날의<br />특별한 기록</h3>
+                      <p className={styles.pageDescription}>
+                        여러분의 따뜻한 마음이<br />
+                        영원히 기억될 거예요
+                      </p>
+                      <div className={styles.messagePreview}>
+                        <div className={styles.previewItem}>
+                          <span className={styles.previewQuote}>"</span>
+                          <p>두 분의 앞날에<br />행복만 가득하길</p>
+                        </div>
+                        <div className={styles.previewItem}>
+                          <span className={styles.previewQuote}>"</span>
+                          <p>아름다운 사랑<br />영원하기를</p>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -210,8 +232,28 @@ const ArrivalConfirmModal = ({ isOpen, onClose, onConfirm, eventData }) => {
                 <div className={styles.pageContent}>
                   {showText && currentPage === 1 && (
                     <>
-                      <h3>QR 찍고<br />바로 축하하기</h3>
-                      <p>모든 축하가<br />하나의 링크에</p>
+                      <h3>스마트한<br />축하 방법</h3>
+                      <p className={styles.pageDescription}>
+                        QR 코드 하나로<br />
+                        모든 축하를 전달하세요
+                      </p>
+                      <div className={styles.featureList}>
+                        <div className={styles.featureItem}>
+                          <span className={styles.featureIcon}>📸</span>
+                          <span>QR 스캔</span>
+                        </div>
+                        <div className={styles.featureItem}>
+                          <span className={styles.featureIcon}>✍️</span>
+                          <span>메시지 작성</span>
+                        </div>
+                        <div className={styles.featureItem}>
+                          <span className={styles.featureIcon}>💐</span>
+                          <span>축의금 전달</span>
+                        </div>
+                      </div>
+                      <div className={styles.bottomMessage}>
+                        <p>종이 없이도<br />마음을 전하세요</p>
+                      </div>
                     </>
                   )}
                 </div>
@@ -219,24 +261,59 @@ const ArrivalConfirmModal = ({ isOpen, onClose, onConfirm, eventData }) => {
 
               {/* 연속으로 넘어가는 여러 페이지들 - 후루룩 효과! */}
               
-              {/* 페이지 1 */}
+              {/* 페이지 1 - 1-2 (첫 번째 장의 오른쪽) */}
               <div 
                 className={`${styles.page} ${currentPage >= 1 ? styles.flipped : ''}`}
                 style={{ zIndex: 15 }}
               >
                 <div className={styles.front}>
                   <div className={styles.pageContent}>
-                    {showText && (
+                    {showText && currentPage === 0 && (
                       <>
-                        <h3>방명록,<br />이제 간편하게</h3>
-                        <p>종이와 펜은 이제 안녕</p>
+                        <h3>디지털 방명록</h3>
+                        <p className={styles.pageDescription}>
+                          스마트폰으로 간편하게<br />
+                          축하 메시지를 남겨주세요
+                        </p>
+                        <div className={styles.featureList}>
+                          <div className={styles.featureItem}>
+                            <span className={styles.featureIcon}>📱</span>
+                            <span>모바일로 간편하게</span>
+                          </div>
+                          <div className={styles.featureItem}>
+                            <span className={styles.featureIcon}>💌</span>
+                            <span>마음 담은 메시지</span>
+                          </div>
+                          <div className={styles.featureItem}>
+                            <span className={styles.featureIcon}>🎁</span>
+                            <span>축의금도 함께</span>
+                          </div>
+                        </div>
                       </>
                     )}
                   </div>
                 </div>
                 <div className={styles.back}>
                   <div className={styles.pageContent}>
-                    {/* 빈 페이지 */}
+                    {showText && currentPage === 1 && (
+                      <div className={styles.guestNames}>
+                        <div className={styles.nameColumn}>
+                          <span className={styles.guestName}>송민정</span>
+                          <span className={styles.guestName}>류승호</span>
+                          <span className={styles.guestName}>백서윤</span>
+                        </div>
+                        <div className={styles.nameColumn}>
+                          <span className={styles.guestName}>남궁진</span>
+                          <span className={styles.guestName}>하은주</span>
+                          <span className={styles.guestName}>도현서</span>
+                        </div>
+                        <div className={styles.nameColumn}>
+                          <span className={styles.guestName}>문재원</span>
+                          <span className={styles.guestName}>서유진</span>
+                          <span className={styles.guestName}>안시현</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
