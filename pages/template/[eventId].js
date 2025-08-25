@@ -317,6 +317,19 @@ export default function TemplatePage() {
         <meta name="description" content={`${event.groom_name} & ${event.bride_name}의 결혼식에 초대합니다`} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         
+        {/* 웹폰트 프리로드 */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link 
+          rel="preload" 
+          href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Dancing+Script:wght@400;500;600;700&family=Sacramento&family=Pacifico&display=swap" 
+          as="style"
+        />
+        <link 
+          href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Dancing+Script:wght@400;500;600;700&family=Sacramento&family=Pacifico&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Serif+KR:wght@300;400;500;600&display=swap" 
+          rel="stylesheet"
+        />
+        
         {/* 소셜 미디어 메타 태그 */}
         <meta property="og:title" content={`${event.groom_name} & ${event.bride_name}의 결혼식`} />
         <meta property="og:description" content={`${new Date(event.event_date).toLocaleDateString('ko-KR')} ${event.ceremony_time || ''}`} />

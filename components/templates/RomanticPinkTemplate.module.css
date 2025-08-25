@@ -1,5 +1,5 @@
 /* RomanticPinkTemplate.module.css - 모바일과 동일한 디자인 */
-@import url('https://fonts.googleapis.com/css2?family=Snell+Roundhand&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Serif+KR:wght@300;400;500;600&family=Dancing+Script:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Serif+KR:wght@300;400;500;600&family=Dancing+Script:wght@400;500;600;700&family=Pacifico&family=Sacramento&display=swap');
 
 .container {
   min-height: 100vh;
@@ -29,11 +29,13 @@
 }
 
 .animatedSvgText {
-  font-family: 'Snell Roundhand', cursive;
+  font-family: 'Great Vibes', 'Sacramento', 'Dancing Script', cursive;
   font-size: 48px;
   color: white;
-  font-style: italic;
+  font-style: normal;
+  font-weight: 400;
   animation: textAppear 1.2s ease-out;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
 @keyframes textAppear {
@@ -119,11 +121,13 @@
 }
 
 .loveText {
-  font-family: 'Dancing Script', cursive;
+  font-family: 'Great Vibes', 'Dancing Script', 'Pacifico', cursive;
   font-size: 64px;
   color: #9B8D82;
   margin: 15px 0 20px 0;
   font-weight: 400;
+  font-style: normal;
+  text-shadow: 1px 1px 2px rgba(155, 141, 130, 0.2);
 }
 
 .mainImageContainer {
@@ -240,9 +244,9 @@
 }
 
 .englishNames {
-  font-family: 'Dancing Script', cursive;
+  font-family: 'Great Vibes', 'Dancing Script', 'Pacifico', cursive;
   font-size: 42px;
-  font-weight: 600;
+  font-weight: 400;
   margin-bottom: 20px;
   display: flex;
   align-items: center;
@@ -317,8 +321,9 @@
 }
 
 .messageText {
-  font-family: 'Dancing Script', cursive;
+  font-family: 'Great Vibes', 'Dancing Script', 'Pacifico', cursive;
   font-size: 24px;
+  font-weight: 400;
   font-weight: 500;
   font-style: italic;
   color: #ffb6c1;
@@ -964,23 +969,35 @@
 
 /* 날짜 섹션 */
 .dateSection {
-  padding: 80px 0;
+  padding: 60px 20px;
   background: linear-gradient(135deg, #9B8D82, #C2B0A2);
   text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 
 .dateBackground {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 80px;
+  min-height: 80px;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 40px;
+  backdrop-filter: blur(10px);
+  max-width: 90%;
+  margin: 0 auto;
 }
 
 .animatedDate {
-  font-family: 'Snell Roundhand', cursive;
-  font-size: 48px;
+  font-family: 'Great Vibes', 'Sacramento', 'Dancing Script', 'Playfair Display', cursive;
+  font-size: 36px;
   color: white;
-  font-style: italic;
+  font-style: normal;
+  font-weight: 400;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  letter-spacing: 1px;
+  line-height: 1.2;
 }
 
 /* Wedding Day 섹션 */
