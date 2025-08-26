@@ -1,5 +1,6 @@
 // pages/index.js - 정담 서비스 소개 랜딩 페이지
 import Head from 'next/head';
+import Script from 'next/script';
 import { useRouter } from 'next/router';
 import { useState, useEffect, useRef } from 'react';
 
@@ -1085,12 +1086,42 @@ function BookAnimation() {
 export default function HomePage() {
   const router = useRouter();
   const [eventId, setEventId] = useState('');
+  const [iframeError, setIframeError] = useState(false);
+  const [screenshotUrl, setScreenshotUrl] = useState(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   const handleDirectAccess = () => {
     if (eventId.trim()) {
       router.push(`/contribute/${eventId.trim()}`);
     }
   };
+
+  // iframe 로드 실패 시 스크린샷 불러오기
+  const handleIframeError = async () => {
+    try {
+      const templateUrl = 'https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic';
+      const response = await fetch(`/api/screenshot?url=${encodeURIComponent(templateUrl)}`);
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const screenshotUrl = URL.createObjectURL(blob);
+        setScreenshotUrl(screenshotUrl);
+        setIframeError(true);
+      }
+    } catch (error) {
+      console.error('Screenshot fallback failed:', error);
+      setIframeError(true);
+    }
+  };
+
+  useEffect(() => {
+    setIsMounted(true);
+    setIframeError(true);
+    
+    // 실제 템플릿의 정적 미리보기 이미지 사용
+    // 또는 간단한 HTML 템플릿을 직접 생성
+    setScreenshotUrl(null);
+  }, []);
 
   return (
     <>
@@ -1102,6 +1133,15 @@ export default function HomePage() {
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
+
+      {/* X-Frame-Bypass 스크립트 - Next.js Script 사용 */}
+      <Script
+        src="https://unpkg.com/x-frame-bypass"
+        strategy="lazyOnload"
+        onLoad={() => {
+          console.log('X-Frame-Bypass loaded');
+        }}
+      />
 
       <div className="min-h-screen bg-white">
         {/* 헤더 */}
@@ -1211,71 +1251,191 @@ export default function HomePage() {
                       }}
                     ></div>
 
-                    {/* 화면 내용 - 템플릿 목업 */}
+                    {/* 화면 내용 - 실제 템플릿 모양의 미리보기 */}
                     <div 
-                      className="absolute inset-0 bg-gradient-to-br from-pink-50 to-rose-100 overflow-hidden"
+                      className="absolute inset-0 overflow-hidden cursor-pointer"
                       style={{ 
                         marginTop: '35px',
-                        borderRadius: '0 0 32px 32px'
+                        borderRadius: '0 0 32px 32px',
+                        backgroundColor: '#fff'
                       }}
+                      onClick={() => window.open('https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic', '_blank')}
                     >
-                      <div className="p-6 text-center h-full flex flex-col justify-center">
-                        <div className="text-3xl mb-4">💒</div>
-                        <h3 className="font-bold text-gray-900 mb-2 text-lg">김민호 ♥ 이지은</h3>
-                        <p className="text-sm text-gray-600 mb-6">2025년 3월 15일 (토) 오후 2시</p>
-                        
-                        {/* QR 코드 영역 */}
-                        <div className="bg-white rounded-2xl p-4 mb-6 shadow-lg mx-auto" style={{ width: '140px' }}>
-                          <div className="w-20 h-20 bg-gray-800 rounded-lg mx-auto mb-2 flex items-center justify-center">
-                            <div className="w-16 h-16 bg-white rounded grid grid-cols-4 gap-px p-1">
-                              {/* 고정 패턴으로 변경하여 Hydration 에러 해결 */}
-                              <div className="bg-black rounded-sm"></div>
-                              <div className="bg-white rounded-sm"></div>
-                              <div className="bg-black rounded-sm"></div>
-                              <div className="bg-white rounded-sm"></div>
-                              <div className="bg-white rounded-sm"></div>
-                              <div className="bg-black rounded-sm"></div>
-                              <div className="bg-white rounded-sm"></div>
-                              <div className="bg-black rounded-sm"></div>
-                              <div className="bg-black rounded-sm"></div>
-                              <div className="bg-white rounded-sm"></div>
-                              <div className="bg-black rounded-sm"></div>
-                              <div className="bg-white rounded-sm"></div>
-                              <div className="bg-white rounded-sm"></div>
-                              <div className="bg-black rounded-sm"></div>
-                              <div className="bg-white rounded-sm"></div>
-                              <div className="bg-black rounded-sm"></div>
-                            </div>
-                          </div>
-                          <p className="text-xs text-gray-500 font-medium">QR 스캔하여 참여</p>
+                      {/* 실제 템플릿과 유사한 디자인 */}
+                      <div className="w-full h-full" style={{ 
+                        background: 'linear-gradient(135deg, #fdf2f8 0%, #fce7f3 50%, #fbcfe8 100%)',
+                        transform: 'scale(0.9)',
+                        transformOrigin: 'top center'
+                      }}>
+                        {/* 상단 장식 */}
+                        <div style={{
+                          height: '60px',
+                          background: 'linear-gradient(to bottom, rgba(255,255,255,0.8), transparent)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '10px',
+                          color: '#f472b6'
+                        }}>
+                          ✿ WEDDING INVITATION ✿
                         </div>
 
-                        {/* 액션 버튼들 */}
-                        <div className="space-y-3">
-                          <div className="bg-pink-500 text-white py-3 px-6 rounded-full text-sm font-semibold shadow-md">
-                            💝 부조금 기록하기
+                        {/* 메인 컨텐츠 */}
+                        <div style={{
+                          padding: '15px',
+                          textAlign: 'center'
+                        }}>
+                          {/* 이모지와 제목 */}
+                          <div style={{ fontSize: '28px', marginBottom: '10px' }}>💒</div>
+                          
+                          {/* 신랑신부 이름 */}
+                          <div style={{
+                            fontSize: '16px',
+                            fontWeight: 'bold',
+                            color: '#1f2937',
+                            marginBottom: '5px'
+                          }}>
+                            김민호 ♥ 이지은
                           </div>
-                          <div className="bg-blue-500 text-white py-3 px-6 rounded-full text-sm font-semibold shadow-md">
-                            💌 축하메시지 남기기
+                          
+                          {/* 날짜 */}
+                          <div style={{
+                            fontSize: '11px',
+                            color: '#6b7280',
+                            marginBottom: '15px'
+                          }}>
+                            2025년 3월 15일 토요일 오후 2시<br/>
+                            그랜드하얏트 서울
                           </div>
+                          
+                          {/* 사진 영역 */}
+                          <div style={{
+                            width: '120px',
+                            height: '80px',
+                            background: 'linear-gradient(45deg, #fbbf24, #f472b6)',
+                            borderRadius: '10px',
+                            margin: '0 auto 15px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '24px',
+                            opacity: 0.8
+                          }}>
+                            👰🤵
+                          </div>
+
+                          {/* 인사말 */}
+                          <div style={{
+                            fontSize: '10px',
+                            color: '#4b5563',
+                            lineHeight: '1.4',
+                            marginBottom: '15px',
+                            padding: '0 10px'
+                          }}>
+                            서로가 마주보며 다져온 사랑을<br/>
+                            이제 함께 한 곳을 바라보며<br/>
+                            걸어갈 수 있는 큰 사랑으로<br/>
+                            키우고자 합니다
+                          </div>
+                          
+                          {/* QR 코드 영역 */}
+                          <div style={{
+                            background: 'white',
+                            borderRadius: '12px',
+                            padding: '10px',
+                            boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+                            width: '110px',
+                            margin: '0 auto 15px'
+                          }}>
+                            <div style={{
+                              width: '60px',
+                              height: '60px',
+                              background: '#1f2937',
+                              borderRadius: '8px',
+                              margin: '0 auto 5px',
+                              position: 'relative',
+                              overflow: 'hidden'
+                            }}>
+                              <div style={{
+                                position: 'absolute',
+                                top: '5px',
+                                left: '5px',
+                                right: '5px',
+                                bottom: '5px',
+                                background: 'white',
+                                borderRadius: '4px',
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(3, 1fr)',
+                                gap: '2px',
+                                padding: '4px'
+                              }}>
+                                <div style={{ background: '#1f2937', borderRadius: '1px' }}></div>
+                                <div style={{ background: 'white', borderRadius: '1px' }}></div>
+                                <div style={{ background: '#1f2937', borderRadius: '1px' }}></div>
+                                <div style={{ background: 'white', borderRadius: '1px' }}></div>
+                                <div style={{ background: '#1f2937', borderRadius: '1px' }}></div>
+                                <div style={{ background: 'white', borderRadius: '1px' }}></div>
+                                <div style={{ background: '#1f2937', borderRadius: '1px' }}></div>
+                                <div style={{ background: 'white', borderRadius: '1px' }}></div>
+                                <div style={{ background: '#1f2937', borderRadius: '1px' }}></div>
+                              </div>
+                            </div>
+                            <div style={{ fontSize: '9px', color: '#6b7280' }}>
+                              QR 스캔하여 축하하기
+                            </div>
+                          </div>
+
+                          {/* 버튼들 */}
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '0 20px' }}>
+                            <div style={{
+                              background: 'linear-gradient(135deg, #f472b6, #ec4899)',
+                              color: 'white',
+                              padding: '8px 16px',
+                              borderRadius: '20px',
+                              fontSize: '11px',
+                              fontWeight: '600',
+                              boxShadow: '0 2px 8px rgba(236, 72, 153, 0.3)'
+                            }}>
+                              💝 축하 마음 전하기
+                            </div>
+                            <div style={{
+                              background: 'linear-gradient(135deg, #60a5fa, #3b82f6)',
+                              color: 'white',
+                              padding: '8px 16px',
+                              borderRadius: '20px',
+                              fontSize: '11px',
+                              fontWeight: '600',
+                              boxShadow: '0 2px 8px rgba(59, 130, 246, 0.3)'
+                            }}>
+                              💌 축하 메시지 남기기
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* 하단 장식 */}
+                        <div style={{
+                          position: 'absolute',
+                          bottom: '10px',
+                          left: 0,
+                          right: 0,
+                          textAlign: 'center',
+                          fontSize: '9px',
+                          color: '#f472b6',
+                          opacity: 0.6
+                        }}>
+                          Made with ❤️ 정담
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
                 
-                <div className="absolute -top-3 -right-3 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse shadow-lg z-20">
-                  DEMO
+                <div className="absolute -top-3 -right-3 bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse shadow-lg z-20">
+                  LIVE
                 </div>
                 <div className="absolute -bottom-3 -left-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg z-20">
-                  👆 템플릿 체험
+                  🎯 실제 템플릿
                 </div>
-                
-                {/* 클릭 이벤트 */}
-                <div 
-                  className="absolute inset-0 cursor-pointer"
-                  onClick={() => window.open('https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic', '_blank')}
-                ></div>
               </div>
             </div>
           </div>
