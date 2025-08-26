@@ -1,7 +1,1086 @@
 // pages/index.js - 정담 서비스 소개 랜딩 페이지
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+
+// 책자 애니메이션이 끝난 후 연필로 방명록 이름을 쓰는 애니메이션
+function HandwritingAnimation() {
+  const [showBook, setShowBook] = useState(false);
+  const [coverOpen, setCoverOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [isFlipping, setIsFlipping] = useState(false);
+  const [showText, setShowText] = useState(false);
+  const [startWriting, setStartWriting] = useState(false);
+  const [currentPhase, setCurrentPhase] = useState(0); // 0: 깔끔한 글씨, 1: 흘려쓴 글씨
+  const [isWriting, setIsWriting] = useState(false);
+  const [currentNameIndex, setCurrentNameIndex] = useState(0);
+  const [isWritingComplete, setIsWritingComplete] = useState(false);
+  const timersRef = useRef([]);
+
+  const addTimer = (timer) => {
+    timersRef.current.push(timer);
+  };
+
+  const clearAllTimers = () => {
+    timersRef.current.forEach(timer => clearTimeout(timer));
+    timersRef.current = [];
+  };
+
+  const startContinuousFlip = () => {
+    setIsFlipping(true);
+    
+    // 더 자연스럽고 빠른 연속 페이지 플립 효과 - 후루룩!
+    const flipSequence = [1, 2, 3, 4, 5, 6, 7, 8];
+    
+    flipSequence.forEach((pageNum, index) => {
+      const timer = setTimeout(() => {
+        setCurrentPage(pageNum);
+        
+        // 마지막 페이지가 넘어간 후
+        if (index === flipSequence.length - 1) {
+          const finalTimer = setTimeout(() => {
+            setCurrentPage(0); // 첫 페이지로 돌아가기
+            setIsFlipping(false);
+            setShowText(true);
+            
+            // 책자 애니메이션이 끝나면 연필로 쓰기 시작
+            setTimeout(() => {
+              setStartWriting(true);
+              startHandwriting();
+            }, 1000);
+          }, 300);
+          addTimer(finalTimer);
+        }
+      }, index * 200); // 200ms 간격으로 빠르게 넘김 (후루룩!)
+      addTimer(timer);
+    });
+  };
+
+  const names = [
+    { text: '김민수', isClean: true, position: { col: 0, row: 0 } },
+    { text: '이종호', isClean: false, position: { col: 0, row: 1 } }, // 잘못 쓴 글씨
+    { text: '박정우', isClean: true, position: { col: 0, row: 2 } },
+    { text: '최수현', isClean: false, position: { col: 1, row: 0 } }, // 잘못 쓴 글씨
+    { text: '정현민', isClean: true, position: { col: 1, row: 1 } },
+    { text: '한소희', isClean: true, position: { col: 1, row: 2 } }
+  ];
+
+  const startHandwriting = () => {
+    let nameIndex = 0;
+    
+    const writeNextName = () => {
+      if (nameIndex >= names.length) {
+        // 모든 이름을 다 썼으면 잠시 후 다시 시작
+        setIsWritingComplete(true);
+        setTimeout(() => {
+          setCurrentNameIndex(0);
+          setIsWritingComplete(false);
+          nameIndex = 0;
+          writeNextName();
+        }, 3000);
+        return;
+      }
+      
+      const currentName = names[nameIndex];
+      setCurrentNameIndex(nameIndex);
+      setCurrentPhase(currentName.isClean ? 0 : 1);
+      setIsWriting(true);
+      
+      // 이름 쓰기 시간
+      setTimeout(() => {
+        setIsWriting(false);
+        nameIndex++;
+        
+        setTimeout(() => {
+          writeNextName();
+        }, 500);
+      }, currentName.isClean ? 1200 : 1800);
+    };
+    
+    writeNextName();
+  };
+
+  useEffect(() => {
+    // 모달이 열리면 잠시 후 책을 페이드인
+    const bookTimer = setTimeout(() => {
+      setShowBook(true);
+    }, 500);
+    addTimer(bookTimer);
+    
+    // 책이 나타난 후 덮개 열기
+    const coverTimer = setTimeout(() => {
+      setCoverOpen(true);
+    }, 1200);
+    addTimer(coverTimer);
+    
+    // 덮개가 열린 후 잠깐 기다렸다가 페이지 넘김 시작
+    const flipTimer = setTimeout(() => {
+      startContinuousFlip();
+    }, 2000);
+    addTimer(flipTimer);
+    
+    return () => {
+      clearAllTimers();
+    };
+  }, []);
+
+  return (
+    <div className="flex justify-center mb-4">
+      {/* 책자 애니메이션 */}
+      <div 
+        className={`transition-all duration-600 ${showBook ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}
+        style={{ 
+          margin: '15px 0 20px 0',
+          position: 'relative'
+        }}
+      >
+        <div style={{
+          width: '280px',
+          height: '175px',
+          position: 'relative',
+          perspective: '1500px',
+          margin: '0 auto',
+          background: '#f5f5f5',
+          borderRadius: '4px',
+          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3), 0 0 0 1px #8b2020',
+          transformStyle: 'preserve-3d'
+        }}>
+          
+          {/* 책 두께감 표현 */}
+          <div style={{
+            position: 'absolute',
+            bottom: '-3px',
+            left: 0,
+            right: 0,
+            height: '3px',
+            background: 'linear-gradient(90deg, #8b2020 0%, #c53030 50%, #8b2020 100%)',
+            borderRadius: '0 0 4px 4px',
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
+          }} />
+
+          {/* 책 등(spine) 표현 */}
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: '-2px',
+            width: '2px',
+            height: '100%',
+            background: 'linear-gradient(180deg, #8b2020 0%, #c53030 50%, #8b2020 100%)',
+            borderRadius: '2px 0 0 2px',
+            boxShadow: '-1px 0 3px rgba(0, 0, 0, 0.2)'
+          }} />
+
+          {/* 책 덮개 */}
+          <div style={{
+            width: '100%',
+            height: '100%',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            transformOrigin: 'left center',
+            transformStyle: 'preserve-3d',
+            transition: 'transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1)',
+            zIndex: 20,
+            transform: coverOpen ? 'rotateY(-150deg)' : 'rotateY(0deg)'
+          }}>
+            {/* 덮개 앞면 */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              backfaceVisibility: 'hidden',
+              borderRadius: '4px',
+              background: 'linear-gradient(135deg, #c53030 0%, #9b2c2c 100%)',
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3), inset 0 2px 0 rgba(255, 255, 255, 0.1)',
+              border: '2px solid #8b2020',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              {/* 책 테두리 금색 장식 */}
+              <div style={{
+                position: 'absolute',
+                top: '10px',
+                left: '10px',
+                right: '10px',
+                bottom: '10px',
+                border: '2px solid #d4af37',
+                borderRadius: '4px',
+                opacity: 0.6
+              }} />
+
+              <div style={{
+                textAlign: 'center',
+                color: '#d4af37',
+                padding: '20px',
+                position: 'relative',
+                zIndex: 2
+              }}>
+                <div style={{
+                  fontSize: '32px',
+                  marginBottom: '10px',
+                  filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4))'
+                }}>💒</div>
+                <div style={{
+                  fontSize: '20px',
+                  fontWeight: '700',
+                  margin: '0 0 5px',
+                  textShadow: '0 2px 4px rgba(0, 0, 0, 0.4)',
+                  fontFamily: 'Georgia, serif'
+                }}>Wedding</div>
+                <div style={{
+                  fontSize: '12px',
+                  margin: 0,
+                  fontStyle: 'italic',
+                  color: '#e5c973',
+                  fontFamily: 'Georgia, serif'
+                }}>Guest Book</div>
+                <div style={{
+                  fontSize: '10px',
+                  color: '#d4af37',
+                  letterSpacing: '4px',
+                  marginTop: '15px'
+                }}>◆ ◇ ◆</div>
+              </div>
+            </div>
+            
+            {/* 덮개 뒷면 */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              backfaceVisibility: 'hidden',
+              transform: 'rotateY(180deg)',
+              background: '#f8f8f8',
+              border: '1px solid #e2e8f0',
+              borderRadius: '4px'
+            }} />
+          </div>
+
+          {/* 왼쪽 고정 페이지 - 빈 페이지에서 시작 */}
+          <div style={{
+            width: '50%',
+            height: '100%',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            zIndex: currentPage === 0 ? 2 : 0,
+            background: '#ffffff',
+            border: '1px solid #e2e8f0',
+            borderRadius: '4px 0 0 4px',
+            padding: '20px',
+            boxSizing: 'border-box',
+            display: currentPage === 0 ? 'flex' : 'none',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <div style={{
+              textAlign: 'center',
+              color: '#2d3748',
+              lineHeight: '1.4',
+              width: '100%'
+            }}>
+              {/* 고정된 6개 이름 표시 */}
+              {startWriting && (
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  gap: '25px',
+                  marginTop: '10px',
+                  position: 'relative',
+                  minHeight: '120px'
+                }}>
+                  {/* 2개 열 */}
+                  {[0, 1].map(colIndex => (
+                    <div 
+                      key={colIndex}
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '10px'
+                      }}
+                    >
+                      {/* 각 열에 3개 이름 */}
+                      {names
+                        .filter(name => name.position.col === colIndex)
+                        .map((name, rowIndex) => {
+                          const nameIndex = names.findIndex(n => n === name);
+                          const isShown = nameIndex <= currentNameIndex || isWritingComplete;
+                          return (
+                            <span
+                              key={nameIndex}
+                              style={{
+                                writingMode: 'vertical-rl',
+                                textOrientation: 'mixed',
+                                fontSize: '13px',
+                                fontWeight: name.isClean ? '500' : '400',
+                                color: name.isClean ? '#2d3748' : '#6b7280',
+                                minHeight: '42px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                transform: !name.isClean ? 'rotate(-2deg) skew(-3deg)' : 'none',
+                                filter: !name.isClean ? 'blur(1px)' : 'none',
+                                opacity: isShown ? 0.9 : 0,
+                                transition: 'opacity 0.5s ease-in',
+                                textAlign: 'center',
+                                lineHeight: '1.2'
+                              }}
+                            >
+                              {name.isClean 
+                                ? name.text 
+                                : name.text
+                                    .replace('종', 'ㅗㅇ')
+                                    .replace('수', 'ㅅㅜ')
+                              }
+                            </span>
+                          );
+                        })}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* 연필 애니메이션 - 간단하게 */}
+              {isWriting && currentNameIndex < names.length && (
+                <div 
+                  className="absolute pointer-events-none z-20 transition-all duration-300"
+                  style={{
+                    fontSize: '14px',
+                    left: `${30 + names[currentNameIndex].position.col * 50}px`,
+                    top: `${35 + names[currentNameIndex].position.row * 52}px`,
+                    transform: `rotate(${currentPhase === 0 ? 45 : 35}deg)`,
+                    filter: 'drop-shadow(1px 1px 3px rgba(0,0,0,0.4))',
+                    animation: currentPhase === 0 ? 'pencilWriteClean 1.2s ease-out' : 'pencilWriteMessy 1.8s ease-in-out'
+                  }}
+                >
+                  ✏️
+                </div>
+              )}
+              
+            </div>
+          </div>
+
+          {/* 페이지들 (기존 애니메이션) */}
+          <div style={{
+            width: '50%',
+            height: '100%',
+            position: 'absolute',
+            top: 0,
+            left: '50%',
+            transformOrigin: 'left center',
+            transition: 'transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1)',
+            transformStyle: 'preserve-3d',
+            zIndex: 15,
+            transform: currentPage >= 1 ? 'rotateY(-180deg)' : 'rotateY(0deg)'
+          }}>
+            {/* 페이지 앞면 */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              background: '#ffffff',
+              border: '1px solid #e2e8f0',
+              backfaceVisibility: 'hidden',
+              borderRadius: '0 4px 4px 0',
+              padding: '20px',
+              boxSizing: 'border-box',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <div style={{
+                textAlign: 'center',
+                color: '#2d3748',
+                lineHeight: '1.4'
+              }}>
+                {showText && (
+                  <>
+                    <h3 style={{
+                      fontSize: '16px',
+                      fontWeight: '700',
+                      margin: '0 0 10px',
+                      color: '#1a202c'
+                    }}>방명록,<br />이제 간편하게</h3>
+                    <p style={{
+                      fontSize: '13px',
+                      color: '#4a5568',
+                      margin: 0
+                    }}>종이와 펜은 이제 안녕</p>
+                  </>
+                )}
+              </div>
+            </div>
+            {/* 페이지 뒷면 */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              background: '#fafafa',
+              border: '1px solid #e2e8f0',
+              backfaceVisibility: 'hidden',
+              transform: 'rotateY(180deg)',
+              borderRadius: '4px 0 0 4px'
+            }} />
+          </div>
+
+          {/* 추가 페이지들 (플립 효과용) */}
+          {[2, 3, 4, 5, 6, 7, 8].map(pageNum => (
+            <div key={pageNum} style={{
+              width: '50%',
+              height: '100%',
+              position: 'absolute',
+              top: 0,
+              left: '50%',
+              transformOrigin: 'left center',
+              transition: 'transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1)',
+              transformStyle: 'preserve-3d',
+              zIndex: 15 - pageNum,
+              transform: currentPage >= pageNum ? 'rotateY(-180deg)' : 'rotateY(0deg)'
+            }}>
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                background: '#ffffff',
+                border: '1px solid #e2e8f0',
+                backfaceVisibility: 'hidden',
+                borderRadius: '0 4px 4px 0'
+              }} />
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                background: '#fafafa',
+                border: '1px solid #e2e8f0',
+                backfaceVisibility: 'hidden',
+                transform: 'rotateY(180deg)',
+                borderRadius: '4px 0 0 4px'
+              }} />
+            </div>
+          ))}
+        </div>
+
+        {/* 상태 표시 */}
+        {startWriting && (
+          <div style={{ textAlign: 'center', marginTop: '10px' }}>
+            <div style={{
+              fontSize: '12px',
+              fontWeight: '600',
+              color: currentPhase === 0 ? '#2563eb' : '#dc2626'
+            }}>
+              {currentPhase === 0 ? '읽기 쉬운 글씨 ✓' : '읽기 어려운 글씨 ⚠️'}
+            </div>
+          </div>
+        )}
+
+        <style jsx>{`
+          /* 깔끔한 글씨를 쓸 때 연필 움직임 */
+          @keyframes pencilWriteClean {
+            0% { 
+              transform: rotate(45deg) translateY(-2px);
+            }
+            50% { 
+              transform: rotate(50deg) translateY(2px);
+            }
+            100% { 
+              transform: rotate(45deg) translateY(0px);
+            }
+          }
+
+          /* 흘려쓴 글씨를 쓸 때 연필 움직임 (더 불안정) */
+          @keyframes pencilWriteMessy {
+            0% { 
+              transform: rotate(35deg) translateY(-1px) translateX(-1px);
+            }
+            25% { 
+              transform: rotate(55deg) translateY(3px) translateX(2px);
+            }
+            50% { 
+              transform: rotate(30deg) translateY(-2px) translateX(-2px);
+            }
+            75% { 
+              transform: rotate(50deg) translateY(2px) translateX(1px);
+            }
+            100% { 
+              transform: rotate(40deg) translateY(1px) translateX(0px);
+            }
+          }
+
+          /* 텍스트가 나타나는 효과 */
+          @keyframes fadeInText {
+            from { 
+              opacity: 0;
+              transform: scale(0.8);
+            }
+            to { 
+              opacity: 1;
+              transform: scale(1);
+            }
+          }
+
+          /* 이름 나타나는 효과 */
+          @keyframes fadeInName {
+            from { 
+              opacity: 0;
+              transform: translateY(5px);
+            }
+            to { 
+              opacity: 0.9;
+              transform: translateY(0);
+            }
+          }
+        `}</style>
+      </div>
+    </div>
+  );
+}
+
+// ArrivalConfirmModal의 진짜 책자 애니메이션
+function BookAnimation() {
+  const [showBook, setShowBook] = useState(false);
+  const [coverOpen, setCoverOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [isFlipping, setIsFlipping] = useState(false);
+  const [showText, setShowText] = useState(false);
+  const timersRef = useRef([]);
+
+  const addTimer = (timer) => {
+    timersRef.current.push(timer);
+  };
+
+  const clearAllTimers = () => {
+    timersRef.current.forEach(timer => clearTimeout(timer));
+    timersRef.current = [];
+  };
+
+  const startContinuousFlip = () => {
+    setIsFlipping(true);
+    
+    // 더 자연스럽고 빠른 연속 페이지 플립 효과 - 후루룩!
+    const flipSequence = [1, 2, 3, 4, 5, 6, 7, 8];
+    
+    flipSequence.forEach((pageNum, index) => {
+      const timer = setTimeout(() => {
+        setCurrentPage(pageNum);
+        
+        // 마지막 페이지가 넘어간 후
+        if (index === flipSequence.length - 1) {
+          const finalTimer = setTimeout(() => {
+            setCurrentPage(0); // 첫 페이지로 돌아가기
+            setIsFlipping(false);
+            setShowText(true);
+          }, 300);
+          addTimer(finalTimer);
+        }
+      }, index * 200); // 200ms 간격으로 빠르게 넘김 (후루룩!)
+      addTimer(timer);
+    });
+  };
+
+  useEffect(() => {
+    // 모달이 열리면 잠시 후 책을 페이드인
+    const bookTimer = setTimeout(() => {
+      setShowBook(true);
+    }, 500);
+    addTimer(bookTimer);
+    
+    // 책이 나타난 후 덮개 열기
+    const coverTimer = setTimeout(() => {
+      setCoverOpen(true);
+    }, 1200);
+    addTimer(coverTimer);
+    
+    // 덮개가 열린 후 잠깐 기다렸다가 페이지 넘김 시작
+    const flipTimer = setTimeout(() => {
+      startContinuousFlip();
+    }, 2000);
+    addTimer(flipTimer);
+    
+    return () => {
+      clearAllTimers();
+    };
+  }, []);
+
+  return (
+    <div className="flex justify-center mb-4">
+      {/* 책자 애니메이션 */}
+      <div 
+        className={`transition-all duration-600 ${showBook ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}
+        style={{ 
+          margin: '15px 0 20px 0',
+          position: 'relative'
+        }}
+      >
+        <div style={{
+          width: '280px',
+          height: '175px',
+          position: 'relative',
+          perspective: '1500px',
+          margin: '0 auto',
+          background: '#f5f5f5',
+          borderRadius: '4px',
+          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3), 0 0 0 1px #8b2020',
+          transformStyle: 'preserve-3d'
+        }}>
+          
+          {/* 책 두께감 표현 */}
+          <div style={{
+            position: 'absolute',
+            bottom: '-3px',
+            left: 0,
+            right: 0,
+            height: '3px',
+            background: 'linear-gradient(90deg, #8b2020 0%, #c53030 50%, #8b2020 100%)',
+            borderRadius: '0 0 4px 4px',
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
+          }} />
+
+          {/* 책 등(spine) 표현 */}
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: '-2px',
+            width: '2px',
+            height: '100%',
+            background: 'linear-gradient(180deg, #8b2020 0%, #c53030 50%, #8b2020 100%)',
+            borderRadius: '2px 0 0 2px',
+            boxShadow: '-1px 0 3px rgba(0, 0, 0, 0.2)'
+          }} />
+
+          {/* 책 덮개 */}
+          <div style={{
+            width: '100%',
+            height: '100%',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            transformOrigin: 'left center',
+            transformStyle: 'preserve-3d',
+            transition: 'transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1)',
+            zIndex: 20,
+            transform: coverOpen ? 'rotateY(-150deg)' : 'rotateY(0deg)'
+          }}>
+            {/* 덮개 앞면 */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              backfaceVisibility: 'hidden',
+              borderRadius: '4px',
+              background: 'linear-gradient(135deg, #c53030 0%, #9b2c2c 100%)',
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3), inset 0 2px 0 rgba(255, 255, 255, 0.1), inset 0 -2px 0 rgba(0, 0, 0, 0.3), inset 2px 0 4px rgba(0, 0, 0, 0.2), inset -2px 0 4px rgba(0, 0, 0, 0.2)',
+              border: '2px solid #8b2020',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              {/* 책 테두리 금색 장식 */}
+              <div style={{
+                position: 'absolute',
+                top: '10px',
+                left: '10px',
+                right: '10px',
+                bottom: '10px',
+                border: '2px solid #d4af37',
+                borderRadius: '4px',
+                opacity: 0.6
+              }} />
+              
+              {/* 책 모서리 금색 장식 */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                width: '60px',
+                height: '60px',
+                background: 'linear-gradient(135deg, transparent 40%, #d4af37 40%, #d4af37 60%, transparent 60%)',
+                opacity: 0.3
+              }} />
+
+              <div style={{
+                textAlign: 'center',
+                color: '#d4af37',
+                padding: '20px',
+                position: 'relative',
+                zIndex: 2
+              }}>
+                <div style={{
+                  fontSize: '32px',
+                  marginBottom: '10px',
+                  filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4))'
+                }}>💒</div>
+                <div style={{
+                  fontSize: '20px',
+                  fontWeight: '700',
+                  margin: '0 0 5px',
+                  textShadow: '0 2px 4px rgba(0, 0, 0, 0.4), 0 0 10px rgba(212, 175, 55, 0.3)',
+                  color: '#d4af37',
+                  fontFamily: 'Georgia, serif'
+                }}>Wedding</div>
+                <div style={{
+                  fontSize: '12px',
+                  margin: 0,
+                  fontStyle: 'italic',
+                  color: '#e5c973',
+                  textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+                  fontFamily: 'Georgia, serif'
+                }}>Guest Book</div>
+                <div style={{
+                  fontSize: '10px',
+                  color: '#d4af37',
+                  letterSpacing: '4px',
+                  textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+                  marginTop: '15px'
+                }}>◆ ◇ ◆</div>
+              </div>
+            </div>
+            
+            {/* 덮개 뒷면 */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              backfaceVisibility: 'hidden',
+              transform: 'rotateY(180deg)',
+              background: '#f8f8f8',
+              border: '1px solid #e2e8f0',
+              borderRadius: '4px'
+            }} />
+          </div>
+
+          {/* 왼쪽 고정 페이지 - 1-1 (첫 번째 장의 왼쪽) */}
+          <div style={{
+            width: '50%',
+            height: '100%',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            zIndex: currentPage === 0 ? 2 : 0,
+            background: '#ffffff',
+            border: '1px solid #e2e8f0',
+            borderRadius: '4px 0 0 4px',
+            padding: '20px',
+            boxSizing: 'border-box',
+            display: currentPage === 0 ? 'flex' : 'none',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <div style={{
+              textAlign: 'center',
+              color: '#2d3748',
+              lineHeight: '1.4'
+            }}>
+              {showText && (
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  gap: '15px',
+                  marginTop: '10px'
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}>
+                    <span style={{
+                      writingMode: 'vertical-rl',
+                      textOrientation: 'mixed',
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      color: '#2d3748',
+                      minHeight: '40px',
+                      display: 'flex',
+                      alignItems: 'center'
+                    }}>김민수</span>
+                    <span style={{
+                      writingMode: 'vertical-rl',
+                      textOrientation: 'mixed',
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      color: '#2d3748',
+                      minHeight: '40px',
+                      display: 'flex',
+                      alignItems: 'center'
+                    }}>이지영</span>
+                    <span style={{
+                      writingMode: 'vertical-rl',
+                      textOrientation: 'mixed',
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      color: '#2d3748',
+                      minHeight: '40px',
+                      display: 'flex',
+                      alignItems: 'center'
+                    }}>박정우</span>
+                  </div>
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}>
+                    <span style={{
+                      writingMode: 'vertical-rl',
+                      textOrientation: 'mixed',
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      color: '#2d3748',
+                      minHeight: '40px',
+                      display: 'flex',
+                      alignItems: 'center'
+                    }}>최수연</span>
+                    <span style={{
+                      writingMode: 'vertical-rl',
+                      textOrientation: 'mixed',
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      color: '#2d3748',
+                      minHeight: '40px',
+                      display: 'flex',
+                      alignItems: 'center'
+                    }}>정현민</span>
+                    <span style={{
+                      writingMode: 'vertical-rl',
+                      textOrientation: 'mixed',
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      color: '#2d3748',
+                      minHeight: '40px',
+                      display: 'flex',
+                      alignItems: 'center'
+                    }}>한소희</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* 페이지 1 */}
+          <div style={{
+            width: '50%',
+            height: '100%',
+            position: 'absolute',
+            top: 0,
+            left: '50%',
+            transformOrigin: 'left center',
+            transition: 'transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1)',
+            transformStyle: 'preserve-3d',
+            zIndex: 15,
+            transform: currentPage >= 1 ? 'rotateY(-180deg)' : 'rotateY(0deg)'
+          }}>
+            {/* 페이지 앞면 */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              background: '#ffffff',
+              border: '1px solid #e2e8f0',
+              backfaceVisibility: 'hidden',
+              overflow: 'hidden',
+              padding: '20px',
+              boxSizing: 'border-box',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '0 4px 4px 0',
+              boxShadow: '0 0 10px rgba(0, 0, 0, 0.05)'
+            }}>
+              <div style={{
+                textAlign: 'center',
+                color: '#2d3748',
+                lineHeight: '1.4'
+              }}>
+                {showText && (
+                  <>
+                    <h3 style={{
+                      fontSize: '16px',
+                      fontWeight: '700',
+                      margin: '0 0 10px',
+                      color: '#1a202c'
+                    }}>방명록,<br />이제 간편하게</h3>
+                    <p style={{
+                      fontSize: '13px',
+                      color: '#4a5568',
+                      margin: 0,
+                      lineHeight: '1.5'
+                    }}>종이와 펜은 이제 안녕</p>
+                  </>
+                )}
+              </div>
+            </div>
+            {/* 페이지 뒷면 */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              background: '#fafafa',
+              border: '1px solid #e2e8f0',
+              backfaceVisibility: 'hidden',
+              transform: 'rotateY(180deg)',
+              borderRadius: '4px 0 0 4px',
+              padding: '20px',
+              boxSizing: 'border-box',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <div style={{
+                textAlign: 'center',
+                color: '#2d3748',
+                lineHeight: '1.4'
+              }}>
+                {/* 2-1: 두 번째 장의 왼쪽 */}
+                {showText && currentPage === 1 && (
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    gap: '15px',
+                    marginTop: '10px'
+                  }}>
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}>
+                      <span style={{
+                        writingMode: 'vertical-rl',
+                        textOrientation: 'mixed',
+                        fontSize: '12px',
+                        fontWeight: '500',
+                        color: '#2d3748',
+                        minHeight: '40px',
+                        display: 'flex',
+                        alignItems: 'center'
+                      }}>조현우</span>
+                      <span style={{
+                        writingMode: 'vertical-rl',
+                        textOrientation: 'mixed',
+                        fontSize: '12px',
+                        fontWeight: '500',
+                        color: '#2d3748',
+                        minHeight: '40px',
+                        display: 'flex',
+                        alignItems: 'center'
+                      }}>신예은</span>
+                      <span style={{
+                        writingMode: 'vertical-rl',
+                        textOrientation: 'mixed',
+                        fontSize: '12px',
+                        fontWeight: '500',
+                        color: '#2d3748',
+                        minHeight: '40px',
+                        display: 'flex',
+                        alignItems: 'center'
+                      }}>김태현</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* 추가 페이지들 (연속으로 넘어가는 여러 페이지들 - 후루룩 효과!) */}
+          {[2, 3, 4, 5, 6, 7, 8].map(pageNum => (
+            <div key={pageNum} style={{
+              width: '50%',
+              height: '100%',
+              position: 'absolute',
+              top: 0,
+              left: '50%',
+              transformOrigin: 'left center',
+              transition: 'transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1)',
+              transformStyle: 'preserve-3d',
+              zIndex: 15 - pageNum,
+              transform: currentPage >= pageNum ? 'rotateY(-180deg)' : 'rotateY(0deg)'
+            }}>
+              {/* 페이지 앞면 */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                background: '#ffffff',
+                border: '1px solid #e2e8f0',
+                backfaceVisibility: 'hidden',
+                overflow: 'hidden',
+                padding: '20px',
+                boxSizing: 'border-box',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '0 4px 4px 0',
+                boxShadow: '0 0 10px rgba(0, 0, 0, 0.05)'
+              }}>
+                <div style={{
+                  textAlign: 'center',
+                  color: '#2d3748',
+                  lineHeight: '1.4'
+                }}>
+                  {/* 빈 페이지 */}
+                </div>
+              </div>
+              {/* 페이지 뒷면 */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                background: '#fafafa',
+                border: '1px solid #e2e8f0',
+                backfaceVisibility: 'hidden',
+                transform: 'rotateY(180deg)',
+                borderRadius: '4px 0 0 4px',
+                padding: '20px',
+                boxSizing: 'border-box',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <div style={{
+                  textAlign: 'center',
+                  color: '#2d3748',
+                  lineHeight: '1.4'
+                }}>
+                  {/* 빈 페이지 */}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 export default function HomePage() {
   const router = useRouter();
@@ -163,12 +1242,12 @@ export default function HomePage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
               <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm">
-                <div className="text-3xl md:text-4xl mb-3 md:mb-4">😰</div>
+                <BookAnimation />
                 <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2 md:mb-3">종이 방명록 분실</h3>
                 <p className="text-sm md:text-base text-gray-600">소중한 축의금 기록이 담긴 방명록을 잃어버리는 불상사...</p>
               </div>
               <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm">
-                <div className="text-3xl md:text-4xl mb-3 md:mb-4">📝</div>
+                <HandwritingAnimation />
                 <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2 md:mb-3">손글씨 해독의 어려움</h3>
                 <p className="text-sm md:text-base text-gray-600">알아보기 힘든 손글씨로 나중에 정리할 때 스트레스...</p>
               </div>
