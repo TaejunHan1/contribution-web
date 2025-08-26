@@ -24,6 +24,10 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
   const [error, setError] = useState('');
   
   const timerRef = useRef(null);
+  
+  // 모달 닫기 상태 관리 (hooks를 조건문 위로 이동)
+  const [isClosing, setIsClosing] = useState(false);
+  const closeTimeoutRef = useRef(null);
 
   // 타이머 관리
   useEffect(() => {
@@ -48,6 +52,15 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
       setIsLoading(false);
     }
   }, [isOpen]);
+
+  // 컴포넌트 언마운트 시 타이머 정리
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // 전화번호 포맷팅
   const formatPhoneNumber = (value) => {
@@ -338,10 +351,6 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
 
   console.log('🔵 GuestbookModal 렌더링됨:', { modalId: modalId.current, isOpen, step, mode });
 
-  // 모달 닫기 상태 관리
-  const [isClosing, setIsClosing] = useState(false);
-  const closeTimeoutRef = useRef(null);
-
   // 모달 닫기 핸들러 (중복 실행 방지)
   const handleClose = (e) => {
     console.log('🔴 모달 닫기 시도:', { modalId: modalId.current, isLoading, isClosing, event: e?.type });
@@ -369,15 +378,6 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
       console.log('🔴 모달 닫기 상태 해제:', { modalId: modalId.current });
     }, 300);
   };
-
-  // 컴포넌트 언마운트 시 타이머 정리
-  useEffect(() => {
-    return () => {
-      if (closeTimeoutRef.current) {
-        clearTimeout(closeTimeoutRef.current);
-      }
-    };
-  }, []);
 
   return (
     <div 
