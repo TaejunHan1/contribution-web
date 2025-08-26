@@ -1100,6 +1100,7 @@ export default function HomePage() {
           name="description"
           content="종이 방명록을 디지털로! QR코드로 간편하게 부조하고 실시간으로 관리하는 스마트 경조사 시스템"
         />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
       <div className="min-h-screen bg-white">
@@ -1163,70 +1164,116 @@ export default function HomePage() {
                 </div>
               </div>
               
-              {/* 오른쪽 실제 템플릿 미리보기 */}
+              {/* 오른쪽 템플릿 미리보기 */}
               <div className="relative">
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-3xl shadow-2xl p-6 mx-auto max-w-sm">
-                  {/* 모바일 프레임 */}
-                  <div className="bg-white rounded-[2rem] shadow-2xl p-2 relative">
-                    {/* 노치 */}
-                    <div className="bg-black rounded-full w-32 h-6 mx-auto mb-2 flex items-center justify-center">
-                      <div className="bg-gray-800 rounded-full w-4 h-4 mr-2"></div>
-                      <div className="bg-gray-800 rounded-sm w-12 h-1"></div>
-                    </div>
-                    
-                    {/* 화면 내용 - 스크린샷 API로 미리보기 */}
-                    <div className="bg-white rounded-[1.5rem] overflow-hidden min-h-[500px] relative">
-                      <img
-                        src="https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic&screenshot=true"
-                        alt="실제 템플릿 미리보기"
-                        className="w-full h-full object-cover object-top"
-                        onError={(e) => {
-                          console.log('스크린샷 로딩 실패, fallback 표시');
-                          e.target.style.display = 'none';
-                          e.target.nextElementSibling.style.display = 'flex';
-                        }}
-                      />
-                      {/* fallback */}
-                      <div className="bg-gradient-to-br from-pink-50 to-rose-100 p-6 h-full text-center flex flex-col justify-center items-center absolute inset-0" style={{ display: 'none' }}>
-                        <div className="text-2xl mb-4">💒</div>
-                        <h3 className="font-bold text-gray-900 mb-2">김민호 ♥ 이지은</h3>
-                        <p className="text-sm text-gray-600 mb-4">2025년 3월 15일 (토)</p>
-                        <div className="bg-white rounded-lg p-3 mb-4 shadow">
-                          <div className="w-16 h-16 bg-gray-800 rounded mx-auto mb-2 flex items-center justify-center">
-                            <div className="w-12 h-12 bg-white rounded grid grid-cols-3 gap-px">
-                              {[...Array(9)].map((_, i) => (
-                                <div key={i} className="bg-black rounded-sm"></div>
-                              ))}
+                {/* 정교한 iPhone 14 Pro 프레임 */}
+                <div className="relative mx-auto" style={{ width: '300px', height: '610px' }}>
+                  {/* iPhone 외곽 프레임 */}
+                  <div className="absolute inset-0" style={{
+                    background: 'linear-gradient(145deg, #1c1c1e 0%, #2c2c2e  50%, #1c1c1e 100%)',
+                    borderRadius: '50px',
+                    boxShadow: `
+                      0 0 0 3px #3a3a3c,
+                      0 0 20px rgba(0, 0, 0, 0.6),
+                      0 30px 60px rgba(0, 0, 0, 0.4),
+                      inset 0 1px 2px rgba(255, 255, 255, 0.1),
+                      inset 0 -1px 2px rgba(0, 0, 0, 0.3)
+                    `
+                  }}>
+                    {/* 측면 버튼들 */}
+                    <div className="absolute left-[-2px] top-[120px] w-1 h-[32px] bg-gray-600 rounded-l-sm"></div>
+                    <div className="absolute left-[-2px] top-[170px] w-1 h-[50px] bg-gray-600 rounded-l-sm"></div>
+                    <div className="absolute left-[-2px] top-[235px] w-1 h-[50px] bg-gray-600 rounded-l-sm"></div>
+                    <div className="absolute right-[-2px] top-[180px] w-1 h-[70px] bg-gray-600 rounded-r-sm"></div>
+                  </div>
+
+                  {/* 화면 영역 */}
+                  <div 
+                    className="absolute bg-black"
+                    style={{
+                      top: '12px',
+                      left: '12px',
+                      right: '12px',
+                      bottom: '12px',
+                      borderRadius: '38px',
+                      overflow: 'hidden'
+                    }}
+                  >
+                    {/* Dynamic Island */}
+                    <div 
+                      className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-black z-10"
+                      style={{
+                        width: '110px',
+                        height: '30px',
+                        borderRadius: '20px',
+                        background: 'linear-gradient(145deg, #000 0%, #1a1a1a 100%)',
+                        boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.3)'
+                      }}
+                    ></div>
+
+                    {/* 화면 내용 - 템플릿 목업 */}
+                    <div 
+                      className="absolute inset-0 bg-gradient-to-br from-pink-50 to-rose-100 overflow-hidden"
+                      style={{ 
+                        marginTop: '35px',
+                        borderRadius: '0 0 32px 32px'
+                      }}
+                    >
+                      <div className="p-6 text-center h-full flex flex-col justify-center">
+                        <div className="text-3xl mb-4">💒</div>
+                        <h3 className="font-bold text-gray-900 mb-2 text-lg">김민호 ♥ 이지은</h3>
+                        <p className="text-sm text-gray-600 mb-6">2025년 3월 15일 (토) 오후 2시</p>
+                        
+                        {/* QR 코드 영역 */}
+                        <div className="bg-white rounded-2xl p-4 mb-6 shadow-lg mx-auto" style={{ width: '140px' }}>
+                          <div className="w-20 h-20 bg-gray-800 rounded-lg mx-auto mb-2 flex items-center justify-center">
+                            <div className="w-16 h-16 bg-white rounded grid grid-cols-4 gap-px p-1">
+                              {/* 고정 패턴으로 변경하여 Hydration 에러 해결 */}
+                              <div className="bg-black rounded-sm"></div>
+                              <div className="bg-white rounded-sm"></div>
+                              <div className="bg-black rounded-sm"></div>
+                              <div className="bg-white rounded-sm"></div>
+                              <div className="bg-white rounded-sm"></div>
+                              <div className="bg-black rounded-sm"></div>
+                              <div className="bg-white rounded-sm"></div>
+                              <div className="bg-black rounded-sm"></div>
+                              <div className="bg-black rounded-sm"></div>
+                              <div className="bg-white rounded-sm"></div>
+                              <div className="bg-black rounded-sm"></div>
+                              <div className="bg-white rounded-sm"></div>
+                              <div className="bg-white rounded-sm"></div>
+                              <div className="bg-black rounded-sm"></div>
+                              <div className="bg-white rounded-sm"></div>
+                              <div className="bg-black rounded-sm"></div>
                             </div>
                           </div>
-                          <p className="text-xs text-gray-500">QR 스캔</p>
+                          <p className="text-xs text-gray-500 font-medium">QR 스캔하여 참여</p>
                         </div>
-                        <div className="w-full space-y-2">
-                          <div className="bg-pink-500 text-white py-2 px-4 rounded-full text-xs font-semibold">
+
+                        {/* 액션 버튼들 */}
+                        <div className="space-y-3">
+                          <div className="bg-pink-500 text-white py-3 px-6 rounded-full text-sm font-semibold shadow-md">
                             💝 부조금 기록하기
                           </div>
-                          <div className="bg-blue-500 text-white py-2 px-4 rounded-full text-xs font-semibold">
+                          <div className="bg-blue-500 text-white py-3 px-6 rounded-full text-sm font-semibold shadow-md">
                             💌 축하메시지 남기기
                           </div>
                         </div>
                       </div>
                     </div>
-                    
-                    {/* 홈 인디케이터 */}
-                    <div className="bg-black rounded-full w-32 h-1 mx-auto mt-2"></div>
                   </div>
                 </div>
                 
-                <div className="absolute -top-3 -right-3 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse shadow-lg">
-                  실제 링크!
+                <div className="absolute -top-3 -right-3 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse shadow-lg z-20">
+                  DEMO
                 </div>
-                <div className="absolute -bottom-3 -left-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
-                  👆 클릭해서 체험
+                <div className="absolute -bottom-3 -left-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg z-20">
+                  👆 템플릿 체험
                 </div>
                 
-                {/* 클릭 가능한 오버레이 */}
+                {/* 클릭 이벤트 */}
                 <div 
-                  className="absolute inset-0 bg-transparent cursor-pointer rounded-3xl"
+                  className="absolute inset-0 cursor-pointer"
                   onClick={() => window.open('https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic', '_blank')}
                 ></div>
               </div>

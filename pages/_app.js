@@ -52,8 +52,8 @@ function MyApp({ Component, pageProps }) {
   return (
     <>
       <Head>
-        <title>정담 - 부조하기</title>
-        <meta name="description" content="간편하고 안전한 모바일 부조 시스템" />
+        <title>정담 - 디지털 경조사 관리</title>
+        <meta name="description" content="종이 방명록을 디지털로! QR코드로 간편하게 부조하고 실시간으로 관리하는 스마트 경조사 시스템" />
 
         {/* 뷰포트 설정 */}
         <meta
@@ -74,76 +74,26 @@ function MyApp({ Component, pageProps }) {
 
         {/* 오픈 그래프 */}
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="정담 - 부조하기" />
+        <meta property="og:title" content="정담 - 디지털 경조사 관리" />
         <meta
           property="og:description"
-          content="간편하고 안전한 모바일 부조 시스템"
+          content="종이 방명록을 디지털로! QR코드로 간편하게 부조하고 실시간으로 관리하는 스마트 경조사 시스템"
         />
-        <meta property="og:image" content="/images/og-image.jpg" />
-        <meta property="og:url" content="https://contribute.jeongdam.com" />
 
         {/* 트위터 카드 */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="정담 - 부조하기" />
+        <meta name="twitter:title" content="정담 - 디지털 경조사 관리" />
         <meta
           name="twitter:description"
-          content="간편하고 안전한 모바일 부조 시스템"
+          content="종이 방명록을 디지털로! QR코드로 간편하게 부조하고 실시간으로 관리하는 스마트 경조사 시스템"
         />
-        <meta name="twitter:image" content="/images/twitter-card.jpg" />
 
         {/* 파비콘 */}
-        <link rel="icon" href="/favicon.ico" />
-        <link
-          rel="apple-touch-icon"
-          sizes="180x180"
-          href="/images/apple-touch-icon.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="32x32"
-          href="/images/favicon-32x32.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="16x16"
-          href="/images/favicon-16x16.png"
-        />
-        <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="alternate icon" href="/favicon.ico" />
 
-        {/* 프리커넥트 및 DNS 프리페치 */}
+        {/* 기본 프리커넥트만 유지 */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://cdn.jsdelivr.net" />
-        <link rel="dns-prefetch" href="https://api.jeongdam.com" />
-
-        {/* 폰트 프리로드 */}
-        <link
-          rel="preload"
-          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css"
-          as="style"
-        />
-
-        {/* 스플래시 스크린 (iOS) */}
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <link
-          rel="apple-touch-startup-image"
-          href="/images/splash-640x1136.png"
-          media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"
-        />
-        <link
-          rel="apple-touch-startup-image"
-          href="/images/splash-750x1334.png"
-          media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)"
-        />
-        <link
-          rel="apple-touch-startup-image"
-          href="/images/splash-1242x2208.png"
-          media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)"
-        />
-
-        {/* 성능 최적화 */}
-        <link rel="prefetch" href="/api/health" />
       </Head>
 
       {/* 메인 컨텐츠 */}
