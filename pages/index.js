@@ -1211,21 +1211,30 @@ export default function HomePage() {
                   <img 
                     src="/iphone16pro.png" 
                     alt="iPhone 16 Pro Frame"
-                    className="absolute inset-0 w-full h-full object-contain"
-                    style={{ zIndex: 10 }}
+                    className="absolute"
+                    style={{ 
+                      width: '300px',
+                      height: '610px',
+                      objectFit: 'cover',
+                      zIndex: 10,
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%) scale(2.5)'
+                    }}
                   />
 
                   {/* 실제 템플릿을 iframe으로 표시할 화면 영역 */}
                   <div 
                     className="absolute cursor-pointer"
                     style={{
-                      top: '12px',
-                      left: '12px', 
-                      right: '12px',
-                      bottom: '12px',
-                      borderRadius: '38px',
+                      top: '45px',
+                      left: '20px', 
+                      right: '20px',
+                      bottom: '45px',
+                      borderRadius: '30px',
                       overflow: 'hidden',
-                      zIndex: 5
+                      zIndex: 5,
+                      backgroundColor: '#fff'
                     }}
                     onClick={() => window.open('https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic', '_blank')}
                   >
@@ -1235,12 +1244,11 @@ export default function HomePage() {
                       src="https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic"
                       className="w-full h-full border-0"
                       style={{
-                        marginTop: '35px',
-                        borderRadius: '0 0 32px 32px',
-                        transform: 'scale(0.85)',
+                        transform: 'scale(0.8)',
                         transformOrigin: 'top center'
                       }}
                       title="Wedding Template Preview"
+                      scrolling="no"
                     />
                   </div>
                 </div>
