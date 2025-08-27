@@ -1222,101 +1222,254 @@ export default function HomePage() {
         </header>
 
         {/* 히어로 섹션 */}
-        <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-8 md:py-16">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+        <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-12 md:py-20 relative overflow-hidden">
+          {/* 배경 장식 요소들 */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200/20 rounded-full blur-3xl"></div>
+            <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-200/20 rounded-full blur-3xl"></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+          </div>
+          
+          <div className="max-w-7xl mx-auto px-4 relative">
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
               {/* 왼쪽 텍스트 */}
-              <div className="text-center lg:text-left md:max-w-lg md:mx-auto lg:max-w-none lg:mx-0">
-                <div className="inline-flex items-center bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <div className="text-center lg:text-left md:max-w-lg md:mx-auto lg:max-w-none lg:mx-0 relative z-10">
+                <div className="inline-flex items-center bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-6 shadow-sm">
                   🔥 7초만에 이해하는 디지털 부조 시스템
                 </div>
-                <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 leading-tight">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
                   종이 방명록은<br />
-                  <span className="text-blue-600">이제 안녕!</span>
+                  <span className="text-blue-600 relative">
+                    이제 안녕!
+                    <div className="absolute -bottom-2 left-0 w-full h-3 bg-blue-200/50 -z-10 rounded"></div>
+                  </span>
                 </h1>
-                <p className="text-lg md:text-xl text-gray-600 mb-6 leading-relaxed">
+                <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">
                   <span className="font-semibold text-gray-900">QR 스캔 → 디지털 방명록 → 실시간 관리</span><br />
                   결혼식·장례식이 이렇게 간편할 줄이야! 
                 </p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-center lg:justify-start">
-                  <button className="bg-blue-600 text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-blue-700 transition-colors shadow-lg">
-                    📱 무료 앱 다운로드
+                
+                {/* 핵심 가치 제안 */}
+                <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 md:p-8 mb-8 border border-gray-100 shadow-xl">
+                  <div className="grid grid-cols-3 gap-4 md:gap-8 text-center">
+                    <div className="group">
+                      <div className="relative mb-3 md:mb-4">
+                        <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl md:rounded-2xl mx-auto flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                          <div className="text-white text-lg md:text-2xl font-bold">01</div>
+                        </div>
+                        <div className="absolute -inset-2 bg-blue-500/10 rounded-xl md:rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      </div>
+                      <h3 className="text-sm md:text-lg font-bold text-gray-900 mb-1 md:mb-2">간편한 접속</h3>
+                      <p className="text-xs md:text-sm text-gray-600 leading-relaxed">QR코드 스캔으로<br/>종이 방명록 완전 대체</p>
+                    </div>
+                    
+                    <div className="group">
+                      <div className="relative mb-3 md:mb-4">
+                        <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl md:rounded-2xl mx-auto flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                          <div className="text-white text-lg md:text-2xl font-bold">02</div>
+                        </div>
+                        <div className="absolute -inset-2 bg-emerald-500/10 rounded-xl md:rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      </div>
+                      <h3 className="text-sm md:text-lg font-bold text-gray-900 mb-1 md:mb-2">실시간 확인</h3>
+                      <p className="text-xs md:text-sm text-gray-600 leading-relaxed">축의금·조의금 입금<br/>즉시 알림으로 확인</p>
+                    </div>
+                    
+                    <div className="group">
+                      <div className="relative mb-3 md:mb-4">
+                        <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl md:rounded-2xl mx-auto flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                          <div className="text-white text-lg md:text-2xl font-bold">03</div>
+                        </div>
+                        <div className="absolute -inset-2 bg-violet-500/10 rounded-xl md:rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      </div>
+                      <h3 className="text-sm md:text-lg font-bold text-gray-900 mb-1 md:mb-2">완벽 관리</h3>
+                      <p className="text-xs md:text-sm text-gray-600 leading-relaxed">자동 정리된 명단과<br/>통계로 한눈에 관리</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-center lg:justify-start mb-8">
+                  <button className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-full text-lg font-bold hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                    무료 앱 다운로드
                   </button>
                   <button 
                     onClick={() => window.open('https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic', '_blank')}
-                    className="bg-white text-blue-600 px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-50 transition-colors border-2 border-blue-200"
+                    className="bg-white text-blue-600 px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-50 transition-all duration-300 border-2 border-blue-200 hover:border-blue-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                   >
-                    🚀 실제 템플릿 체험
+                    실제 템플릿 체험
                   </button>
                 </div>
-                <div className="mt-6 flex items-center justify-center md:justify-center lg:justify-start gap-6 text-sm text-gray-500">
+                
+                <div className="flex items-center justify-center md:justify-center lg:justify-start gap-6 text-sm text-gray-500 mb-6">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                     무료 다운로드
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                     1분 설치
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                     즉시 사용 가능
                   </div>
                 </div>
+                
+                {/* 사용자 리뷰 슬라이드 */}
+                <div className="space-y-4 mb-8">
+                  <div className="bg-white/90 backdrop-blur-sm rounded-xl p-5 border border-blue-100 shadow-lg hover:shadow-xl transition-all duration-300">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">김</div>
+                      <div className="flex-1">
+                        <p className="text-gray-700 mb-2">"진짜 편해요! 이제 방명록 관리 스트레스 없어졌어요. 축의금도 실시간으로 확인되고 정말 혁신적이에요!"</p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="text-yellow-400">⭐⭐⭐⭐⭐</div>
+                            <span className="text-sm text-gray-600 font-medium">김○○님 (결혼식)</span>
+                          </div>
+                          <span className="text-xs text-gray-400">2024.08.15</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white/90 backdrop-blur-sm rounded-xl p-5 border border-blue-100 shadow-lg hover:shadow-xl transition-all duration-300">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-white font-bold">박</div>
+                      <div className="flex-1">
+                        <p className="text-gray-700 mb-2">"장례식 때 사용했는데 정말 간편하고 조문객분들도 편리해하셨어요. 감사합니다."</p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="text-yellow-400">⭐⭐⭐⭐⭐</div>
+                            <span className="text-sm text-gray-600 font-medium">박○○님 (장례식)</span>
+                          </div>
+                          <span className="text-xs text-gray-400">2024.08.10</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
               </div>
               
               {/* 오른쪽 템플릿 미리보기 */}
-              <div className="relative">
-                {/* iPhone 16 Pro 프레임 이미지 사용 - 반응형 크기 */}
-                <div className="relative mx-auto w-[300px] h-[610px] md:w-[380px] md:h-[774px] lg:w-[420px] lg:h-[855px]">
-                  <img 
-                    src="/iphone16pro.png" 
-                    alt="iPhone 16 Pro Frame"
-                    className="absolute"
-                    style={{ 
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                      zIndex: 10,
-                      top: '50%',
-                      left: '50%',
-                      transform: 'translate(-50%, -50%) scale(0.93)'
-                    }}
-                  />
+              <div className="relative lg:ml-8">
+                {/* 아이폰 주변 장식 요소들 */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  {/* 원형 그라데이션 배경 */}
+                  <div className="absolute w-[500px] h-[500px] bg-gradient-to-br from-blue-100/50 to-purple-100/30 rounded-full blur-2xl animate-pulse"></div>
+                  {/* 작은 원들 */}
+                  <div className="absolute top-10 left-10 w-4 h-4 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
+                  <div className="absolute top-32 right-8 w-3 h-3 bg-purple-400 rounded-full animate-bounce" style={{animationDelay: '0.5s'}}></div>
+                  <div className="absolute bottom-20 left-16 w-2 h-2 bg-pink-400 rounded-full animate-bounce" style={{animationDelay: '1s'}}></div>
+                  <div className="absolute bottom-40 right-12 w-5 h-5 bg-indigo-400 rounded-full animate-bounce" style={{animationDelay: '1.5s'}}></div>
+                </div>
 
-                  {/* 실제 템플릿을 iframe으로 표시할 화면 영역 */}
-                  <div 
-                    className="absolute cursor-pointer top-[45px] left-[20px] right-[20px] bottom-[45px] md:top-[57px] md:left-[25px] md:right-[25px] md:bottom-[57px] lg:top-[63px] lg:left-[28px] lg:right-[28px] lg:bottom-[63px]"
-                    style={{
-                      borderRadius: '30px',
-                      overflow: 'hidden',
-                      zIndex: 5,
-                      backgroundColor: '#fff'
-                    }}
-                    onClick={() => window.open('https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic', '_blank')}
-                  >
-
-                    {/* 실제 템플릿 iframe */}
-                    <iframe 
-                      src="https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic"
-                      className="w-full h-full border-0"
-                      style={{
-                        transform: 'scale(0.8)',
-                        transformOrigin: 'top center'
+                {/* iPhone 프레임 컨테이너 */}
+                <div className="relative z-10">
+                  {/* iPhone 16 Pro 프레임 이미지 사용 - 더 큰 크기 */}
+                  <div className="relative mx-auto w-[350px] h-[700px] md:w-[420px] md:h-[840px] lg:w-[480px] lg:h-[960px] drop-shadow-2xl">
+                    <img 
+                      src="/iphone16pro.png" 
+                      alt="iPhone 16 Pro Frame"
+                      className="absolute drop-shadow-2xl"
+                      style={{ 
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        zIndex: 10,
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%) scale(0.95)'
                       }}
-                      title="Wedding Template Preview"
-                      scrolling="no"
                     />
-                  </div>
-                  
-                  {/* 배지들 - 프레임 안에 위치 */}
-                  <div className="absolute top-2 right-2 md:top-3 md:right-3 lg:top-4 lg:right-4 bg-blue-500 text-white px-2 py-1 md:px-3 rounded-full text-xs font-bold animate-pulse shadow-lg z-20">
-                    LIVE
-                  </div>
-                  <div className="absolute bottom-2 left-2 md:bottom-3 md:left-3 lg:bottom-4 lg:left-4 bg-green-500 text-white px-2 py-1 md:px-3 rounded-full text-xs font-semibold shadow-lg z-20">
-                    🎯 실제 템플릿
+
+                    {/* 실제 템플릿을 iframe으로 표시할 화면 영역 */}
+                    <div 
+                      className="absolute cursor-pointer group"
+                      style={{
+                        top: '52px',
+                        left: '25px',
+                        right: '25px',
+                        bottom: '52px',
+                        borderRadius: '35px',
+                        overflow: 'hidden',
+                        zIndex: 5,
+                        backgroundColor: '#fff'
+                      }}
+                      onClick={() => window.open('https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic', '_blank')}
+                    >
+                      {/* 호버 오버레이 */}
+                      <div className="absolute inset-0 bg-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 flex items-center justify-center">
+                        <div className="bg-white/90 rounded-full p-3 shadow-lg">
+                          <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                          </svg>
+                        </div>
+                      </div>
+
+                      {/* 실제 템플릿 iframe */}
+                      <iframe 
+                        src="https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic"
+                        className="w-full h-full border-0"
+                        style={{
+                          transform: 'scale(0.82)',
+                          transformOrigin: 'top center'
+                        }}
+                        title="Wedding Template Preview"
+                        scrolling="no"
+                      />
+                    </div>
+                    
+                    
                   </div>
                 </div>
+
+                {/* 아이폰 주변 추가 요소들 */}
+                <div className="mt-4 space-y-4">
+                  {/* 플로팅 알림 카드 */}
+                  <div className="bg-white rounded-2xl p-4 shadow-2xl border border-gray-100 animate-float relative">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-sm font-semibold text-gray-900">김민수님 축의금 도착</div>
+                        <div className="text-xs text-gray-500">100,000원 • 방금 전</div>
+                      </div>
+                    </div>
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full animate-ping"></div>
+                  </div>
+
+                  {/* 통계 미니 카드 */}
+                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-4 border border-blue-100">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-gray-900 mb-1">12명</div>
+                      <div className="text-sm text-gray-600">실시간 참석 확인</div>
+                      <div className="flex justify-center mt-2 gap-1">
+                        <div className="w-6 h-6 bg-blue-400 rounded-full border-2 border-white shadow-sm"></div>
+                        <div className="w-6 h-6 bg-green-400 rounded-full border-2 border-white shadow-sm -ml-2"></div>
+                        <div className="w-6 h-6 bg-purple-400 rounded-full border-2 border-white shadow-sm -ml-2"></div>
+                        <div className="w-6 h-6 bg-gray-300 rounded-full border-2 border-white shadow-sm -ml-2 flex items-center justify-center">
+                          <span className="text-xs text-gray-600 font-medium">+9</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* CSS 애니메이션 추가 */}
+                <style jsx>{`
+                  @keyframes float {
+                    0%, 100% { transform: translateY(0px); }
+                    50% { transform: translateY(-10px); }
+                  }
+                  .animate-float {
+                    animation: float 3s ease-in-out infinite;
+                  }
+                `}</style>
+
               </div>
             </div>
           </div>
