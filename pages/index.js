@@ -1205,14 +1205,16 @@ export default function HomePage() {
               </div>
               
               {/* 오른쪽 템플릿 미리보기 */}
-              <div className="relative" style={{ minHeight: '650px' }}>
+              <div className="relative" style={{ minHeight: '800px' }}>
                 {/* iPhone 16 Pro 프레임 이미지 사용 */}
-                <div className="relative mx-auto" style={{ width: '340px', height: '690px' }}>
+                <div className="relative mx-auto" style={{ width: '450px', height: '900px' }}>
                   <img 
                     src="/iphone16pro.png" 
                     alt="iPhone 16 Pro Frame"
-                    className="absolute inset-0 w-full h-full"
+                    className="absolute inset-0"
                     style={{ 
+                      width: '100%',
+                      height: '100%',
                       zIndex: 10,
                       objectFit: 'contain',
                       pointerEvents: 'none'
@@ -1223,11 +1225,11 @@ export default function HomePage() {
                   <div 
                     className="absolute cursor-pointer"
                     style={{
-                      top: '55px',
-                      left: '20px', 
-                      right: '20px',
-                      bottom: '55px',
-                      borderRadius: '35px',
+                      top: '75px',
+                      left: '30px', 
+                      right: '30px',
+                      bottom: '75px',
+                      borderRadius: '45px',
                       overflow: 'hidden',
                       zIndex: 5,
                       backgroundColor: '#fff'
@@ -1240,7 +1242,7 @@ export default function HomePage() {
                       src="https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic"
                       className="w-full h-full border-0"
                       style={{
-                        transform: 'scale(0.88)',
+                        transform: 'scale(0.9)',
                         transformOrigin: 'top center'
                       }}
                       title="Wedding Template Preview"
