@@ -1205,34 +1205,27 @@ export default function HomePage() {
               </div>
               
               {/* 오른쪽 템플릿 미리보기 */}
-              <div className="relative" style={{ minHeight: '800px' }}>
+              <div className="relative">
                 {/* iPhone 16 Pro 프레임 이미지 사용 */}
-                <div className="relative mx-auto" style={{ width: '450px', height: '900px' }}>
+                <div className="relative mx-auto" style={{ width: '300px', height: '610px' }}>
                   <img 
                     src="/iphone16pro.png" 
                     alt="iPhone 16 Pro Frame"
-                    className="absolute inset-0"
-                    style={{ 
-                      width: '100%',
-                      height: '100%',
-                      zIndex: 10,
-                      objectFit: 'contain',
-                      pointerEvents: 'none'
-                    }}
+                    className="absolute inset-0 w-full h-full object-contain"
+                    style={{ zIndex: 10 }}
                   />
 
                   {/* 실제 템플릿을 iframe으로 표시할 화면 영역 */}
                   <div 
                     className="absolute cursor-pointer"
                     style={{
-                      top: '75px',
-                      left: '30px', 
-                      right: '30px',
-                      bottom: '75px',
-                      borderRadius: '45px',
+                      top: '12px',
+                      left: '12px', 
+                      right: '12px',
+                      bottom: '12px',
+                      borderRadius: '38px',
                       overflow: 'hidden',
-                      zIndex: 5,
-                      backgroundColor: '#fff'
+                      zIndex: 5
                     }}
                     onClick={() => window.open('https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic', '_blank')}
                   >
@@ -1242,11 +1235,12 @@ export default function HomePage() {
                       src="https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic"
                       className="w-full h-full border-0"
                       style={{
-                        transform: 'scale(0.9)',
+                        marginTop: '35px',
+                        borderRadius: '0 0 32px 32px',
+                        transform: 'scale(0.85)',
                         transformOrigin: 'top center'
                       }}
                       title="Wedding Template Preview"
-                      scrolling="no"
                     />
                   </div>
                 </div>
