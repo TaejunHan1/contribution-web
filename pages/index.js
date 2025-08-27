@@ -1089,6 +1089,7 @@ export default function HomePage() {
   const [iframeError, setIframeError] = useState(false);
   const [screenshotUrl, setScreenshotUrl] = useState(null);
   const [isMounted, setIsMounted] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleDirectAccess = () => {
     if (eventId.trim()) {
@@ -1145,19 +1146,79 @@ export default function HomePage() {
 
       <div className="min-h-screen bg-white">
         {/* 헤더 */}
-        <header className="bg-white shadow-sm sticky top-0 z-50">
-          <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div className="flex items-center space-x-2">
-              <span className="text-2xl">💎</span>
-              <span className="text-xl font-bold text-gray-900">정담</span>
+        <header className="sticky top-0 z-50 bg-white shadow-md border-b border-gray-100">
+          <div className="max-w-6xl mx-auto px-4 py-3 md:py-4 flex justify-between items-center">
+            <div className="flex items-center">
+              <img 
+                src="/jeongdamlogo.png" 
+                alt="정담 로고" 
+                className="h-20 md:h-28 lg:h-32 object-contain"
+              />
             </div>
+            
+            {/* 데스크톱 메뉴 */}
             <div className="hidden md:flex space-x-6">
               <a href="#features" className="text-gray-600 hover:text-blue-600">기능</a>
               <a href="#how-it-works" className="text-gray-600 hover:text-blue-600">사용법</a>
               <a href="#templates" className="text-gray-600 hover:text-blue-600">템플릿</a>
               <a href="#download" className="text-gray-600 hover:text-blue-600">앱 다운로드</a>
             </div>
+            
+            {/* 모바일 햄버거 버튼 */}
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-2 rounded-xl bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-200 transition-all duration-200 shadow-sm"
+            >
+              <svg 
+                className={`w-6 h-6 text-gray-700 hover:text-blue-600 transform transition-all duration-200 ${isMobileMenuOpen ? 'rotate-90' : ''}`}
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                {isMobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
           </div>
+
+          {/* 모바일 메뉴 */}
+          {isMobileMenuOpen && (
+            <div className="md:hidden bg-white border-t border-gray-200 shadow-lg">
+              <div className="px-4 py-3 space-y-3">
+                <a 
+                  href="#features" 
+                  className="block py-2 text-gray-600 hover:text-blue-600 transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  기능
+                </a>
+                <a 
+                  href="#how-it-works" 
+                  className="block py-2 text-gray-600 hover:text-blue-600 transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  사용법
+                </a>
+                <a 
+                  href="#templates" 
+                  className="block py-2 text-gray-600 hover:text-blue-600 transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  템플릿
+                </a>
+                <a 
+                  href="#download" 
+                  className="block py-2 text-gray-600 hover:text-blue-600 transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  앱 다운로드
+                </a>
+              </div>
+            </div>
+          )}
         </header>
 
         {/* 히어로 섹션 */}
@@ -1165,7 +1226,7 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto px-4">
             <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
               {/* 왼쪽 텍스트 */}
-              <div className="text-center lg:text-left">
+              <div className="text-center lg:text-left md:max-w-lg md:mx-auto lg:max-w-none lg:mx-0">
                 <div className="inline-flex items-center bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-4">
                   🔥 7초만에 이해하는 디지털 부조 시스템
                 </div>
@@ -1177,7 +1238,7 @@ export default function HomePage() {
                   <span className="font-semibold text-gray-900">QR 스캔 → 디지털 방명록 → 실시간 관리</span><br />
                   결혼식·장례식이 이렇게 간편할 줄이야! 
                 </p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+                <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-center lg:justify-start">
                   <button className="bg-blue-600 text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-blue-700 transition-colors shadow-lg">
                     📱 무료 앱 다운로드
                   </button>
@@ -1188,7 +1249,7 @@ export default function HomePage() {
                     🚀 실제 템플릿 체험
                   </button>
                 </div>
-                <div className="mt-6 flex items-center justify-center lg:justify-start gap-6 text-sm text-gray-500">
+                <div className="mt-6 flex items-center justify-center md:justify-center lg:justify-start gap-6 text-sm text-gray-500">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 bg-green-500 rounded-full"></span>
                     무료 다운로드
@@ -1206,31 +1267,27 @@ export default function HomePage() {
               
               {/* 오른쪽 템플릿 미리보기 */}
               <div className="relative">
-                {/* iPhone 16 Pro 프레임 이미지 사용 */}
-                <div className="relative mx-auto" style={{ width: '300px', height: '610px' }}>
+                {/* iPhone 16 Pro 프레임 이미지 사용 - 반응형 크기 */}
+                <div className="relative mx-auto w-[300px] h-[610px] md:w-[380px] md:h-[774px] lg:w-[420px] lg:h-[855px]">
                   <img 
                     src="/iphone16pro.png" 
                     alt="iPhone 16 Pro Frame"
                     className="absolute"
                     style={{ 
-                      width: '300px',
-                      height: '610px',
+                      width: '100%',
+                      height: '100%',
                       objectFit: 'cover',
                       zIndex: 10,
                       top: '50%',
                       left: '50%',
-                      transform: 'translate(-50%, -50%) scale(2.5)'
+                      transform: 'translate(-50%, -50%) scale(0.93)'
                     }}
                   />
 
                   {/* 실제 템플릿을 iframe으로 표시할 화면 영역 */}
                   <div 
-                    className="absolute cursor-pointer"
+                    className="absolute cursor-pointer top-[45px] left-[20px] right-[20px] bottom-[45px] md:top-[57px] md:left-[25px] md:right-[25px] md:bottom-[57px] lg:top-[63px] lg:left-[28px] lg:right-[28px] lg:bottom-[63px]"
                     style={{
-                      top: '45px',
-                      left: '20px', 
-                      right: '20px',
-                      bottom: '45px',
                       borderRadius: '30px',
                       overflow: 'hidden',
                       zIndex: 5,
@@ -1251,13 +1308,14 @@ export default function HomePage() {
                       scrolling="no"
                     />
                   </div>
-                </div>
-                
-                <div className="absolute -top-3 -right-3 bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse shadow-lg z-20">
-                  LIVE
-                </div>
-                <div className="absolute -bottom-3 -left-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg z-20">
-                  🎯 실제 템플릿
+                  
+                  {/* 배지들 - 프레임 안에 위치 */}
+                  <div className="absolute top-2 right-2 md:top-3 md:right-3 lg:top-4 lg:right-4 bg-blue-500 text-white px-2 py-1 md:px-3 rounded-full text-xs font-bold animate-pulse shadow-lg z-20">
+                    LIVE
+                  </div>
+                  <div className="absolute bottom-2 left-2 md:bottom-3 md:left-3 lg:bottom-4 lg:left-4 bg-green-500 text-white px-2 py-1 md:px-3 rounded-full text-xs font-semibold shadow-lg z-20">
+                    🎯 실제 템플릿
+                  </div>
                 </div>
               </div>
             </div>
@@ -1602,10 +1660,6 @@ export default function HomePage() {
           <div className="max-w-6xl mx-auto px-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
               <div className="col-span-2 md:col-span-1">
-                <div className="flex items-center space-x-2 mb-3 md:mb-4">
-                  <span className="text-xl md:text-2xl">💎</span>
-                  <span className="text-lg md:text-xl font-bold">정담</span>
-                </div>
                 <p className="text-gray-400 text-sm md:text-base">디지털 경조사 관리의 새로운 표준</p>
               </div>
               <div>
