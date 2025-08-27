@@ -1206,227 +1206,42 @@ export default function HomePage() {
               
               {/* 오른쪽 템플릿 미리보기 */}
               <div className="relative">
-                {/* 정교한 iPhone 14 Pro 프레임 */}
+                {/* iPhone 16 Pro 프레임 이미지 사용 */}
                 <div className="relative mx-auto" style={{ width: '300px', height: '610px' }}>
-                  {/* iPhone 외곽 프레임 */}
-                  <div className="absolute inset-0" style={{
-                    background: 'linear-gradient(145deg, #1c1c1e 0%, #2c2c2e  50%, #1c1c1e 100%)',
-                    borderRadius: '50px',
-                    boxShadow: `
-                      0 0 0 3px #3a3a3c,
-                      0 0 20px rgba(0, 0, 0, 0.6),
-                      0 30px 60px rgba(0, 0, 0, 0.4),
-                      inset 0 1px 2px rgba(255, 255, 255, 0.1),
-                      inset 0 -1px 2px rgba(0, 0, 0, 0.3)
-                    `
-                  }}>
-                    {/* 측면 버튼들 */}
-                    <div className="absolute left-[-2px] top-[120px] w-1 h-[32px] bg-gray-600 rounded-l-sm"></div>
-                    <div className="absolute left-[-2px] top-[170px] w-1 h-[50px] bg-gray-600 rounded-l-sm"></div>
-                    <div className="absolute left-[-2px] top-[235px] w-1 h-[50px] bg-gray-600 rounded-l-sm"></div>
-                    <div className="absolute right-[-2px] top-[180px] w-1 h-[70px] bg-gray-600 rounded-r-sm"></div>
-                  </div>
+                  <img 
+                    src="/iphone16pro.png" 
+                    alt="iPhone 16 Pro Frame"
+                    className="absolute inset-0 w-full h-full object-contain"
+                    style={{ zIndex: 10 }}
+                  />
 
-                  {/* 화면 영역 */}
+                  {/* 실제 템플릿을 iframe으로 표시할 화면 영역 */}
                   <div 
-                    className="absolute bg-black"
+                    className="absolute cursor-pointer"
                     style={{
                       top: '12px',
-                      left: '12px',
+                      left: '12px', 
                       right: '12px',
                       bottom: '12px',
                       borderRadius: '38px',
-                      overflow: 'hidden'
+                      overflow: 'hidden',
+                      zIndex: 5
                     }}
+                    onClick={() => window.open('https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic', '_blank')}
                   >
-                    {/* Dynamic Island */}
-                    <div 
-                      className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-black z-10"
-                      style={{
-                        width: '110px',
-                        height: '30px',
-                        borderRadius: '20px',
-                        background: 'linear-gradient(145deg, #000 0%, #1a1a1a 100%)',
-                        boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.3)'
-                      }}
-                    ></div>
 
-                    {/* 화면 내용 - 실제 템플릿 모양의 미리보기 */}
-                    <div 
-                      className="absolute inset-0 overflow-hidden cursor-pointer"
-                      style={{ 
+                    {/* 실제 템플릿 iframe */}
+                    <iframe 
+                      src="https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic"
+                      className="w-full h-full border-0"
+                      style={{
                         marginTop: '35px',
                         borderRadius: '0 0 32px 32px',
-                        backgroundColor: '#fff'
-                      }}
-                      onClick={() => window.open('https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic', '_blank')}
-                    >
-                      {/* 실제 템플릿과 유사한 디자인 */}
-                      <div className="w-full h-full" style={{ 
-                        background: 'linear-gradient(135deg, #fdf2f8 0%, #fce7f3 50%, #fbcfe8 100%)',
-                        transform: 'scale(0.9)',
+                        transform: 'scale(0.85)',
                         transformOrigin: 'top center'
-                      }}>
-                        {/* 상단 장식 */}
-                        <div style={{
-                          height: '60px',
-                          background: 'linear-gradient(to bottom, rgba(255,255,255,0.8), transparent)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '10px',
-                          color: '#f472b6'
-                        }}>
-                          ✿ WEDDING INVITATION ✿
-                        </div>
-
-                        {/* 메인 컨텐츠 */}
-                        <div style={{
-                          padding: '15px',
-                          textAlign: 'center'
-                        }}>
-                          {/* 이모지와 제목 */}
-                          <div style={{ fontSize: '28px', marginBottom: '10px' }}>💒</div>
-                          
-                          {/* 신랑신부 이름 */}
-                          <div style={{
-                            fontSize: '16px',
-                            fontWeight: 'bold',
-                            color: '#1f2937',
-                            marginBottom: '5px'
-                          }}>
-                            김민호 ♥ 이지은
-                          </div>
-                          
-                          {/* 날짜 */}
-                          <div style={{
-                            fontSize: '11px',
-                            color: '#6b7280',
-                            marginBottom: '15px'
-                          }}>
-                            2025년 3월 15일 토요일 오후 2시<br/>
-                            그랜드하얏트 서울
-                          </div>
-                          
-                          {/* 사진 영역 */}
-                          <div style={{
-                            width: '120px',
-                            height: '80px',
-                            background: 'linear-gradient(45deg, #fbbf24, #f472b6)',
-                            borderRadius: '10px',
-                            margin: '0 auto 15px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '24px',
-                            opacity: 0.8
-                          }}>
-                            👰🤵
-                          </div>
-
-                          {/* 인사말 */}
-                          <div style={{
-                            fontSize: '10px',
-                            color: '#4b5563',
-                            lineHeight: '1.4',
-                            marginBottom: '15px',
-                            padding: '0 10px'
-                          }}>
-                            서로가 마주보며 다져온 사랑을<br/>
-                            이제 함께 한 곳을 바라보며<br/>
-                            걸어갈 수 있는 큰 사랑으로<br/>
-                            키우고자 합니다
-                          </div>
-                          
-                          {/* QR 코드 영역 */}
-                          <div style={{
-                            background: 'white',
-                            borderRadius: '12px',
-                            padding: '10px',
-                            boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-                            width: '110px',
-                            margin: '0 auto 15px'
-                          }}>
-                            <div style={{
-                              width: '60px',
-                              height: '60px',
-                              background: '#1f2937',
-                              borderRadius: '8px',
-                              margin: '0 auto 5px',
-                              position: 'relative',
-                              overflow: 'hidden'
-                            }}>
-                              <div style={{
-                                position: 'absolute',
-                                top: '5px',
-                                left: '5px',
-                                right: '5px',
-                                bottom: '5px',
-                                background: 'white',
-                                borderRadius: '4px',
-                                display: 'grid',
-                                gridTemplateColumns: 'repeat(3, 1fr)',
-                                gap: '2px',
-                                padding: '4px'
-                              }}>
-                                <div style={{ background: '#1f2937', borderRadius: '1px' }}></div>
-                                <div style={{ background: 'white', borderRadius: '1px' }}></div>
-                                <div style={{ background: '#1f2937', borderRadius: '1px' }}></div>
-                                <div style={{ background: 'white', borderRadius: '1px' }}></div>
-                                <div style={{ background: '#1f2937', borderRadius: '1px' }}></div>
-                                <div style={{ background: 'white', borderRadius: '1px' }}></div>
-                                <div style={{ background: '#1f2937', borderRadius: '1px' }}></div>
-                                <div style={{ background: 'white', borderRadius: '1px' }}></div>
-                                <div style={{ background: '#1f2937', borderRadius: '1px' }}></div>
-                              </div>
-                            </div>
-                            <div style={{ fontSize: '9px', color: '#6b7280' }}>
-                              QR 스캔하여 축하하기
-                            </div>
-                          </div>
-
-                          {/* 버튼들 */}
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '0 20px' }}>
-                            <div style={{
-                              background: 'linear-gradient(135deg, #f472b6, #ec4899)',
-                              color: 'white',
-                              padding: '8px 16px',
-                              borderRadius: '20px',
-                              fontSize: '11px',
-                              fontWeight: '600',
-                              boxShadow: '0 2px 8px rgba(236, 72, 153, 0.3)'
-                            }}>
-                              💝 축하 마음 전하기
-                            </div>
-                            <div style={{
-                              background: 'linear-gradient(135deg, #60a5fa, #3b82f6)',
-                              color: 'white',
-                              padding: '8px 16px',
-                              borderRadius: '20px',
-                              fontSize: '11px',
-                              fontWeight: '600',
-                              boxShadow: '0 2px 8px rgba(59, 130, 246, 0.3)'
-                            }}>
-                              💌 축하 메시지 남기기
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* 하단 장식 */}
-                        <div style={{
-                          position: 'absolute',
-                          bottom: '10px',
-                          left: 0,
-                          right: 0,
-                          textAlign: 'center',
-                          fontSize: '9px',
-                          color: '#f472b6',
-                          opacity: 0.6
-                        }}>
-                          Made with ❤️ 정담
-                        </div>
-                      </div>
-                    </div>
+                      }}
+                      title="Wedding Template Preview"
+                    />
                   </div>
                 </div>
                 
