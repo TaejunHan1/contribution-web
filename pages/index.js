@@ -1367,7 +1367,7 @@ export default function HomePage() {
                 {/* iPhone 프레임 컨테이너 */}
                 <div className="relative z-10">
                   {/* iPhone 16 Pro 프레임 이미지 사용 - 더 큰 크기 */}
-                  <div className="relative mx-auto w-[350px] h-[700px] md:w-[420px] md:h-[840px] lg:w-[480px] lg:h-[960px] drop-shadow-2xl">
+                  <div className="relative mx-auto w-[350px] h-[706px] md:w-[420px] md:h-[836px] lg:w-[480px] lg:h-[956px] drop-shadow-2xl">
                     <img 
                       src="/iphone16pro.png" 
                       alt="iPhone 16 Pro Frame"
@@ -1385,17 +1385,7 @@ export default function HomePage() {
 
                     {/* 실제 템플릿을 iframe으로 표시할 화면 영역 */}
                     <div 
-                      className="absolute cursor-pointer group"
-                      style={{
-                        top: '52px',
-                        left: '25px',
-                        right: '25px',
-                        bottom: '52px',
-                        borderRadius: '35px',
-                        overflow: 'hidden',
-                        zIndex: 5,
-                        backgroundColor: '#fff'
-                      }}
+                      className="absolute cursor-pointer group iframe-container-mobile md:iframe-container-desktop"
                       onClick={() => window.open('https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic', '_blank')}
                     >
                       {/* 호버 오버레이 */}
@@ -1412,8 +1402,10 @@ export default function HomePage() {
                         src="https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic"
                         className="w-full h-full border-0"
                         style={{
-                          transform: 'scale(0.82)',
-                          transformOrigin: 'top center'
+                          transform: 'scale(1.0)',
+                          transformOrigin: 'top center',
+                          width: '100%',
+                          height: '100%'
                         }}
                         title="Wedding Template Preview"
                         scrolling="no"
@@ -1459,7 +1451,7 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* CSS 애니메이션 추가 */}
+                {/* CSS 애니메이션 및 반응형 스타일 추가 */}
                 <style jsx>{`
                   @keyframes float {
                     0%, 100% { transform: translateY(0px); }
@@ -1467,6 +1459,25 @@ export default function HomePage() {
                   }
                   .animate-float {
                     animation: float 3s ease-in-out infinite;
+                  }
+                  .iframe-container-mobile {
+                    top: 45px;
+                    left: 30px;
+                    right: 30px;
+                    bottom: 45px;
+                    border-radius: 30px;
+                    overflow: hidden;
+                    z-index: 5;
+                    background-color: #f5f5f5;
+                  }
+                  @media (min-width: 768px) {
+                    .iframe-container-desktop {
+                      top: 60px !important;
+                      left: 38px !important;
+                      right: 38px !important;
+                      bottom: 60px !important;
+                      border-radius: 28px !important;
+                    }
                   }
                 `}</style>
 
