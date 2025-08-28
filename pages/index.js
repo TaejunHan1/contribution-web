@@ -1086,8 +1086,6 @@ function BookAnimation() {
 export default function HomePage() {
   const router = useRouter();
   const [eventId, setEventId] = useState('');
-  const [iframeError, setIframeError] = useState(false);
-  const [screenshotUrl, setScreenshotUrl] = useState(null);
   const [isMounted, setIsMounted] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -1097,31 +1095,9 @@ export default function HomePage() {
     }
   };
 
-  // iframe 로드 실패 시 스크린샷 불러오기
-  const handleIframeError = async () => {
-    try {
-      const templateUrl = 'https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic';
-      const response = await fetch(`/api/screenshot?url=${encodeURIComponent(templateUrl)}`);
-      
-      if (response.ok) {
-        const blob = await response.blob();
-        const screenshotUrl = URL.createObjectURL(blob);
-        setScreenshotUrl(screenshotUrl);
-        setIframeError(true);
-      }
-    } catch (error) {
-      console.error('Screenshot fallback failed:', error);
-      setIframeError(true);
-    }
-  };
 
   useEffect(() => {
     setIsMounted(true);
-    setIframeError(true);
-    
-    // 실제 템플릿의 정적 미리보기 이미지 사용
-    // 또는 간단한 HTML 템플릿을 직접 생성
-    setScreenshotUrl(null);
   }, []);
 
   return (
@@ -1264,19 +1240,26 @@ export default function HomePage() {
 
                   {/* 아이폰 화면 안 미리보기 컨텐츠 */}
                   <div className="absolute inset-0 flex items-center justify-center z-5">
-                    <div className="w-[45%] h-[55%]  rounded-[15px] overflow-hidden bg-white shadow-inner">
-                      <iframe
-                        src="https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic"
-                        className="w-full h-full border-0"
-                        style={{
-                          transform: 'scale(0.6)',
-                          transformOrigin: 'top left',
-                          width: '167%',
-                          height: '167%'
+                    <div className="w-[45%] h-[55%] rounded-[25px] overflow-hidden bg-white shadow-inner">
+                      <img 
+                        src="/wedding-template-preview.png"
+                        alt="웨딩 템플릿 미리보기"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          // fallback으로 플레이스홀더 표시
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
                         }}
-                        title="Wedding Template Preview"
-                        scrolling="no"
                       />
+                      <div 
+                        className="w-full h-full hidden bg-gradient-to-br from-pink-50 to-rose-100 items-center justify-center"
+                        style={{ display: 'none' }}
+                      >
+                        <div className="text-center">
+                          <div className="text-2xl mb-1">💕</div>
+                          <div className="text-pink-600 font-medium text-xs">웨딩 템플릿</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
@@ -1447,7 +1430,7 @@ export default function HomePage() {
                     무료 앱 다운로드
                   </button>
                   <button 
-                    onClick={() => window.open('https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic', '_blank')}
+                    onClick={() => window.open('https://contribution-web-srgt.vercel.app/template/603dfb2e-707b-420b-afc9-406c9775a0ee?template=romantic', '_blank')}
                     className="bg-white text-blue-600 px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-50 transition-all duration-300 border-2 border-blue-200 hover:border-blue-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                   >
                     실제 템플릿 체험
@@ -1542,7 +1525,7 @@ export default function HomePage() {
                     {/* 실제 템플릿을 iframe으로 표시할 화면 영역 */}
                     <div 
                       className="absolute cursor-pointer group iframe-container-mobile md:iframe-container-desktop z-5"
-                      onClick={() => window.open('https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic', '_blank')}
+                      onClick={() => window.open('https://contribution-web-srgt.vercel.app/template/603dfb2e-707b-420b-afc9-406c9775a0ee?template=romantic', '_blank')}
                     >
                       {/* 호버 오버레이 */}
                       <div className="absolute inset-0 bg-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center rounded-[30px]">
@@ -1553,19 +1536,29 @@ export default function HomePage() {
                         </div>
                       </div>
 
-                      {/* 실제 템플릿 iframe */}
-                      <iframe 
-                        src="https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic"
-                        className="w-full h-full border-0"
-                        style={{
-                          transform: 'scale(1.0)',
-                          transformOrigin: 'top center',
-                          width: '100%',
-                          height: '100%'
-                        }}
-                        title="Wedding Template Preview"
-                        scrolling="no"
-                      />
+                      {/* 템플릿 미리보기 이미지 */}
+                      <div className="w-full h-full bg-gradient-to-br from-pink-50 to-rose-100 flex items-center justify-center rounded-[30px] overflow-hidden">
+                        <img 
+                          src="/wedding-template-preview.png"
+                          alt="웨딩 템플릿 미리보기"
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            // fallback으로 플레이스홀더 표시
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                          }}
+                        />
+                        <div 
+                          className="w-full h-full hidden items-center justify-center bg-gradient-to-br from-pink-50 to-rose-100"
+                          style={{ display: 'none' }}
+                        >
+                          <div className="text-center p-4">
+                            <div className="text-4xl mb-2">💕</div>
+                            <div className="text-pink-600 font-medium text-sm">웨딩 템플릿</div>
+                            <div className="text-pink-500 text-xs mt-1">클릭하여 체험하기</div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
                     {/* 플로팅 알림들 - iPhone 프레임에 상대적으로 위치 */}
@@ -1813,7 +1806,7 @@ export default function HomePage() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
               {/* 로맨틱 핑크 템플릿 */}
-              <div className="group cursor-pointer" onClick={() => window.open('https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic', '_blank')}>
+              <div className="group cursor-pointer" onClick={() => window.open('https://contribution-web-srgt.vercel.app/template/603dfb2e-707b-420b-afc9-406c9775a0ee?template=romantic', '_blank')}>
                 <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
                   <div className="relative h-80 bg-gradient-to-br from-pink-50 to-rose-100 flex items-center justify-center">
                     {/* 실제 템플릿 미리보기 목업 */}
