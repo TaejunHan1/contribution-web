@@ -1353,45 +1353,42 @@ export default function HomePage() {
               
               {/* 오른쪽 템플릿 미리보기 */}
               <div className="relative lg:ml-8">
-                {/* 아이폰 주변 장식 요소들 */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  {/* 원형 그라데이션 배경 */}
-                  <div className="absolute w-[500px] h-[500px] bg-gradient-to-br from-blue-100/50 to-purple-100/30 rounded-full blur-2xl animate-pulse"></div>
-                  {/* 작은 원들 */}
-                  <div className="absolute top-10 left-10 w-4 h-4 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
-                  <div className="absolute top-32 right-8 w-3 h-3 bg-purple-400 rounded-full animate-bounce" style={{animationDelay: '0.5s'}}></div>
-                  <div className="absolute bottom-20 left-16 w-2 h-2 bg-pink-400 rounded-full animate-bounce" style={{animationDelay: '1s'}}></div>
-                  <div className="absolute bottom-40 right-12 w-5 h-5 bg-indigo-400 rounded-full animate-bounce" style={{animationDelay: '1.5s'}}></div>
-                </div>
+                {/* 메인 시연 컨테이너 */}
+                <div className="relative bg-gradient-to-br from-gray-50 to-blue-50 rounded-3xl p-3 sm:p-4 md:p-5 lg:p-6 shadow-2xl border border-gray-100 max-w-2xl mx-auto">
+                  {/* 배경 장식 요소 */}
+                  <div className="absolute inset-0 overflow-hidden rounded-3xl">
+                    <div className="absolute -top-6 -right-6 w-16 h-16 md:w-24 md:h-24 lg:w-32 lg:h-32 bg-blue-200/20 rounded-full blur-xl"></div>
+                    <div className="absolute -bottom-6 -left-6 w-16 h-16 md:w-24 md:h-24 lg:w-32 lg:h-32 bg-purple-200/20 rounded-full blur-xl"></div>
+                  </div>
+
+                  {/* 상단 제목 */}
+                  <div className="relative z-10 text-center mb-6">
+                    <div className="inline-flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium mb-2">
+                      💫 실제 작동 중
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900">디지털 청첩장 미리보기</h3>
+                    <p className="text-sm text-gray-600 mt-1">지금 바로 체험해보세요</p>
+                  </div>
 
                 {/* iPhone 프레임 컨테이너 */}
                 <div className="relative z-10">
-                  {/* iPhone 16 Pro 프레임 이미지 사용 - 더 큰 크기 */}
-                  <div className="relative mx-auto w-[350px] h-[706px] md:w-[420px] md:h-[836px] lg:w-[480px] lg:h-[956px] drop-shadow-2xl">
+                  {/* iPhone 프레임 */}
+                  <div className="relative mx-auto w-[240px] h-[480px] sm:w-[260px] sm:h-[520px] md:w-[280px] md:h-[560px] lg:w-[380px] lg:h-[760px] xl:w-[480px] xl:h-[960px] drop-shadow-2xl">
                     <img 
                       src="/iphone16pro.png" 
-                      alt="iPhone 16 Pro Frame"
-                      className="absolute drop-shadow-2xl"
-                      style={{ 
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        zIndex: 10,
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%) scale(0.95)'
-                      }}
+                      alt="iPhone Frame"
+                      className="absolute inset-0 w-full h-full object-contain pointer-events-none z-10"
                     />
 
                     {/* 실제 템플릿을 iframe으로 표시할 화면 영역 */}
                     <div 
-                      className="absolute cursor-pointer group iframe-container-mobile md:iframe-container-desktop"
+                      className="absolute cursor-pointer group iframe-container-mobile md:iframe-container-desktop z-5"
                       onClick={() => window.open('https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic', '_blank')}
                     >
                       {/* 호버 오버레이 */}
-                      <div className="absolute inset-0 bg-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 flex items-center justify-center">
-                        <div className="bg-white/90 rounded-full p-3 shadow-lg">
-                          <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="absolute inset-0 bg-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center rounded-[30px]">
+                        <div className="bg-white/90 rounded-full p-2 shadow-lg">
+                          <svg className="w-4 h-4 md:w-5 md:h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                           </svg>
                         </div>
@@ -1411,44 +1408,62 @@ export default function HomePage() {
                         scrolling="no"
                       />
                     </div>
-                    
-                    
+
+                    {/* 플로팅 알림들 - iPhone 프레임에 상대적으로 위치 */}
+                    <div className="absolute top-16 -left-1 md:-left-2 lg:-left-4 animate-float z-50">
+                      <div className="bg-white rounded-xl p-3 shadow-xl border border-gray-100 max-w-[140px]">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-xs font-semibold text-gray-900 truncate">김민수님</div>
+                            <div className="text-xs text-gray-500">축의금 10만원</div>
+                          </div>
+                        </div>
+                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping"></div>
+                      </div>
+                    </div>
+
+                    <div className="absolute bottom-16 -right-1 md:-right-2 lg:-right-4 z-50">
+                      <div className="bg-white rounded-xl p-3 shadow-xl border border-gray-100 min-w-[180px]">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-xs font-semibold text-gray-900">김민수님</div>
+                            <div className="text-xs text-gray-500">축의금 10만원</div>
+                          </div>
+                          <div className="text-sm font-bold text-blue-600">12명</div>
+                        </div>
+                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-ping"></div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {/* 아이폰 주변 추가 요소들 */}
-                <div className="mt-4 space-y-4">
-                  {/* 플로팅 알림 카드 */}
-                  <div className="bg-white rounded-2xl p-4 shadow-2xl border border-gray-100 animate-float relative">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-sm font-semibold text-gray-900">김민수님 축의금 도착</div>
-                        <div className="text-xs text-gray-500">100,000원 • 방금 전</div>
-                      </div>
-                    </div>
-                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full animate-ping"></div>
+                  {/* 하단 기능 태그들 */}
+                  <div className="relative z-10 mt-6 flex flex-wrap justify-center gap-2">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-700 font-medium">
+                      ⚡ 실시간 알림
+                    </span>
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-green-100 text-green-700 font-medium">
+                      📱 모바일 최적화
+                    </span>
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-purple-100 text-purple-700 font-medium">
+                      🔒 안전한 관리
+                    </span>
                   </div>
+                </div>
 
-                  {/* 통계 미니 카드 */}
-                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-4 border border-blue-100">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-gray-900 mb-1">12명</div>
-                      <div className="text-sm text-gray-600">실시간 참석 확인</div>
-                      <div className="flex justify-center mt-2 gap-1">
-                        <div className="w-6 h-6 bg-blue-400 rounded-full border-2 border-white shadow-sm"></div>
-                        <div className="w-6 h-6 bg-green-400 rounded-full border-2 border-white shadow-sm -ml-2"></div>
-                        <div className="w-6 h-6 bg-purple-400 rounded-full border-2 border-white shadow-sm -ml-2"></div>
-                        <div className="w-6 h-6 bg-gray-300 rounded-full border-2 border-white shadow-sm -ml-2 flex items-center justify-center">
-                          <span className="text-xs text-gray-600 font-medium">+9</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                {/* 하단 설명 텍스트 */}
+                <div className="mt-4 text-center">
+                  <p className="text-sm text-gray-600">실제 작동하는 템플릿을 클릭해서 체험해보세요</p>
                 </div>
 
                 {/* CSS 애니메이션 및 반응형 스타일 추가 */}
