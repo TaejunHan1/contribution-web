@@ -1251,8 +1251,8 @@ export default function HomePage() {
                           height: '333%'
                         }}
                         title="Wedding Template Preview Mobile"
-                        scrolling="no"
-                        sandbox="allow-scripts allow-same-origin"
+                        allowFullScreen={true}
+                        referrerPolicy="no-referrer-when-downgrade"
                       />
                     </div>
                   </div>
@@ -1541,11 +1541,8 @@ export default function HomePage() {
                           height: '100%'
                         }}
                         title="Wedding Template Preview"
-                        scrolling="no"
-                        sandbox="allow-scripts allow-same-origin"
-                        onError={() => {
-                          console.log('iframe load error');
-                        }}
+                        allowFullScreen={true}
+                        referrerPolicy="no-referrer-when-downgrade"
                       />
                     </div>
 
