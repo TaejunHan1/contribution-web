@@ -1241,20 +1241,7 @@ export default function HomePage() {
                   {/* 아이폰 화면 안 미리보기 컨텐츠 */}
                   <div className="absolute inset-0 flex items-center justify-center z-5">
                     <div className="w-[45%] h-[55%] rounded-[25px] overflow-hidden bg-white shadow-inner">
-                      <img 
-                        src="/wedding-template-preview.png"
-                        alt="웨딩 템플릿 미리보기"
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          // fallback으로 플레이스홀더 표시
-                          e.target.style.display = 'none';
-                          e.target.nextSibling.style.display = 'flex';
-                        }}
-                      />
-                      <div 
-                        className="w-full h-full hidden bg-gradient-to-br from-pink-50 to-rose-100 items-center justify-center"
-                        style={{ display: 'none' }}
-                      >
+                      <div className="w-full h-full bg-gradient-to-br from-pink-50 to-rose-100 flex items-center justify-center">
                         <div className="text-center">
                           <div className="text-2xl mb-1">💕</div>
                           <div className="text-pink-600 font-medium text-xs">웨딩 템플릿</div>
@@ -1538,20 +1525,7 @@ export default function HomePage() {
 
                       {/* 템플릿 미리보기 이미지 */}
                       <div className="w-full h-full bg-gradient-to-br from-pink-50 to-rose-100 flex items-center justify-center rounded-[30px] overflow-hidden">
-                        <img 
-                          src="/wedding-template-preview.png"
-                          alt="웨딩 템플릿 미리보기"
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            // fallback으로 플레이스홀더 표시
-                            e.target.style.display = 'none';
-                            e.target.nextSibling.style.display = 'flex';
-                          }}
-                        />
-                        <div 
-                          className="w-full h-full hidden items-center justify-center bg-gradient-to-br from-pink-50 to-rose-100"
-                          style={{ display: 'none' }}
-                        >
+                        <div className="w-full h-full bg-gradient-to-br from-pink-50 to-rose-100 flex items-center justify-center">
                           <div className="text-center p-4">
                             <div className="text-4xl mb-2">💕</div>
                             <div className="text-pink-600 font-medium text-sm">웨딩 템플릿</div>
