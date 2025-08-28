@@ -1241,10 +1241,17 @@ export default function HomePage() {
                   {/* 아이폰 화면 안 미리보기 컨텐츠 */}
                   <div className="absolute inset-0 flex items-center justify-center z-5">
                     <div className="w-[45%] h-[55%] rounded-[25px] overflow-hidden bg-white shadow-inner">
-                      <div className="w-full h-full bg-gradient-to-br from-pink-50 to-rose-100 flex items-center justify-center">
+                      <div className="w-full h-full bg-white flex flex-col items-center justify-center p-2">
+                        <div className="w-6 h-6 rounded-full bg-pink-200 flex items-center justify-center mb-1">
+                          <span className="text-xs">💕</span>
+                        </div>
                         <div className="text-center">
-                          <div className="text-2xl mb-1">💕</div>
-                          <div className="text-pink-600 font-medium text-xs">웨딩 템플릿</div>
+                          <div className="text-[8px] font-bold text-gray-800 mb-0.5">지현 ♥ 태준</div>
+                          <div className="text-[6px] text-gray-600 mb-0.5">2024년 12월 15일</div>
+                          <div className="text-[5px] text-gray-500">서울 강남구 웨딩홀</div>
+                        </div>
+                        <div className="mt-1 w-4 h-2 bg-pink-100 rounded-sm flex items-center justify-center">
+                          <span className="text-[4px] text-pink-600">💒</span>
                         </div>
                       </div>
                     </div>
@@ -1523,16 +1530,23 @@ export default function HomePage() {
                         </div>
                       </div>
 
-                      {/* 템플릿 미리보기 이미지 */}
-                      <div className="w-full h-full bg-gradient-to-br from-pink-50 to-rose-100 flex items-center justify-center rounded-[30px] overflow-hidden">
-                        <div className="w-full h-full bg-gradient-to-br from-pink-50 to-rose-100 flex items-center justify-center">
-                          <div className="text-center p-4">
-                            <div className="text-4xl mb-2">💕</div>
-                            <div className="text-pink-600 font-medium text-sm">웨딩 템플릿</div>
-                            <div className="text-pink-500 text-xs mt-1">클릭하여 체험하기</div>
-                          </div>
-                        </div>
-                      </div>
+                      {/* 실제 템플릿 iframe */}
+                      <iframe 
+                        src="https://contribution-web-srgt.vercel.app/template/603dfb2e-707b-420b-afc9-406c9775a0ee?template=romantic"
+                        className="w-full h-full border-0"
+                        style={{
+                          transform: 'scale(1.0)',
+                          transformOrigin: 'top center',
+                          width: '100%',
+                          height: '100%'
+                        }}
+                        title="Wedding Template Preview"
+                        scrolling="no"
+                        sandbox="allow-scripts allow-same-origin"
+                        onError={() => {
+                          console.log('iframe load error');
+                        }}
+                      />
                     </div>
 
                     {/* 플로팅 알림들 - iPhone 프레임에 상대적으로 위치 */}
