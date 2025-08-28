@@ -1262,6 +1262,23 @@ export default function HomePage() {
                     className="absolute inset-0 w-full h-full object-contain pointer-events-none z-10"
                   />
 
+                  {/* 아이폰 화면 안 미리보기 컨텐츠 */}
+                  <div className="absolute inset-0 flex items-center justify-center z-5">
+                    <div className="w-[45%] h-[55%]  rounded-[15px] overflow-hidden bg-white shadow-inner">
+                      <iframe
+                        src="https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic"
+                        className="w-full h-full border-0"
+                        style={{
+                          transform: 'scale(0.6)',
+                          transformOrigin: 'top left',
+                          width: '167%',
+                          height: '167%'
+                        }}
+                        title="Wedding Template Preview"
+                        scrolling="no"
+                      />
+                    </div>
+                  </div>
 
                   {/* 플로팅 알림들 */}
                   <div className="absolute top-60 left-8 animate-float z-50">
