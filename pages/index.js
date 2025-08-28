@@ -1147,7 +1147,7 @@ export default function HomePage() {
       <div className="min-h-screen bg-white">
         {/* 헤더 */}
         <header className="sticky top-0 z-50 bg-white shadow-md border-b border-gray-100">
-          <div className="max-w-6xl mx-auto px-4 py-3 md:py-4 flex justify-between items-center">
+          <div className="max-w-6xl mx-auto px-4 py-1 md:py-2 flex justify-between items-center">
             <div className="flex items-center">
               <img 
                 src="/jeongdamlogo.png" 
@@ -1222,7 +1222,7 @@ export default function HomePage() {
         </header>
 
         {/* 히어로 섹션 */}
-        <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-12 md:py-20 relative overflow-hidden">
+        <section className="bg-gradient-to-br from-blue-50 to-indigo-100 md:py-20 relative overflow-hidden">
           {/* 배경 장식 요소들 */}
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200/20 rounded-full blur-3xl"></div>
@@ -1230,8 +1230,146 @@ export default function HomePage() {
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
           </div>
           
-          <div className="max-w-7xl mx-auto px-4 relative">
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div className="max-w-7xl mx-auto px-0 md:px-4 relative">
+            {/* 모바일 전용 버전 */}
+            <div className="block md:hidden text-center pt-8 pb-2">
+              {/* 배지 */}
+              <div className="inline-flex items-center bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-3 shadow-sm">
+                🔥 7초만에 이해하는 디지털 부조 시스템
+              </div>
+              
+              {/* 메인 타이틀 */}
+              <h1 className="text-3xl font-bold text-gray-900 mb-3 leading-tight">
+                디지털 경조사 관리<br />
+                <span className="text-blue-600 relative">
+                  정담
+                  <div className="absolute -bottom-2 left-0 w-full h-3 bg-blue-200/50 -z-10 rounded"></div>
+                </span>
+              </h1>
+              
+              {/* 서브텍스트 */}
+              <p className="text-lg text-gray-600 mb-4 px-4 leading-relaxed">
+                <span className="font-semibold text-gray-900">QR 스캔 → 디지털 방명록 → 실시간 관리</span><br />
+                결혼식·장례식이 이렇게 간편할 줄이야! 
+              </p>
+
+              {/* 아이폰 프레임 - 모바일용 (더 큰 크기) */}
+              <div className="relative mb-2 flex justify-center items-center w-full">
+                <div className="relative w-[95vw] h-[75vh] drop-shadow-2xl -mt-28">
+                  <img 
+                    src="/iphone16pro.png" 
+                    alt="iPhone Frame"
+                    className="absolute inset-0 w-full h-full object-contain pointer-events-none z-10"
+                  />
+
+
+                  {/* 플로팅 알림들 */}
+                  <div className="absolute top-60 left-8 animate-float z-50">
+                    <div className="bg-white rounded-xl p-3 shadow-xl border border-gray-100 max-w-[140px]">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-xs font-semibold text-gray-900 truncate">김민수님</div>
+                          <div className="text-xs text-gray-500">축의금 10만원</div>
+                        </div>
+                      </div>
+                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping"></div>
+                    </div>
+                  </div>
+
+                  <div className="absolute bottom-64 right-8 z-50">
+                    <div className="bg-white rounded-xl p-3 shadow-xl border border-gray-100 min-w-[160px]">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                          </svg>
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-xs font-semibold text-gray-900">최효정님</div>
+                          <div className="text-xs text-gray-500">축의금 10만원</div>
+                        </div>
+                        <div className="text-sm font-bold text-blue-600">12명</div>
+                      </div>
+                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-ping"></div>
+                    </div>
+                  </div>
+
+                  {/* 하단 기능 태그들 */}
+                  <div className="relative z-10 mt-28 flex flex-wrap justify-center gap-2">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-700 font-medium">
+                      ⚡ 실시간 알림
+                    </span>
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-green-100 text-green-700 font-medium">
+                      📱 모바일 최적화
+                    </span>
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-purple-100 text-purple-700 font-medium">
+                      🔒 안전한 관리
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 리뷰 카드들 - 아이폰 아래 */}
+              <div className="flex flex-col items-center gap-3 px-4 -mt-36">
+                <div className="bg-white rounded-xl p-3 shadow-lg border border-gray-100 w-full max-w-[320px]">
+                  <div className="flex items-center gap-3">
+                    <img 
+                      src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=64&h=64&fit=crop&crop=face&auto=format" 
+                      alt="박지영님 프로필" 
+                      className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <div className="text-xs font-semibold text-gray-900">박지영</div>
+                        <div className="flex items-center gap-0.5">
+                          <span className="text-yellow-400 text-xs">★★★★★</span>
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-600 mt-1">
+                        "정말 편리해요! QR코드로 간편하게 축의금 받고 관리도 쉬워요"
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-xl p-3 shadow-lg border border-gray-100 w-full max-w-[320px]">
+                  <div className="flex items-center gap-3">
+                    <img 
+                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=64&h=64&fit=crop&crop=face&auto=format" 
+                      alt="이준호님 프로필" 
+                      className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <div className="text-xs font-semibold text-gray-900">이준호</div>
+                        <div className="flex items-center gap-0.5">
+                          <span className="text-yellow-400 text-xs">★★★★★</span>
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-600 mt-1">
+                        "종이 방명록 정리 고민이 사라졌어요. 모든 게 자동으로!"
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 무료 앱 다운로드 버튼 */}
+              <div className="flex justify-center px-4 mt-10 mb-8">
+                <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-full text-sm shadow-lg transition-colors duration-200 w-full max-w-[320px]">
+                  무료 앱 다운로드
+                </button>
+              </div>
+
+            </div>
+
+            {/* 데스크톱/태블릿 버전 (기존) */}
+            <div className="hidden md:grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
               {/* 왼쪽 텍스트 */}
               <div className="text-center lg:text-left md:max-w-lg md:mx-auto lg:max-w-none lg:mx-0 relative z-10">
                 <div className="inline-flex items-center bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-6 shadow-sm">
@@ -1318,7 +1456,11 @@ export default function HomePage() {
                 <div className="space-y-4 mb-8">
                   <div className="bg-white/90 backdrop-blur-sm rounded-xl p-5 border border-blue-100 shadow-lg hover:shadow-xl transition-all duration-300">
                     <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">김</div>
+                      <img 
+                        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=48&h=48&fit=crop&crop=face&auto=format" 
+                        alt="김○○님 프로필" 
+                        className="w-12 h-12 rounded-full object-cover"
+                      />
                       <div className="flex-1">
                         <p className="text-gray-700 mb-2">"진짜 편해요! 이제 방명록 관리 스트레스 없어졌어요. 축의금도 실시간으로 확인되고 정말 혁신적이에요!"</p>
                         <div className="flex items-center justify-between">

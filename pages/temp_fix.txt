@@ -1,0 +1,93 @@
+              {/* 아이폰 프레임 - 모바일용 */}
+              <div className="relative mx-auto mb-8">
+                <div className="relative mx-auto w-[240px] h-[480px] drop-shadow-2xl">
+                  <img 
+                    src="/iphone16pro.png" 
+                    alt="iPhone Frame"
+                    className="absolute inset-0 w-full h-full object-contain pointer-events-none z-10"
+                  />
+
+                  {/* 실제 템플릿을 iframe으로 표시할 화면 영역 */}
+                  <div 
+                    className="absolute cursor-pointer group iframe-container-mobile z-5"
+                    onClick={() => window.open('https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic', '_blank')}
+                  >
+                    {/* 호버 오버레이 */}
+                    <div className="absolute inset-0 bg-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center rounded-[30px]">
+                      <div className="bg-white/90 rounded-full p-2 shadow-lg">
+                        <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                      </div>
+                    </div>
+
+                    {/* 실제 템플릿 iframe */}
+                    <iframe 
+                      src="https://contribution-web-srgt.vercel.app/template/c3798b4a-1d11-4cf7-b4ae-aa3150de585f?template=romantic"
+                      className="w-full h-full border-0"
+                      style={{
+                        transform: 'scale(1.0)',
+                        transformOrigin: 'top center',
+                        width: '100%',
+                        height: '100%'
+                      }}
+                      title="Wedding Template Preview"
+                      scrolling="no"
+                    />
+                  </div>
+
+                  {/* 플로팅 알림들 */}
+                  <div className="absolute top-16 -left-1 animate-float z-50">
+                    <div className="bg-white rounded-xl p-3 shadow-xl border border-gray-100 max-w-[140px]">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-xs font-semibold text-gray-900 truncate">김민수님</div>
+                          <div className="text-xs text-gray-500">축의금 10만원</div>
+                        </div>
+                      </div>
+                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping"></div>
+                    </div>
+                  </div>
+
+                  <div className="absolute bottom-16 -right-1 z-50">
+                    <div className="bg-white rounded-xl p-3 shadow-xl border border-gray-100 min-w-[160px]">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                          </svg>
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-xs font-semibold text-gray-900">김민수님</div>
+                          <div className="text-xs text-gray-500">축의금 10만원</div>
+                        </div>
+                        <div className="text-sm font-bold text-blue-600">12명</div>
+                      </div>
+                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-ping"></div>
+                    </div>
+                  </div>
+
+                  {/* 하단 기능 태그들 */}
+                  <div className="relative z-10 mt-4 flex flex-wrap justify-center gap-2">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-700 font-medium">
+                      ⚡ 실시간 알림
+                    </span>
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-green-100 text-green-700 font-medium">
+                      📱 모바일 최적화
+                    </span>
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-purple-100 text-purple-700 font-medium">
+                      🔒 안전한 관리
+                    </span>
+                  </div>
+
+                  {/* 하단 설명 텍스트 */}
+                  <div className="mt-3 text-center">
+                    <p className="text-sm text-gray-600">실제 작동하는 템플릿을 클릭해서 체험해보세요</p>
+                  </div>
+                </div>
+              </div>
