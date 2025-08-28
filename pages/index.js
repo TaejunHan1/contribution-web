@@ -1241,19 +1241,19 @@ export default function HomePage() {
                   {/* 아이폰 화면 안 미리보기 컨텐츠 */}
                   <div className="absolute inset-0 flex items-center justify-center z-5">
                     <div className="w-[45%] h-[55%] rounded-[25px] overflow-hidden bg-white shadow-inner">
-                      <div className="w-full h-full bg-white flex flex-col items-center justify-center p-2">
-                        <div className="w-6 h-6 rounded-full bg-pink-200 flex items-center justify-center mb-1">
-                          <span className="text-xs">💕</span>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-[8px] font-bold text-gray-800 mb-0.5">지현 ♥ 태준</div>
-                          <div className="text-[6px] text-gray-600 mb-0.5">2024년 12월 15일</div>
-                          <div className="text-[5px] text-gray-500">서울 강남구 웨딩홀</div>
-                        </div>
-                        <div className="mt-1 w-4 h-2 bg-pink-100 rounded-sm flex items-center justify-center">
-                          <span className="text-[4px] text-pink-600">💒</span>
-                        </div>
-                      </div>
+                      <iframe 
+                        src="https://contribution-web-srgt.vercel.app/template/603dfb2e-707b-420b-afc9-406c9775a0ee?template=romantic"
+                        className="w-full h-full border-0"
+                        style={{
+                          transform: 'scale(0.3)',
+                          transformOrigin: 'top center',
+                          width: '333%',
+                          height: '333%'
+                        }}
+                        title="Wedding Template Preview Mobile"
+                        scrolling="no"
+                        sandbox="allow-scripts allow-same-origin"
+                      />
                     </div>
                   </div>
 
