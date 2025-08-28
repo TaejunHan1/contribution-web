@@ -1240,7 +1240,7 @@ export default function HomePage() {
 
                   {/* 아이폰 화면 안 미리보기 컨텐츠 */}
                   <div className="absolute inset-0 flex items-center justify-center z-5">
-                    <div className="w-[45%] h-[55%] rounded-[25px] overflow-hidden bg-white shadow-inner">
+                    <div className="w-[45%] h-[55%] rounded-[25px] overflow-hidden bg-white shadow-inner relative">
                       <iframe 
                         src="https://contribution-web-srgt.vercel.app/template/603dfb2e-707b-420b-afc9-406c9775a0ee?template=romantic"
                         className="w-full h-full border-0"
@@ -1253,7 +1253,31 @@ export default function HomePage() {
                         title="Wedding Template Preview Mobile"
                         allowFullScreen={true}
                         referrerPolicy="no-referrer-when-downgrade"
+                        onLoad={(e) => {
+                          // iframe 로드 성공 시 fallback 숨기기
+                          const fallback = e.target.nextElementSibling;
+                          if (fallback) fallback.style.display = 'none';
+                        }}
+                        onError={(e) => {
+                          // iframe 로드 실패 시 fallback 보여주기
+                          e.target.style.display = 'none';
+                          const fallback = e.target.nextElementSibling;
+                          if (fallback) fallback.style.display = 'flex';
+                        }}
                       />
+                      {/* 모바일 fallback */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-pink-50 via-white to-rose-50 flex flex-col items-center justify-center p-1 text-center">
+                        <div className="mb-1">
+                          <div className="text-pink-400 text-[10px]">💝</div>
+                        </div>
+                        <div className="text-[7px] font-bold text-gray-700 mb-0.5">지현 ♥ 태준</div>
+                        <div className="text-[5px] text-gray-500 mb-0.5">2024년 12월 15일 (일)</div>
+                        <div className="text-[4px] text-gray-400 mb-1">오후 2:30</div>
+                        <div className="text-[4px] text-gray-400 mb-1">서울 강남구 웨딩홀</div>
+                        <div className="w-6 h-1.5 bg-pink-100 rounded-sm flex items-center justify-center">
+                          <span className="text-[3px] text-pink-600">참석확인</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
