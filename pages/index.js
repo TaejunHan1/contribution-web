@@ -1243,52 +1243,21 @@ export default function HomePage() {
                     <div className="w-[45%] h-[55%] rounded-[25px] overflow-hidden bg-white shadow-inner relative">
                       <iframe 
                         src="https://contribution-web-srgt.vercel.app/template/603dfb2e-707b-420b-afc9-406c9775a0ee?template=romantic"
-                        className="w-full h-full border-0 z-10 relative"
+                        className="w-full h-full border-0"
                         style={{
-                          transform: 'scale(0.3)',
+                          transform: 'scale(0.5)',
                           transformOrigin: 'top center',
-                          width: '333%',
-                          height: '333%'
+                          width: '200%',
+                          height: '200%',
+                          position: 'absolute',
+                          top: '0',
+                          left: '0'
                         }}
                         title="Wedding Template Preview Mobile"
                         allowFullScreen={true}
                         referrerPolicy="no-referrer-when-downgrade"
-                        sandbox="allow-scripts allow-same-origin allow-forms"
                         loading="eager"
-                        onLoad={(e) => {
-                          console.log('Mobile iframe loaded successfully');
-                          // iframe 로드 성공 시 fallback 숨기기
-                          setTimeout(() => {
-                            const fallback = e.target.parentElement.querySelector('.mobile-fallback');
-                            if (fallback) {
-                              fallback.style.opacity = '0';
-                              fallback.style.pointerEvents = 'none';
-                            }
-                          }, 1000);
-                        }}
-                        onError={(e) => {
-                          console.log('Mobile iframe failed to load');
-                          // iframe 로드 실패 시 fallback 보여주기
-                          const fallback = e.target.parentElement.querySelector('.mobile-fallback');
-                          if (fallback) {
-                            fallback.style.opacity = '1';
-                            fallback.style.pointerEvents = 'auto';
-                          }
-                        }}
                       />
-                      {/* 모바일 fallback - 초기에는 보이다가 iframe 로드되면 숨김 */}
-                      <div className="mobile-fallback absolute inset-0 bg-gradient-to-br from-pink-50 via-white to-rose-50 flex flex-col items-center justify-center p-1 text-center transition-opacity duration-500 z-5">
-                        <div className="mb-1">
-                          <div className="text-pink-400 text-[10px]">💝</div>
-                        </div>
-                        <div className="text-[7px] font-bold text-gray-700 mb-0.5">지현 ♥ 태준</div>
-                        <div className="text-[5px] text-gray-500 mb-0.5">2024년 12월 15일 (일)</div>
-                        <div className="text-[4px] text-gray-400 mb-1">오후 2:30</div>
-                        <div className="text-[4px] text-gray-400 mb-1">서울 강남구 웨딩홀</div>
-                        <div className="w-6 h-1.5 bg-pink-100 rounded-sm flex items-center justify-center">
-                          <span className="text-[3px] text-pink-600">참석확인</span>
-                        </div>
-                      </div>
                     </div>
                   </div>
 
