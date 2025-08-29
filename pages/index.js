@@ -1577,10 +1577,10 @@ export default function HomePage() {
                         src="https://contribution-web-srgt.vercel.app/template/603dfb2e-707b-420b-afc9-406c9775a0ee?template=romantic"
                         className="w-full h-full border-0"
                         style={{
-                          transform: 'scale(0.8)',
+                          transform: 'scale(1.0)',
                           transformOrigin: 'top center',
-                          width: '125%',
-                          height: '125%'
+                          width: '100%',
+                          height: '100%'
                         }}
                         title="Wedding Template Preview"
                         allowFullScreen={true}
@@ -1667,8 +1667,8 @@ export default function HomePage() {
                   @media (min-width: 768px) {
                     .iframe-container-desktop {
                       top: 60px !important;
-                      left: 38px !important;
-                      right: 38px !important;
+                      left: 32px !important;
+                      right: 32px !important;
                       bottom: 60px !important;
                       border-radius: 28px !important;
                     }
