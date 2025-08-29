@@ -1093,6 +1093,8 @@ export default function HomePage() {
   const [isIPhone14ProMax, setIsIPhone14ProMax] = useState(false);
   const [isGalaxyS8Plus, setIsGalaxyS8Plus] = useState(false);
   const [isGalaxyFold, setIsGalaxyFold] = useState(false);
+  const [isIPhoneX, setIsIPhoneX] = useState(false);
+  const [isZFlip, setIsZFlip] = useState(false);
 
   const handleDirectAccess = () => {
     if (eventId.trim()) {
@@ -1107,15 +1109,34 @@ export default function HomePage() {
     // 기기별 크기 감지
     const checkScreenSize = () => {
       const width = window.innerWidth;
-      console.log('Current width:', width); // 디버깅용
-      setIsSmallScreen(width <= 375); // iPhone SE
-      setIsIPhoneXR(width > 375 && width <= 414); // iPhone XR (414px)
-      setIsIPhone14ProMax(width > 414 && width <= 430); // iPhone 14 Pro Max (430px)
-      setIsGalaxyS8Plus(width >= 360 && width <= 365); // Galaxy S8+ (360px)
-      setIsGalaxyFold(width >= 340 && width <= 350); // Galaxy Fold (접힌 상태, 344px)
+      console.log('Current width:', width);
       
-      if (width >= 340 && width <= 350) {
-        console.log('Galaxy Fold detected!'); // 디버깅용
+      // 모든 상태 초기화
+      setIsSmallScreen(false);
+      setIsIPhoneX(false);
+      setIsIPhoneXR(false);
+      setIsIPhone14ProMax(false);
+      setIsGalaxyS8Plus(false);
+      setIsGalaxyFold(false);
+      setIsZFlip(false);
+      
+      // 우선순위로 감지
+      if (width >= 320 && width <= 335) {
+        setIsZFlip(true);
+        console.log('Z Flip detected!');
+      } else if (width >= 340 && width <= 350) {
+        setIsGalaxyFold(true);
+        console.log('Galaxy Fold detected!');
+      } else if (width >= 360 && width <= 365) {
+        setIsGalaxyS8Plus(true);
+      } else if (width < 375) {
+        setIsSmallScreen(true);
+      } else if (width === 375) {
+        setIsIPhoneX(true);
+      } else if (width > 375 && width <= 414) {
+        setIsIPhoneXR(true);
+      } else if (width > 414 && width <= 430) {
+        setIsIPhone14ProMax(true);
       }
     };
     
@@ -1255,8 +1276,8 @@ export default function HomePage() {
               </p>
 
               {/* 아이폰 프레임 - 모바일용 (더 큰 크기) */}
-              <div className={`relative flex justify-center items-center w-full ${isGalaxyFold ? '-mt-32 -mb-36' : 'mb-2'} ${isSmallScreen ? 'mt-14' : ''} ${isIPhoneXR ? '-mt-10' : ''} ${isIPhone14ProMax ? '-mt-12' : ''}`}>
-                <div className={`relative w-[95vw] h-[75vh] drop-shadow-2xl ${isGalaxyFold ? '-mt-12' : '-mt-28'}`}>
+              <div className={`relative flex justify-center items-center w-full ${isZFlip ? '-mt-24 -mb-16' : isGalaxyFold ? '-mt-32 -mb-36' : isIPhoneX ? '-mt-16 -mb-4' : isSmallScreen ? 'mt-14 mb-2' : isIPhoneXR ? '-mt-10 mb-2' : isIPhone14ProMax ? '-mt-12 mb-2' : 'mb-2'}`}>
+                <div className={`relative w-[95vw] h-[75vh] drop-shadow-2xl ${isZFlip ? '-mt-16' : isGalaxyFold ? '-mt-12' : isIPhoneX ? '-mt-24' : '-mt-28'}`}>
                   <img 
                     src="/iphone16pro.png" 
                     alt="iPhone Frame"
@@ -1265,7 +1286,7 @@ export default function HomePage() {
 
                   {/* 아이폰 화면 안 미리보기 컨텐츠 */}
                   <div className="absolute inset-0 flex items-center justify-center z-5">
-                    <div className={`w-[45%] ${isGalaxyFold ? 'h-[47%]' : isSmallScreen ? 'h-[66%]' : isGalaxyS8Plus ? 'h-[50%]' : 'h-[55%]'} rounded-[25px] overflow-hidden bg-white shadow-inner relative`}>
+                    <div className={`w-[45%] ${isZFlip ? 'h-[42%]' : isGalaxyFold ? 'h-[47%]' : isIPhoneX ? 'h-[50%]' : isSmallScreen ? 'h-[66%]' : isGalaxyS8Plus ? 'h-[50%]' : 'h-[55%]'} rounded-[25px] overflow-hidden bg-white shadow-inner relative`}>
                       <iframe 
                         src="https://contribution-web-srgt.vercel.app/template/603dfb2e-707b-420b-afc9-406c9775a0ee?template=romantic"
                         className="w-full h-full border-0"
