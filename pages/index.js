@@ -1312,7 +1312,7 @@ export default function HomePage() {
                   </div>
 
                   {/* 플로팅 알림들 */}
-                  <div className={`absolute animate-float z-50 ${isGalaxyFold ? 'top-64 left-8' : isSmallScreen ? 'top-48 left-8' : 'top-60 left-8'}`}>
+                  <div className={`absolute animate-float z-50 ${isZFlip ? 'top-48 left-8' : isGalaxyFold ? 'top-52 left-8' : isSmallScreen ? 'top-48 left-8' : 'top-60 left-8'}`}>
                     <div className="bg-white rounded-xl p-3 shadow-xl border border-gray-100 max-w-[140px]">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
@@ -1329,7 +1329,7 @@ export default function HomePage() {
                     </div>
                   </div>
 
-                  <div className={`absolute z-50 ${isGalaxyFold ? 'bottom-64 right-4' : isSmallScreen ? 'bottom-48 right-8' : 'bottom-64 right-8'}`}>
+                  <div className={`absolute z-50 ${isZFlip ? 'bottom-40 right-4' : isGalaxyFold ? 'bottom-48 right-4' : isSmallScreen ? 'bottom-48 right-8' : 'bottom-64 right-8'}`}>
                     <div className="bg-white rounded-xl p-3 shadow-xl border border-gray-100 min-w-[160px]">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
