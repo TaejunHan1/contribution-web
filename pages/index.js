@@ -1121,9 +1121,9 @@ export default function HomePage() {
       setIsZFlip(false);
       
       // 우선순위로 감지
-      if (width >= 320 && width <= 335) {
+      if (width >= 310 && width <= 340) {
         setIsZFlip(true);
-        console.log('Z Flip detected!');
+        console.log('Z Flip detected! Width:', width);
       } else if (width >= 340 && width <= 350) {
         setIsGalaxyFold(true);
         console.log('Galaxy Fold detected!');
@@ -1276,8 +1276,8 @@ export default function HomePage() {
               </p>
 
               {/* 아이폰 프레임 - 모바일용 (더 큰 크기) */}
-              <div className={`relative flex justify-center items-center w-full ${isZFlip ? '-mt-24 -mb-12' : isGalaxyFold ? '-mt-28 -mb-32' : isIPhoneX ? '-mt-16 -mb-4' : isSmallScreen ? 'mt-14 mb-2' : isIPhoneXR ? '-mt-10 mb-2' : isIPhone14ProMax ? '-mt-12 mb-2' : 'mb-2'}`}>
-                <div className={`relative w-[95vw] drop-shadow-2xl ${isZFlip ? 'h-[500px] -mt-12' : isGalaxyFold ? 'h-[600px] -mt-8' : isIPhoneX ? 'h-[650px] -mt-24' : 'h-[700px] -mt-28'}`}>
+              <div className={`relative flex justify-center items-center w-full ${isZFlip ? '-mt-32 -mb-12' : isGalaxyFold ? '-mt-28 -mb-32' : isIPhoneX ? '-mt-16 -mb-4' : isSmallScreen ? 'mt-14 mb-2' : isIPhoneXR ? '-mt-10 mb-2' : isIPhone14ProMax ? '-mt-12 mb-2' : 'mb-2'}`}>
+                <div className={`relative w-[95vw] drop-shadow-2xl ${isZFlip ? 'h-[500px] -mt-20' : isGalaxyFold ? 'h-[600px] -mt-8' : isIPhoneX ? 'h-[650px] -mt-24' : 'h-[700px] -mt-28'}`}>
                   <img 
                     src="/iphone16pro.png" 
                     alt="iPhone Frame"
@@ -1286,7 +1286,7 @@ export default function HomePage() {
 
                   {/* 아이폰 화면 안 미리보기 컨텐츠 */}
                   <div className="absolute inset-0 flex items-center justify-center z-5">
-                    <div className={`w-[45%] ${isZFlip ? 'h-[39%]' : isGalaxyFold ? 'h-[50%]' : isIPhoneX ? 'h-[50%]' : isSmallScreen ? 'h-[66%]' : isGalaxyS8Plus ? 'h-[50%]' : 'h-[55%]'} rounded-[25px] overflow-hidden bg-white shadow-inner relative`}>
+                    <div className={`w-[45%] ${isZFlip ? 'h-[30%]' : isGalaxyFold ? 'h-[53%]' : isIPhoneX ? 'h-[50%]' : isSmallScreen ? 'h-[66%]' : isGalaxyS8Plus ? 'h-[50%]' : 'h-[55%]'} rounded-[25px] overflow-hidden bg-white shadow-inner relative`}>
                       <iframe 
                         src="https://contribution-web-srgt.vercel.app/template/603dfb2e-707b-420b-afc9-406c9775a0ee?template=romantic"
                         className="w-full h-full border-0"
