@@ -1088,6 +1088,11 @@ export default function HomePage() {
   const [eventId, setEventId] = useState('');
   const [isMounted, setIsMounted] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [isIPhoneXR, setIsIPhoneXR] = useState(false);
+  const [isIPhone14ProMax, setIsIPhone14ProMax] = useState(false);
+  const [isGalaxyS8Plus, setIsGalaxyS8Plus] = useState(false);
+  const [isGalaxyFold, setIsGalaxyFold] = useState(false);
 
   const handleDirectAccess = () => {
     if (eventId.trim()) {
@@ -1098,6 +1103,26 @@ export default function HomePage() {
 
   useEffect(() => {
     setIsMounted(true);
+    
+    // 기기별 크기 감지
+    const checkScreenSize = () => {
+      const width = window.innerWidth;
+      console.log('Current width:', width); // 디버깅용
+      setIsSmallScreen(width <= 375); // iPhone SE
+      setIsIPhoneXR(width > 375 && width <= 414); // iPhone XR (414px)
+      setIsIPhone14ProMax(width > 414 && width <= 430); // iPhone 14 Pro Max (430px)
+      setIsGalaxyS8Plus(width >= 360 && width <= 365); // Galaxy S8+ (360px)
+      setIsGalaxyFold(width >= 340 && width <= 350); // Galaxy Fold (접힌 상태, 344px)
+      
+      if (width >= 340 && width <= 350) {
+        console.log('Galaxy Fold detected!'); // 디버깅용
+      }
+    };
+    
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    
+    return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
   return (
@@ -1230,8 +1255,8 @@ export default function HomePage() {
               </p>
 
               {/* 아이폰 프레임 - 모바일용 (더 큰 크기) */}
-              <div className="relative mb-2 flex justify-center items-center w-full">
-                <div className="relative w-[95vw] h-[75vh] drop-shadow-2xl -mt-28">
+              <div className={`relative flex justify-center items-center w-full ${isGalaxyFold ? '-mt-32 -mb-36' : 'mb-2'} ${isSmallScreen ? 'mt-14' : ''} ${isIPhoneXR ? '-mt-10' : ''} ${isIPhone14ProMax ? '-mt-12' : ''}`}>
+                <div className={`relative w-[95vw] h-[75vh] drop-shadow-2xl ${isGalaxyFold ? '-mt-12' : '-mt-28'}`}>
                   <img 
                     src="/iphone16pro.png" 
                     alt="iPhone Frame"
@@ -1240,7 +1265,7 @@ export default function HomePage() {
 
                   {/* 아이폰 화면 안 미리보기 컨텐츠 */}
                   <div className="absolute inset-0 flex items-center justify-center z-5">
-                    <div className="w-[45%] h-[55%] rounded-[25px] overflow-hidden bg-white shadow-inner relative">
+                    <div className={`w-[45%] ${isGalaxyFold ? 'h-[47%]' : isSmallScreen ? 'h-[66%]' : isGalaxyS8Plus ? 'h-[50%]' : 'h-[55%]'} rounded-[25px] overflow-hidden bg-white shadow-inner relative`}>
                       <iframe 
                         src="https://contribution-web-srgt.vercel.app/template/603dfb2e-707b-420b-afc9-406c9775a0ee?template=romantic"
                         className="w-full h-full border-0"
@@ -1262,7 +1287,7 @@ export default function HomePage() {
                   </div>
 
                   {/* 플로팅 알림들 */}
-                  <div className="absolute top-60 left-8 animate-float z-50">
+                  <div className={`absolute animate-float z-50 ${isGalaxyFold ? 'top-64 left-8' : isSmallScreen ? 'top-48 left-8' : 'top-60 left-8'}`}>
                     <div className="bg-white rounded-xl p-3 shadow-xl border border-gray-100 max-w-[140px]">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
@@ -1279,7 +1304,7 @@ export default function HomePage() {
                     </div>
                   </div>
 
-                  <div className="absolute bottom-64 right-8 z-50">
+                  <div className={`absolute z-50 ${isGalaxyFold ? 'bottom-64 right-4' : isSmallScreen ? 'bottom-48 right-8' : 'bottom-64 right-8'}`}>
                     <div className="bg-white rounded-xl p-3 shadow-xl border border-gray-100 min-w-[160px]">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
@@ -1297,23 +1322,11 @@ export default function HomePage() {
                     </div>
                   </div>
 
-                  {/* 하단 기능 태그들 */}
-                  <div className="relative z-10 mt-28 flex flex-wrap justify-center gap-2">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-700 font-medium">
-                      ⚡ 실시간 알림
-                    </span>
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-green-100 text-green-700 font-medium">
-                      📱 모바일 최적화
-                    </span>
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-purple-100 text-purple-700 font-medium">
-                      🔒 안전한 관리
-                    </span>
-                  </div>
                 </div>
               </div>
 
               {/* 리뷰 카드들 - 아이폰 아래 */}
-              <div className="flex flex-col items-center gap-3 px-4 -mt-36">
+              <div className={`flex flex-col items-center gap-3 px-4 ${isSmallScreen ? '-mt-16' : '-mt-36'}`}>
                 <div className="bg-white rounded-xl p-3 shadow-lg border border-gray-100 w-full max-w-[320px]">
                   <div className="flex items-center gap-3">
                     <img 
