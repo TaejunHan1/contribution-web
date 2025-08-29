@@ -1551,7 +1551,7 @@ export default function HomePage() {
                 {/* iPhone 프레임 컨테이너 */}
                 <div className="relative z-10">
                   {/* iPhone 프레임 */}
-                  <div className="relative mx-auto w-[240px] h-[480px] sm:w-[260px] sm:h-[520px] md:w-[280px] md:h-[560px] lg:w-[380px] lg:h-[760px] xl:w-[480px] xl:h-[960px] drop-shadow-2xl">
+                  <div className="relative mx-auto w-[240px] h-[480px] sm:w-[260px] sm:h-[520px] md:w-[380px] md:h-[760px] lg:w-[420px] lg:h-[840px] xl:w-[480px] xl:h-[960px] drop-shadow-2xl">
                     <img 
                       src="/iphone16pro.png" 
                       alt="iPhone Frame"
@@ -1577,10 +1577,10 @@ export default function HomePage() {
                         src="https://contribution-web-srgt.vercel.app/template/603dfb2e-707b-420b-afc9-406c9775a0ee?template=romantic"
                         className="w-full h-full border-0"
                         style={{
-                          transform: 'scale(1.0)',
+                          transform: 'scale(0.8)',
                           transformOrigin: 'top center',
-                          width: '100%',
-                          height: '100%'
+                          width: '125%',
+                          height: '125%'
                         }}
                         title="Wedding Template Preview"
                         allowFullScreen={true}
