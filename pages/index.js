@@ -1277,7 +1277,7 @@ export default function HomePage() {
 
               {/* 아이폰 프레임 - 모바일용 (더 큰 크기) */}
               <div className={`relative flex justify-center items-center w-full ${isZFlip ? '-mt-24 -mb-16' : isGalaxyFold ? '-mt-32 -mb-36' : isIPhoneX ? '-mt-16 -mb-4' : isSmallScreen ? 'mt-14 mb-2' : isIPhoneXR ? '-mt-10 mb-2' : isIPhone14ProMax ? '-mt-12 mb-2' : 'mb-2'}`}>
-                <div className={`relative w-[95vw] h-[75vh] drop-shadow-2xl ${isZFlip ? '-mt-16' : isGalaxyFold ? '-mt-12' : isIPhoneX ? '-mt-24' : '-mt-28'}`}>
+                <div className={`relative w-[95vw] drop-shadow-2xl ${isZFlip ? 'h-[500px] -mt-16' : isGalaxyFold ? 'h-[600px] -mt-12' : isIPhoneX ? 'h-[650px] -mt-24' : 'h-[700px] -mt-28'}`}>
                   <img 
                     src="/iphone16pro.png" 
                     alt="iPhone Frame"
