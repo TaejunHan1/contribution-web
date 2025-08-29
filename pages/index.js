@@ -1230,8 +1230,8 @@ export default function HomePage() {
               </p>
 
               {/* 아이폰 프레임 - 모바일용 (더 큰 크기) */}
-              <div className="relative mb-8 mt-4 flex justify-center items-center w-full">
-                <div className="relative w-[95vw] h-[75vh] drop-shadow-2xl -mt-20">
+              <div className="relative mb-2 flex justify-center items-center w-full">
+                <div className="relative w-[95vw] h-[75vh] drop-shadow-2xl -mt-28">
                   <img 
                     src="/iphone16pro.png" 
                     alt="iPhone Frame"
@@ -1245,10 +1245,10 @@ export default function HomePage() {
                         src="https://contribution-web-srgt.vercel.app/template/603dfb2e-707b-420b-afc9-406c9775a0ee?template=romantic"
                         className="w-full h-full border-0"
                         style={{
-                          transform: 'scale(0.35)',
+                          transform: 'scale(0.25)',
                           transformOrigin: 'top left',
-                          width: '285%',
-                          height: '285%',
+                          width: '400%',
+                          height: '400%',
                           position: 'absolute',
                           top: '0',
                           left: '0'
@@ -1313,7 +1313,7 @@ export default function HomePage() {
               </div>
 
               {/* 리뷰 카드들 - 아이폰 아래 */}
-              <div className="flex flex-col items-center gap-3 px-4 -mt-20">
+              <div className="flex flex-col items-center gap-3 px-4 -mt-36">
                 <div className="bg-white rounded-xl p-3 shadow-lg border border-gray-100 w-full max-w-[320px]">
                   <div className="flex items-center gap-3">
                     <img 
