@@ -1245,10 +1245,10 @@ export default function HomePage() {
                         src="https://contribution-web-srgt.vercel.app/template/603dfb2e-707b-420b-afc9-406c9775a0ee?template=romantic"
                         className="w-full h-full border-0"
                         style={{
-                          transform: 'scale(0.25)',
+                          transform: 'scale(0.35)',
                           transformOrigin: 'top left',
-                          width: '400%',
-                          height: '400%',
+                          width: '285%',
+                          height: '285%',
                           position: 'absolute',
                           top: '0',
                           left: '0'
