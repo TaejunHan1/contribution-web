@@ -1096,6 +1096,9 @@ export default function HomePage() {
   const [isIPhoneX, setIsIPhoneX] = useState(false);
   const [isZFlip, setIsZFlip] = useState(false);
   const [isIPhone12Pro, setIsIPhone12Pro] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
+  const [isIPadAir, setIsIPadAir] = useState(false);
+  const [isIPadPro, setIsIPadPro] = useState(false);
 
   const handleDirectAccess = () => {
     if (eventId.trim()) {
@@ -1121,9 +1124,20 @@ export default function HomePage() {
       setIsGalaxyFold(false);
       setIsZFlip(false);
       setIsIPhone12Pro(false);
+      setIsTablet(false);
+      setIsIPadAir(false);
+      setIsIPadPro(false);
       
       // 우선순위로 감지
-      if (width === 360) {
+      if (width >= 1280) {
+        setIsIPadPro(true);
+        setIsTablet(true);
+      } else if (width >= 1024) {
+        setIsIPadAir(true);
+        setIsTablet(true);
+      } else if (width >= 768) {
+        setIsTablet(true);
+      } else if (width === 360) {
         setIsZFlip(true);
         console.log('Z Flip detected! Width:', width);
       } else if (width >= 340 && width <= 350) {
@@ -1551,17 +1565,28 @@ export default function HomePage() {
                 {/* iPhone 프레임 컨테이너 */}
                 <div className="relative z-10">
                   {/* iPhone 프레임 */}
-                  <div className="relative mx-auto w-[240px] h-[480px] sm:w-[260px] sm:h-[520px] md:w-[380px] md:h-[760px] lg:w-[420px] lg:h-[840px] xl:w-[480px] xl:h-[960px] drop-shadow-2xl">
+                  <div className="relative mx-auto w-[240px] h-[480px] sm:w-[260px] sm:h-[520px] md:w-[380px] md:h-[760px] lg:w-[420px] lg:h-[840px] xl:w-[480px] xl:h-[960px] drop-shadow-2xl"
+                    style={{
+                      marginLeft: isIPadAir ? '-18px' : isIPadPro ? '15px' : (isTablet && !isIPadAir && !isIPadPro) ? '85px' : '0',
+                    }}>
                     <img 
                       src="/iphone16pro.png" 
                       alt="iPhone Frame"
                       className="absolute inset-0 w-full h-full object-contain pointer-events-none z-10"
+                      style={{
+                        transform: isTablet ? 'scale(1.9)' : 'scale(1.0)'
+                      }}
                     />
 
                     {/* 실제 템플릿을 iframe으로 표시할 화면 영역 */}
                     <div 
                       className="absolute cursor-pointer group iframe-container-mobile md:iframe-container-desktop z-5"
                       onClick={() => window.open('https://contribution-web-srgt.vercel.app/template/603dfb2e-707b-420b-afc9-406c9775a0ee?template=romantic', '_blank')}
+                      style={{
+                        borderRadius: isIPadPro ? '70px' : isIPadAir ? '60px' : isTablet ? '35px' : '30px',
+                        left: isIPadPro || isIPadAir || (isTablet && !isIPadAir && !isIPadPro) ? '35px' : undefined,
+                        right: isIPadPro || isIPadAir || (isTablet && !isIPadAir && !isIPadPro) ? '29px' : undefined
+                      }}
                     >
                       {/* 호버 오버레이 */}
                       <div className="absolute inset-0 bg-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center rounded-[30px]">
@@ -1667,10 +1692,31 @@ export default function HomePage() {
                   @media (min-width: 768px) {
                     .iframe-container-desktop {
                       top: 60px !important;
-                      left: 32px !important;
-                      right: 32px !important;
+                      left: 33px !important;
+                      right: 31px !important;
                       bottom: 60px !important;
-                      border-radius: 28px !important;
+                      border-radius: 35px !important;
+                    }
+                    .iphone-frame-tablet {
+                      transform: scale(3.0) !important;
+                    }
+                  }
+                  @media (min-width: 1024px) {
+                    .iframe-container-desktop {
+                      top: 60px !important;
+                      left: 33px !important;
+                      right: 31px !important;
+                      bottom: 60px !important;
+                      border-radius: 60px !important;
+                    }
+                  }
+                  @media (min-width: 1280px) {
+                    .iframe-container-desktop {
+                      top: 60px !important;
+                      left: 33px !important;
+                      right: 31px !important;
+                      bottom: 60px !important;
+                      border-radius: 70px !important;
                     }
                   }
                 `}</style>
