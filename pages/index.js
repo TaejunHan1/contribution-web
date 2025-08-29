@@ -1290,7 +1290,7 @@ export default function HomePage() {
 
                   {/* 아이폰 화면 안 미리보기 컨텐츠 */}
                   <div className="absolute inset-0 flex items-center justify-center z-5">
-                    <div className={`w-[45%] ${isZFlip ? 'h-[35%]' : isGalaxyFold ? 'h-[52%]' : isIPhoneX ? 'h-[50%]' : isIPhone12Pro ? 'h-[52%]' : isSmallScreen ? 'h-[66%]' : isGalaxyS8Plus ? 'h-[50%]' : 'h-[55%]'} rounded-[25px] overflow-hidden bg-white shadow-inner relative`}>
+                    <div className={`w-[45%] ${isZFlip ? 'h-[59%]' : isGalaxyFold ? 'h-[52%]' : isIPhoneX ? 'h-[50%]' : isIPhone12Pro ? 'h-[50%]' : isSmallScreen ? 'h-[66%]' : isGalaxyS8Plus ? 'h-[50%]' : isIPhoneXR ? 'h-[53%]' : 'h-[55%]'} rounded-[25px] overflow-hidden bg-white shadow-inner relative`}>
                       <iframe 
                         src="https://contribution-web-srgt.vercel.app/template/603dfb2e-707b-420b-afc9-406c9775a0ee?template=romantic"
                         className="w-full h-full border-0"
