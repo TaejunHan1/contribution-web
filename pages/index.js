@@ -164,7 +164,7 @@ function HandwritingAnimation() {
           borderRadius: '4px',
           boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3), 0 0 0 1px #8b2020',
           transformStyle: 'preserve-3d'
-        }}>
+        }} className="handwriting-animation-container">
           
           {/* 책 두께감 표현 */}
           <div style={{
@@ -577,6 +577,19 @@ function HandwritingAnimation() {
               transform: translateY(0);
             }
           }
+          
+          /* iPad Mini 전용 반응형 크기 조정 (768px-1023px) */
+          @media (min-width: 768px) and (max-width: 1023px) {
+            .handwriting-animation-container {
+              width: 180px !important;
+              height: 110px !important;
+              font-size: 0.7em !important;
+            }
+            
+            .handwriting-animation-container * {
+              font-size: inherit !important;
+            }
+          }
         `}</style>
       </div>
     </div>
@@ -640,7 +653,7 @@ function ExcelCalculationAnimation() {
     }}>
       {/* 엑셀 스프레드시트 */}
       <div style={{
-        width: '450px',
+        width: '380px',
         height: '160px',
         background: '#f8f9fa',
         border: '2px solid #dee2e6',
@@ -650,7 +663,7 @@ function ExcelCalculationAnimation() {
         transition: 'opacity 0.5s ease-in-out',
         fontFamily: 'Consolas, monospace',
         fontSize: '12px'
-      }}>
+      }} className="excel-animation-container">
         {/* 엑셀 헤더 */}
         <div style={{
           background: '#e9ecef',
@@ -665,36 +678,36 @@ function ExcelCalculationAnimation() {
         </div>
         
         {/* 스프레드시트 내용 */}
-        <div style={{ padding: '8px' }}>
-          <table style={{ width: '100%', fontSize: '12px', borderCollapse: 'collapse' }}>
+        <div style={{ padding: '6px' }}>
+          <table style={{ width: '100%', fontSize: '10px', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: '#f1f3f4' }}>
-                <th style={{ border: '1px solid #dee2e6', padding: '6px', fontSize: '11px' }}>이름</th>
-                <th style={{ border: '1px solid #dee2e6', padding: '6px', fontSize: '11px' }}>금액</th>
-                <th style={{ border: '1px solid #dee2e6', padding: '6px', fontSize: '11px' }}>합계</th>
+                <th style={{ border: '1px solid #dee2e6', padding: '4px', fontSize: '9px' }}>이름</th>
+                <th style={{ border: '1px solid #dee2e6', padding: '4px', fontSize: '9px' }}>금액</th>
+                <th style={{ border: '1px solid #dee2e6', padding: '4px', fontSize: '9px' }}>합계</th>
               </tr>
             </thead>
             <tbody>
               <tr style={{ opacity: currentStep >= 1 ? 1 : 0.3, transition: 'opacity 0.5s' }}>
-                <td style={{ border: '1px solid #dee2e6', padding: '5px 6px' }}>김민수</td>
-                <td style={{ border: '1px solid #dee2e6', padding: '5px 6px', textAlign: 'right' }}>
+                <td style={{ border: '1px solid #dee2e6', padding: '3px 4px' }}>김민수</td>
+                <td style={{ border: '1px solid #dee2e6', padding: '3px 4px', textAlign: 'right' }}>
                   {calculatingValues[0] || '50,000'}
                 </td>
-                <td style={{ border: '1px solid #dee2e6', padding: '5px 6px' }}></td>
+                <td style={{ border: '1px solid #dee2e6', padding: '3px 4px' }}></td>
               </tr>
               <tr style={{ opacity: currentStep >= 2 ? 1 : 0.3, transition: 'opacity 0.5s' }}>
-                <td style={{ border: '1px solid #dee2e6', padding: '5px 6px' }}>박정우</td>
-                <td style={{ border: '1px solid #dee2e6', padding: '5px 6px', textAlign: 'right' }}>
+                <td style={{ border: '1px solid #dee2e6', padding: '3px 4px' }}>박정우</td>
+                <td style={{ border: '1px solid #dee2e6', padding: '3px 4px', textAlign: 'right' }}>
                   {calculatingValues[1] || '100,000'}
                 </td>
-                <td style={{ border: '1px solid #dee2e6', padding: '5px 6px' }}></td>
+                <td style={{ border: '1px solid #dee2e6', padding: '3px 4px' }}></td>
               </tr>
               <tr style={{ opacity: currentStep >= 3 ? 1 : 0.3, transition: 'opacity 0.5s' }}>
-                <td style={{ border: '1px solid #dee2e6', padding: '5px 6px' }}>이지영</td>
-                <td style={{ border: '1px solid #dee2e6', padding: '5px 6px', textAlign: 'right' }}>
+                <td style={{ border: '1px solid #dee2e6', padding: '3px 4px' }}>이지영</td>
+                <td style={{ border: '1px solid #dee2e6', padding: '3px 4px', textAlign: 'right' }}>
                   {calculatingValues[2] || '30,000'}
                 </td>
-                <td style={{ border: '1px solid #dee2e6', padding: '5px 6px', 
+                <td style={{ border: '1px solid #dee2e6', padding: '3px 4px', 
                     background: showError ? '#ffebee' : 'white',
                     color: showError ? '#d32f2f' : '#333',
                     fontWeight: showError ? 'bold' : 'normal',
@@ -733,6 +746,14 @@ function ExcelCalculationAnimation() {
         @keyframes pulse {
           0%, 100% { transform: scale(1); }
           50% { transform: scale(1.2); }
+        }
+        
+        /* iPad Mini 전용 반응형 크기 조정 (768px-1023px) */
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .excel-animation-container {
+            width: 260px !important;
+            height: 100px !important;
+          }
         }
       `}</style>
     </div>
@@ -839,7 +860,7 @@ function BookAnimation() {
           height: '160px',
           position: 'relative',
           margin: '0 auto'
-        }}>
+        }} className="book-animation-container">
           {/* 방명록 페이지 1 - 전통적인 줄 그어진 형태 */}
           <div style={{
             position: 'absolute',
@@ -860,16 +881,16 @@ function BookAnimation() {
           }}>
             {/* 방명록 헤더 */}
             <div style={{ 
-              fontSize: '11px',
+              fontSize: '8px',
               fontWeight: 'bold',
               color: '#1f2937',
               textAlign: 'center',
-              marginBottom: '8px',
+              marginBottom: '5px',
               textDecoration: 'underline'
             }}>방 명 록</div>
             
             {/* 방명록 항목들 */}
-            <div style={{ fontSize: '8px', color: '#374151', lineHeight: '14px' }}>
+            <div style={{ fontSize: '6px', color: '#374151', lineHeight: '10px' }}>
               <div style={{ marginBottom: '2px' }}>성명: 김민수</div>
               <div style={{ marginBottom: '2px' }}>주소: 서울시 강남구</div>
               <div style={{ marginBottom: '2px' }}>축의: 5만원</div>
@@ -893,7 +914,7 @@ function BookAnimation() {
             transition: 'all 1.8s ease-out 0.2s',
             opacity: fadeOut ? 0 : 1,
             fontFamily: 'Georgia, serif',
-            backgroundImage: 'repeating-linear-gradient(transparent, transparent 13px, #e5e7eb 13px, #e5e7eb 14px)'
+            backgroundImage: 'repeating-linear-gradient(transparent, transparent 10px, #e5e7eb 10px, #e5e7eb 11px)'
           }}>
             <div style={{ 
               fontSize: '11px',
@@ -905,10 +926,10 @@ function BookAnimation() {
             }}>방 명 록</div>
             
             <div style={{ fontSize: '8px', color: '#374151', lineHeight: '14px' }}>
-              <div style={{ marginBottom: '2px' }}>성명: 박정우</div>
-              <div style={{ marginBottom: '2px' }}>주소: 부산시 해운대구</div>
-              <div style={{ marginBottom: '2px' }}>축의: 10만원</div>
-              <div style={{ fontSize: '7px', color: '#6b7280' }}>행복하세요~</div>
+              <div style={{ marginBottom: '1px' }}>성명: 박정우</div>
+              <div style={{ marginBottom: '1px' }}>주소: 부산시 해운대구</div>
+              <div style={{ marginBottom: '1px' }}>축의: 10만원</div>
+              <div style={{ fontSize: '5px', color: '#6b7280' }}>행복하세요~</div>
             </div>
           </div>
           
@@ -928,7 +949,7 @@ function BookAnimation() {
             transition: 'all 2.2s ease-out 0.4s',
             opacity: fadeOut ? 0 : 1,
             fontFamily: 'Georgia, serif',
-            backgroundImage: 'repeating-linear-gradient(transparent, transparent 13px, #e5e7eb 13px, #e5e7eb 14px)'
+            backgroundImage: 'repeating-linear-gradient(transparent, transparent 10px, #e5e7eb 10px, #e5e7eb 11px)'
           }}>
             <div style={{ 
               fontSize: '11px',
@@ -940,10 +961,10 @@ function BookAnimation() {
             }}>방 명 록</div>
             
             <div style={{ fontSize: '8px', color: '#374151', lineHeight: '14px' }}>
-              <div style={{ marginBottom: '2px' }}>성명: 이지영</div>
-              <div style={{ marginBottom: '2px' }}>주소: 대구시 중구</div>
-              <div style={{ marginBottom: '2px' }}>축의: 3만원</div>
-              <div style={{ fontSize: '7px', color: '#6b7280' }}>축복합니다</div>
+              <div style={{ marginBottom: '1px' }}>성명: 이지영</div>
+              <div style={{ marginBottom: '1px' }}>주소: 대구시 중구</div>
+              <div style={{ marginBottom: '1px' }}>축의: 3만원</div>
+              <div style={{ fontSize: '5px', color: '#6b7280' }}>축복합니다</div>
             </div>
           </div>
         </div>
@@ -992,6 +1013,51 @@ function BookAnimation() {
           25% { opacity: 1; transform: translateX(-50%); }
           75% { opacity: 1; transform: translateX(-50%); }
           100% { opacity: 0; transform: translateX(-50%); }
+        }
+        
+        /* iPad Mini 전용 반응형 크기 조정 (768px-1023px) */
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .book-animation-container {
+            width: 200px !important;
+            height: 100px !important;
+            transform: translateX(-30px) !important;
+          }
+          
+          .book-animation-container > div:nth-child(1) {
+            width: 80px !important;
+            height: 60px !important;
+            padding: 4px 3px !important;
+            font-size: 5px !important;
+          }
+          
+          .book-animation-container > div:nth-child(2) {
+            width: 85px !important;
+            height: 65px !important;
+            padding: 4px 3px !important;
+            font-size: 5px !important;
+          }
+          
+          .book-animation-container > div:nth-child(3) {
+            width: 75px !important;
+            height: 55px !important;
+            padding: 4px 3px !important;
+            font-size: 5px !important;
+          }
+          
+          .excel-animation-container {
+            width: 260px !important;
+            height: 100px !important;
+          }
+          
+          .handwriting-animation-container {
+            width: 180px !important;
+            height: 110px !important;
+          }
+          
+          .handwriting-animation-container span {
+            font-size: 8px !important;
+            min-height: 20px !important;
+          }
         }
       `}</style>
     </div>
