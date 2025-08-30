@@ -106,6 +106,12 @@ function HandwritingAnimation() {
             setCurrentPage(0); // 첫 페이지로 돌아가기
             setIsFlipping(false);
             setShowText(true);
+            setStartWriting(true);
+            
+            // 펜 쓰기 애니메이션 시작
+            setTimeout(() => {
+              startHandwriting();
+            }, 800);
           }, 300);
           addTimer(finalTimer);
         }
@@ -492,11 +498,23 @@ function HandwritingAnimation() {
 
         {/* 상태 표시 */}
         {startWriting && (
-          <div style={{ textAlign: 'center', marginTop: '10px' }}>
+          <div style={{ 
+            textAlign: 'center', 
+            marginTop: '25px',
+            transition: 'all 0.5s ease-in-out',
+            opacity: isWriting ? 1 : 0.7,
+            transform: isWriting ? 'translateY(0)' : 'translateY(10px)'
+          }}>
             <div style={{
               fontSize: '12px',
               fontWeight: '600',
-              color: currentPhase === 0 ? '#2563eb' : '#dc2626'
+              color: currentPhase === 0 ? '#2563eb' : '#dc2626',
+              padding: '8px 16px',
+              borderRadius: '20px',
+              background: currentPhase === 0 ? 'rgba(37, 99, 235, 0.1)' : 'rgba(220, 38, 38, 0.1)',
+              border: `1px solid ${currentPhase === 0 ? 'rgba(37, 99, 235, 0.2)' : 'rgba(220, 38, 38, 0.2)'}`,
+              transition: 'all 0.3s ease-in-out',
+              display: 'inline-block'
             }}>
               {currentPhase === 0 ? '읽기 쉬운 글씨 ✓' : '읽기 어려운 글씨 ⚠️'}
             </div>
@@ -583,7 +601,7 @@ function BookAnimation() {
   };
 
   const startBookDisappearance = () => {
-    // 책이 떨어지면서 사라지는 애니메이션
+    // 책이 사라지는 애니메이션
     const timer1 = setTimeout(() => {
       setDropBook(true);
     }, 1000);
@@ -596,9 +614,31 @@ function BookAnimation() {
       setShowLostIcon(true);
     }, 3000);
     
+    // X가 3번 깜빡이고 나서 다시 처음부터 시작
+    const timer4 = setTimeout(() => {
+      // 3초 후에 다시 처음부터 시작
+      setShowBook(false);
+      setDropBook(false);
+      setFadeOut(false);
+      setShowLostIcon(false);
+      
+      // 잠시 후 다시 시작
+      const restartTimer = setTimeout(() => {
+        setShowBook(true);
+        
+        // 다시 사라지는 애니메이션 시작
+        const againTimer = setTimeout(() => {
+          startBookDisappearance();
+        }, 1500);
+        addTimer(againTimer);
+      }, 500);
+      addTimer(restartTimer);
+    }, 6000); // X가 나온 후 3초 더 기다림
+    
     addTimer(timer1);
     addTimer(timer2);
     addTimer(timer3);
+    addTimer(timer4);
   };
 
 
@@ -632,45 +672,118 @@ function BookAnimation() {
           opacity: fadeOut ? 0 : (showBook ? 1 : 0)
         }}
       >
-        {/* 간단한 책 모양 */}
+        {/* 전통적인 결혼식 방명록 페이지들 */}
         <div style={{
-          width: '200px',
-          height: '140px',
+          width: '350px',
+          height: '160px',
           position: 'relative',
-          margin: '0 auto',
-          background: 'linear-gradient(135deg, #c53030 0%, #9b2c2c 100%)',
-          borderRadius: '4px',
-          boxShadow: '0 8px 25px rgba(0, 0, 0, 0.3)',
-          border: '2px solid #8b2020',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
+          margin: '0 auto'
         }}>
-          {/* 책 제목 */}
+          {/* 방명록 페이지 1 - 전통적인 줄 그어진 형태 */}
           <div style={{
-            textAlign: 'center',
-            color: '#d4af37',
-            padding: '20px'
+            position: 'absolute',
+            width: '140px',
+            height: '110px',
+            background: 'linear-gradient(to bottom, #fdfdfd 0%, #fafafa 100%)',
+            border: '1px solid #d1d5db',
+            borderRadius: '2px',
+            padding: '12px 8px',
+            fontSize: '9px',
+            boxSizing: 'border-box',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+            transform: dropBook ? 'translateX(-200px) translateY(-130px) rotate(-45deg) scale(0.3)' : 'translateX(20px) translateY(8px) rotate(-3deg)',
+            transition: 'all 2s ease-out',
+            opacity: fadeOut ? 0 : 1,
+            fontFamily: 'Georgia, serif',
+            backgroundImage: 'repeating-linear-gradient(transparent, transparent 13px, #e5e7eb 13px, #e5e7eb 14px)'
           }}>
-            <div style={{
-              fontSize: '24px',
+            {/* 방명록 헤더 */}
+            <div style={{ 
+              fontSize: '11px',
+              fontWeight: 'bold',
+              color: '#1f2937',
+              textAlign: 'center',
               marginBottom: '8px',
-              filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4))'
-            }}>💒</div>
-            <div style={{
-              fontSize: '16px',
-              fontWeight: '700',
-              margin: '0 0 4px',
-              textShadow: '0 2px 4px rgba(0, 0, 0, 0.4)',
-              fontFamily: 'Georgia, serif'
-            }}>Wedding</div>
-            <div style={{
-              fontSize: '10px',
-              fontStyle: 'italic',
-              color: '#e5c973',
-              textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
-              fontFamily: 'Georgia, serif'
-            }}>Guest Book</div>
+              textDecoration: 'underline'
+            }}>방 명 록</div>
+            
+            {/* 방명록 항목들 */}
+            <div style={{ fontSize: '8px', color: '#374151', lineHeight: '14px' }}>
+              <div style={{ marginBottom: '2px' }}>성명: 김민수</div>
+              <div style={{ marginBottom: '2px' }}>주소: 서울시 강남구</div>
+              <div style={{ marginBottom: '2px' }}>축의: 5만원</div>
+              <div style={{ fontSize: '7px', color: '#6b7280' }}>축하드립니다</div>
+            </div>
+          </div>
+          
+          {/* 방명록 페이지 2 */}
+          <div style={{
+            position: 'absolute',
+            width: '145px',
+            height: '115px',
+            background: 'linear-gradient(to bottom, #fdfdfd 0%, #fafafa 100%)',
+            border: '1px solid #d1d5db',
+            borderRadius: '2px',
+            padding: '12px 8px',
+            fontSize: '9px',
+            boxSizing: 'border-box',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+            transform: dropBook ? 'translateX(280px) translateY(-160px) rotate(60deg) scale(0.2)' : 'translateX(105px) translateY(35px) rotate(5deg)',
+            transition: 'all 1.8s ease-out 0.2s',
+            opacity: fadeOut ? 0 : 1,
+            fontFamily: 'Georgia, serif',
+            backgroundImage: 'repeating-linear-gradient(transparent, transparent 13px, #e5e7eb 13px, #e5e7eb 14px)'
+          }}>
+            <div style={{ 
+              fontSize: '11px',
+              fontWeight: 'bold',
+              color: '#1f2937',
+              textAlign: 'center',
+              marginBottom: '8px',
+              textDecoration: 'underline'
+            }}>방 명 록</div>
+            
+            <div style={{ fontSize: '8px', color: '#374151', lineHeight: '14px' }}>
+              <div style={{ marginBottom: '2px' }}>성명: 박정우</div>
+              <div style={{ marginBottom: '2px' }}>주소: 부산시 해운대구</div>
+              <div style={{ marginBottom: '2px' }}>축의: 10만원</div>
+              <div style={{ fontSize: '7px', color: '#6b7280' }}>행복하세요~</div>
+            </div>
+          </div>
+          
+          {/* 방명록 페이지 3 */}
+          <div style={{
+            position: 'absolute',
+            width: '135px',
+            height: '105px',
+            background: 'linear-gradient(to bottom, #fdfdfd 0%, #fafafa 100%)',
+            border: '1px solid #d1d5db',
+            borderRadius: '2px',
+            padding: '12px 8px',
+            fontSize: '9px',
+            boxSizing: 'border-box',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+            transform: dropBook ? 'translateX(140px) translateY(-260px) rotate(120deg) scale(0.1)' : 'translateX(190px) translateY(0px) rotate(-8deg)',
+            transition: 'all 2.2s ease-out 0.4s',
+            opacity: fadeOut ? 0 : 1,
+            fontFamily: 'Georgia, serif',
+            backgroundImage: 'repeating-linear-gradient(transparent, transparent 13px, #e5e7eb 13px, #e5e7eb 14px)'
+          }}>
+            <div style={{ 
+              fontSize: '11px',
+              fontWeight: 'bold',
+              color: '#1f2937',
+              textAlign: 'center',
+              marginBottom: '8px',
+              textDecoration: 'underline'
+            }}>방 명 록</div>
+            
+            <div style={{ fontSize: '8px', color: '#374151', lineHeight: '14px' }}>
+              <div style={{ marginBottom: '2px' }}>성명: 이지영</div>
+              <div style={{ marginBottom: '2px' }}>주소: 대구시 중구</div>
+              <div style={{ marginBottom: '2px' }}>축의: 3만원</div>
+              <div style={{ fontSize: '7px', color: '#6b7280' }}>축복합니다</div>
+            </div>
           </div>
         </div>
         
@@ -682,7 +795,7 @@ function BookAnimation() {
             left: '50%',
             transform: 'translate(-50%, -50%)',
             fontSize: '60px',
-            animation: 'fadeIn 1s ease-in-out'
+            animation: 'fadeInAndBlink 3s ease-in-out'
           }}>
             ❌
           </div>
@@ -693,6 +806,21 @@ function BookAnimation() {
         @keyframes fadeIn {
           from { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
           to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+        
+        @keyframes fadeInAndBlink {
+          0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+          10% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+          30% { opacity: 1; }
+          35% { opacity: 0.3; }
+          40% { opacity: 1; }
+          50% { opacity: 1; }
+          55% { opacity: 0.3; }
+          60% { opacity: 1; }
+          70% { opacity: 1; }
+          75% { opacity: 0.3; }
+          80% { opacity: 1; }
+          100% { opacity: 1; }
         }
       `}</style>
     </div>
