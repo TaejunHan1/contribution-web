@@ -583,6 +583,162 @@ function HandwritingAnimation() {
   );
 }
 
+// 엑셀 부조금 계산 실수 애니메이션
+function ExcelCalculationAnimation() {
+  const [showSpreadsheet, setShowSpreadsheet] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [showError, setShowError] = useState(false);
+  const [calculatingValues, setCalculatingValues] = useState([]);
+  const timersRef = useRef([]);
+
+  const addTimer = (timer) => {
+    timersRef.current.push(timer);
+  };
+
+  const clearAllTimers = () => {
+    timersRef.current.forEach(timer => clearTimeout(timer));
+    timersRef.current = [];
+  };
+
+  const startAnimation = () => {
+    clearAllTimers();
+    setShowSpreadsheet(false);
+    setCurrentStep(0);
+    setShowError(false);
+    setCalculatingValues([]);
+
+    // 1. 스프레드시트 나타남
+    addTimer(setTimeout(() => setShowSpreadsheet(true), 300));
+    
+    // 2. 단계별 계산 과정
+    addTimer(setTimeout(() => setCurrentStep(1), 1000));
+    addTimer(setTimeout(() => setCurrentStep(2), 1800));
+    addTimer(setTimeout(() => setCurrentStep(3), 2600));
+    
+    // 3. 계산 값들이 나타남
+    addTimer(setTimeout(() => setCalculatingValues(['50000', '100000', '30000']), 3200));
+    
+    // 4. 계산 실수 발생 (빨간색 에러)
+    addTimer(setTimeout(() => setShowError(true), 4000));
+    
+    // 5. 애니메이션 반복
+    addTimer(setTimeout(() => startAnimation(), 6000));
+  };
+
+  useEffect(() => {
+    startAnimation();
+    return () => clearAllTimers();
+  }, []);
+
+  return (
+    <div style={{ 
+      height: '180px', 
+      display: 'flex', 
+      justifyContent: 'center', 
+      alignItems: 'center',
+      marginBottom: '20px'
+    }}>
+      {/* 엑셀 스프레드시트 */}
+      <div style={{
+        width: '450px',
+        height: '160px',
+        background: '#f8f9fa',
+        border: '2px solid #dee2e6',
+        borderRadius: '4px',
+        position: 'relative',
+        opacity: showSpreadsheet ? 1 : 0,
+        transition: 'opacity 0.5s ease-in-out',
+        fontFamily: 'Consolas, monospace',
+        fontSize: '12px'
+      }}>
+        {/* 엑셀 헤더 */}
+        <div style={{
+          background: '#e9ecef',
+          padding: '2px 4px',
+          borderBottom: '1px solid #dee2e6',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <div style={{ fontSize: '8px', fontWeight: 'bold', color: '#495057' }}>💚 Excel</div>
+          <div style={{ fontSize: '8px', color: '#6c757d' }}>부조금계산.xlsx</div>
+        </div>
+        
+        {/* 스프레드시트 내용 */}
+        <div style={{ padding: '8px' }}>
+          <table style={{ width: '100%', fontSize: '12px', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ background: '#f1f3f4' }}>
+                <th style={{ border: '1px solid #dee2e6', padding: '6px', fontSize: '11px' }}>이름</th>
+                <th style={{ border: '1px solid #dee2e6', padding: '6px', fontSize: '11px' }}>금액</th>
+                <th style={{ border: '1px solid #dee2e6', padding: '6px', fontSize: '11px' }}>합계</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style={{ opacity: currentStep >= 1 ? 1 : 0.3, transition: 'opacity 0.5s' }}>
+                <td style={{ border: '1px solid #dee2e6', padding: '5px 6px' }}>김민수</td>
+                <td style={{ border: '1px solid #dee2e6', padding: '5px 6px', textAlign: 'right' }}>
+                  {calculatingValues[0] || '50,000'}
+                </td>
+                <td style={{ border: '1px solid #dee2e6', padding: '5px 6px' }}></td>
+              </tr>
+              <tr style={{ opacity: currentStep >= 2 ? 1 : 0.3, transition: 'opacity 0.5s' }}>
+                <td style={{ border: '1px solid #dee2e6', padding: '5px 6px' }}>박정우</td>
+                <td style={{ border: '1px solid #dee2e6', padding: '5px 6px', textAlign: 'right' }}>
+                  {calculatingValues[1] || '100,000'}
+                </td>
+                <td style={{ border: '1px solid #dee2e6', padding: '5px 6px' }}></td>
+              </tr>
+              <tr style={{ opacity: currentStep >= 3 ? 1 : 0.3, transition: 'opacity 0.5s' }}>
+                <td style={{ border: '1px solid #dee2e6', padding: '5px 6px' }}>이지영</td>
+                <td style={{ border: '1px solid #dee2e6', padding: '5px 6px', textAlign: 'right' }}>
+                  {calculatingValues[2] || '30,000'}
+                </td>
+                <td style={{ border: '1px solid #dee2e6', padding: '5px 6px', 
+                    background: showError ? '#ffebee' : 'white',
+                    color: showError ? '#d32f2f' : '#333',
+                    fontWeight: showError ? 'bold' : 'normal',
+                    transition: 'all 0.5s'
+                }}>
+                  {showError ? '160,000❌' : (currentStep >= 3 ? '180,000' : '')}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        {/* 계산 실수 표시 */}
+        {showError && (
+          <div style={{
+            position: 'absolute',
+            top: '-8px',
+            right: '-8px',
+            background: '#ff5252',
+            color: 'white',
+            borderRadius: '50%',
+            width: '16px',
+            height: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '10px',
+            animation: 'pulse 1s infinite'
+          }}>
+            ⚠️
+          </div>
+        )}
+      </div>
+      
+      <style jsx>{`
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.2); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
 // 종이 방명록 분실 애니메이션 - 책이 사라지는 효과
 function BookAnimation() {
   const [showBook, setShowBook] = useState(false);
@@ -614,31 +770,35 @@ function BookAnimation() {
       setShowLostIcon(true);
     }, 3000);
     
-    // X가 3번 깜빡이고 나서 다시 처음부터 시작
     const timer4 = setTimeout(() => {
-      // 3초 후에 다시 처음부터 시작
-      setShowBook(false);
-      setDropBook(false);
-      setFadeOut(false);
+      setShowLostIcon(false);
+    }, 6000); // 3초간 보이기
+    
+    const timer5 = setTimeout(() => {
+      setShowLostIcon(true);
+    }, 7000); // 1초 간격
+    
+    const timer6 = setTimeout(() => {
       setShowLostIcon(false);
       
-      // 잠시 후 다시 시작
-      const restartTimer = setTimeout(() => {
-        setShowBook(true);
+      setTimeout(() => {
+        setShowBook(false);
+        setDropBook(false);
+        setFadeOut(false);
         
-        // 다시 사라지는 애니메이션 시작
-        const againTimer = setTimeout(() => {
-          startBookDisappearance();
-        }, 1500);
-        addTimer(againTimer);
+        setTimeout(() => {
+          setShowBook(true);
+          setTimeout(() => startBookDisappearance(), 1500);
+        }, 1000);
       }, 500);
-      addTimer(restartTimer);
-    }, 6000); // X가 나온 후 3초 더 기다림
+    }, 10000); // 3초간 보이기
     
     addTimer(timer1);
     addTimer(timer2);
     addTimer(timer3);
     addTimer(timer4);
+    addTimer(timer5);
+    addTimer(timer6);
   };
 
 
@@ -646,14 +806,14 @@ function BookAnimation() {
     // 모달이 열리면 잠시 후 책을 페이드인
     const bookTimer = setTimeout(() => {
       setShowBook(true);
+      
+      // 책이 나타난 후 바로 사라지는 애니메이션 시작
+      const disappearTimer = setTimeout(() => {
+        startBookDisappearance();
+      }, 1500);
+      addTimer(disappearTimer);
     }, 500);
     addTimer(bookTimer);
-    
-    // 책이 나타난 후 사라지는 애니메이션 시작
-    const disappearTimer = setTimeout(() => {
-      startBookDisappearance();
-    }, 1500);
-    addTimer(disappearTimer);
     
     return () => {
       clearAllTimers();
@@ -661,7 +821,7 @@ function BookAnimation() {
   }, []);
 
   return (
-    <div className="flex justify-center mb-4">
+    <div className="flex justify-center mb-4" style={{ position: 'relative', height: '200px' }}>
       {/* 책이 사라지는 애니메이션 */}
       <div 
         className={`transition-all duration-1000 ${showBook ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'} ${dropBook ? 'animate-pulse' : ''}`}
@@ -669,7 +829,8 @@ function BookAnimation() {
           margin: '5px 0 10px 0',
           position: 'relative',
           transition: 'all 1.5s ease-in-out',
-          opacity: fadeOut ? 0 : (showBook ? 1 : 0)
+          opacity: fadeOut ? 0 : (showBook ? 1 : 0),
+          height: '200px' // 높이를 확실히 지정
         }}
       >
         {/* 전통적인 결혼식 방명록 페이지들 */}
@@ -787,20 +948,26 @@ function BookAnimation() {
           </div>
         </div>
         
-        {/* 분실 아이콘 */}
-        {showLostIcon && (
-          <div style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            fontSize: '60px',
-            animation: 'fadeInAndBlink 3s ease-in-out'
-          }}>
-            ❌
-          </div>
-        )}
-      </div>
+        </div>
+      
+      {/* X 표시만 */}
+      {showLostIcon && (
+        <div style={{
+          position: 'absolute',
+          top: '10px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          fontSize: '100px',
+          color: '#ff0000',
+          fontWeight: 'bold',
+          textShadow: '4px 4px 12px rgba(0,0,0,0.6)',
+          zIndex: 9999,
+          opacity: 1,
+          transition: 'opacity 0.5s ease-in-out'
+        }}>
+          ❌
+        </div>
+      )}
       
       <style jsx>{`
         @keyframes fadeIn {
@@ -808,19 +975,23 @@ function BookAnimation() {
           to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
         
-        @keyframes fadeInAndBlink {
-          0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-          10% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-          30% { opacity: 1; }
-          35% { opacity: 0.3; }
-          40% { opacity: 1; }
-          50% { opacity: 1; }
-          55% { opacity: 0.3; }
-          60% { opacity: 1; }
-          70% { opacity: 1; }
-          75% { opacity: 0.3; }
-          80% { opacity: 1; }
-          100% { opacity: 1; }
+        @keyframes fadeInOnly {
+          from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+          to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+        
+        @keyframes fadeInOut {
+          0% { opacity: 0; transform: translateX(-50%) scale(0.5); }
+          20% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+          80% { opacity: 1; transform: translateX(-50%) scale(1); }
+          100% { opacity: 0; transform: translateX(-50%) scale(0.8); }
+        }
+        
+        @keyframes xFadeInOut {
+          0% { opacity: 0; transform: translateX(-50%); }
+          25% { opacity: 1; transform: translateX(-50%); }
+          75% { opacity: 1; transform: translateX(-50%); }
+          100% { opacity: 0; transform: translateX(-50%); }
         }
       `}</style>
     </div>
@@ -1489,7 +1660,7 @@ export default function HomePage() {
                 <p className="text-sm md:text-base text-gray-600">알아보기 힘든 손글씨로 나중에 정리할 때 스트레스...</p>
               </div>
               <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm">
-                <div className="text-3xl md:text-4xl mb-3 md:mb-4">💸</div>
+                <ExcelCalculationAnimation />
                 <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2 md:mb-3">부조금 계산 실수</h3>
                 <p className="text-sm md:text-base text-gray-600">현금 관리와 수동 계산으로 인한 누락이나 착오...</p>
               </div>
