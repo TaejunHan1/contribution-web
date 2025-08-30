@@ -7,7 +7,7 @@ import { useState, useEffect, useRef } from 'react';
 // 책자 애니메이션이 끝난 후 연필로 방명록 이름을 쓰는 애니메이션
 function HandwritingAnimation() {
   const [showBook, setShowBook] = useState(false);
-  const [coverOpen, setCoverOpen] = useState(false);
+  const [coverOpen, setCoverOpen] = useState(true); // 처음부터 책이 열려있게
   const [currentPage, setCurrentPage] = useState(0);
   const [isFlipping, setIsFlipping] = useState(false);
   const [showText, setShowText] = useState(false);
@@ -27,34 +27,23 @@ function HandwritingAnimation() {
     timersRef.current = [];
   };
 
-  const startContinuousFlip = () => {
-    setIsFlipping(true);
+  const startBookDisappearance = () => {
+    // 책이 떨어지면서 사라지는 애니메이션
+    const timer1 = setTimeout(() => {
+      setDropBook(true);
+    }, 1000);
     
-    // 더 자연스럽고 빠른 연속 페이지 플립 효과 - 후루룩!
-    const flipSequence = [1, 2, 3, 4, 5, 6, 7, 8];
+    const timer2 = setTimeout(() => {
+      setFadeOut(true);
+    }, 2000);
     
-    flipSequence.forEach((pageNum, index) => {
-      const timer = setTimeout(() => {
-        setCurrentPage(pageNum);
-        
-        // 마지막 페이지가 넘어간 후
-        if (index === flipSequence.length - 1) {
-          const finalTimer = setTimeout(() => {
-            setCurrentPage(0); // 첫 페이지로 돌아가기
-            setIsFlipping(false);
-            setShowText(true);
-            
-            // 책자 애니메이션이 끝나면 연필로 쓰기 시작
-            setTimeout(() => {
-              setStartWriting(true);
-              startHandwriting();
-            }, 1000);
-          }, 300);
-          addTimer(finalTimer);
-        }
-      }, index * 200); // 200ms 간격으로 빠르게 넘김 (후루룩!)
-      addTimer(timer);
-    });
+    const timer3 = setTimeout(() => {
+      setShowLostIcon(true);
+    }, 3000);
+    
+    addTimer(timer1);
+    addTimer(timer2);
+    addTimer(timer3);
   };
 
   const names = [
@@ -99,6 +88,30 @@ function HandwritingAnimation() {
     };
     
     writeNextName();
+  };
+
+  const startContinuousFlip = () => {
+    setIsFlipping(true);
+    
+    // 더 자연스럽고 빠른 연속 페이지 플립 효과 - 후루룩!
+    const flipSequence = [1, 2, 3, 4, 5, 6, 7, 8];
+    
+    flipSequence.forEach((pageNum, index) => {
+      const timer = setTimeout(() => {
+        setCurrentPage(pageNum);
+        
+        // 마지막 페이지가 넘어간 후
+        if (index === flipSequence.length - 1) {
+          const finalTimer = setTimeout(() => {
+            setCurrentPage(0); // 첫 페이지로 돌아가기
+            setIsFlipping(false);
+            setShowText(true);
+          }, 300);
+          addTimer(finalTimer);
+        }
+      }, index * 200); // 200ms 간격으로 빠르게 넘김 (후루룩!)
+      addTimer(timer);
+    });
   };
 
   useEffect(() => {
@@ -182,7 +195,8 @@ function HandwritingAnimation() {
             transformStyle: 'preserve-3d',
             transition: 'transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1)',
             zIndex: 20,
-            transform: coverOpen ? 'rotateY(-150deg)' : 'rotateY(0deg)'
+            transform: 'rotateY(-150deg)', // 항상 열려있게
+            display: 'none' // 표지를 완전히 숨김
           }}>
             {/* 덮개 앞면 */}
             <div style={{
@@ -551,13 +565,12 @@ function HandwritingAnimation() {
   );
 }
 
-// ArrivalConfirmModal의 진짜 책자 애니메이션
+// 종이 방명록 분실 애니메이션 - 책이 사라지는 효과
 function BookAnimation() {
   const [showBook, setShowBook] = useState(false);
-  const [coverOpen, setCoverOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [isFlipping, setIsFlipping] = useState(false);
-  const [showText, setShowText] = useState(false);
+  const [fadeOut, setFadeOut] = useState(false);
+  const [dropBook, setDropBook] = useState(false);
+  const [showLostIcon, setShowLostIcon] = useState(false);
   const timersRef = useRef([]);
 
   const addTimer = (timer) => {
@@ -569,29 +582,25 @@ function BookAnimation() {
     timersRef.current = [];
   };
 
-  const startContinuousFlip = () => {
-    setIsFlipping(true);
+  const startBookDisappearance = () => {
+    // 책이 떨어지면서 사라지는 애니메이션
+    const timer1 = setTimeout(() => {
+      setDropBook(true);
+    }, 1000);
     
-    // 더 자연스럽고 빠른 연속 페이지 플립 효과 - 후루룩!
-    const flipSequence = [1, 2, 3, 4, 5, 6, 7, 8];
+    const timer2 = setTimeout(() => {
+      setFadeOut(true);
+    }, 2000);
     
-    flipSequence.forEach((pageNum, index) => {
-      const timer = setTimeout(() => {
-        setCurrentPage(pageNum);
-        
-        // 마지막 페이지가 넘어간 후
-        if (index === flipSequence.length - 1) {
-          const finalTimer = setTimeout(() => {
-            setCurrentPage(0); // 첫 페이지로 돌아가기
-            setIsFlipping(false);
-            setShowText(true);
-          }, 300);
-          addTimer(finalTimer);
-        }
-      }, index * 200); // 200ms 간격으로 빠르게 넘김 (후루룩!)
-      addTimer(timer);
-    });
+    const timer3 = setTimeout(() => {
+      setShowLostIcon(true);
+    }, 3000);
+    
+    addTimer(timer1);
+    addTimer(timer2);
+    addTimer(timer3);
   };
+
 
   useEffect(() => {
     // 모달이 열리면 잠시 후 책을 페이드인
@@ -600,17 +609,11 @@ function BookAnimation() {
     }, 500);
     addTimer(bookTimer);
     
-    // 책이 나타난 후 덮개 열기
-    const coverTimer = setTimeout(() => {
-      setCoverOpen(true);
-    }, 1200);
-    addTimer(coverTimer);
-    
-    // 덮개가 열린 후 잠깐 기다렸다가 페이지 넘김 시작
-    const flipTimer = setTimeout(() => {
-      startContinuousFlip();
-    }, 2000);
-    addTimer(flipTimer);
+    // 책이 나타난 후 사라지는 애니메이션 시작
+    const disappearTimer = setTimeout(() => {
+      startBookDisappearance();
+    }, 1500);
+    addTimer(disappearTimer);
     
     return () => {
       clearAllTimers();
@@ -619,465 +622,79 @@ function BookAnimation() {
 
   return (
     <div className="flex justify-center mb-4">
-      {/* 책자 애니메이션 */}
+      {/* 책이 사라지는 애니메이션 */}
       <div 
-        className={`transition-all duration-600 ${showBook ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}
+        className={`transition-all duration-1000 ${showBook ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'} ${dropBook ? 'animate-pulse' : ''}`}
         style={{ 
-          margin: '15px 0 20px 0',
-          position: 'relative'
+          margin: '5px 0 10px 0',
+          position: 'relative',
+          transition: 'all 1.5s ease-in-out',
+          opacity: fadeOut ? 0 : (showBook ? 1 : 0)
         }}
       >
+        {/* 간단한 책 모양 */}
         <div style={{
-          width: '280px',
-          height: '175px',
+          width: '200px',
+          height: '140px',
           position: 'relative',
-          perspective: '1500px',
           margin: '0 auto',
-          background: '#f5f5f5',
+          background: 'linear-gradient(135deg, #c53030 0%, #9b2c2c 100%)',
           borderRadius: '4px',
-          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3), 0 0 0 1px #8b2020',
-          transformStyle: 'preserve-3d'
+          boxShadow: '0 8px 25px rgba(0, 0, 0, 0.3)',
+          border: '2px solid #8b2020',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
         }}>
-          
-          {/* 책 두께감 표현 */}
+          {/* 책 제목 */}
           <div style={{
-            position: 'absolute',
-            bottom: '-3px',
-            left: 0,
-            right: 0,
-            height: '3px',
-            background: 'linear-gradient(90deg, #8b2020 0%, #c53030 50%, #8b2020 100%)',
-            borderRadius: '0 0 4px 4px',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
-          }} />
-
-          {/* 책 등(spine) 표현 */}
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            left: '-2px',
-            width: '2px',
-            height: '100%',
-            background: 'linear-gradient(180deg, #8b2020 0%, #c53030 50%, #8b2020 100%)',
-            borderRadius: '2px 0 0 2px',
-            boxShadow: '-1px 0 3px rgba(0, 0, 0, 0.2)'
-          }} />
-
-          {/* 책 덮개 */}
-          <div style={{
-            width: '100%',
-            height: '100%',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            transformOrigin: 'left center',
-            transformStyle: 'preserve-3d',
-            transition: 'transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1)',
-            zIndex: 20,
-            transform: coverOpen ? 'rotateY(-150deg)' : 'rotateY(0deg)'
-          }}>
-            {/* 덮개 앞면 */}
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              backfaceVisibility: 'hidden',
-              borderRadius: '4px',
-              background: 'linear-gradient(135deg, #c53030 0%, #9b2c2c 100%)',
-              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3), inset 0 2px 0 rgba(255, 255, 255, 0.1), inset 0 -2px 0 rgba(0, 0, 0, 0.3), inset 2px 0 4px rgba(0, 0, 0, 0.2), inset -2px 0 4px rgba(0, 0, 0, 0.2)',
-              border: '2px solid #8b2020',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
-              {/* 책 테두리 금색 장식 */}
-              <div style={{
-                position: 'absolute',
-                top: '10px',
-                left: '10px',
-                right: '10px',
-                bottom: '10px',
-                border: '2px solid #d4af37',
-                borderRadius: '4px',
-                opacity: 0.6
-              }} />
-              
-              {/* 책 모서리 금색 장식 */}
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                right: 0,
-                width: '60px',
-                height: '60px',
-                background: 'linear-gradient(135deg, transparent 40%, #d4af37 40%, #d4af37 60%, transparent 60%)',
-                opacity: 0.3
-              }} />
-
-              <div style={{
-                textAlign: 'center',
-                color: '#d4af37',
-                padding: '20px',
-                position: 'relative',
-                zIndex: 2
-              }}>
-                <div style={{
-                  fontSize: '32px',
-                  marginBottom: '10px',
-                  filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4))'
-                }}>💒</div>
-                <div style={{
-                  fontSize: '20px',
-                  fontWeight: '700',
-                  margin: '0 0 5px',
-                  textShadow: '0 2px 4px rgba(0, 0, 0, 0.4), 0 0 10px rgba(212, 175, 55, 0.3)',
-                  color: '#d4af37',
-                  fontFamily: 'Georgia, serif'
-                }}>Wedding</div>
-                <div style={{
-                  fontSize: '12px',
-                  margin: 0,
-                  fontStyle: 'italic',
-                  color: '#e5c973',
-                  textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
-                  fontFamily: 'Georgia, serif'
-                }}>Guest Book</div>
-                <div style={{
-                  fontSize: '10px',
-                  color: '#d4af37',
-                  letterSpacing: '4px',
-                  textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
-                  marginTop: '15px'
-                }}>◆ ◇ ◆</div>
-              </div>
-            </div>
-            
-            {/* 덮개 뒷면 */}
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              backfaceVisibility: 'hidden',
-              transform: 'rotateY(180deg)',
-              background: '#f8f8f8',
-              border: '1px solid #e2e8f0',
-              borderRadius: '4px'
-            }} />
-          </div>
-
-          {/* 왼쪽 고정 페이지 - 1-1 (첫 번째 장의 왼쪽) */}
-          <div style={{
-            width: '50%',
-            height: '100%',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            zIndex: currentPage === 0 ? 2 : 0,
-            background: '#ffffff',
-            border: '1px solid #e2e8f0',
-            borderRadius: '4px 0 0 4px',
-            padding: '20px',
-            boxSizing: 'border-box',
-            display: currentPage === 0 ? 'flex' : 'none',
-            alignItems: 'center',
-            justifyContent: 'center'
+            textAlign: 'center',
+            color: '#d4af37',
+            padding: '20px'
           }}>
             <div style={{
-              textAlign: 'center',
-              color: '#2d3748',
-              lineHeight: '1.4'
-            }}>
-              {showText && (
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  gap: '15px',
-                  marginTop: '10px'
-                }}>
-                  <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}>
-                    <span style={{
-                      writingMode: 'vertical-rl',
-                      textOrientation: 'mixed',
-                      fontSize: '12px',
-                      fontWeight: '500',
-                      color: '#2d3748',
-                      minHeight: '40px',
-                      display: 'flex',
-                      alignItems: 'center'
-                    }}>김민수</span>
-                    <span style={{
-                      writingMode: 'vertical-rl',
-                      textOrientation: 'mixed',
-                      fontSize: '12px',
-                      fontWeight: '500',
-                      color: '#2d3748',
-                      minHeight: '40px',
-                      display: 'flex',
-                      alignItems: 'center'
-                    }}>이지영</span>
-                    <span style={{
-                      writingMode: 'vertical-rl',
-                      textOrientation: 'mixed',
-                      fontSize: '12px',
-                      fontWeight: '500',
-                      color: '#2d3748',
-                      minHeight: '40px',
-                      display: 'flex',
-                      alignItems: 'center'
-                    }}>박정우</span>
-                  </div>
-                  <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}>
-                    <span style={{
-                      writingMode: 'vertical-rl',
-                      textOrientation: 'mixed',
-                      fontSize: '12px',
-                      fontWeight: '500',
-                      color: '#2d3748',
-                      minHeight: '40px',
-                      display: 'flex',
-                      alignItems: 'center'
-                    }}>최수연</span>
-                    <span style={{
-                      writingMode: 'vertical-rl',
-                      textOrientation: 'mixed',
-                      fontSize: '12px',
-                      fontWeight: '500',
-                      color: '#2d3748',
-                      minHeight: '40px',
-                      display: 'flex',
-                      alignItems: 'center'
-                    }}>정현민</span>
-                    <span style={{
-                      writingMode: 'vertical-rl',
-                      textOrientation: 'mixed',
-                      fontSize: '12px',
-                      fontWeight: '500',
-                      color: '#2d3748',
-                      minHeight: '40px',
-                      display: 'flex',
-                      alignItems: 'center'
-                    }}>한소희</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* 페이지 1 */}
-          <div style={{
-            width: '50%',
-            height: '100%',
-            position: 'absolute',
-            top: 0,
-            left: '50%',
-            transformOrigin: 'left center',
-            transition: 'transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1)',
-            transformStyle: 'preserve-3d',
-            zIndex: 15,
-            transform: currentPage >= 1 ? 'rotateY(-180deg)' : 'rotateY(0deg)'
-          }}>
-            {/* 페이지 앞면 */}
+              fontSize: '24px',
+              marginBottom: '8px',
+              filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4))'
+            }}>💒</div>
             <div style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              background: '#ffffff',
-              border: '1px solid #e2e8f0',
-              backfaceVisibility: 'hidden',
-              overflow: 'hidden',
-              padding: '20px',
-              boxSizing: 'border-box',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: '0 4px 4px 0',
-              boxShadow: '0 0 10px rgba(0, 0, 0, 0.05)'
-            }}>
-              <div style={{
-                textAlign: 'center',
-                color: '#2d3748',
-                lineHeight: '1.4'
-              }}>
-                {showText && (
-                  <>
-                    <h3 style={{
-                      fontSize: '16px',
-                      fontWeight: '700',
-                      margin: '0 0 10px',
-                      color: '#1a202c'
-                    }}>방명록,<br />이제 간편하게</h3>
-                    <p style={{
-                      fontSize: '13px',
-                      color: '#4a5568',
-                      margin: 0,
-                      lineHeight: '1.5'
-                    }}>종이와 펜은 이제 안녕</p>
-                  </>
-                )}
-              </div>
-            </div>
-            {/* 페이지 뒷면 */}
+              fontSize: '16px',
+              fontWeight: '700',
+              margin: '0 0 4px',
+              textShadow: '0 2px 4px rgba(0, 0, 0, 0.4)',
+              fontFamily: 'Georgia, serif'
+            }}>Wedding</div>
             <div style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              background: '#fafafa',
-              border: '1px solid #e2e8f0',
-              backfaceVisibility: 'hidden',
-              transform: 'rotateY(180deg)',
-              borderRadius: '4px 0 0 4px',
-              padding: '20px',
-              boxSizing: 'border-box',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}>
-              <div style={{
-                textAlign: 'center',
-                color: '#2d3748',
-                lineHeight: '1.4'
-              }}>
-                {/* 2-1: 두 번째 장의 왼쪽 */}
-                {showText && currentPage === 1 && (
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    gap: '15px',
-                    marginTop: '10px'
-                  }}>
-                    <div style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      gap: '8px'
-                    }}>
-                      <span style={{
-                        writingMode: 'vertical-rl',
-                        textOrientation: 'mixed',
-                        fontSize: '12px',
-                        fontWeight: '500',
-                        color: '#2d3748',
-                        minHeight: '40px',
-                        display: 'flex',
-                        alignItems: 'center'
-                      }}>조현우</span>
-                      <span style={{
-                        writingMode: 'vertical-rl',
-                        textOrientation: 'mixed',
-                        fontSize: '12px',
-                        fontWeight: '500',
-                        color: '#2d3748',
-                        minHeight: '40px',
-                        display: 'flex',
-                        alignItems: 'center'
-                      }}>신예은</span>
-                      <span style={{
-                        writingMode: 'vertical-rl',
-                        textOrientation: 'mixed',
-                        fontSize: '12px',
-                        fontWeight: '500',
-                        color: '#2d3748',
-                        minHeight: '40px',
-                        display: 'flex',
-                        alignItems: 'center'
-                      }}>김태현</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
+              fontSize: '10px',
+              fontStyle: 'italic',
+              color: '#e5c973',
+              textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+              fontFamily: 'Georgia, serif'
+            }}>Guest Book</div>
           </div>
-
-          {/* 추가 페이지들 (연속으로 넘어가는 여러 페이지들 - 후루룩 효과!) */}
-          {[2, 3, 4, 5, 6, 7, 8].map(pageNum => (
-            <div key={pageNum} style={{
-              width: '50%',
-              height: '100%',
-              position: 'absolute',
-              top: 0,
-              left: '50%',
-              transformOrigin: 'left center',
-              transition: 'transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1)',
-              transformStyle: 'preserve-3d',
-              zIndex: 15 - pageNum,
-              transform: currentPage >= pageNum ? 'rotateY(-180deg)' : 'rotateY(0deg)'
-            }}>
-              {/* 페이지 앞면 */}
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                background: '#ffffff',
-                border: '1px solid #e2e8f0',
-                backfaceVisibility: 'hidden',
-                overflow: 'hidden',
-                padding: '20px',
-                boxSizing: 'border-box',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '0 4px 4px 0',
-                boxShadow: '0 0 10px rgba(0, 0, 0, 0.05)'
-              }}>
-                <div style={{
-                  textAlign: 'center',
-                  color: '#2d3748',
-                  lineHeight: '1.4'
-                }}>
-                  {/* 빈 페이지 */}
-                </div>
-              </div>
-              {/* 페이지 뒷면 */}
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                background: '#fafafa',
-                border: '1px solid #e2e8f0',
-                backfaceVisibility: 'hidden',
-                transform: 'rotateY(180deg)',
-                borderRadius: '4px 0 0 4px',
-                padding: '20px',
-                boxSizing: 'border-box',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                <div style={{
-                  textAlign: 'center',
-                  color: '#2d3748',
-                  lineHeight: '1.4'
-                }}>
-                  {/* 빈 페이지 */}
-                </div>
-              </div>
-            </div>
-          ))}
         </div>
+        
+        {/* 분실 아이콘 */}
+        {showLostIcon && (
+          <div style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            fontSize: '60px',
+            animation: 'fadeIn 1s ease-in-out'
+          }}>
+            ❌
+          </div>
+        )}
       </div>
+      
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+          to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+      `}</style>
     </div>
   );
 }
