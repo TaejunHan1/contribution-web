@@ -39,9 +39,16 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
     return () => clearTimeout(timerRef.current);
   }, [timer, verificationSent]);
 
-  // 모달 닫힐 때 초기화
+  // 모달 열릴 때 verifiedPhone 체크 및 기존 방명록 로드
   useEffect(() => {
-    if (!isOpen) {
+    if (isOpen) {
+      const verifiedPhone = localStorage.getItem('verifiedPhone');
+      if (verifiedPhone && eventData?.id) {
+        // 인증된 번호가 있으면 기존 방명록 확인
+        checkExistingGuestbook(verifiedPhone);
+      }
+    } else {
+      // 모달 닫힐 때 초기화
       setStep('info');
       setMode('create');
       setExistingGuestbook(null);
@@ -52,6 +59,61 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
       setIsLoading(false);
     }
   }, [isOpen]);
+
+  // 기존 방명록 확인 함수
+  const checkExistingGuestbook = async (phone) => {
+    try {
+      const response = await fetch('/api/check-guestbook-duplicate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          phone: phone,
+          eventId: eventData.id
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.exists && result.existingEntry) {
+        // 기존 방명록이 있으면 수정 모드로
+        setMode('edit');
+        setExistingGuestbook(result.existingEntry);
+        setFormData(prev => ({
+          ...prev,
+          phone: formatPhoneNumberFromE164(phone),
+          guestName: result.existingEntry.guest_name || '',
+          message: result.existingEntry.message || '',
+          agreed: true
+        }));
+        setStep('message'); // 바로 메시지 수정 단계로
+      } else {
+        // 기존 방명록이 없으면 작성 모드로
+        setMode('create');
+        setFormData(prev => ({
+          ...prev,
+          phone: formatPhoneNumberFromE164(phone),
+          agreed: true
+        }));
+        setStep('message'); // 바로 메시지 작성 단계로
+      }
+    } catch (error) {
+      console.error('기존 방명록 확인 오류:', error);
+      // 오류 발생시 일반 모드로 진행
+    }
+  };
+
+  // E.164 형식에서 일반 형식으로 변환
+  const formatPhoneNumberFromE164 = (phone) => {
+    if (phone.startsWith('+82')) {
+      const numbers = '0' + phone.slice(3);
+      if (numbers.length <= 3) return numbers;
+      if (numbers.length <= 7) return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
+      return `${numbers.slice(0, 3)}-${numbers.slice(3, 7)}-${numbers.slice(7)}`;
+    }
+    return phone;
+  };
 
   // 컴포넌트 언마운트 시 타이머 정리
   useEffect(() => {
@@ -568,11 +630,11 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
 
               <div className={styles.inputGroup}>
                 <label className={styles.label}>
-                  {eventData.bride_name || '하윤'}님과 {eventData.groom_name || '민호'}님에게 전하는 마음
+                  {mode === 'edit' ? '방명록 수정' : `${eventData.bride_name || '하윤'}님과 ${eventData.groom_name || '민호'}님에게 전하는 마음`}
                 </label>
                 <textarea
                   className={styles.textarea}
-                  placeholder="축하 메시지를 남겨주세요"
+                  placeholder={mode === 'edit' ? '방명록을 수정해주세요' : '축하 메시지를 남겨주세요'}
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   rows={6}
@@ -584,17 +646,24 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
               <div className={styles.buttonGroup}>
                 <button
                   className={styles.secondaryButton}
-                  onClick={() => setStep('verification')}
+                  onClick={() => {
+                    // verifiedPhone으로 바로 온 경우는 모달을 닫고, 인증 과정을 거친 경우는 이전 단계로
+                    if (localStorage.getItem('verifiedPhone') && !verificationSent) {
+                      onClose();
+                    } else {
+                      setStep('verification');
+                    }
+                  }}
                   disabled={isLoading}
                 >
-                  이전
+                  {localStorage.getItem('verifiedPhone') && !verificationSent ? '취소' : '이전'}
                 </button>
                 <button
                   className={styles.primaryButton}
                   onClick={submitGuestbook}
                   disabled={isLoading || !formData.guestName.trim() || !formData.message.trim()}
                 >
-                  {isLoading ? '등록 중...' : '방명록 등록'}
+                  {isLoading ? (mode === 'edit' ? '수정 중...' : '등록 중...') : (mode === 'edit' ? '방명록 수정' : '방명록 등록')}
                 </button>
               </div>
             </>

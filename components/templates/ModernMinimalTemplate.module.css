@@ -1,62 +1,79 @@
-/* Modern Minimal Template CSS */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+/* ModernMinimalTemplate.module.css - 모바일 앱 디자인 복제 */
 
 .container {
   min-height: 100vh;
-  background: #000;
-  color: #fff;
-  font-family: 'Inter', sans-serif;
+  background: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
   overflow-x: hidden;
+  position: relative;
 }
 
-.navigation {
+/* 떨어지는 꽃잎 애니메이션 */
+.fallingFlowersContainer {
   position: fixed;
-  top: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  z-index: 100;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  padding: 12px 24px;
-  border-radius: 25px;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 10;
+  overflow: hidden;
 }
 
-.navItem {
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 2px;
-  cursor: pointer;
-  transition: opacity 0.3s;
-}
-
-.navItem:hover {
+.fallingFlower {
+  position: absolute;
+  animation: petalFall linear infinite;
+  animation-fill-mode: both;
   opacity: 0.7;
 }
 
-.navDivider {
-  opacity: 0.3;
+@keyframes petalFall {
+  0% { 
+    transform: translateY(-100px) translateX(0px) rotate(0deg); 
+    opacity: 0; 
+  }
+  2% { 
+    opacity: 0.7; 
+  }
+  20% { 
+    transform: translateY(20vh) translateX(15px) rotate(45deg); 
+    opacity: 0.8; 
+  }
+  40% { 
+    transform: translateY(40vh) translateX(-10px) rotate(90deg); 
+    opacity: 0.7; 
+  }
+  60% { 
+    transform: translateY(60vh) translateX(20px) rotate(135deg); 
+    opacity: 0.6; 
+  }
+  80% { 
+    transform: translateY(80vh) translateX(-5px) rotate(180deg); 
+    opacity: 0.5; 
+  }
+  100% { 
+    transform: translateY(calc(100vh + 100px)) translateX(10px) rotate(225deg); 
+    opacity: 0; 
+  }
 }
 
+/* 히어로 섹션 */
 .heroSection {
-  height: 100vh;
+  height: 85vh;
   position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+  overflow: hidden;
 }
 
-.heroBackground {
-  position: absolute;
-  top: 0;
-  left: 0;
+.heroImageContainer {
   width: 100%;
   height: 100%;
-  z-index: -2;
+  position: relative;
+}
+
+.heroSlideshow {
+  width: 100%;
+  height: 100%;
+  position: relative;
 }
 
 .heroImage {
@@ -68,10 +85,11 @@
   background-size: cover;
   background-position: center;
   opacity: 0;
-  transition: opacity 2s ease-in-out;
+  transition: opacity 1s ease-in-out;
+  cursor: pointer;
 }
 
-.heroImage.active {
+.heroImageActive {
   opacity: 1;
 }
 
@@ -81,521 +99,829 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: -1;
+  background: linear-gradient(transparent, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 60px 20px;
 }
 
 .heroContent {
-  z-index: 1;
+  text-align: center;
+  color: white;
+}
+
+.heroNames {
+  font-size: 28px;
+  font-weight: 200;
+  letter-spacing: 4px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.groomName,
+.brideName {
+  display: block;
+}
+
+.ampersand {
+  font-size: 20px;
+  opacity: 0.8;
+  font-weight: 300;
+}
+
+.heroSubtitle {
+  font-size: 12px;
+  letter-spacing: 3px;
+  opacity: 0.8;
+  margin-bottom: 15px;
 }
 
 .heroDate {
   font-size: 14px;
-  font-weight: 300;
-  letter-spacing: 4px;
-  margin-bottom: 30px;
-  opacity: 0.8;
-}
-
-.heroNames {
-  font-size: clamp(3rem, 8vw, 6rem);
-  font-weight: 300;
-  line-height: 1.1;
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.groomName, .brideName {
-  letter-spacing: 3px;
-}
-
-.ampersand {
-  font-size: 0.5em;
-  opacity: 0.6;
-  font-weight: 400;
-}
-
-.heroSubtitle {
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 3px;
-  opacity: 0.7;
-}
-
-.scrollIndicator {
-  position: absolute;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.scrollLine {
-  width: 1px;
-  height: 40px;
-  background: #fff;
-  opacity: 0.3;
-  animation: scrollPulse 2s ease-in-out infinite;
-}
-
-@keyframes scrollPulse {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.8; }
-}
-
-.scrollText {
-  font-size: 10px;
   letter-spacing: 2px;
-  opacity: 0.6;
-  writing-mode: vertical-rl;
+  opacity: 0.9;
+  font-weight: 300;
 }
 
-.countdownSection {
-  padding: 100px 20px;
-  background: #111;
-}
-
-.countdownContent {
-  max-width: 800px;
-  margin: 0 auto;
+/* 인사말 섹션 */
+.greetingSection {
+  background-color: #ffffff;
+  padding: 60px 25px;
   text-align: center;
 }
 
-.countdownTitle {
-  font-size: 32px;
-  font-weight: 300;
-  letter-spacing: 4px;
-  margin-bottom: 60px;
-}
-
-.countdownGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 40px;
-  max-width: 600px;
+.greetingContent {
+  max-width: 400px;
   margin: 0 auto;
 }
 
-.countdownBlock {
+.dividerLine {
+  width: 40px;
+  height: 1px;
+  background-color: #ddd;
+  margin: 0 auto 40px;
+}
+
+.greetingTitle {
+  font-size: 22px;
+  font-weight: 200;
+  color: #333;
+  letter-spacing: 1px;
+  margin: 0 0 30px 0;
+  line-height: 1.6;
+}
+
+.greetingText {
+  font-size: 14px;
+  color: #666;
+  line-height: 26px;
+  margin: 0 0 40px 0;
+  white-space: pre-line;
+}
+
+.parentsInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.parentGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.parentLabel {
+  font-size: 12px;
+  color: #999;
+  letter-spacing: 1px;
+}
+
+.parentChild {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+/* 날짜 섹션 (어두운 배경) */
+.dateSection {
+  background: linear-gradient(135deg, #1a1a1a, #000000);
+  padding: 60px 25px;
+  text-align: center;
+  color: white;
+}
+
+.dateContent {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.dateSectionTitle {
+  font-size: 22px;
+  font-weight: 200;
+  letter-spacing: 3px;
+  margin: 0 0 40px 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* 캘린더 스타일 */
+.calendarContainer {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 25px;
+  border-radius: 8px;
+  margin-bottom: 40px;
+}
+
+.calendarHeader {
+  font-size: 16px;
+  letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 200;
+}
+
+.weekDaysHeader {
+  display: flex;
+  margin-bottom: 15px;
+}
+
+.weekDay {
+  flex: 1;
+  text-align: center;
+}
+
+.weekDayText {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 1px;
+}
+
+.sundayText {
+  font-size: 11px;
+  color: rgba(255, 182, 193, 0.8);
+  letter-spacing: 1px;
+}
+
+.calendarGrid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.calendarDay {
+  width: calc(100% / 7);
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+}
+
+.targetDate {
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.normalDate {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.sundayDate {
+  font-size: 13px;
+  color: rgba(255, 182, 193, 0.6);
+}
+
+.inactiveDate {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.2);
+}
+
+/* 카운트다운 */
+.countdownContainer {
+  margin-bottom: 40px;
+}
+
+.countdownGrid {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+}
+
+.countdownItem {
   text-align: center;
 }
 
 .countdownNumber {
-  font-size: 48px;
-  font-weight: 700;
-  display: block;
-  margin-bottom: 10px;
-  color: #fff;
+  font-size: 32px;
+  font-weight: 200;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
 }
 
 .countdownLabel {
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 2px;
-  opacity: 0.6;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .marriedMessage {
-  text-align: center;
+  margin-bottom: 40px;
+}
+
+.marriedTitle {
+  font-size: 24px;
+  font-weight: 200;
+  letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 15px 0;
 }
 
 .marriedText {
-  font-size: 18px;
-  opacity: 0.7;
-  margin-top: 20px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
 }
 
-.messageSection {
-  padding: 120px 20px;
-  background: #000;
-  text-align: center;
-}
-
-.messageContent {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.quoteMark {
-  font-size: 72px;
-  opacity: 0.1;
-  line-height: 0.5;
-  font-family: Georgia, serif;
-}
-
-.message {
-  font-size: 24px;
-  font-weight: 300;
-  line-height: 1.6;
-  margin: 40px 0;
-  white-space: pre-line;
-}
-
-.infoSection {
-  padding: 120px 20px;
-  background: #111;
-}
-
-.infoGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+.ceremonyInfo {
+  display: flex;
+  justify-content: center;
   gap: 60px;
-  max-width: 1000px;
-  margin: 0 auto;
 }
 
-.infoCard {
+.ceremonyTime {
   text-align: center;
-  padding: 40px 20px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: border-color 0.3s;
 }
 
-.infoCard:hover {
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-.infoIcon {
-  font-size: 32px;
-  margin-bottom: 20px;
-  opacity: 0.8;
-}
-
-.infoTitle {
-  font-size: 14px;
-  font-weight: 600;
+.timeLabel {
+  display: block;
+  font-size: 11px;
   letter-spacing: 2px;
-  margin-bottom: 20px;
-  opacity: 0.8;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 8px;
 }
 
-.infoMain {
-  font-size: 20px;
-  font-weight: 500;
-  margin-bottom: 10px;
-}
-
-.infoSub {
+.timeValue {
+  display: block;
   font-size: 16px;
-  opacity: 0.7;
-  margin-bottom: 15px;
-}
-
-.infoDetail {
-  font-size: 14px;
-  opacity: 0.6;
-  line-height: 1.5;
-}
-
-.coupleSection {
-  padding: 120px 20px;
-  background: #000;
-}
-
-.sectionTitle {
-  font-size: 32px;
   font-weight: 300;
-  letter-spacing: 4px;
-  text-align: center;
-  margin-bottom: 80px;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 1px;
 }
 
-.coupleGrid {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 80px;
-  max-width: 800px;
-  margin: 0 auto;
-  flex-wrap: wrap;
-}
-
-.personCard {
-  text-align: center;
-  flex: 1;
-  min-width: 200px;
-}
-
-.personImageContainer {
-  width: 200px;
-  height: 200px;
-  margin: 0 auto 30px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-}
-
-.personImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: grayscale(20%);
-}
-
-.personPlaceholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #111;
-  font-size: 60px;
-}
-
-.personName {
-  font-size: 28px;
-  font-weight: 300;
-  letter-spacing: 2px;
-  margin-bottom: 10px;
-}
-
-.personParents {
-  font-size: 14px;
-  opacity: 0.6;
-  line-height: 1.5;
-}
-
-.coupleAnd {
-  font-size: 24px;
-  opacity: 0.4;
-  font-weight: 300;
-}
-
+/* 갤러리 섹션 */
 .gallerySection {
-  padding: 120px 20px;
-  background: #111;
+  background-color: #ffffff;
+  padding: 60px 0;
 }
 
-.galleryGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  max-width: 1000px;
-  margin: 0 auto;
+.gallerySectionContent {
+  text-align: center;
+}
+
+.gallerySectionTitle {
+  font-size: 22px;
+  font-weight: 200;
+  color: #333;
+  letter-spacing: 3px;
+  margin: 0 0 40px 0;
+}
+
+.galleryContainer {
+  position: relative;
+}
+
+.galleryScroll {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 0 20px;
+  gap: 15px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.galleryScroll::-webkit-scrollbar {
+  display: none;
 }
 
 .galleryItem {
-  position: relative;
-  aspect-ratio: 1;
+  flex: 0 0 70vw;
+  height: 70vw;
+  border-radius: 8px;
   overflow: hidden;
+  position: relative;
   cursor: pointer;
-  transition: transform 0.3s;
-}
-
-.galleryItem:hover {
-  transform: scale(1.05);
+  scroll-snap-align: center;
 }
 
 .galleryItem img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: grayscale(30%);
-  transition: filter 0.3s;
-}
-
-.galleryItem:hover img {
-  filter: grayscale(0%);
 }
 
 .galleryOverlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.3);
+  top: 15px;
+  right: 15px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.galleryIndicators {
   display: flex;
-  align-items: center;
   justify-content: center;
-  opacity: 0;
-  transition: opacity 0.3s;
+  gap: 8px;
+  margin-top: 20px;
 }
 
-.galleryItem:hover .galleryOverlay {
-  opacity: 1;
+.galleryIndicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background-color: #ddd;
+  transition: background-color 0.3s ease;
 }
 
-.galleryNumber {
-  font-size: 24px;
-  font-weight: 300;
-  color: #fff;
+.galleryIndicatorActive {
+  background-color: #333;
 }
 
-.locationSection {
-  padding: 120px 20px;
-  background: #000;
+/* 신랑신부 섹션 */
+.coupleSection {
+  background-color: #ffffff;
+  padding: 60px 25px;
 }
 
-.mapContainer {
-  max-width: 600px;
+.coupleSectionContent {
+  max-width: 400px;
   margin: 0 auto;
+  text-align: center;
 }
 
-.mapPlaceholder {
-  aspect-ratio: 16/9;
-  background: #111;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+.coupleSectionTitle {
+  font-size: 22px;
+  font-weight: 200;
+  color: #333;
+  letter-spacing: 3px;
+  margin: 0 0 40px 0;
+}
+
+.coupleContainer {
   display: flex;
   flex-direction: column;
+  gap: 30px;
+}
+
+.coupleCard {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  text-align: left;
+}
+
+.coupleImageContainer {
+  width: 80px;
+  height: 80px;
+  border-radius: 40px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.coupleImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.couplePlaceholder {
+  width: 100%;
+  height: 100%;
+  background-color: #f8f8f8;
+  display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  margin-bottom: 40px;
+  font-size: 30px;
 }
 
-.mapIcon {
-  font-size: 48px;
-  margin-bottom: 20px;
-  opacity: 0.6;
+.coupleInfo {
+  flex: 1;
 }
 
-.mapLocation {
-  font-size: 20px;
-  font-weight: 500;
-  margin-bottom: 10px;
-}
-
-.mapAddress {
-  font-size: 14px;
-  opacity: 0.6;
-}
-
-.mapButtons {
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-}
-
-.mapButton, .mapButtonOutline {
-  padding: 15px 30px;
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 1px;
-  cursor: pointer;
-  transition: all 0.3s;
-  border: none;
-  background: none;
-  color: #fff;
-}
-
-.mapButton {
-  background: #fff;
-  color: #000;
-}
-
-.mapButton:hover {
-  background: #ddd;
-}
-
-.mapButtonOutline {
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.mapButtonOutline:hover {
-  border-color: #fff;
-}
-
-.rsvpSection {
-  padding: 120px 20px;
-  background: #111;
-  text-align: center;
-}
-
-.rsvpContent {
-  max-width: 500px;
-  margin: 0 auto;
-}
-
-.rsvpTitle {
-  font-size: 32px;
-  font-weight: 300;
-  letter-spacing: 4px;
-  margin-bottom: 30px;
-}
-
-.rsvpText {
+.coupleName {
   font-size: 18px;
-  opacity: 0.7;
-  margin-bottom: 50px;
-  line-height: 1.6;
+  font-weight: 300;
+  color: #333;
+  margin: 0 0 8px 0;
+  letter-spacing: 1px;
 }
 
-.shareButton {
-  padding: 18px 40px;
-  background: #fff;
-  color: #000;
-  border: none;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 2px;
-  cursor: pointer;
-  transition: all 0.3s;
+.coupleParents {
+  font-size: 13px;
+  color: #999;
+  margin: 0;
+  letter-spacing: 0.5px;
 }
 
-.shareButton:hover {
-  background: #ddd;
-  transform: translateY(-2px);
-}
-
-.footer {
-  padding: 80px 20px;
-  background: #000;
+/* 위치 섹션 (어두운 배경) */
+.locationSection {
+  background: linear-gradient(135deg, #1a1a1a, #000000);
+  padding: 60px 25px;
   text-align: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
 }
 
-.footerContent {
+.locationContent {
   max-width: 400px;
   margin: 0 auto;
 }
 
-.footerNames {
-  font-size: 24px;
+.locationSectionTitle {
+  font-size: 22px;
+  font-weight: 200;
+  letter-spacing: 3px;
+  margin: 0 0 40px 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.locationInfo {
+  margin-bottom: 40px;
+}
+
+.locationName {
+  font-size: 20px;
   font-weight: 300;
-  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 15px 0;
+  letter-spacing: 1px;
+}
+
+.locationAddress {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  line-height: 22px;
+}
+
+.locationButtons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.locationButton {
+  flex: 1;
+  max-width: 120px;
+  padding: 15px 20px;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #1a1a1a;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.locationButton:hover {
+  background-color: white;
+}
+
+.locationButtonOutline {
+  flex: 1;
+  max-width: 120px;
+  padding: 15px 20px;
+  background-color: transparent;
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.locationButtonOutline:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* 축의금 섹션 */
+.accountSection {
+  background-color: #fafafa;
+  padding: 60px 25px;
+}
+
+.accountSectionContent {
+  max-width: 400px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.accountSectionTitle {
+  font-size: 22px;
+  font-weight: 200;
+  color: #333;
+  letter-spacing: 3px;
+  margin: 0 0 15px 0;
+}
+
+.accountSectionSubtitle {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 40px 0;
+  line-height: 22px;
+}
+
+.accountContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.accountCard {
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.accountHeader {
+  width: 100%;
+  padding: 18px 20px;
+  background-color: white;
+  border: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.accountHeader:hover {
+  background-color: #f8f8f8;
+}
+
+.accountTitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  letter-spacing: 0.5px;
+}
+
+.accountChevron {
+  font-size: 12px;
+  color: #999;
+  transition: transform 0.3s ease;
+}
+
+.accountChevronOpen {
+  transform: rotate(180deg);
+}
+
+.accountDetails {
+  padding: 20px;
+  background-color: #f8f8f8;
+  border-top: 1px solid #eee;
+}
+
+.accountInfo {
   margin-bottom: 20px;
 }
 
-.footerDate {
-  font-size: 16px;
-  opacity: 0.6;
-  margin-bottom: 30px;
+.accountRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
 }
 
-.footerDivider {
-  font-size: 20px;
-  opacity: 0.3;
-  margin-bottom: 30px;
+.accountRow:last-child {
+  border-bottom: none;
 }
 
-.footerMessage {
-  font-size: 12px;
+.accountLabel {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.accountValue {
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.copyButton {
+  width: 100%;
+  padding: 12px;
+  background-color: #007AFF;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.copyButton:hover {
+  background-color: #0056CC;
+}
+
+/* 공유 섹션 (어두운 배경) */
+.shareSection {
+  background: linear-gradient(135deg, #1a1a1a, #000000);
+  padding: 60px 25px;
+  text-align: center;
+  color: white;
+}
+
+.shareSectionContent {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.shareSectionTitle {
+  font-size: 22px;
+  font-weight: 200;
   letter-spacing: 3px;
-  opacity: 0.5;
+  margin: 0 0 20px 0;
+  color: rgba(255, 255, 255, 0.9);
 }
 
-@media (max-width: 768px) {
+.shareText {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0 40px 0;
+  line-height: 22px;
+}
+
+.shareButton {
+  padding: 18px 40px;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #1a1a1a;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 60px;
+  letter-spacing: 0.5px;
+}
+
+.shareButton:hover {
+  background-color: white;
+}
+
+.shareFooter {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 40px;
+}
+
+.shareNames {
+  font-size: 18px;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 10px;
+  letter-spacing: 2px;
+}
+
+.shareDate {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+
+.shareMessage {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  line-height: 26px;
+}
+
+/* 이미지 뷰어 */
+.imageViewer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imageViewerContent {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+
+.imageViewerClose {
+  position: absolute;
+  top: -50px;
+  right: 0;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 30px;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.imageViewerImage {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* 반응형 디자인 */
+@media (min-width: 768px) {
   .heroNames {
-    font-size: 2.5rem;
+    font-size: 36px;
+    flex-direction: row;
+    gap: 20px;
+  }
+  
+  .ampersand {
+    font-size: 24px;
   }
   
   .countdownGrid {
-    grid-template-columns: 1fr;
-    gap: 30px;
+    gap: 60px;
   }
   
-  .coupleGrid {
-    flex-direction: column;
-    gap: 50px;
+  .countdownNumber {
+    font-size: 40px;
   }
   
-  .mapButtons {
+  .ceremonyInfo {
+    gap: 80px;
+  }
+  
+  .galleryItem {
+    flex: 0 0 300px;
+    height: 300px;
+  }
+  
+  .coupleContainer {
+    flex-direction: row;
+    gap: 60px;
+    justify-content: center;
+  }
+  
+  .coupleCard {
     flex-direction: column;
+    text-align: center;
+    max-width: 150px;
+  }
+  
+  .coupleImageContainer {
+    width: 120px;
+    height: 120px;
+    border-radius: 60px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .heroNames {
+    font-size: 42px;
+  }
+  
+  .galleryItem {
+    flex: 0 0 350px;
+    height: 350px;
+  }
+  
+  .accountContainer {
+    max-width: 500px;
+    margin: 0 auto;
   }
 }

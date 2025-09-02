@@ -26,12 +26,13 @@ export default async function handler(req, res) {
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // 방명록 데이터 조회
+    // 방명록 데이터 조회 (is_public: true인 것만)
     const { data: guestBookEntries, error: selectError } = await supabase
       .from('guest_book')
       .select('*')
       .eq('event_id', eventId)
       .eq('is_verified', true)
+      .eq('is_public', true) // 공개된 방명록만 조회
       .order('created_at', { ascending: false });
 
     if (selectError) {

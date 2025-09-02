@@ -1,4 +1,4 @@
-/* components/ContributionModal.module.css - 토스 스타일 */
+/* components/ContributionModal.module.css - 토스 스타일 + 폰 인증 */
 .overlay {
   position: fixed;
   top: 0;
@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 1001;
   padding: 20px;
   backdrop-filter: blur(4px);
 }
@@ -149,10 +149,11 @@
 }
 
 .subtitle {
-  font-size: 16px;
-  color: #718096;
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+  margin: 0 0 20px;
   line-height: 1.5;
-  margin: 0;
 }
 
 .pageContent {
@@ -203,6 +204,11 @@
   justify-content: center;
 }
 
+/* 왼쪽 페이지 (뒤집힌 면)의 이름들은 180도 회전 */
+.pageBack .guestName {
+  transform: rotate(180deg);
+}
+
 
 /* 책자 애니메이션 */
 .bookContainer {
@@ -230,6 +236,56 @@
     0 10px 30px rgba(0, 0, 0, 0.3),
     0 0 0 1px #8b2020;
   transform-style: preserve-3d;
+}
+
+.bookPages {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.bookPage {
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  right: 0;
+  background: #fff;
+  border-radius: 0 4px 4px 0;
+  transition: transform 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
+  border-left: 1px solid #ddd;
+}
+
+.bookPage.pageFlipped {
+  transform: rotateY(-180deg);
+}
+
+.bookPage.flipping {
+  transition: transform 0.15s ease;
+}
+
+.pageContent {
+  padding: 15px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backface-visibility: hidden;
+  position: absolute;
+  width: 100%;
+}
+
+.pageBack {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  transform: rotateY(180deg);
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-radius: 0 4px 4px 0;
 }
 
 .book::before {
@@ -683,9 +739,9 @@
 
 /* 폼 섹션 */
 .formSection {
-  margin-top: 24px;
-  opacity: 0;
-  transform: translateY(20px);
+  margin-top: 0;
+  opacity: 1;
+  transform: translateY(0);
   transition: all 0.6s ease 0.4s;
 }
 
@@ -697,6 +753,116 @@
 /* 입력 필드 */
 .inputGroup {
   margin-bottom: 12px;
+}
+
+/* 개인정보 보호 안내 */
+.privacyNotice {
+  margin: 16px 0;
+  padding: 12px 16px;
+  background: #f0f8ff;
+  border: 1px solid #b3d9ff;
+  border-radius: 8px;
+  border-left: 4px solid #0066cc;
+}
+
+.privacyText {
+  font-size: 13px;
+  color: #004080;
+  margin: 0;
+  line-height: 1.5;
+  text-align: left;
+}
+
+/* 토스 스타일 보안 안내 */
+.tossSecurity {
+  margin: 24px 0;
+  text-align: center;
+}
+
+.lockAnimation {
+  margin-bottom: 16px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.lockIcon {
+  font-size: 48px;
+  display: inline-block;
+  animation: lockFadeInScale 1.2s ease-out forwards;
+}
+
+@keyframes lockFadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(20px);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2) translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(0.8) translateY(0);
+  }
+}
+
+.tossCheckbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: #f7f8fa;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 12px;
+  opacity: 0;
+  animation: fadeInUp 0.6s ease-out 0.8s forwards;
+}
+
+.tossCheckbox:hover {
+  background: #e8ecf0;
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #333d4b;
+}
+
+.checkboxLabel {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333d4b;
+  user-select: none;
+}
+
+.tossPrivacyText {
+  font-size: 14px;
+  color: #6b7684;
+  line-height: 1.5;
+  margin: 0;
+  opacity: 0;
+  animation: fadeInUp 0.6s ease-out 1.2s forwards;
+}
+
+.tossPrivacyText strong {
+  color: #333d4b;
+  font-weight: 700;
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .input {
@@ -826,7 +992,7 @@
   margin-top: 16px;
   border: none;
   border-radius: 12px;
-  background: #000;
+  background: #ff69b4;
   color: white;
   font-size: 16px;
   font-weight: 700;
@@ -836,8 +1002,8 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  opacity: 0;
-  transform: translateY(10px);
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .submitButton.show {
@@ -848,6 +1014,10 @@
 
 .submitButton:active:not(:disabled) {
   transform: scale(0.98);
+}
+
+.submitButton:hover {
+  background: #e55aa0;
 }
 
 .submitButton:disabled {
@@ -971,4 +1141,103 @@
   .sideButtonGroup {
     flex-direction: column;
   }
+}
+
+/* 폰 인증 관련 스타일 */
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 8px;
+  text-align: center;
+}
+
+.stepTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 16px;
+  text-align: center;
+}
+
+.stepDescription {
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+
+.label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.primaryButton {
+  flex: 1;
+  background: #ff69b4;
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.primaryButton:hover {
+  background: #e55aa0;
+}
+
+.primaryButton:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.secondaryButton {
+  flex: 1;
+  background: #f5f5f5;
+  color: #666;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.secondaryButton:hover {
+  background: #e5e5e5;
+}
+
+.resendButton {
+  width: 100%;
+  background: none;
+  color: #666;
+  border: none;
+  padding: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.resendButton:hover {
+  color: #333;
+}
+
+.resendButton:disabled {
+  color: #ccc;
+  cursor: not-allowed;
+  text-decoration: none;
 }

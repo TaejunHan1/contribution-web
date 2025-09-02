@@ -7,6 +7,7 @@ import EditGuestbookModal from '../EditGuestbookModal';
 import ArrivalConfirmModal from '../ArrivalConfirmModal';
 import ContributionModal from '../ContributionModal';
 import CompletionModal from '../CompletionModal';
+import WelcomeChoiceModal from '../WelcomeChoiceModal';
 import styles from './RomanticPinkTemplate.module.css';
 
 // 떨어지는 꽃잎 애니메이션 컴포넌트 (모바일과 동일)
@@ -430,6 +431,87 @@ const GuestBookMessages = ({ messages, onAddMessage }) => {
   );
 };
 
+// 내 축의금 섹션 컴포넌트
+const MyContributionSection = ({ eventData, myContribution, onEdit, setMyContribution }) => {
+  const [loading, setLoading] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
+  
+  // 데이터 변경 감지
+  useEffect(() => {
+    console.log('🔵 MyContributionSection 렌더링:', {
+      name: myContribution?.guestName,
+      amount: myContribution?.contributionAmount || myContribution?.amount,
+      rawData: myContribution
+    });
+  }, [myContribution]);
+
+  // realtime으로 데이터가 자동 업데이트되므로 polling 제거
+
+  const verifiedPhone = localStorage.getItem('verifiedPhone');
+  
+  // 인증된 사용자가 아니면 표시하지 않음
+  if (!verifiedPhone) return null;
+  
+  // 축의금이 없으면 표시하지 않음 (props로 받아서 처리)
+  if (!myContribution) return null;
+
+  const handleEditContribution = () => {
+    // 축의금 수정 로직 - 기존 데이터로 모달 열기
+    onEdit();
+  };
+
+  return (
+    <div className={styles.myContributionSection}>
+      {/* 토글 버튼 */}
+      <button 
+        className={styles.toggleButton}
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <span className={styles.toggleText}>내가 축의한 금액</span>
+        <span className={styles.toggleIcon}>{isExpanded ? '▼' : '▲'}</span>
+      </button>
+      
+      {/* 확장된 내용 */}
+      {isExpanded && (
+        <div className={styles.contributionContent}>
+          <p className={styles.contributionSubtitle}>본인에게만 보이는 정보입니다</p>
+          
+          <div className={styles.contributionSummary}>
+            <div className={styles.summaryInfo}>
+              <span className={styles.summaryName}>{myContribution.guestName}</span>
+              <span className={styles.summaryAmount}>
+                {(myContribution.contributionAmount || myContribution.amount)?.toLocaleString()}원
+              </span>
+            </div>
+            <div className={styles.summaryDetails}>
+              <span className={styles.summaryRelation}>
+                {myContribution.relationship === 'family' ? '가족' : 
+                 myContribution.relationship === 'relative' ? '친척' :
+                 myContribution.relationship === 'friend' ? '지인' : 
+                 myContribution.relationship === 'colleague' ? '직장동료' : 
+                 myContribution.relationship === 'senior' ? '선배' :
+                 myContribution.relationship === 'junior' ? '후배' :
+                 myContribution.relationship === 'neighbor' ? '이웃' :
+                 myContribution.relationship === 'other' ? '기타' :
+                 myContribution.relationship}
+              </span>
+              <span className={styles.summarySide}>
+                {myContribution.side === 'groom' ? '신랑측' : '신부측'}
+              </span>
+            </div>
+            <button 
+              className={styles.editButton}
+              onClick={handleEditContribution}
+            >
+              수정
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessages = false, messageSettings = {} }) => {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [randomGreeting, setRandomGreeting] = useState(null);
@@ -443,13 +525,21 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingMessage, setEditingMessage] = useState(null);
   
-  // 결혼식장 도착 및 축의금 모달 상태
+  // 모달 상태들
+  const [showWelcomeChoice, setShowWelcomeChoice] = useState(false);
   const [showArrivalModal, setShowArrivalModal] = useState(false);
   const [showContributionModal, setShowContributionModal] = useState(false);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
+  
   const [contributionData, setContributionData] = useState(null);
+  const [completionData, setCompletionData] = useState(null); // 완료 모달용 데이터
+  const [myContribution, setMyContribution] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [, forceUpdate] = useState({});
+  const [contributionKey, setContributionKey] = useState(0);
   const [arrivalDismissed, setArrivalDismissed] = useState(false); // 도착 확인 모달 닫음 여부
   const [guestMessages, setGuestMessages] = useState([]);
+  const [userChoice, setUserChoice] = useState(null); // 'guestbook' 또는 'contribution'
   
   // 이미지 URL 처리 함수 - EventDisplayScreen과 동일한 방식
   const getImageSrc = (image) => {
@@ -614,6 +704,101 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
     }, 1000);
     return () => clearInterval(timer);
   }, [eventData]);
+
+  // 내 축의금 데이터 초기화 및 realtime 구독
+  useEffect(() => {
+    const verifiedPhone = localStorage.getItem('verifiedPhone');
+    if (!verifiedPhone || !eventData?.id) return;
+
+    let isSubscribed = true; // cleanup flag
+
+    // 초기 데이터 로드 (한 번만)
+    const fetchMyContribution = async () => {
+      if (!isSubscribed) return;
+      
+      try {
+        const response = await fetch(`/api/get-my-contribution?eventId=${eventData.id}&phone=${encodeURIComponent(verifiedPhone)}`);
+        const result = await response.json();
+        
+        console.log('🔄 내 축의금 초기 로드:', result);
+        
+        if (result.success && result.contribution && isSubscribed) {
+          // amount 필드 추가 (contributionAmount와 amount 둘 다 지원)
+          const contribution = {
+            ...result.contribution,
+            amount: result.contribution.contributionAmount || result.contribution.amount
+          };
+          setMyContribution(contribution);
+        }
+      } catch (error) {
+        console.error('내 축의금 조회 오류:', error);
+      }
+    };
+
+    fetchMyContribution();
+
+    // Supabase realtime 구독 설정
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    );
+
+    // 필터를 간단하게 event_id만으로 설정하고 클라이언트에서 필터링
+    const subscription = supabase
+      .channel(`guest_book_changes_${eventData.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'guest_book',
+          filter: `event_id=eq.${eventData.id}`
+        },
+        (payload) => {
+          console.log('📡 guest_book 테이블 변경 감지:', payload);
+          
+          // 변경된 데이터가 현재 사용자의 것인지 확인
+          if (payload.new && payload.new.guest_phone === verifiedPhone) {
+            console.log('✅ 내 축의금 데이터 업데이트 감지!');
+            
+            if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
+              const newContribution = {
+                id: payload.new.id,
+                guestName: payload.new.guest_name,
+                contributionAmount: payload.new.amount,
+                amount: payload.new.amount, // 두 가지 키 모두 제공
+                relationship: payload.new.relation_detail,
+                side: payload.new.relation_category,
+                phone: payload.new.guest_phone,
+                createdAt: payload.new.created_at,
+                updatedAt: payload.new.updated_at
+              };
+              console.log('💚 새로운 축의금 데이터 설정:', newContribution);
+              
+              // 상태 업데이트
+              setMyContribution(newContribution);
+              
+              // 컴포넌트 키 변경으로 완전히 재마운트
+              setContributionKey(prev => prev + 1);
+              
+              // 강제 리렌더링 트리거
+              forceUpdate({});
+            }
+          } else if (payload.old && payload.old.guest_phone === verifiedPhone && payload.eventType === 'DELETE') {
+            console.log('❌ 내 축의금 삭제 감지');
+            setMyContribution(null);
+          }
+        }
+      )
+      .subscribe((status) => {
+        console.log('📡 Realtime 구독 상태:', status);
+      });
+
+    return () => {
+      isSubscribed = false;
+      subscription.unsubscribe();
+    };
+  }, [eventData?.id]);
 
   // 영문 이름 생성
   const groomEnglishName = koreanToEnglish(eventData.groom_name || '이민호');
@@ -935,31 +1120,47 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
     arrivalTimersRef.current = [];
   };
 
-  // 통합된 도착 확인 모달 체크 함수
-  const checkAndShowArrivalModal = () => {
+  // Welcome Choice 모달 체크 함수
+  const checkAndShowWelcomeChoice = () => {
     // 이미 체크했거나 모달이 열려있으면 즉시 종료
-    if (arrivalModalCheckedRef.current || arrivalModalOpeningRef.current || showArrivalModal) {
-      console.log('🟡 도착 모달 이미 처리됨');
+    if (arrivalModalCheckedRef.current || arrivalModalOpeningRef.current || showWelcomeChoice) {
       return false;
     }
     
     const verifiedPhone = localStorage.getItem('verifiedPhone');
+    const currentEventArrivalKey = `arrival_checked_${eventData?.id}`;
+    const arrivalCheckedForThisEvent = localStorage.getItem(currentEventArrivalKey);
     
-    if (!verifiedPhone || arrivalDismissed) {
+    // 이미 이 이벤트에서 도착 확인을 했다면 Welcome Choice 모달을 표시하지 않음
+    if (arrivalCheckedForThisEvent) {
       return false;
     }
     
-    // 체크 완료 표시
+    // 인증된 폰이 있고 이미 방명록을 작성했다면 도착 모달만 표시
+    if (verifiedPhone && !arrivalDismissed) {
+      const hasPublicGuestBookForThisEvent = guestMessages.some(msg => 
+        msg.phone === verifiedPhone
+      );
+      
+      if (hasPublicGuestBookForThisEvent) {
+        localStorage.setItem(currentEventArrivalKey, 'true');
+        return false;
+      }
+      
+      // "축의금만 낼게요" 선택한 경우 도착 모달 건너뛰기
+      if (userChoice === 'contribution') {
+        localStorage.setItem(currentEventArrivalKey, 'true');
+        return false;
+      }
+      
+      // 인증된 폰이 있지만 방명록 없으면 도착 모달 표시
+      setShowArrivalModal(true);
+      return true;
+    }
+    
+    // 새 사용자라면 Welcome Choice 모달 표시
     arrivalModalCheckedRef.current = true;
-    arrivalModalOpeningRef.current = true;
-    
-    console.log('🟡 도착 모달 조건 만족 - 트리거됨');
-    setShowArrivalModal(true);
-    
-    setTimeout(() => {
-      arrivalModalOpeningRef.current = false;
-    }, 1000);
-    
+    setShowWelcomeChoice(true);
     return true;
   };
 
@@ -979,22 +1180,55 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
     }, 1000);
   };
 
+  // Welcome Choice 핸들러들
+  const handleSelectGuestbook = () => {
+    setUserChoice('guestbook');
+    setShowWelcomeChoice(false);
+    setShowGuestbookModal(true);
+  };
+
+  const handleSelectContribution = () => {
+    setUserChoice('contribution');
+    setShowWelcomeChoice(false);
+    
+    // arrival_checked는 핸드폰 인증 후에 설정하도록 변경
+    // 여기서는 설정하지 않음
+    
+    setTimeout(() => {
+      setShowContributionModal(true);
+    }, 100);
+  };
+
   // 도착 확인 핸들러
   const handleArrivalConfirm = async () => {
     clearArrivalTimers(); // 모든 대기 중인 타이머 정리
+    
+    // 이 이벤트에서 도착 확인했다고 표시
+    const currentEventArrivalKey = `arrival_checked_${eventData?.id}`;
+    localStorage.setItem(currentEventArrivalKey, 'true');
+    
     setShowArrivalModal(false);
-    // 잠시 후 축의금 모달 표시
-    setTimeout(() => {
-      setShowContributionModal(true);
-    }, 300);
+    
+    // 사용자 선택에 따라 다르게 처리
+    if (userChoice === 'contribution') {
+      // 축의금만 선택한 경우 → 축의금 모달
+      setTimeout(() => {
+        setShowContributionModal(true);
+      }, 300);
+    } else {
+      // 기존 로직 (방명록 선택한 경우나 기타) → 축의금 모달
+      setTimeout(() => {
+        setShowContributionModal(true);
+      }, 300);
+    }
   };
 
   // 안전한 도착 모달 닫기
   const handleArrivalModalClose = () => {
     clearArrivalTimers(); // 모든 대기 중인 타이머 정리
-    arrivalModalCheckedRef.current = true; // 다시 체크하지 않도록 표시
     setShowArrivalModal(false);
     setArrivalDismissed(true);
+    // arrivalModalCheckedRef 설정 제거 - "네 도착했어요" 버튼을 눌러야만 설정되도록
   };
 
   // 축의금 제출 핸들러
@@ -1011,18 +1245,61 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
       const result = await response.json();
 
       if (result.success) {
-        setContributionData(contributionFormData);
+        // 축의금만 선택한 경우에만 arrival_checked 설정
+        if (userChoice === 'contribution') {
+          const currentEventArrivalKey = `arrival_checked_${eventData?.id}`;
+          localStorage.setItem(currentEventArrivalKey, 'true');
+          
+          // 상태도 강제 업데이트
+          arrivalModalCheckedRef.current = true;
+          setArrivalDismissed(true);
+        }
+        
+        // 완료 모달용 데이터 저장
+        setCompletionData(contributionFormData);
         setShowContributionModal(false);
+        setIsEditMode(false);
+        
+        // Realtime이 자동으로 처리하므로 수동 새로고침 제거
+        // 단, 편집 모드일 때만 즉시 업데이트를 위해 로컬 상태 업데이트
+        if (isEditMode && myContribution) {
+          const updatedContribution = {
+            ...myContribution,
+            ...contributionFormData,
+            amount: contributionFormData.contributionAmount
+          };
+          console.log('🟣 편집 완료, 로컬 상태 즉시 업데이트:', updatedContribution);
+          setMyContribution(updatedContribution);
+          setContributionKey(prev => prev + 1);
+        }
+        
+        // 방명록 새로고침해서 랜덤 메시지 표시
+        const refreshGuestbook = async () => {
+          try {
+            const response = await fetch(`/api/get-guestbook?eventId=${eventData.id}`);
+            const result = await response.json();
+            
+            if (result.success && result.messages) {
+              setGuestMessages(result.messages);
+            }
+          } catch (error) {
+            console.error('방명록 새로고침 오류:', error);
+          }
+        };
+        
+        refreshGuestbook();
         
         // 잠시 후 완료 모달 표시
         setTimeout(() => {
           setShowCompletionModal(true);
         }, 300);
       } else {
+        console.error('축의금 등록 실패 응답:', result);
         throw new Error(result.error || '축의금 등록에 실패했습니다.');
       }
     } catch (error) {
       console.error('축의금 제출 오류:', error);
+      alert(`축의금 등록 중 오류가 발생했습니다:\n${error.message}`);
       throw error;
     }
   };
@@ -1030,9 +1307,9 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
   const handleOpeningComplete = () => {
     setShowOpening(false);
     
-    // 0.5초 후 도착 확인 모달 체크
+    // 0.5초 후 Welcome Choice 모달 체크
     const timer = setTimeout(() => {
-      checkAndShowArrivalModal();
+      checkAndShowWelcomeChoice();
     }, 500);
     arrivalTimersRef.current.push(timer);
   };
@@ -1049,7 +1326,7 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
     if (!showOpening) {
       // 오프닝이 이미 false인 경우 (새로고침 등) 1초 후 체크
       checkTimer = setTimeout(() => {
-        checkAndShowArrivalModal();
+        checkAndShowWelcomeChoice();
       }, 1000);
     } else {
       // 오프닝이 진행 중인 경우 4초 후 체크
@@ -1057,7 +1334,7 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
         if (showOpening) {
           setShowOpening(false);
           setTimeout(() => {
-            checkAndShowArrivalModal();
+            checkAndShowWelcomeChoice();
           }, 500);
         }
       }, 4000);
@@ -1735,6 +2012,15 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
         </div>
       )}
 
+      {/* Welcome Choice 모달 */}
+      <WelcomeChoiceModal
+        isOpen={showWelcomeChoice}
+        onClose={() => setShowWelcomeChoice(false)}
+        onSelectGuestbook={handleSelectGuestbook}
+        onSelectContribution={handleSelectContribution}
+        eventData={eventData}
+      />
+
       {/* 방명록 작성 모달 */}
       <GuestbookModal
         isOpen={showGuestbookModal}
@@ -1768,9 +2054,13 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
       {/* 축의금 입력 모달 */}
       <ContributionModal
         isOpen={showContributionModal}
-        onClose={() => setShowContributionModal(false)}
+        onClose={() => {
+          setShowContributionModal(false);
+          setIsEditMode(false);
+        }}
         onSubmit={handleContributionSubmit}
         eventData={eventData}
+        editData={isEditMode ? myContribution : null}
       />
 
       {/* 축의금 완료 모달 */}
@@ -1778,11 +2068,25 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
         isOpen={showCompletionModal}
         onClose={() => {
           setShowCompletionModal(false);
-          setContributionData(null);
+          setCompletionData(null);
         }}
-        contributionData={contributionData}
+        contributionData={completionData}
         eventData={eventData}
       />
+
+      {/* 내 축의금 섹션 (하단 고정) */}
+      {myContribution && (
+        <MyContributionSection 
+          key={`contribution-${contributionKey}-${myContribution?.contributionAmount || myContribution?.amount}`}
+          eventData={eventData} 
+          myContribution={myContribution}
+          onEdit={() => {
+            setIsEditMode(true);
+            setShowContributionModal(true);
+          }}
+          setMyContribution={setMyContribution}
+        />
+      )}
     </div>
   );
 };

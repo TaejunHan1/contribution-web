@@ -907,6 +907,127 @@
   transform: translateY(-2px);
 }
 
+/* 내 축의금 섹션 - 하단 컴팩트 토글 */
+.myContributionSection {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top: 1px solid #e0e0e0;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+}
+
+.toggleButton {
+  width: 100%;
+  background: linear-gradient(135deg, #ff69b4 0%, #e55aa0 100%);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.toggleButton:hover {
+  opacity: 0.95;
+}
+
+.toggleText {
+  flex: 1;
+  text-align: center;
+}
+
+.toggleIcon {
+  font-size: 12px;
+  transition: transform 0.2s ease;
+}
+
+.contributionContent {
+  padding: 16px 20px;
+  background: #fafafa;
+  border-top: 1px solid #f0f0f0;
+}
+
+.contributionSubtitle {
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+  margin: 0 0 12px;
+}
+
+.contributionSummary {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.summaryInfo {
+  flex: 1;
+}
+
+.summaryName {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.summaryAmount {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  color: #ff69b4;
+}
+
+.summaryDetails {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  margin-right: 12px;
+}
+
+.summaryRelation {
+  font-size: 12px;
+  color: #666;
+  background: #f8f9fa;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.summarySide {
+  font-size: 12px;
+  color: #666;
+}
+
+.editButton {
+  background: #ff69b4;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.editButton:hover {
+  background: #e55aa0;
+  transform: translateY(-1px);
+}
+
 /* 공유 섹션 */
 .shareSection {
   padding: 30px 20px;
