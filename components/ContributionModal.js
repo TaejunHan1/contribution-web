@@ -22,6 +22,8 @@ const ContributionModal = ({ isOpen, onClose, onSubmit, eventData, editData = nu
   const [showBook, setShowBook] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [isFlipping, setIsFlipping] = useState(false);
+  const [coverOpen, setCoverOpen] = useState(false);
+  const [showText, setShowText] = useState(false);
 
   // 관계 옵션들
   const relationshipOptions = [
@@ -89,6 +91,8 @@ const ContributionModal = ({ isOpen, onClose, onSubmit, eventData, editData = nu
       setShowBook(false);
       setCurrentPage(0);
       setIsFlipping(false);
+      setCoverOpen(false);
+      setShowText(false);
     }
   }, [isOpen, editData]);
 
@@ -98,10 +102,15 @@ const ContributionModal = ({ isOpen, onClose, onSubmit, eventData, editData = nu
       const timer = setTimeout(() => {
         setShowBook(true);
         
-        // 책자 페이지 플립 애니메이션
+        // 책이 나타난 후 덮개 열기
+        const coverTimer = setTimeout(() => {
+          setCoverOpen(true);
+        }, 700);
+        
+        // 덮개가 열린 후 잠깐 기다렸다가 페이지 넘김 시작
         const flipTimer = setTimeout(() => {
           setIsFlipping(true);
-          const flipSequence = [1, 2, 3, 4, 5];
+          const flipSequence = [1, 2, 3, 4, 5, 6, 7, 8];
           
           flipSequence.forEach((pageNum, index) => {
             setTimeout(() => {
@@ -110,12 +119,13 @@ const ContributionModal = ({ isOpen, onClose, onSubmit, eventData, editData = nu
                 setTimeout(() => {
                   setCurrentPage(0);
                   setIsFlipping(false);
-                }, 200);
+                  setShowText(true);
+                }, 300);
               }
-            }, index * 150);
+            }, index * 200);
           });
-        }, 800);
-      }, 300);
+        }, 1500);
+      }, 500);
     }
   }, [step, editData]);
 
@@ -315,86 +325,144 @@ const ContributionModal = ({ isOpen, onClose, onSubmit, eventData, editData = nu
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <button className={styles.closeButton} onClick={onClose}>×</button>
+          <button className={styles.closeButton} onClick={onClose}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M1 1L13 13M13 1L1 13" stroke="#8B95A1" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+          </button>
+          <span className={styles.headerTitle}>
+            {step === 'phone' ? '휴대폰 인증' : step === 'verification' ? '인증번호 입력' : '축의금 전달'}
+          </span>
         </div>
 
         <div className={styles.content}>
           {/* 폰 인증 단계 */}
           {step === 'phone' && (
-            <div className={styles.formSection}>
-              <h2 className={styles.title}>축의금 전달</h2>
-              <p className={styles.subtitle}>간편한 본인 확인이 필요해요</p>
-              
-              <div className={styles.inputGroup}>
-                <label className={styles.label}>휴대폰 번호</label>
-                <input
-                  type="tel"
-                  className={styles.input}
-                  placeholder="010-1234-5678"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: formatPhoneNumber(e.target.value) })}
-                />
-              </div>
-              
-              {/* 개인정보 보호 안내 - 토스 스타일 */}
-              <div className={styles.tossSecurity}>
-                <div className={styles.lockAnimation}>
-                  <span className={styles.lockIcon}>🔒</span>
+            <>
+              {/* 상단 섹션 */}
+              <div className={styles.topSection}>
+                <div className={styles.iconContainer}>
+                  <div className={styles.iconBackground}>
+                    <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+                      <path d="M14 6C12.9 6 12 6.9 12 8V36C12 37.1 12.9 38 14 38H30C31.1 38 32 37.1 32 36V8C32 6.9 31.1 6 30 6H14Z" fill="#4A90E2"/>
+                      <rect x="15" y="9" width="14" height="20" rx="1" fill="white"/>
+                      <circle cx="22" cy="33" r="2" fill="white"/>
+                    </svg>
+                  </div>
                 </div>
                 
-                <label className={styles.tossCheckbox}>
-                  <input
-                    type="checkbox"
-                    checked={privacyAgreed}
-                    onChange={(e) => setPrivacyAgreed(e.target.checked)}
-                    className={styles.checkbox}
-                  />
-                  <span className={styles.checkboxLabel}>개인정보 수집 동의</span>
-                </label>
-                
-                <p className={styles.tossPrivacyText}>
-                  수집된 휴대폰 번호는 <strong>오직 본인 확인 목적으로만</strong> 사용됩니다
+                <h2 className={styles.mainTitle}>휴대폰 인증</h2>
+                <p className={styles.mainDescription}>
+                  안전한 축의금 전달을 위해<br />
+                  간단한 본인 확인이 필요해요
                 </p>
               </div>
+
+              {/* 개인정보 동의 */}
+              <div className={styles.agreementSection}>
+                <div className={styles.agreementItem} onClick={() => setPrivacyAgreed(!privacyAgreed)}>
+                  <div className={styles.agreementLeft}>
+                    <span className={styles.agreementLabel}>개인정보 수집 동의</span>
+                  </div>
+                  <div className={`${styles.checkbox} ${privacyAgreed ? styles.checked : ''}`}>
+                    {privacyAgreed && (
+                      <svg width="14" height="10" viewBox="0 0 14 10" fill="none">
+                        <path d="M1 5L5 9L13 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    )}
+                  </div>
+                </div>
+                
+                <p className={styles.privacyText}>
+                  수집된 휴대폰번호는 오직 본인 확인 목적으로만 사용됩니다
+                </p>
+              </div>
+
+              {/* 입력 폼 섹션 */}
+              <div className={styles.formList}>
+                <div className={styles.inputSection}>
+                  <label className={styles.inputLabel}>휴대폰 번호</label>
+                  <input
+                    type="tel"
+                    className={styles.phoneInput}
+                    placeholder="010-0000-0000"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: formatPhoneNumber(e.target.value) })}
+                  />
+                </div>
+              </div>
               
-              {error && <p className={styles.error}>{error}</p>}
+              {error && <div className={styles.errorMessage}>{error}</div>}
               
-              <button
-                className={styles.submitButton}
-                onClick={sendVerificationCode}
-                disabled={isLoading || !formData.phone || !privacyAgreed}
-              >
-                {isLoading ? '발송 중...' : '인증번호 받기'}
-              </button>
-            </div>
+              <div className={styles.buttonStack}>
+                <button
+                  className={styles.submitButton}
+                  onClick={sendVerificationCode}
+                  disabled={isLoading || !formData.phone || !privacyAgreed}
+                >
+                  {isLoading ? '발송 중...' : '인증번호 받기'}
+                </button>
+              </div>
+            </>
           )}
 
           {/* 인증번호 확인 단계 */}
           {step === 'verification' && (
-            <div className={styles.formSection}>
-              <h2 className={styles.title}>인증번호 확인</h2>
-              <p className={styles.subtitle}>
-                {formData.phone}로 발송된<br />
-                6자리 인증번호를 입력해주세요
-              </p>
-              
-              <div className={styles.inputGroup}>
-                <input
-                  type="text"
-                  className={styles.input}
-                  placeholder="123456"
-                  value={formData.verificationCode}
-                  onChange={(e) => {
-                    const code = e.target.value.replace(/[^\d]/g, '').slice(0, 6);
-                    setFormData({ ...formData, verificationCode: code });
-                  }}
-                  maxLength={6}
-                />
+            <>
+              {/* 상단 섹션 */}
+              <div className={styles.topSection}>
+                <div className={styles.iconContainer}>
+                  <div className={styles.iconBackground}>
+                    <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+                      <path d="M12 8C12 6.9 12.9 6 14 6H30C31.1 6 32 6.9 32 8V36C32 37.1 31.1 38 30 38H14C12.9 38 12 37.1 12 36V8Z" fill="#4A90E2"/>
+                      <rect x="15" y="10" width="14" height="18" rx="1" fill="white"/>
+                      <path d="M18 16H26M18 19H26M18 22H24" stroke="#4A90E2" strokeWidth="1.5"/>
+                      <circle cx="22" cy="33" r="2" fill="white"/>
+                    </svg>
+                  </div>
+                </div>
+                
+                <h2 className={styles.mainTitle}>인증번호 입력</h2>
+                <p className={styles.mainDescription}>
+                  {formData.phone}로 발송된<br />
+                  6자리 인증번호를 입력해주세요
+                </p>
               </div>
 
-              {error && <p className={styles.error}>{error}</p>}
+              {/* 입력 폼 섹션 */}
+              <div className={styles.formList}>
+                <div className={styles.inputSection}>
+                  <label className={styles.inputLabel}>인증번호</label>
+                  <input
+                    type="text"
+                    className={styles.codeInput}
+                    placeholder="123456"
+                    value={formData.verificationCode}
+                    onChange={(e) => {
+                      const code = e.target.value.replace(/[^\d]/g, '').slice(0, 6);
+                      setFormData({ ...formData, verificationCode: code });
+                    }}
+                    maxLength={6}
+                  />
+                  {timer > 0 && (
+                    <div className={styles.timerText}>
+                      {formatTimer(timer)} 후 재발송 가능
+                    </div>
+                  )}
+                </div>
+              </div>
 
-              <div className={styles.buttonGroup}>
+              {error && <div className={styles.errorMessage}>{error}</div>}
+
+              <div className={styles.buttonStack}>
+                <button
+                  className={styles.submitButton}
+                  onClick={verifyCode}
+                  disabled={isLoading || formData.verificationCode.length !== 6}
+                >
+                  {isLoading ? '확인 중...' : '인증완료'}
+                </button>
+                
                 <button
                   className={styles.secondaryButton}
                   onClick={() => setStep('phone')}
@@ -402,29 +470,21 @@ const ContributionModal = ({ isOpen, onClose, onSubmit, eventData, editData = nu
                 >
                   이전
                 </button>
+                
                 <button
-                  className={styles.primaryButton}
-                  onClick={verifyCode}
-                  disabled={isLoading || formData.verificationCode.length !== 6}
+                  className={styles.resendButton}
+                  onClick={sendVerificationCode}
+                  disabled={isLoading || timer > 0}
                 >
-                  {isLoading ? '확인 중...' : '인증완료'}
+                  {timer > 0 ? `재전송 (${formatTimer(timer)})` : '인증번호 재전송'}
                 </button>
               </div>
-
-              <button
-                className={styles.resendButton}
-                onClick={sendVerificationCode}
-                disabled={isLoading || timer > 0}
-              >
-                {timer > 0 ? `재전송 (${formatTimer(timer)})` : '인증번호 재전송'}
-              </button>
-            </div>
+            </>
           )}
 
           {/* 축의금 입력 폼 */}
           {step === 'form' && (
             <div className={styles.formSection}>
-              <h2 className={styles.title}>{editData ? '축의금 수정' : '축의금 정보'}</h2>
               <p className={styles.subtitle}>
                 {editData ? '축의금 정보를 수정해주세요' : `${brideName}님과 ${groomName}님께 축의금을 전달해주세요`}
               </p>
@@ -433,60 +493,238 @@ const ContributionModal = ({ isOpen, onClose, onSubmit, eventData, editData = nu
               {!editData && (
                 <div className={`${styles.bookContainer} ${showBook ? styles.showBook : ''}`}>
                   <div className={styles.book}>
-                    {/* 책 페이지들 */}
-                    <div className={styles.bookPages}>
-                      {[...Array(8)].map((_, pageIndex) => (
-                        <div
-                          key={pageIndex}
-                          className={`${styles.bookPage} ${currentPage >= pageIndex ? styles.pageFlipped : ''} ${isFlipping ? styles.flipping : ''}`}
-                          style={{
-                            zIndex: 20 - pageIndex,
-                            transformOrigin: 'left center'
-                          }}
-                        >
-                          {/* 왼쪽 페이지 (뒤집힌 상태에서 보이는 부분) */}
-                          <div className={styles.pageBack}>
-                            <div className={styles.guestNames}>
-                              <div className={styles.nameColumn}>
-                                <span className={styles.guestName}>홍</span>
-                                <span className={styles.guestName}>길</span>
-                                <span className={styles.guestName}>동</span>
-                              </div>
-                              <div className={styles.nameColumn}>
-                                <span className={styles.guestName}>강</span>
-                                <span className={styles.guestName}>수</span>
-                                <span className={styles.guestName}>지</span>
-                              </div>
-                              <div className={styles.nameColumn}>
-                                <span className={styles.guestName}>오</span>
-                                <span className={styles.guestName}>정</span>
-                                <span className={styles.guestName}>민</span>
-                              </div>
-                            </div>
+                    {/* 책 덮개 */}
+                    <div className={`${styles.bookCover} ${coverOpen ? styles.coverOpen : ''}`}>
+                      <div className={styles.coverFront}>
+                        <div className={styles.coverContent}>
+                          <div className={styles.coverTitle}>
+                            <span className={styles.coverIcon}>💒</span>
+                            <h3>Wedding</h3>
+                            <p>Guest Book</p>
                           </div>
-                          
-                          {/* 오른쪽 페이지 (기본 상태에서 보이는 부분) */}
-                          <div className={styles.pageContent}>
-                            <div className={styles.guestNames}>
-                              <div className={styles.nameColumn}>
-                                <span className={styles.guestName}>김</span>
-                                <span className={styles.guestName}>민</span>
-                                <span className={styles.guestName}>수</span>
-                              </div>
-                              <div className={styles.nameColumn}>
-                                <span className={styles.guestName}>이</span>
-                                <span className={styles.guestName}>영</span>
-                                <span className={styles.guestName}>희</span>
-                              </div>
-                              <div className={styles.nameColumn}>
-                                <span className={styles.guestName}>박</span>
-                                <span className={styles.guestName}>철</span>
-                                <span className={styles.guestName}>수</span>
-                              </div>
-                            </div>
+                          <div className={styles.coverDecor}>
+                            <span>◆ ◇ ◆</span>
                           </div>
                         </div>
-                      ))}
+                      </div>
+                      <div className={styles.coverBack}>
+                        <div className={styles.coverBackContent}>
+                          {/* 덮개 뒷면 (비어있음) */}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 왼쪽 고정 페이지 - 1-1 (첫 번째 장의 왼쪽) */}
+                    <div className={styles.fixedLeftPage} style={{display: currentPage === 0 ? 'flex' : 'none', zIndex: currentPage === 0 ? 2 : 0}}>
+                      <div className={styles.pageContent}>
+                        {showText && (
+                          <div className={styles.guestNames}>
+                            <div className={styles.nameColumn}>
+                              <span className={styles.guestName}>김민수</span>
+                              <span className={styles.guestName}>이지영</span>
+                              <span className={styles.guestName}>박정우</span>
+                            </div>
+                            <div className={styles.nameColumn}>
+                              <span className={styles.guestName}>최수연</span>
+                              <span className={styles.guestName}>정현민</span>
+                              <span className={styles.guestName}>한소희</span>
+                            </div>
+                            <div className={styles.nameColumn}>
+                              <span className={styles.guestName}>장미영</span>
+                              <span className={styles.guestName}>강동혁</span>
+                              <span className={styles.guestName}>윤서정</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* 오른쪽 고정 페이지 - 2-2 (두 번째 장의 오른쪽) */}
+                    <div className={styles.fixedRightPage} style={{display: currentPage === 1 && !isFlipping ? 'flex' : 'none', zIndex: 25}}>
+                      <div className={styles.pageContent}>
+                        <h3 style={{color: '#333', fontSize: '16px', lineHeight: '1.4', marginBottom: '10px'}}>QR 찍고<br />바로 축하하기</h3>
+                        <p style={{color: '#666', fontSize: '14px', lineHeight: '1.5'}}>모든 축하가<br />하나의 링크에</p>
+                      </div>
+                    </div>
+
+                    {/* 연속으로 넘어가는 여러 페이지들 - 후루룩 효과! */}
+                    
+                    {/* 페이지 1 */}
+                    <div 
+                      className={`${styles.page} ${currentPage >= 1 ? styles.flipped : ''}`}
+                      style={{ zIndex: 15 }}
+                    >
+                      <div className={styles.front}>
+                        <div className={styles.pageContent}>
+                          {showText && (
+                            <>
+                              <h3>방명록,<br />이제 간편하게</h3>
+                              <p>종이와 펜은 이제 안녕</p>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      <div className={styles.back}>
+                        <div className={styles.pageContent}>
+                          {/* 2-1: 두 번째 장의 왼쪽 */}
+                          {showText && currentPage === 1 && (
+                            <div className={styles.guestNames}>
+                              <div className={styles.nameColumn}>
+                                <span className={styles.guestName}>조현우</span>
+                                <span className={styles.guestName}>신예은</span>
+                                <span className={styles.guestName}>김태현</span>
+                              </div>
+                              <div className={styles.nameColumn}>
+                                <span className={styles.guestName}>이서현</span>
+                                <span className={styles.guestName}>오민석</span>
+                                <span className={styles.guestName}>황지우</span>
+                              </div>
+                              <div className={styles.nameColumn}>
+                                <span className={styles.guestName}>전소영</span>
+                                <span className={styles.guestName}>김도영</span>
+                                <span className={styles.guestName}>나은하</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 페이지 2 */}
+                    <div 
+                      className={`${styles.page} ${currentPage >= 2 ? styles.flipped : ''}`}
+                      style={{ zIndex: 14 }}
+                    >
+                      <div className={styles.front}>
+                        <div className={styles.pageContent}>
+                          {/* 빈 페이지 */}
+                        </div>
+                      </div>
+                      <div className={styles.back}>
+                        <div className={styles.pageContent}>
+                          {/* 빈 페이지 */}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 페이지 3 */}
+                    <div 
+                      className={`${styles.page} ${currentPage >= 3 ? styles.flipped : ''}`}
+                      style={{ zIndex: 13 }}
+                    >
+                      <div className={styles.front}>
+                        <div className={styles.pageContent}>
+                          {/* 빈 페이지 */}
+                        </div>
+                      </div>
+                      <div className={styles.back}>
+                        <div className={styles.pageContent}>
+                          {/* 빈 페이지 */}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 페이지 4 */}
+                    <div 
+                      className={`${styles.page} ${currentPage >= 4 ? styles.flipped : ''}`}
+                      style={{ zIndex: 12 }}
+                    >
+                      <div className={styles.front}>
+                        <div className={styles.pageContent}>
+                          {/* 빈 페이지 */}
+                        </div>
+                      </div>
+                      <div className={styles.back}>
+                        <div className={styles.pageContent}>
+                          {/* 빈 페이지 */}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 페이지 5 */}
+                    <div 
+                      className={`${styles.page} ${currentPage >= 5 ? styles.flipped : ''}`}
+                      style={{ zIndex: 11 }}
+                    >
+                      <div className={styles.front}>
+                        <div className={styles.pageContent}>
+                          {/* 빈 페이지 */}
+                        </div>
+                      </div>
+                      <div className={styles.back}>
+                        <div className={styles.pageContent}>
+                          {/* 빈 페이지 */}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 페이지 6 */}
+                    <div 
+                      className={`${styles.page} ${currentPage >= 6 ? styles.flipped : ''}`}
+                      style={{ zIndex: 10 }}
+                    >
+                      <div className={styles.front}>
+                        <div className={styles.pageContent}>
+                          {/* 빈 페이지 */}
+                        </div>
+                      </div>
+                      <div className={styles.back}>
+                        <div className={styles.pageContent}>
+                          {/* 빈 페이지 */}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 페이지 7 */}
+                    <div 
+                      className={`${styles.page} ${currentPage >= 7 ? styles.flipped : ''}`}
+                      style={{ zIndex: 9 }}
+                    >
+                      <div className={styles.front}>
+                        <div className={styles.pageContent}>
+                          {/* 빈 페이지 */}
+                        </div>
+                      </div>
+                      <div className={styles.back}>
+                        <div className={styles.pageContent}>
+                          {showText && (
+                            <div className={styles.guestNames}>
+                              <div className={styles.nameColumn}>
+                                <span className={styles.guestName}>조현우</span>
+                                <span className={styles.guestName}>신예은</span>
+                                <span className={styles.guestName}>김태현</span>
+                              </div>
+                              <div className={styles.nameColumn}>
+                                <span className={styles.guestName}>이서현</span>
+                                <span className={styles.guestName}>오민석</span>
+                                <span className={styles.guestName}>황지우</span>
+                              </div>
+                              <div className={styles.nameColumn}>
+                                <span className={styles.guestName}>전소영</span>
+                                <span className={styles.guestName}>김도영</span>
+                                <span className={styles.guestName}>나은하</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 페이지 8 */}
+                    <div 
+                      className={`${styles.page} ${currentPage >= 8 ? styles.flipped : ''}`}
+                      style={{ zIndex: 8 }}
+                    >
+                      <div className={styles.front}>
+                        <div className={styles.pageContent}>
+                          {/* 빈 페이지 */}
+                        </div>
+                      </div>
+                      <div className={styles.back}>
+                        <div className={styles.pageContent}>
+                          {/* 빈 페이지 */}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -1,71 +1,92 @@
 // components/WelcomeChoiceModal.js - 초기 선택 모달
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './WelcomeChoiceModal.module.css';
 
 const WelcomeChoiceModal = ({ isOpen, onClose, onSelectGuestbook, onSelectContribution, eventData }) => {
+  const [selectedOption, setSelectedOption] = useState('guestbook');
+  
   if (!isOpen) return null;
 
   const brideName = eventData?.bride_name || '하윤';
   const groomName = eventData?.groom_name || '민호';
 
+  const handleSubmit = () => {
+    if (selectedOption === 'guestbook') {
+      onSelectGuestbook();
+    } else {
+      onSelectContribution();
+    }
+  };
+
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <button className={styles.closeButton} onClick={onClose}>×</button>
+          <button className={styles.closeButton} onClick={onClose}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M1 1L13 13M13 1L1 13" stroke="#8B95A1" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+          </button>
+          <span className={styles.headerTitle}>선택</span>
         </div>
 
         <div className={styles.content}>
-          {/* 웰컴 메시지 */}
-          <div className={styles.welcomeSection}>
-            <div className={styles.welcomeIcon}>💕</div>
-            <h2 className={styles.title}>
-              {brideName}님과 {groomName}님의<br />
-              결혼식에 오신 것을 환영합니다!
-            </h2>
-            <p className={styles.subtitle}>
-              어떤 방식으로 축하를 전하시겠어요?
+          {/* 상단 아이콘 및 메시지 */}
+          <div className={styles.topSection}>
+            <div className={styles.iconContainer}>
+              <div className={styles.iconBackground}>
+                <img src="/hart.png" alt="하트" className={styles.heartIcon} />
+              </div>
+            </div>
+            
+            <h2 className={styles.mainTitle}>축하 방식 선택</h2>
+            <p className={styles.mainDescription}>
+              {brideName}님과 {groomName}님의 결혼을 위한<br />
+              축하 방식을 선택해주세요
             </p>
           </div>
 
-          {/* 선택 옵션들 */}
-          <div className={styles.optionGroup}>
-            <button 
-              className={styles.optionButton}
-              onClick={onSelectGuestbook}
-            >
-              <div className={styles.optionIcon}>✍️</div>
-              <div className={styles.optionContent}>
-                <h3 className={styles.optionTitle}>방명록도 쓰고 축의금도 낼래요</h3>
-                <p className={styles.optionDescription}>
-                  따뜻한 축하 메시지와 함께 축의금을 전달해요
-                </p>
+          {/* 선택 옵션들 - iOS 스타일 리스트 */}
+          <div className={styles.optionList}>
+            <div className={styles.sectionTitle}>축하 방식</div>
+            
+            <div className={styles.optionItem} onClick={() => setSelectedOption('guestbook')}>
+              <div className={styles.optionLeft}>
+                <span className={styles.optionLabel}>방명록 작성 + 축의금</span>
               </div>
-              <div className={styles.optionArrow}>→</div>
-            </button>
+              <div className={`${styles.radioButton} ${selectedOption === 'guestbook' ? styles.selected : ''}`}>
+                {selectedOption === 'guestbook' && <div className={styles.radioInner}></div>}
+              </div>
+            </div>
 
-            <button 
-              className={styles.optionButton}
-              onClick={onSelectContribution}
-            >
-              <div className={styles.optionIcon}>💰</div>
-              <div className={styles.optionContent}>
-                <h3 className={styles.optionTitle}>축의금만 낼래요</h3>
-                <p className={styles.optionDescription}>
-                  간편하게 축의금만 전달하고 싶어요
-                </p>
+            <div className={styles.optionItem} onClick={() => setSelectedOption('contribution')}>
+              <div className={styles.optionLeft}>
+                <span className={styles.optionLabel}>축의금만 전달</span>
               </div>
-              <div className={styles.optionArrow}>→</div>
-            </button>
+              <div className={`${styles.radioButton} ${selectedOption === 'contribution' ? styles.selected : ''}`}>
+                {selectedOption === 'contribution' && <div className={styles.radioInner}></div>}
+              </div>
+            </div>
           </div>
 
-          {/* 안내 메시지 */}
-          <div className={styles.noticeBox}>
-            <div className={styles.noticeIcon}>ℹ️</div>
-            <p className={styles.noticeText}>
-              두 경우 모두 간단한 본인 확인이 필요해요
+          {/* 안내 메시지 - iOS 스타일 */}
+          <div className={styles.infoSection}>
+            <div className={styles.infoIcon}>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="8" r="7" stroke="#8B95A1" strokeWidth="1.5"/>
+                <path d="M8 7V12" stroke="#8B95A1" strokeWidth="1.5" strokeLinecap="round"/>
+                <circle cx="8" cy="4.5" r="0.75" fill="#8B95A1"/>
+              </svg>
+            </div>
+            <p className={styles.infoText}>
+              모든 방식에서 간단한 본인 확인이 필요합니다
             </p>
           </div>
+
+          {/* 하단 버튼 */}
+          <button className={styles.submitButton} onClick={handleSubmit}>
+            다음
+          </button>
         </div>
       </div>
     </div>

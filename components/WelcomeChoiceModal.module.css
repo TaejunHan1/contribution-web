@@ -1,208 +1,402 @@
-/* components/WelcomeChoiceModal.module.css */
+/* components/WelcomeChoiceModal.module.css - iOS/네이버 스타일 */
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
   z-index: 1000;
-  backdrop-filter: blur(3px);
+  animation: overlayFadeIn 0.3s ease-out;
 }
 
-.modal {
-  background: white;
-  border-radius: 20px;
-  width: 90%;
-  max-width: 480px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-  animation: modalSlideIn 0.3s ease-out;
-}
-
-@keyframes modalSlideIn {
+@keyframes overlayFadeIn {
   from {
     opacity: 0;
-    transform: translateY(30px) scale(0.95);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
   }
 }
 
-.header {
-  display: flex;
-  justify-content: flex-end;
-  padding: 16px 20px 0;
+.modal {
+  background: #ffffff;
+  border-radius: 16px 16px 0 0;
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  animation: modalSlideUp 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden; /* 하단 라디우스 적용을 위해 */
 }
 
-.closeButton {
-  background: none;
-  border: none;
-  font-size: 24px;
-  color: #999;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
+@keyframes modalSlideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* 헤더 - 토스 스타일 */
+.header {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  position: relative;
+  padding: 24px 20px;
+  border-bottom: 1px solid #f2f4f7;
+  background: #ffffff;
+}
+
+.closeButton {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s ease;
 }
 
 .closeButton:hover {
-  background: #f5f5f5;
-  color: #666;
+  background: #f5f5f7;
 }
 
-.content {
-  padding: 0 24px 32px;
+.closeButton:active {
+  background: #e8e8ed;
 }
 
-.welcomeSection {
-  text-align: center;
-  margin-bottom: 32px;
-}
-
-.welcomeIcon {
-  font-size: 48px;
-  margin-bottom: 16px;
-  display: block;
-}
-
-.title {
-  font-size: 22px;
+.headerTitle {
+  font-size: 17px;
   font-weight: 600;
-  line-height: 1.4;
-  color: #333;
-  margin: 0 0 12px;
+  color: #000000;
+  letter-spacing: -0.4px;
 }
 
-.subtitle {
-  font-size: 16px;
-  color: #666;
-  margin: 0;
-  line-height: 1.5;
+/* 컨텐츠 영역 */
+.content {
+  padding: 0;
+  background: #ffffff;
 }
 
-.optionGroup {
+/* 상단 섹션 - 아이콘과 타이틀 */
+.topSection {
+  padding: 40px 24px 32px;
+  text-align: center;
+  background: #ffffff;
+  border-bottom: 8px solid #f8f9fa;
+}
+
+.iconContainer {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-bottom: 24px;
+  justify-content: center;
+  margin-bottom: 28px;
 }
 
-.optionButton {
-  background: white;
-  border: 2px solid #f0f0f0;
-  border-radius: 16px;
-  padding: 20px;
+.iconBackground {
+  width: 88px;
+  height: 88px;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  gap: 16px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: left;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(74, 144, 226, 0.15);
 }
 
-.optionButton:hover {
-  border-color: #ff69b4;
-  background: linear-gradient(135deg, #fff0f5 0%, #ffe4e6 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(255, 105, 180, 0.15);
+.heartIcon {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
 }
 
-.optionIcon {
-  font-size: 32px;
-  flex-shrink: 0;
+.mainTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #191919;
+  margin: 0 0 12px;
+  letter-spacing: -0.6px;
+  line-height: 1.2;
 }
 
-.optionContent {
-  flex: 1;
-  min-width: 0;
-}
-
-.optionTitle {
+.mainDescription {
   font-size: 16px;
-  font-weight: 600;
-  color: #333;
-  margin: 0 0 6px;
-  line-height: 1.3;
-}
-
-.optionDescription {
-  font-size: 14px;
-  color: #666;
+  color: #8b95a1;
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.5;
+  letter-spacing: -0.2px;
 }
 
-.optionArrow {
-  font-size: 18px;
-  color: #ccc;
-  flex-shrink: 0;
+/* 옵션 리스트 - 토스 스타일 */
+.optionList {
+  background: #f8f9fa;
+  padding: 20px 0 0;
+}
+
+.sectionTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #8b95a1;
+  letter-spacing: -0.1px;
+  padding: 0 24px 16px;
+  background: #f8f9fa;
+  margin: 0;
+}
+
+.optionItem {
+  background: #ffffff;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  border-bottom: 1px solid #f2f4f7;
+  min-height: 60px;
+}
+
+.optionItem:first-child {
+  border-top: 1px solid #f2f4f7;
+}
+
+.optionItem:last-child {
+  border-bottom: none;
+}
+
+.optionItem:active {
+  background: #f8f9fa;
+}
+
+.optionLeft {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.optionLabel {
+  font-size: 17px;
+  font-weight: 500;
+  color: #191919;
+  letter-spacing: -0.4px;
+}
+
+/* 라디오 버튼 - 토스 스타일 */
+.radioButton {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #d1d5db;
+  border-radius: 50%;
+  position: relative;
   transition: all 0.2s ease;
+  background: #ffffff;
+  flex-shrink: 0;
 }
 
-.optionButton:hover .optionArrow {
-  color: #ff69b4;
-  transform: translateX(4px);
+.radioButton.selected {
+  border-color: #3182f6;
+  background: #3182f6;
 }
 
-.noticeBox {
-  background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
-  border: 1px solid #e6efff;
-  border-radius: 12px;
-  padding: 16px;
+.radioInner {
+  width: 10px;
+  height: 10px;
+  background: #ffffff;
+  border-radius: 50%;
+  animation: radioSelect 0.2s ease;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes radioSelect {
+  from {
+    transform: translate(-50%, -50%) scale(0);
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* 안내 섹션 - 토스 스타일 */
+.infoSection {
   display: flex;
   align-items: flex-start;
   gap: 12px;
+  padding: 24px;
+  background: #f8f9fa;
+  margin: 0;
+  border-top: 8px solid #f8f9fa;
 }
 
-.noticeIcon {
-  font-size: 18px;
+.infoIcon {
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-top: 1px;
 }
 
-.noticeText {
-  font-size: 14px;
-  color: #4a5568;
+.infoText {
+  font-size: 15px;
+  color: #6b7280;
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.5;
+  letter-spacing: -0.1px;
+  flex: 1;
 }
 
-/* 모바일 최적화 */
+/* 하단 버튼 - 토스 스타일 */
+.submitButton {
+  width: calc(100% - 48px);
+  margin: 32px 24px 32px;
+  padding: 18px;
+  background: #3182f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(49, 130, 246, 0.15);
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.submitButton:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(49, 130, 246, 0.25);
+}
+
+.submitButton:active {
+  background: #1d4ed8;
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(49, 130, 246, 0.15);
+}
+
+/* 태블릿 및 데스크탑 */
+@media (min-width: 481px) {
+  .overlay {
+    align-items: center;
+  }
+  
+  .modal {
+    border-radius: 16px;
+    height: auto;
+    max-height: 90vh;
+    animation: modalFadeScale 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  
+  @keyframes modalFadeScale {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+/* 모바일 최적화 - 토스 스타일 */
 @media (max-width: 480px) {
   .modal {
-    width: 95%;
-    margin: 16px;
+    max-width: 100%;
+    border-radius: 16px 16px 0 0;
   }
   
-  .content {
-    padding: 0 20px 28px;
+  .header {
+    padding: 20px 16px;
   }
   
-  .title {
-    font-size: 20px;
+  .headerTitle {
+    font-size: 17px;
   }
   
-  .optionButton {
-    padding: 16px;
+  .topSection {
+    padding: 32px 20px 28px;
+    border-bottom: 6px solid #f8f9fa;
   }
   
-  .optionTitle {
+  .iconBackground {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .heartIcon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .mainTitle {
+    font-size: 22px;
+  }
+  
+  .mainDescription {
     font-size: 15px;
   }
   
-  .optionDescription {
-    font-size: 13px;
+  .optionList {
+    padding: 16px 0 0;
+  }
+  
+  .sectionTitle {
+    padding: 0 20px 14px;
+  }
+  
+  .optionItem {
+    padding: 18px 20px;
+    min-height: 56px;
+  }
+  
+  .optionLabel {
+    font-size: 16px;
+  }
+  
+  .radioButton {
+    width: 22px;
+    height: 22px;
+  }
+  
+  .radioInner {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .infoSection {
+    padding: 20px;
+    border-top: 6px solid #f8f9fa;
+  }
+  
+  .infoText {
+    font-size: 14px;
+  }
+  
+  .submitButton {
+    width: calc(100% - 40px);
+    margin: 28px 20px 28px;
+    padding: 16px;
+    font-size: 16px;
+    min-height: 52px;
   }
 }
+
+/* 다크모드 제거 - 라이트 모드만 사용 */
