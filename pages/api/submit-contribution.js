@@ -1,4 +1,6 @@
 // pages/api/submit-contribution.js - 축의금 저장 API
+import { sendContributionNotification } from '../../lib/notificationService';
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -180,6 +182,26 @@ export default async function handler(req, res) {
         });
       }
       contributionData = insertData;
+    }
+
+    // 🔔 푸시 알림 발송 시도
+    try {
+      const notificationResult = await sendContributionNotification(eventId, {
+        guestName,
+        contributionAmount,
+        relationship,
+        side,
+        contributionId: contributionData.id
+      });
+      
+      if (notificationResult.success) {
+        console.log('푸시 알림 발송 성공:', notificationResult.message);
+      } else {
+        console.warn('푸시 알림 발송 실패:', notificationResult.error);
+      }
+    } catch (notificationError) {
+      console.error('푸시 알림 발송 오류 (축의금 저장은 성공):', notificationError);
+      // 알림 발송 실패해도 축의금 저장은 성공이므로 계속 진행
     }
 
     // 성공 응답
