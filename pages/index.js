@@ -1244,7 +1244,7 @@ export default function HomePage() {
         </header>
 
         {/* 히어로 섹션 */}
-        <section className="bg-gradient-to-br from-blue-50 to-indigo-100 md:py-20 relative overflow-hidden">
+        <section className="bg-gradient-to-br from-blue-50 to-indigo-100 md:py-20 relative overflow-clip">
           {/* 배경 장식 요소들 */}
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200/20 rounded-full blur-3xl"></div>
@@ -1277,9 +1277,9 @@ export default function HomePage() {
 
               {/* 아이폰 프레임 - 모바일용 (더 큰 크기) */}
               <div className={`relative flex justify-center items-center w-full ${isZFlip ? '-mt-12 mb-12' : isGalaxyFold ? '-mt-28 -mb-32' : isIPhoneX ? '-mt-16 -mb-4' : isIPhone12Pro ? '-mt-16 mb-2' : isSmallScreen ? 'mt-14 mb-2' : isIPhoneXR ? '-mt-10 mb-2' : isIPhone14ProMax ? '-mt-12 mb-2' : 'mb-2'}`}>
-                <div className={`relative w-[95vw] drop-shadow-2xl ${isZFlip ? 'h-[550px] -mt-16' : isGalaxyFold ? 'h-[600px] -mt-8' : isIPhoneX ? 'h-[650px] -mt-24' : isIPhone12Pro ? 'h-[700px] -mt-32' : 'h-[700px] -mt-28'}`}>
-                  <img 
-                    src="/iphone16pro.png" 
+                <div className={`relative w-[95vw] drop-shadow-2xl pointer-events-none ${isZFlip ? 'h-[550px] -mt-16' : isGalaxyFold ? 'h-[600px] -mt-8' : isIPhoneX ? 'h-[650px] -mt-24' : isIPhone12Pro ? 'h-[700px] -mt-32' : 'h-[700px] -mt-28'}`}>
+                  <img
+                    src="/iphone16pro.png"
                     alt="iPhone Frame"
                     className="absolute inset-0 w-full h-full object-contain pointer-events-none z-10"
                   />
@@ -1287,8 +1287,8 @@ export default function HomePage() {
                   {/* 아이폰 화면 안 미리보기 컨텐츠 */}
                   <div className="absolute inset-0 flex items-center justify-center z-5">
                     <div className={`w-[45%] ${isZFlip ? 'h-[59%]' : isGalaxyFold ? 'h-[52%]' : isIPhoneX ? 'h-[50%]' : isIPhone12Pro ? 'h-[50%]' : isSmallScreen ? 'h-[66%]' : isGalaxyS8Plus ? 'h-[50%]' : isIPhoneXR ? 'h-[53%]' : 'h-[55%]'} rounded-[25px] overflow-hidden bg-white shadow-inner relative`}>
-                      <iframe 
-                        src="https://contribution-web-srgt.vercel.app/template/603dfb2e-707b-420b-afc9-406c9775a0ee?template=romantic"
+                      <iframe
+                        src="/template/603dfb2e-707b-420b-afc9-406c9775a0ee?template=romantic"
                         className="w-full h-full border-0"
                         style={{
                           transform: 'scale(0.25)',
@@ -1580,9 +1580,9 @@ export default function HomePage() {
                       </div>
 
                       {/* 실제 템플릿 iframe */}
-                      <iframe 
-                        src="https://contribution-web-srgt.vercel.app/template/603dfb2e-707b-420b-afc9-406c9775a0ee?template=romantic"
-                        className="w-full h-full border-0"
+                      <iframe
+                        src="/template/603dfb2e-707b-420b-afc9-406c9775a0ee?template=romantic"
+                        className="w-full h-full border-0 pointer-events-none"
                         style={{
                           transform: 'scale(1.0)',
                           transformOrigin: 'top center',

@@ -27,14 +27,6 @@ function MyApp({ Component, pageProps }) {
     window.addEventListener('load', setVH);
     window.addEventListener('scroll', handleResize);
 
-    // 터치 스크롤 최적화
-    document.body.style.overscrollBehavior = 'none';
-
-    // iOS 줌 방지
-    document.addEventListener('gesturestart', e => {
-      e.preventDefault();
-    });
-
     // 정리
     return () => {
       window.removeEventListener('resize', setVH);
@@ -201,13 +193,11 @@ function MyApp({ Component, pageProps }) {
         body {
           overflow-x: hidden;
           -webkit-overflow-scrolling: touch;
-          overscroll-behavior: none;
         }
 
         /* 터치 최적화 */
         * {
           -webkit-tap-highlight-color: transparent;
-          -webkit-touch-callout: none;
         }
 
         /* 입력 필드 줌 방지 (iOS) */

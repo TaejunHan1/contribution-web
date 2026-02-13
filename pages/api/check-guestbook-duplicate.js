@@ -1,5 +1,10 @@
 // pages/api/check-guestbook-duplicate.js - 방명록 중복 작성 확인 API
 export default async function handler(req, res) {
+  // 브라우저 캐시 방지
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -29,31 +34,39 @@ export default async function handler(req, res) {
     // 해당 이벤트에서 해당 전화번호로 작성된 방명록 확인
     const { data: existingEntries, error: selectError } = await supabase
       .from('guest_book')
-      .select('id, guest_name, created_at')
+      .select('id, guest_name, message, amount, created_at')
       .eq('event_id', eventId)
       .eq('guest_phone', phone)
       .eq('is_verified', true);
 
     if (selectError) {
       console.error('중복 확인 오류:', selectError);
-      return res.status(500).json({ 
-        success: false, 
-        error: '중복 확인 중 오류가 발생했습니다.' 
+      return res.status(500).json({
+        success: false,
+        error: '중복 확인 중 오류가 발생했습니다.'
       });
     }
 
-    // 중복 방명록이 있는 경우
+    // 기존 항목이 있는 경우
     if (existingEntries && existingEntries.length > 0) {
       const latestEntry = existingEntries[0];
-      return res.status(200).json({ 
+      const hasMessage = latestEntry.message && latestEntry.message.trim() !== '';
+
+      return res.status(200).json({
         success: true,
-        isDuplicate: true,
+        exists: true,
+        isDuplicate: hasMessage, // 메시지가 있는 경우만 중복으로 처리
+        hasMessage: hasMessage,
         existingEntry: {
           id: latestEntry.id,
-          name: latestEntry.guest_name,
+          guest_name: latestEntry.guest_name,
+          message: latestEntry.message,
+          amount: latestEntry.amount,
           createdAt: latestEntry.created_at
         },
-        message: '이미 이 번호로 방명록을 작성하셨습니다.'
+        message: hasMessage
+          ? '이미 이 번호로 방명록을 작성하셨습니다.'
+          : '기존 정보가 있습니다. 방명록을 작성해주세요.'
       });
     }
 

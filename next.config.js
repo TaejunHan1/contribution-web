@@ -96,10 +96,35 @@ const nextConfig = {
   async headers() {
     return [
       {
-        // 모든 페이지에 적용되는 보안 헤더
-        source: '/(.*)',
+        // template 페이지는 iframe 임베딩 허용
+        source: '/template/:path*',
         headers: [
-          // 보안 헤더들
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        // 나머지 페이지에 적용되는 보안 헤더 (iframe 차단)
+        source: '/((?!template).*)',
+        headers: [
           {
             key: 'X-DNS-Prefetch-Control',
             value: 'on',
@@ -120,7 +145,6 @@ const nextConfig = {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin',
           },
-          // 캐시 제어
           {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable',

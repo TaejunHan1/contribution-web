@@ -77,17 +77,30 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
       const result = await response.json();
 
       if (result.exists && result.existingEntry) {
-        // 기존 방명록이 있으면 수정 모드로
-        setMode('edit');
-        setExistingGuestbook(result.existingEntry);
-        setFormData(prev => ({
-          ...prev,
-          phone: formatPhoneNumberFromE164(phone),
-          guestName: result.existingEntry.guest_name || '',
-          message: result.existingEntry.message || '',
-          agreed: true
-        }));
-        setStep('message'); // 바로 메시지 수정 단계로
+        if (result.hasMessage) {
+          // 기존 메시지가 있으면 수정 모드로
+          setMode('edit');
+          setExistingGuestbook(result.existingEntry);
+          setFormData(prev => ({
+            ...prev,
+            phone: formatPhoneNumberFromE164(phone),
+            guestName: result.existingEntry.guest_name || '',
+            message: result.existingEntry.message || '',
+            agreed: true
+          }));
+        } else {
+          // 기존 항목은 있지만 메시지가 없으면 (삭제된 경우) 작성 모드 + 이름 유지
+          setMode('create');
+          setExistingGuestbook(result.existingEntry);
+          setFormData(prev => ({
+            ...prev,
+            phone: formatPhoneNumberFromE164(phone),
+            guestName: result.existingEntry.guest_name || '', // 기존 이름 유지
+            message: '', // 메시지는 새로 작성
+            agreed: true
+          }));
+        }
+        setStep('message');
       } else {
         // 기존 방명록이 없으면 작성 모드로
         setMode('create');
@@ -96,7 +109,7 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
           phone: formatPhoneNumberFromE164(phone),
           agreed: true
         }));
-        setStep('message'); // 바로 메시지 작성 단계로
+        setStep('message');
       }
     } catch (error) {
       console.error('기존 방명록 확인 오류:', error);
@@ -360,8 +373,39 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
         } else {
           setError(result.error || '방명록 수정에 실패했습니다.');
         }
+      } else if (existingGuestbook) {
+        // 기존 항목이 있지만 메시지가 삭제된 경우 - UPDATE로 메시지 추가
+        const response = await fetch('/api/update-guestbook', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: existingGuestbook.id,
+            guestName: formData.guestName.trim(),
+            message: formData.message.trim(),
+            phone: verifiedPhone
+          }),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          await onSubmit({
+            name: formData.guestName.trim(),
+            phone: verifiedPhone,
+            message: formData.message.trim()
+          });
+          onClose();
+
+          if (onTriggerArrival) {
+            setTimeout(() => onTriggerArrival(), 500);
+          }
+        } else {
+          setError(result.error || '방명록 저장에 실패했습니다.');
+        }
       } else {
-        // 새 작성 모드 - 새로운 방명록 작성
+        // 완전히 새로운 방명록 작성
         const response = await fetch('/api/submit-guestbook', {
           method: 'POST',
           headers: {
@@ -378,15 +422,13 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
         const result = await response.json();
 
         if (result.success) {
-          // 기존 onSubmit 콜백도 호출 (템플릿 업데이트용)
           await onSubmit({
             name: formData.guestName.trim(),
             phone: verifiedPhone,
             message: formData.message.trim()
           });
           onClose();
-          
-          // 방명록 작성 완료 후 도착 확인 모달 트리거
+
           if (onTriggerArrival) {
             setTimeout(() => onTriggerArrival(), 500);
           }

@@ -44,14 +44,28 @@ export default async function handler(req, res) {
       });
     }
 
+    // 클라이언트 정보 가져오기
+    const userAgent = req.headers['user-agent'] || null;
+    const forwardedFor = req.headers['x-forwarded-for'];
+    const ipAddress = forwardedFor ? forwardedFor.split(',')[0].trim() : req.socket?.remoteAddress || null;
+
     // 방명록 데이터 저장
     const guestBookData = {
       event_id: eventId || null,
       guest_name: guestName,
       guest_phone: phone,
       message: message,
-      is_verified: true
+      is_verified: true,
+      is_public: true,
+      ip_address: ipAddress,
+      user_agent: userAgent,
+      additional_info: {
+        timestamp: new Date().toISOString(),
+        created_via: 'web'
+      }
     };
+
+    console.log('방명록 저장 시도:', guestBookData);
 
     const { data: guestBookEntry, error: insertError } = await supabase
       .from('guest_book')

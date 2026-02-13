@@ -1,5 +1,5 @@
 // components/templates/RomanticPinkTemplate.js
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import GoogleMapEmbed from '../MapComponent';
 import GuestbookModal from '../GuestbookModal';
@@ -540,6 +540,7 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
   const [arrivalDismissed, setArrivalDismissed] = useState(false); // 도착 확인 모달 닫음 여부
   const [guestMessages, setGuestMessages] = useState([]);
   const [userChoice, setUserChoice] = useState(null); // 'guestbook' 또는 'contribution'
+  const [hasWrittenGuestbook, setHasWrittenGuestbook] = useState(false); // 방명록 작성 여부
   
   // 이미지 URL 처리 함수 - EventDisplayScreen과 동일한 방식
   const getImageSrc = (image) => {
@@ -959,10 +960,36 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
       }
     };
   }, [eventData?.id]);
-  
-  // 실제 메시지 또는 기본 메시지 선택 (state와 통합)
-  const hasRealMessages = (eventData.guestMessages && eventData.guestMessages.length > 0) || guestMessages.length > 0;
-  const displayMessages = hasRealMessages ? [...(eventData.guestMessages || []), ...guestMessages] : defaultMessages;
+
+  // 현재 사용자가 방명록 메시지를 작성했는지 확인 (메시지 내용이 있는 경우만)
+  useEffect(() => {
+    const verifiedPhone = localStorage.getItem('verifiedPhone');
+    if (verifiedPhone && guestMessages.length > 0) {
+      // 메시지 내용이 있는 경우만 작성한 것으로 처리
+      const hasWritten = guestMessages.some(msg =>
+        msg.phone === verifiedPhone && msg.content && msg.content.trim() !== ''
+      );
+      setHasWrittenGuestbook(hasWritten);
+    } else {
+      setHasWrittenGuestbook(false);
+    }
+  }, [guestMessages]);
+
+  // 실제 메시지 또는 기본 메시지 선택
+  // guestMessages(state)가 최신 데이터이므로 우선 사용, ID로 중복 제거
+  const mergedMessages = useMemo(() => {
+    const stateMessageIds = new Set(guestMessages.map(msg => msg.id));
+    // props에서 온 메시지 중 state에 없는 것만 추가
+    const propsMessages = (eventData.guestMessages || []).filter(
+      msg => !stateMessageIds.has(msg.id)
+    );
+    return [...guestMessages, ...propsMessages];
+  }, [guestMessages, eventData.guestMessages]);
+
+  // 메시지 내용이 있는 것만 필터링 (삭제된 메시지는 표시하지 않음)
+  const messagesWithContent = mergedMessages.filter(msg => msg.content && msg.content.trim() !== '');
+  const hasRealMessages = messagesWithContent.length > 0;
+  const displayMessages = hasRealMessages ? messagesWithContent : defaultMessages;
   
   // 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState(0);
@@ -1056,11 +1083,35 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
   // 방명록 제출 핸들러
   const handleGuestbookSubmit = async (guestbookData) => {
     try {
-      // 실시간 구독으로 자동 추가되므로 여기서는 첫 페이지로만 이동
+      console.log('📝 방명록 제출 핸들러 호출됨:', guestbookData);
+
+      // 새 메시지를 즉시 state에 추가 (낙관적 업데이트)
+      const newMessage = {
+        id: `temp-${Date.now()}`, // 임시 ID
+        from: guestbookData.name || '익명',
+        phone: guestbookData.phone,
+        date: new Date().toLocaleDateString('ko-KR', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        }).replace(/\./g, '.').replace(/\s/g, ' '),
+        content: guestbookData.message || ''
+      };
+
+      setGuestMessages(prevMessages => [newMessage, ...prevMessages]);
+
+      // 방명록 작성 완료 - 버튼 숨김
+      setHasWrittenGuestbook(true);
+
+      // 첫 페이지로 이동
       setCurrentPage(0);
 
-      // 서버 저장은 이미 GuestbookModal에서 처리됨
-      // 추가 처리 필요 없음
+      // 서버에서 최신 데이터 다시 가져오기 (실제 ID로 업데이트)
+      setTimeout(async () => {
+        await fetchGuestbook();
+      }, 500);
 
     } catch (error) {
       console.error('방명록 제출 오류:', error);
@@ -1080,10 +1131,23 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
     await fetchGuestbook();
   };
 
-  // 방명록 삭제 완료 핸들러  
+  // 방명록 삭제 완료 핸들러 (메시지만 비움, 레코드는 유지)
   const handleEditDelete = async () => {
-    // 실시간 구독으로 자동 업데이트됨
-    await fetchGuestbook();
+    // 즉시 UI에서 메시지 내용만 비움 (이름, 축의금 등은 유지)
+    if (editingMessage?.id) {
+      setGuestMessages(prevMessages =>
+        prevMessages.map(msg =>
+          msg.id === editingMessage.id
+            ? { ...msg, content: '' }
+            : msg
+        )
+      );
+    }
+    // 방명록 메시지 삭제 완료 - 다시 작성 가능하도록 버튼 표시
+    setHasWrittenGuestbook(false);
+    // 모달 닫기
+    setShowEditModal(false);
+    setEditingMessage(null);
   };
 
   // 수정 권한 확인 (본인 전화번호와 일치하는지 체크)
@@ -1202,25 +1266,24 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
   // 도착 확인 핸들러
   const handleArrivalConfirm = async () => {
     clearArrivalTimers(); // 모든 대기 중인 타이머 정리
-    
+
     // 이 이벤트에서 도착 확인했다고 표시
     const currentEventArrivalKey = `arrival_checked_${eventData?.id}`;
     localStorage.setItem(currentEventArrivalKey, 'true');
-    
+
     setShowArrivalModal(false);
-    
-    // 사용자 선택에 따라 다르게 처리
-    if (userChoice === 'contribution') {
-      // 축의금만 선택한 경우 → 축의금 모달
-      setTimeout(() => {
-        setShowContributionModal(true);
-      }, 300);
-    } else {
-      // 기존 로직 (방명록 선택한 경우나 기타) → 축의금 모달
-      setTimeout(() => {
-        setShowContributionModal(true);
-      }, 300);
+
+    // 이미 축의금을 입력한 경우 모달 스킵
+    const existingAmount = myContribution?.amount || myContribution?.contributionAmount;
+    if (existingAmount) {
+      console.log('✅ 기존 축의금이 있어서 축의금 모달 스킵:', existingAmount);
+      return;
     }
+
+    // 축의금이 없는 경우에만 모달 표시
+    setTimeout(() => {
+      setShowContributionModal(true);
+    }, 300);
   };
 
   // 안전한 도착 모달 닫기
@@ -1903,14 +1966,16 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
           </div>
         )}
         
-        {/* 방명록 작성 버튼 */}
-        <button 
-          className={styles.navigationButton} 
-          onClick={handleGuestbookModalOpen}
-          disabled={showGuestbookModal}
-        >
-          방명록 남기기
-        </button>
+        {/* 방명록 작성 버튼 - 이미 작성한 사용자에게는 표시하지 않음 */}
+        {!hasWrittenGuestbook && (
+          <button
+            className={styles.navigationButton}
+            onClick={handleGuestbookModalOpen}
+            disabled={showGuestbookModal}
+          >
+            방명록 남기기
+          </button>
+        )}
       </section>
 
       {/* 오시는 길 */}
