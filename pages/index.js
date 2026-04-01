@@ -1734,115 +1734,148 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 솔루션 소개 */}
-        <section className="py-12 md:py-20">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="text-center mb-8 md:mb-16">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 md:mb-6">정담이 모든 걸 해결해드립니다</h2>
-              <p className="text-lg md:text-xl text-gray-600">모바일 앱 + 웹 페이지로 완벽한 디지털 경조사 관리</p>
+        {/* 솔루션 소개 - 토스 스타일 */}
+        <section className="py-16 md:py-28 relative">
+          <div className="absolute inset-0 bg-gradient-to-b from-white via-blue-50/30 to-white"></div>
+          <div className="max-w-5xl mx-auto px-5 relative">
+            <div className="text-center mb-10 md:mb-20">
+              <p className="text-blue-500 font-semibold text-sm md:text-base mb-3 tracking-wide">Solution</p>
+              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4 md:mb-6 leading-tight">
+                정담이 <span className="text-blue-600">모든 걸</span> 해결해드립니다
+              </h2>
+              <p className="text-base md:text-lg text-gray-500 max-w-lg mx-auto leading-relaxed">모바일 앱과 웹 페이지가 하나로 연결되어<br className="md:hidden" /> 완벽한 디지털 경조사 관리를 경험하세요</p>
             </div>
-            
-            {/* 앱 + 웹 연동 설명 */}
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 md:p-8 rounded-3xl mb-8 md:mb-16">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
-                <div>
-                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 md:mb-4">📱 모바일 앱 (주최자용)</h3>
-                  <ul className="space-y-2 md:space-y-3 text-sm md:text-base text-gray-700">
-                    <li className="flex items-center"><span className="text-blue-600 mr-2 text-sm">✓</span> 청첩장/부고장 제작</li>
-                    <li className="flex items-center"><span className="text-blue-600 mr-2 text-sm">✓</span> QR코드 생성</li>
-                    <li className="flex items-center"><span className="text-blue-600 mr-2 text-sm">✓</span> 실시간 부조금 확인</li>
-                    <li className="flex items-center"><span className="text-blue-600 mr-2 text-sm">✓</span> 참석자 관리</li>
-                  </ul>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
+              <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-7 md:p-9 border border-gray-100/80 shadow-[0_4px_40px_rgba(49,130,246,0.08)] hover:shadow-[0_8px_50px_rgba(49,130,246,0.12)] transition-all duration-500">
+                <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-5 shadow-lg shadow-blue-500/25">
+                  <svg className="w-6 h-6 md:w-7 md:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
                 </div>
-                <div>
-                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 md:mb-4">💻 웹 페이지 (참석자용)</h3>
-                  <ul className="space-y-2 md:space-y-3 text-sm md:text-base text-gray-700">
-                    <li className="flex items-center"><span className="text-green-600 mr-2 text-sm">✓</span> QR코드로 접속</li>
-                    <li className="flex items-center"><span className="text-green-600 mr-2 text-sm">✓</span> 온라인 방명록 작성</li>
-                    <li className="flex items-center"><span className="text-green-600 mr-2 text-sm">✓</span> 부조금 기록</li>
-                    <li className="flex items-center"><span className="text-green-600 mr-2 text-sm">✓</span> 축하 메시지 남기기</li>
-                  </ul>
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-2">주최자용 <span className="text-blue-600">모바일 앱</span></h3>
+                <p className="text-sm text-gray-500 mb-5">행사를 만들고 관리하는 모든 것</p>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3"><div className="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0"><svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg></div><span className="text-sm md:text-base text-gray-700">청첩장 / 부고장 제작</span></div>
+                  <div className="flex items-center gap-3"><div className="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0"><svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg></div><span className="text-sm md:text-base text-gray-700">QR코드 자동 생성</span></div>
+                  <div className="flex items-center gap-3"><div className="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0"><svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg></div><span className="text-sm md:text-base text-gray-700">실시간 부조금 확인</span></div>
+                  <div className="flex items-center gap-3"><div className="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0"><svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg></div><span className="text-sm md:text-base text-gray-700">참석자 명단 관리</span></div>
+                </div>
+              </div>
+
+              <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-7 md:p-9 border border-gray-100/80 shadow-[0_4px_40px_rgba(16,185,129,0.08)] hover:shadow-[0_8px_50px_rgba(16,185,129,0.12)] transition-all duration-500">
+                <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mb-5 shadow-lg shadow-emerald-500/25">
+                  <svg className="w-6 h-6 md:w-7 md:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
+                </div>
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-2">참석자용 <span className="text-emerald-600">웹 페이지</span></h3>
+                <p className="text-sm text-gray-500 mb-5">앱 설치 없이 바로 참여</p>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3"><div className="w-7 h-7 rounded-full bg-emerald-50 flex items-center justify-center flex-shrink-0"><svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg></div><span className="text-sm md:text-base text-gray-700">QR코드로 즉시 접속</span></div>
+                  <div className="flex items-center gap-3"><div className="w-7 h-7 rounded-full bg-emerald-50 flex items-center justify-center flex-shrink-0"><svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg></div><span className="text-sm md:text-base text-gray-700">온라인 방명록 작성</span></div>
+                  <div className="flex items-center gap-3"><div className="w-7 h-7 rounded-full bg-emerald-50 flex items-center justify-center flex-shrink-0"><svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg></div><span className="text-sm md:text-base text-gray-700">부조금 간편 기록</span></div>
+                  <div className="flex items-center gap-3"><div className="w-7 h-7 rounded-full bg-emerald-50 flex items-center justify-center flex-shrink-0"><svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg></div><span className="text-sm md:text-base text-gray-700">축하 메시지 남기기</span></div>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* 사용 방법 */}
-        <section id="how-it-works" className="py-12 md:py-20 bg-gray-50">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="text-center mb-8 md:mb-16">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 md:mb-6">이렇게 간단합니다</h2>
+        {/* 사용 방법 - 토스 스타일 */}
+        <section id="how-it-works" className="py-16 md:py-28 bg-gray-50/70">
+          <div className="max-w-5xl mx-auto px-5">
+            <div className="text-center mb-10 md:mb-20">
+              <p className="text-blue-500 font-semibold text-sm md:text-base mb-3 tracking-wide">How it works</p>
+              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 leading-tight">
+                이렇게 <span className="text-blue-600">간단</span>합니다
+              </h2>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-              <div className="text-center">
-                <div className="bg-blue-100 w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+              <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-5 md:p-7 text-center border border-gray-100/80 shadow-[0_2px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(49,130,246,0.1)] transition-all duration-500 hover:-translate-y-1">
+                <div className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/20">
+                  <span className="text-2xl md:text-3xl">📱</span>
+                </div>
+                <div className="text-xs font-bold text-blue-500 mb-1.5">STEP 1</div>
+                <h3 className="font-bold text-gray-900 mb-1.5 text-sm md:text-base">행사 생성</h3>
+                <p className="text-gray-500 text-xs md:text-sm leading-relaxed">앱에서 정보 입력 후<br />템플릿 선택</p>
+              </div>
+              <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-5 md:p-7 text-center border border-gray-100/80 shadow-[0_2px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(16,185,129,0.1)] transition-all duration-500 hover:-translate-y-1">
+                <div className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-emerald-500 to-teal-400 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-500/20">
+                  <span className="text-2xl md:text-3xl">📷</span>
+                </div>
+                <div className="text-xs font-bold text-emerald-500 mb-1.5">STEP 2</div>
+                <h3 className="font-bold text-gray-900 mb-1.5 text-sm md:text-base">QR 생성</h3>
+                <p className="text-gray-500 text-xs md:text-sm leading-relaxed">자동 생성된 QR을<br />행사장에 게시</p>
+              </div>
+              <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-5 md:p-7 text-center border border-gray-100/80 shadow-[0_2px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(139,92,246,0.1)] transition-all duration-500 hover:-translate-y-1">
+                <div className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-violet-500 to-purple-400 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-violet-500/20">
+                  <span className="text-2xl md:text-3xl">💝</span>
+                </div>
+                <div className="text-xs font-bold text-violet-500 mb-1.5">STEP 3</div>
+                <h3 className="font-bold text-gray-900 mb-1.5 text-sm md:text-base">QR 스캔</h3>
+                <p className="text-gray-500 text-xs md:text-sm leading-relaxed">참석자가 스캔하면<br />웹 방명록으로 이동</p>
+              </div>
+              <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-5 md:p-7 text-center border border-gray-100/80 shadow-[0_2px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(245,158,11,0.1)] transition-all duration-500 hover:-translate-y-1">
+                <div className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-amber-500 to-orange-400 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-amber-500/20">
+                  <span className="text-2xl md:text-3xl">📊</span>
+                </div>
+                <div className="text-xs font-bold text-amber-500 mb-1.5">STEP 4</div>
+                <h3 className="font-bold text-gray-900 mb-1.5 text-sm md:text-base">실시간 확인</h3>
+                <p className="text-gray-500 text-xs md:text-sm leading-relaxed">부조금과 방명록을<br />앱에서 즉시 확인</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 핵심 기능 - 토스 스타일 */}
+        <section id="features" className="py-16 md:py-28 relative">
+          <div className="absolute inset-0 bg-gradient-to-b from-white via-gray-50/50 to-white"></div>
+          <div className="max-w-5xl mx-auto px-5 relative">
+            <div className="text-center mb-10 md:mb-20">
+              <p className="text-blue-500 font-semibold text-sm md:text-base mb-3 tracking-wide">Features</p>
+              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 leading-tight">
+                <span className="text-blue-600">핵심</span> 기능들
+              </h2>
+            </div>
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+              <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-6 md:p-8 border border-gray-100/80 shadow-[0_2px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(49,130,246,0.1)] transition-all duration-500 hover:-translate-y-1 group">
+                <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-4 md:mb-5 shadow-lg shadow-blue-500/25 group-hover:scale-105 transition-transform duration-300">
+                  <span className="text-xl md:text-2xl">🎨</span>
+                </div>
+                <h3 className="text-sm md:text-lg font-bold text-gray-900 mb-1.5 md:mb-2">다양한 템플릿</h3>
+                <p className="text-xs md:text-sm text-gray-500 leading-relaxed">결혼식 5종, 장례식 1종의<br className="hidden md:block" /> 세련된 디자인</p>
+              </div>
+              <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-6 md:p-8 border border-gray-100/80 shadow-[0_2px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(16,185,129,0.1)] transition-all duration-500 hover:-translate-y-1 group">
+                <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mb-4 md:mb-5 shadow-lg shadow-emerald-500/25 group-hover:scale-105 transition-transform duration-300">
+                  <span className="text-xl md:text-2xl">⚡</span>
+                </div>
+                <h3 className="text-sm md:text-lg font-bold text-gray-900 mb-1.5 md:mb-2">실시간 동기화</h3>
+                <p className="text-xs md:text-sm text-gray-500 leading-relaxed">웹에서 입력하면<br className="hidden md:block" /> 앱으로 즉시 전송</p>
+              </div>
+              <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-6 md:p-8 border border-gray-100/80 shadow-[0_2px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(139,92,246,0.1)] transition-all duration-500 hover:-translate-y-1 group">
+                <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-violet-500 to-purple-500 rounded-2xl flex items-center justify-center mb-4 md:mb-5 shadow-lg shadow-violet-500/25 group-hover:scale-105 transition-transform duration-300">
+                  <span className="text-xl md:text-2xl">🔒</span>
+                </div>
+                <h3 className="text-sm md:text-lg font-bold text-gray-900 mb-1.5 md:mb-2">안전한 관리</h3>
+                <p className="text-xs md:text-sm text-gray-500 leading-relaxed">클라우드 저장으로<br className="hidden md:block" /> 데이터 분실 걱정 없음</p>
+              </div>
+              <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-6 md:p-8 border border-gray-100/80 shadow-[0_2px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(236,72,153,0.1)] transition-all duration-500 hover:-translate-y-1 group">
+                <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-pink-500 to-rose-500 rounded-2xl flex items-center justify-center mb-4 md:mb-5 shadow-lg shadow-pink-500/25 group-hover:scale-105 transition-transform duration-300">
                   <span className="text-xl md:text-2xl">📱</span>
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2 text-sm md:text-base">1. 앱에서 행사 생성</h3>
-                <p className="text-gray-600 text-xs md:text-sm px-2">결혼식/장례식 정보를 입력하고 예쁜 템플릿 선택</p>
+                <h3 className="text-sm md:text-lg font-bold text-gray-900 mb-1.5 md:mb-2">모바일 최적화</h3>
+                <p className="text-xs md:text-sm text-gray-500 leading-relaxed">누구나 쉽게 사용하는<br className="hidden md:block" /> 모바일 친화적 설계</p>
               </div>
-              <div className="text-center">
-                <div className="bg-green-100 w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
-                  <span className="text-xl md:text-2xl">📷</span>
+              <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-6 md:p-8 border border-gray-100/80 shadow-[0_2px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(245,158,11,0.1)] transition-all duration-500 hover:-translate-y-1 group">
+                <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl flex items-center justify-center mb-4 md:mb-5 shadow-lg shadow-amber-500/25 group-hover:scale-105 transition-transform duration-300">
+                  <span className="text-xl md:text-2xl">💳</span>
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2 text-sm md:text-base">2. QR코드 생성</h3>
-                <p className="text-gray-600 text-xs md:text-sm px-2">행사장에 QR코드를 출력해서 게시</p>
+                <h3 className="text-sm md:text-lg font-bold text-gray-900 mb-1.5 md:mb-2">간편한 부조</h3>
+                <p className="text-xs md:text-sm text-gray-500 leading-relaxed">이름과 금액만 입력하면<br className="hidden md:block" /> 자동으로 기록</p>
               </div>
-              <div className="text-center">
-                <div className="bg-purple-100 w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
-                  <span className="text-xl md:text-2xl">💝</span>
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-2 text-sm md:text-base">3. 참석자가 QR 스캔</h3>
-                <p className="text-gray-600 text-xs md:text-sm px-2">휴대폰으로 스캔하면 웹 방명록으로 이동</p>
-              </div>
-              <div className="text-center">
-                <div className="bg-orange-100 w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
+              <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-6 md:p-8 border border-gray-100/80 shadow-[0_2px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(99,102,241,0.1)] transition-all duration-500 hover:-translate-y-1 group">
+                <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-2xl flex items-center justify-center mb-4 md:mb-5 shadow-lg shadow-indigo-500/25 group-hover:scale-105 transition-transform duration-300">
                   <span className="text-xl md:text-2xl">📊</span>
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2 text-sm md:text-base">4. 실시간 확인</h3>
-                <p className="text-gray-600 text-xs md:text-sm px-2">앱에서 부조금과 방명록을 실시간 확인</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 주요 기능 */}
-        <section id="features" className="py-12 md:py-20">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="text-center mb-8 md:mb-16">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 md:mb-6">핵심 기능들</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 md:p-8 rounded-2xl">
-                <div className="text-3xl md:text-4xl mb-3 md:mb-4">🎨</div>
-                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2 md:mb-3">다양한 템플릿</h3>
-                <p className="text-sm md:text-base text-gray-700">결혼식 5종, 장례식 1종의 세련된 디자인 템플릿</p>
-              </div>
-              <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 md:p-8 rounded-2xl">
-                <div className="text-3xl md:text-4xl mb-3 md:mb-4">⚡</div>
-                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2 md:mb-3">실시간 동기화</h3>
-                <p className="text-sm md:text-base text-gray-700">웹에서 입력된 정보가 앱으로 즉시 전송</p>
-              </div>
-              <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 md:p-8 rounded-2xl">
-                <div className="text-3xl md:text-4xl mb-3 md:mb-4">🔒</div>
-                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2 md:mb-3">안전한 관리</h3>
-                <p className="text-sm md:text-base text-gray-700">클라우드 저장으로 데이터 분실 걱정 없음</p>
-              </div>
-              <div className="bg-gradient-to-br from-red-50 to-red-100 p-6 md:p-8 rounded-2xl">
-                <div className="text-3xl md:text-4xl mb-3 md:mb-4">📱</div>
-                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2 md:mb-3">모바일 최적화</h3>
-                <p className="text-sm md:text-base text-gray-700">참석자들이 쉽게 사용할 수 있는 모바일 친화적 설계</p>
-              </div>
-              <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 p-6 md:p-8 rounded-2xl">
-                <div className="text-3xl md:text-4xl mb-3 md:mb-4">💳</div>
-                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2 md:mb-3">간편한 부조</h3>
-                <p className="text-sm md:text-base text-gray-700">이름과 금액만 입력하면 자동으로 기록</p>
-              </div>
-              <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 p-6 md:p-8 rounded-2xl">
-                <div className="text-3xl md:text-4xl mb-3 md:mb-4">📊</div>
-                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2 md:mb-3">통계 및 분석</h3>
-                <p className="text-sm md:text-base text-gray-700">총 부조금액, 참석자 수 등 한눈에 파악</p>
+                <h3 className="text-sm md:text-lg font-bold text-gray-900 mb-1.5 md:mb-2">통계 및 분석</h3>
+                <p className="text-xs md:text-sm text-gray-500 leading-relaxed">부조금액, 참석자 수<br className="hidden md:block" /> 한눈에 파악</p>
               </div>
             </div>
           </div>
