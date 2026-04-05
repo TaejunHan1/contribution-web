@@ -112,7 +112,7 @@ const ContributionModal = ({ isOpen, onClose, onBack, onSubmit, eventData, editD
         const verifiedPhone = localStorage.getItem('verifiedPhone');
         if (verifiedPhone) {
           setStep('form');
-          setFormStep('name'); // 이미 인증된 경우 책자 애니메이션 스킵
+          setFormStep('book');
           setShowBook(false);
         } else {
           setStep('phone');

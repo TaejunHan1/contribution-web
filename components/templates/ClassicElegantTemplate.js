@@ -4,7 +4,6 @@ import { createClient } from '@supabase/supabase-js';
 import GoogleMapEmbed from '../MapComponent';
 import GuestbookModal from '../GuestbookModal';
 import EditGuestbookModal from '../EditGuestbookModal';
-import ArrivalConfirmModal from '../ArrivalConfirmModal';
 import ContributionModal from '../ContributionModal';
 import CompletionModal from '../CompletionModal';
 import WelcomeChoiceModal from '../WelcomeChoiceModal';
@@ -311,7 +310,6 @@ const ClassicElegantTemplate = ({ eventData = {}, categorizedImages = {}, allowM
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingMessage, setEditingMessage] = useState(null);
   const [showWelcomeChoice, setShowWelcomeChoice] = useState(false);
-  const [showArrivalModal, setShowArrivalModal] = useState(false);
   const [showContributionModal, setShowContributionModal] = useState(false);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [completionData, setCompletionData] = useState(null);
@@ -319,7 +317,6 @@ const ClassicElegantTemplate = ({ eventData = {}, categorizedImages = {}, allowM
   const [isEditMode, setIsEditMode] = useState(false);
   const [, forceUpdate] = useState({});
   const [contributionKey, setContributionKey] = useState(0);
-  const [arrivalDismissed, setArrivalDismissed] = useState(false);
   const [guestMessages, setGuestMessages] = useState([]);
   const [userChoice, setUserChoice] = useState(null);
   const [hasWrittenGuestbook, setHasWrittenGuestbook] = useState(false);
@@ -580,39 +577,21 @@ const ClassicElegantTemplate = ({ eventData = {}, categorizedImages = {}, allowM
 
   const modalOpeningRef = useRef(false);
   const modalClosingRef = useRef(false);
-  const arrivalTimersRef = useRef([]);
-  const arrivalModalOpeningRef = useRef(false);
   const arrivalModalCheckedRef = useRef(false);
 
-  const clearArrivalTimers = () => { arrivalTimersRef.current.forEach(t => clearTimeout(t)); arrivalTimersRef.current = []; };
-
   const checkAndShowWelcomeChoice = () => {
-    if (arrivalModalCheckedRef.current || arrivalModalOpeningRef.current || showWelcomeChoice) return false;
-    const verifiedPhone = typeof window !== 'undefined' ? localStorage.getItem('verifiedPhone') : null;
-    const currentEventArrivalKey = `arrival_checked_${eventData?.id}`;
-    const arrivalCheckedForThisEvent = typeof window !== 'undefined' ? localStorage.getItem(currentEventArrivalKey) : null;
-    if (arrivalCheckedForThisEvent) return false;
-    if (verifiedPhone && !arrivalDismissed) {
-      const hasPublicGuestBookForThisEvent = guestMessages.some(msg => msg.phone === verifiedPhone);
-      if (hasPublicGuestBookForThisEvent) { if (typeof window !== 'undefined') localStorage.setItem(currentEventArrivalKey, 'true'); return false; }
-      if (userChoice === 'contribution') { if (typeof window !== 'undefined') localStorage.setItem(currentEventArrivalKey, 'true'); return false; }
-      setShowArrivalModal(true);
-      return true;
-    }
+    if (arrivalModalCheckedRef.current || showWelcomeChoice) return false;
+    const arrivalKey = `arrival_checked_${eventData?.id}`;
+    if (typeof window !== 'undefined' && localStorage.getItem(arrivalKey)) return false;
     arrivalModalCheckedRef.current = true;
     setShowWelcomeChoice(true);
     return true;
   };
 
   const handleTriggerArrival = () => {
-    if (userChoice === 'guestbook') {
-      setTimeout(() => setShowContributionModal(true), 300);
-      return;
-    }
-    if (arrivalModalOpeningRef.current || showArrivalModal) return;
-    arrivalModalOpeningRef.current = true;
-    setShowArrivalModal(true);
-    setTimeout(() => { arrivalModalOpeningRef.current = false; }, 1000);
+    const existing = myContribution?.amount || myContribution?.contributionAmount;
+    if (existing) return;
+    setTimeout(() => setShowContributionModal(true), 300);
   };
 
   const handleGuestbookModalOpen = () => {
@@ -669,18 +648,6 @@ const ClassicElegantTemplate = ({ eventData = {}, categorizedImages = {}, allowM
     setTimeout(() => { setShowContributionModal(true); }, 100);
   };
 
-  const handleArrivalConfirm = async () => {
-    clearArrivalTimers();
-    const currentEventArrivalKey = `arrival_checked_${eventData?.id}`;
-    if (typeof window !== 'undefined') localStorage.setItem(currentEventArrivalKey, 'true');
-    setShowArrivalModal(false);
-    const existingAmount = myContribution?.amount || myContribution?.contributionAmount;
-    if (existingAmount) return;
-    setTimeout(() => { setShowContributionModal(true); }, 300);
-  };
-
-  const handleArrivalModalClose = () => { clearArrivalTimers(); setShowArrivalModal(false); setArrivalDismissed(true); };
-
   const handleContributionSubmit = async (contributionFormData) => {
     try {
       const response = await fetch('/api/submit-contribution', {
@@ -690,12 +657,8 @@ const ClassicElegantTemplate = ({ eventData = {}, categorizedImages = {}, allowM
       });
       const result = await response.json();
       if (result.success) {
-        if (userChoice === 'contribution') {
-          const currentEventArrivalKey = `arrival_checked_${eventData?.id}`;
-          if (typeof window !== 'undefined') localStorage.setItem(currentEventArrivalKey, 'true');
-          arrivalModalCheckedRef.current = true;
-          setArrivalDismissed(true);
-        }
+        if (typeof window !== 'undefined') localStorage.setItem(`arrival_checked_${eventData?.id}`, 'true');
+        arrivalModalCheckedRef.current = true;
         setCompletionData(contributionFormData);
         setShowContributionModal(false);
         setIsEditMode(false);
@@ -715,25 +678,19 @@ const ClassicElegantTemplate = ({ eventData = {}, categorizedImages = {}, allowM
 
   const handleOpeningComplete = () => {
     setShowOpening(false);
-    const timer = setTimeout(() => { checkAndShowWelcomeChoice(); }, 500);
-    arrivalTimersRef.current.push(timer);
+    setTimeout(() => checkAndShowWelcomeChoice(), 500);
   };
 
   useEffect(() => {
-    if (arrivalModalCheckedRef.current || arrivalDismissed) return;
-    let checkTimer;
+    if (arrivalModalCheckedRef.current) return;
+    let t;
     if (!showOpening) {
-      checkTimer = setTimeout(() => { checkAndShowWelcomeChoice(); }, 1000);
+      t = setTimeout(() => checkAndShowWelcomeChoice(), 1000);
     } else {
-      checkTimer = setTimeout(() => {
-        if (showOpening) { setShowOpening(false); setTimeout(() => { checkAndShowWelcomeChoice(); }, 500); }
-      }, 4000);
+      t = setTimeout(() => { setShowOpening(false); setTimeout(() => checkAndShowWelcomeChoice(), 500); }, 4000);
     }
-    arrivalTimersRef.current.push(checkTimer);
-    return () => clearTimeout(checkTimer);
-  }, [showOpening, arrivalDismissed]);
-
-  useEffect(() => { return () => clearArrivalTimers(); }, []);
+    return () => clearTimeout(t);
+  }, [showOpening]);
 
   const copyAccount = async (accountNumber) => {
     try {
@@ -1107,8 +1064,7 @@ const ClassicElegantTemplate = ({ eventData = {}, categorizedImages = {}, allowM
       <WelcomeChoiceModal isOpen={showWelcomeChoice} onClose={() => setShowWelcomeChoice(false)} onSelectGuestbook={handleSelectGuestbook} onSelectContribution={handleSelectContribution} eventData={eventData} />
       <GuestbookModal isOpen={showGuestbookModal} onClose={handleGuestbookModalClose} onSubmit={handleGuestbookSubmit} eventData={eventData} onTriggerArrival={handleTriggerArrival} />
       <EditGuestbookModal isOpen={showEditModal} onClose={() => { setShowEditModal(false); setEditingMessage(null); }} message={editingMessage} eventData={eventData} onUpdate={handleEditUpdate} onDelete={handleEditDelete} />
-      <ArrivalConfirmModal isOpen={showArrivalModal} onClose={handleArrivalModalClose} onConfirm={handleArrivalConfirm} eventData={eventData} />
-      <ContributionModal isOpen={showContributionModal} onClose={() => { setShowContributionModal(false); setIsEditMode(false); }} onBack={!isEditMode ? () => { setShowContributionModal(false); setShowWelcomeChoice(true); } : undefined} onSubmit={handleContributionSubmit} eventData={eventData} editData={isEditMode ? myContribution : null} />
+<ContributionModal isOpen={showContributionModal} onClose={() => { setShowContributionModal(false); setIsEditMode(false); }} onBack={!isEditMode ? () => { setShowContributionModal(false); setShowWelcomeChoice(true); } : undefined} onSubmit={handleContributionSubmit} eventData={eventData} editData={isEditMode ? myContribution : null} />
       <CompletionModal isOpen={showCompletionModal} onClose={() => { setShowCompletionModal(false); setCompletionData(null); }} contributionData={completionData} eventData={eventData} />
 
       {myContribution && (

@@ -4,7 +4,6 @@ import { createClient } from '@supabase/supabase-js';
 import GoogleMapEmbed from '../MapComponent';
 import GuestbookModal from '../GuestbookModal';
 import EditGuestbookModal from '../EditGuestbookModal';
-import ArrivalConfirmModal from '../ArrivalConfirmModal';
 import ContributionModal from '../ContributionModal';
 import CompletionModal from '../CompletionModal';
 import WelcomeChoiceModal from '../WelcomeChoiceModal';
@@ -416,7 +415,6 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
   const [showGuestbookModal, setShowGuestbookModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingMessage, setEditingMessage] = useState(null);
-  const [showArrivalModal, setShowArrivalModal] = useState(false);
   const [showContributionModal, setShowContributionModal] = useState(false);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [completionData, setCompletionData] = useState(null);
@@ -424,14 +422,11 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
   const [isEditMode, setIsEditMode] = useState(false);
   const [contributionKey, setContributionKey] = useState(0);
   const [, forceUpdate] = useState({});
-  const [arrivalDismissed, setArrivalDismissed] = useState(false);
   const [userChoice, setUserChoice] = useState(null);
   const [hasWrittenGuestbook, setHasWrittenGuestbook] = useState(false);
 
   const modalOpeningRef = useRef(false);
   const modalClosingRef = useRef(false);
-  const arrivalTimersRef = useRef([]);
-  const arrivalModalOpeningRef = useRef(false);
   const arrivalModalCheckedRef = useRef(false);
 
   // ─ 이미지 처리 ──────────────────────────────────────────────────────
@@ -687,22 +682,10 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
   const currentMessages = messagesWithContent.slice(currentPage * messagesPerPage, (currentPage + 1) * messagesPerPage);
 
   // ─ 모달 핸들러 ──────────────────────────────────────────────────────
-  const clearArrivalTimers = () => { arrivalTimersRef.current.forEach(clearTimeout); arrivalTimersRef.current = []; };
-
   const checkAndShowWelcomeChoice = () => {
-    if (arrivalModalCheckedRef.current || arrivalModalOpeningRef.current || showWelcomeChoice) return false;
-    const phone = typeof window !== 'undefined' ? localStorage.getItem('verifiedPhone') : null;
+    if (arrivalModalCheckedRef.current || showWelcomeChoice) return false;
     const arrivalKey = `arrival_checked_${eventData?.id}`;
     if (typeof window !== 'undefined' && localStorage.getItem(arrivalKey)) return false;
-    if (phone && !arrivalDismissed) {
-      const hasEntry = guestMessages.some(m => m.phone === phone);
-      if (hasEntry || userChoice === 'contribution') {
-        if (typeof window !== 'undefined') localStorage.setItem(arrivalKey, 'true');
-        return false;
-      }
-      setShowArrivalModal(true);
-      return true;
-    }
     arrivalModalCheckedRef.current = true;
     setShowWelcomeChoice(true);
     return true;
@@ -710,23 +693,19 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
 
   const handleOpeningComplete = () => {
     setShowOpening(false);
-    const t = setTimeout(() => checkAndShowWelcomeChoice(), 500);
-    arrivalTimersRef.current.push(t);
+    setTimeout(() => checkAndShowWelcomeChoice(), 500);
   };
 
   useEffect(() => {
-    if (arrivalModalCheckedRef.current || arrivalDismissed) return;
+    if (arrivalModalCheckedRef.current) return;
     let t;
     if (!showOpening) {
       t = setTimeout(() => checkAndShowWelcomeChoice(), 1000);
     } else {
       t = setTimeout(() => { setShowOpening(false); setTimeout(() => checkAndShowWelcomeChoice(), 500); }, 4000);
     }
-    arrivalTimersRef.current.push(t);
     return () => clearTimeout(t);
-  }, [showOpening, arrivalDismissed]);
-
-  useEffect(() => () => clearArrivalTimers(), []);
+  }, [showOpening]);
 
   const handleGuestbookModalOpen = () => {
     if (modalOpeningRef.current || showGuestbookModal) return;
@@ -775,36 +754,18 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
   const handleSelectGuestbook = () => { setUserChoice('guestbook'); setShowWelcomeChoice(false); setShowGuestbookModal(true); };
   const handleSelectContribution = () => { setUserChoice('contribution'); setShowWelcomeChoice(false); setTimeout(() => setShowContributionModal(true), 100); };
 
-  const handleArrivalConfirm = async () => {
-    clearArrivalTimers();
-    if (typeof window !== 'undefined') localStorage.setItem(`arrival_checked_${eventData?.id}`, 'true');
-    setShowArrivalModal(false);
-    const existing = myContribution?.amount || myContribution?.contributionAmount;
-    if (!existing) setTimeout(() => setShowContributionModal(true), 300);
-  };
-
-  const handleArrivalModalClose = () => { clearArrivalTimers(); setShowArrivalModal(false); setArrivalDismissed(true); };
-
   const handleTriggerArrival = () => {
-    if (userChoice === 'guestbook') {
-      setTimeout(() => setShowContributionModal(true), 300);
-      return;
-    }
-    if (arrivalModalOpeningRef.current || showArrivalModal) return;
-    arrivalModalOpeningRef.current = true;
-    setShowArrivalModal(true);
-    setTimeout(() => { arrivalModalOpeningRef.current = false; }, 1000);
+    const existing = myContribution?.amount || myContribution?.contributionAmount;
+    if (existing) return;
+    setTimeout(() => setShowContributionModal(true), 300);
   };
 
   const handleContributionSubmit = async (formData) => {
     const res = await fetch('/api/submit-contribution', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });
     const result = await res.json();
     if (result.success) {
-      if (userChoice === 'contribution') {
-        if (typeof window !== 'undefined') localStorage.setItem(`arrival_checked_${eventData?.id}`, 'true');
-        arrivalModalCheckedRef.current = true;
-        setArrivalDismissed(true);
-      }
+      if (typeof window !== 'undefined') localStorage.setItem(`arrival_checked_${eventData?.id}`, 'true');
+      arrivalModalCheckedRef.current = true;
       setCompletionData(formData);
       setShowContributionModal(false);
       setIsEditMode(false);
@@ -1223,7 +1184,7 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
       </footer>
 
       {/* 부조 참여하기 플로팅 버튼 */}
-      {!myContribution && !showContributionModal && !showGuestbookModal && !showWelcomeChoice && !showArrivalModal && (
+      {!myContribution && !showContributionModal && !showGuestbookModal && !showWelcomeChoice && (
         <button className={styles.floatingContributeButton} onClick={() => { setUserChoice('contribution'); setShowContributionModal(true); }}>
           💝 부조 참여하기
         </button>
@@ -1272,13 +1233,6 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
         eventData={eventData}
         onUpdate={handleEditUpdate}
         onDelete={handleEditDelete}
-      />
-
-      <ArrivalConfirmModal
-        isOpen={showArrivalModal}
-        onClose={handleArrivalModalClose}
-        onConfirm={handleArrivalConfirm}
-        eventData={eventData}
       />
 
       <ContributionModal
