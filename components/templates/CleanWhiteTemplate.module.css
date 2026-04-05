@@ -1,0 +1,1076 @@
+/* CleanWhiteTemplate.module.css - Toss 핀테크 감성의 클린 화이트 청첩장 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=optional');
+
+/* ===== VARIABLES ===== */
+
+/* ===== BASE ===== */
+.container {
+  min-height: 100vh;
+  background: #FFFFFF;
+  font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  overflow-x: hidden;
+  position: relative;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* ===== SECTION DIVIDER ===== */
+.sectionDivider {
+  height: 8px;
+  background: #F8F9FA;
+}
+
+/* ===== SECTION TITLE ===== */
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1B1B1B;
+  margin: 0 0 20px 0;
+  letter-spacing: -0.5px;
+}
+
+/* ===== INTRO SECTION ===== */
+.introSection {
+  padding: 60px 24px 40px;
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.heroBadge {
+  display: inline-block;
+  background: #EBF2FF;
+  color: #3182F6;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+.heroNames {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+
+.heroName {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.heroNameKo {
+  font-size: 28px;
+  font-weight: 900;
+  color: #1B1B1B;
+  letter-spacing: -1px;
+  line-height: 1.1;
+}
+
+.heroNameEn {
+  font-size: 13px;
+  color: #8B95A1;
+  font-weight: 400;
+}
+
+.heroAmpersand {
+  font-size: 32px;
+  font-weight: 300;
+  color: #3182F6;
+  line-height: 1;
+}
+
+.heroDateBadge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #F8F9FA;
+  padding: 10px 20px;
+  border-radius: 100px;
+}
+
+.heroDateText {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1B1B1B;
+}
+
+.heroDateSep {
+  color: #E8E8E8;
+  font-size: 14px;
+}
+
+/* ===== HERO PHOTO ===== */
+.mainImageContainer {
+  width: 100%;
+  max-width: 380px;
+}
+
+.heroPhotoContainer {
+  width: 100%;
+  padding-bottom: 120%;
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #F8F9FA;
+  cursor: pointer;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+.heroPhoto {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+}
+
+.heroPhoto.active {
+  opacity: 1;
+}
+
+.photoPlaceholder {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60px;
+  background: #F8F9FA;
+}
+
+.heroDots {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+}
+
+.heroDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+}
+
+.heroDotActive {
+  background: white;
+  width: 18px;
+  border-radius: 3px;
+}
+
+/* ===== DATE SECTION ===== */
+.dateSection {
+  padding: 32px 24px;
+  background: #FFFFFF;
+}
+
+.dateCard {
+  border: 1px solid #E8E8E8;
+  border-left: 4px solid #3182F6;
+  border-radius: 0 12px 12px 0;
+  padding: 20px 20px;
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.dateCardRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 10px 0;
+}
+
+.dateCardDivider {
+  height: 1px;
+  background: #E8E8E8;
+}
+
+.dateCardLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: #3182F6;
+  min-width: 28px;
+  padding-top: 2px;
+}
+
+.dateCardValue {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1B1B1B;
+  flex: 1;
+  line-height: 1.5;
+}
+
+/* ===== GREETING SECTION ===== */
+.greetingSection {
+  padding: 32px 24px;
+  background: #FFFFFF;
+}
+
+.poem {
+  font-size: 14px;
+  line-height: 2;
+  color: #555;
+  text-align: center;
+  white-space: pre-line;
+  background: #F8F9FA;
+  padding: 24px;
+  border-radius: 12px;
+  margin: 0 0 24px 0;
+}
+
+.coupleRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 24px;
+  background: #EBF2FF;
+  border-radius: 16px;
+}
+
+.coupleItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.coupleRole {
+  font-size: 11px;
+  font-weight: 700;
+  color: #3182F6;
+  letter-spacing: 1px;
+}
+
+.coupleName {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1B1B1B;
+  letter-spacing: -0.5px;
+}
+
+.coupleParents {
+  font-size: 11px;
+  color: #8B95A1;
+  text-align: center;
+}
+
+.coupleHeart {
+  font-size: 24px;
+  color: #3182F6;
+  font-weight: 300;
+}
+
+/* ===== GALLERY SECTION ===== */
+.gallerySection {
+  padding: 32px 24px;
+  background: #FFFFFF;
+}
+
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.galleryItem {
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  aspect-ratio: 3/4;
+  background: #F8F9FA;
+}
+
+.galleryPhoto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.galleryPhoto:hover {
+  transform: scale(1.03);
+}
+
+/* ===== WEDDING DAY SECTION ===== */
+.weddingDaySection {
+  padding: 32px 24px;
+  background: #FFFFFF;
+}
+
+/* ===== CALENDAR ===== */
+.cleanCalendar {
+  background: #F8F9FA;
+  border-radius: 16px;
+  padding: 24px 20px;
+  margin: 0 0 20px 0;
+}
+
+.calendarMonth {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1B1B1B;
+  text-align: center;
+  margin: 0 0 16px 0;
+}
+
+.calendarWeekDays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 8px;
+}
+
+.calendarWeekDay {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8B95A1;
+  text-align: center;
+  padding: 4px 0;
+}
+
+.calendarWeekDay.sunday {
+  color: #FF5252;
+}
+
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.calendarDayWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 0;
+}
+
+.calendarDay {
+  font-size: 13px;
+  color: #1B1B1B;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.calendarDay.sunday {
+  color: #FF5252;
+}
+
+.calendarDay.inactive {
+  opacity: 0;
+}
+
+.calendarTargetDay {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #3182F6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(49, 130, 246, 0.35);
+}
+
+.calendarTargetDayText {
+  font-size: 13px;
+  font-weight: 700;
+  color: white;
+}
+
+/* ===== COUNTDOWN ===== */
+.countdown {
+  margin: 0 0 16px 0;
+}
+
+.countdownCards {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.countdownCard {
+  background: #FFFFFF;
+  border: 1px solid #E8E8E8;
+  border-radius: 14px;
+  padding: 16px 12px;
+  text-align: center;
+  min-width: 64px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.countdownNumber {
+  font-size: 28px;
+  font-weight: 900;
+  color: #3182F6;
+  line-height: 1;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.countdownLabel {
+  font-size: 11px;
+  font-weight: 500;
+  color: #8B95A1;
+  margin-top: 4px;
+}
+
+.weddingComplete {
+  text-align: center;
+  padding: 24px;
+}
+
+.completeIcon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.completeMessage {
+  font-size: 18px;
+  font-weight: 700;
+  color: #3182F6;
+}
+
+.countdownMessage {
+  font-size: 14px;
+  color: #8B95A1;
+  text-align: center;
+  margin: 0;
+}
+
+.heartText {
+  color: #3182F6;
+}
+
+.countdownDays {
+  font-weight: 900;
+  color: #3182F6;
+  font-size: 16px;
+}
+
+/* ===== GIFT / ACCOUNT SECTION ===== */
+.giftSection {
+  padding: 32px 24px;
+  background: #FFFFFF;
+}
+
+.giftSubtitle {
+  font-size: 14px;
+  color: #8B95A1;
+  margin: -12px 0 20px 0;
+}
+
+.toggleContainer {
+  margin-bottom: 16px;
+}
+
+.toggleButtons {
+  display: flex;
+  background: #F8F9FA;
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.toggleBtn {
+  flex: 1;
+  padding: 10px 0;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+  color: #8B95A1;
+  font-family: inherit;
+}
+
+.toggleBtnActive {
+  background: #FFFFFF;
+  color: #3182F6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.accountsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.accountCards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Toss-style expandable cards */
+.tossAccountCard {
+  background: #FFFFFF;
+  border: 1px solid #E8E8E8;
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.tossAccountCard:hover {
+  border-color: #3182F6;
+}
+
+.tossAccountHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  cursor: pointer;
+}
+
+.tossAccountLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tossAccountName {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1B1B1B;
+}
+
+.tossAccountBank {
+  font-size: 13px;
+  color: #8B95A1;
+  font-weight: 400;
+}
+
+.tossChevron {
+  font-size: 11px;
+  color: #8B95A1;
+  transition: transform 0.2s;
+}
+
+.tossAccountBody {
+  border-top: 1px solid #E8E8E8;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #F8F9FA;
+}
+
+.tossAccountNumber {
+  font-size: 14px;
+  color: #1B1B1B;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+.tossCopyButton {
+  background: #3182F6;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s;
+  font-family: inherit;
+}
+
+.tossCopyButton:hover {
+  background: #1A6FE0;
+}
+
+/* ===== MESSAGES SECTION ===== */
+.messagesSection {
+  padding: 32px 24px;
+  background: #FFFFFF;
+}
+
+.messagesList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.messageCard {
+  background: #F8F9FA;
+  border-radius: 14px;
+  padding: 18px 20px;
+  border: 1px solid #E8E8E8;
+  transition: border-color 0.2s;
+}
+
+.messageCard:hover {
+  border-color: #3182F6;
+}
+
+.messageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.messageName {
+  font-size: 14px;
+  font-weight: 700;
+  color: #3182F6;
+}
+
+.messageDate {
+  font-size: 12px;
+  color: #8B95A1;
+}
+
+.messageContent {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #555;
+}
+
+.emptyMessages {
+  text-align: center;
+  padding: 48px 24px;
+  background: #F8F9FA;
+  border-radius: 14px;
+}
+
+.emptyIcon {
+  font-size: 44px;
+  margin-bottom: 12px;
+  opacity: 0.4;
+}
+
+.emptyText {
+  font-size: 15px;
+  color: #8B95A1;
+  margin: 0;
+}
+
+.editMsgButton {
+  background: #3182F6;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 8px;
+  transition: background 0.2s;
+  font-family: inherit;
+}
+
+.editMsgButton:hover {
+  background: #1A6FE0;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.pageButton {
+  background: transparent;
+  color: #8B95A1;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.2s;
+}
+
+.pageButton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.pageDots {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.pageDot {
+  width: 8px;
+  height: 8px;
+  background: #E8E8E8;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+.pageDotActive {
+  background: #3182F6;
+  width: 24px;
+  border-radius: 4px;
+}
+
+.addMessageButton {
+  width: 100%;
+  padding: 16px;
+  background: #3182F6;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+  font-family: inherit;
+  box-shadow: 0 4px 16px rgba(49, 130, 246, 0.25);
+}
+
+.addMessageButton:hover {
+  background: #1A6FE0;
+  box-shadow: 0 6px 20px rgba(49, 130, 246, 0.35);
+}
+
+.addMessageButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== LOCATION SECTION ===== */
+.locationSection {
+  padding: 32px 24px;
+  background: #FFFFFF;
+}
+
+.locationCard {
+  background: #F8F9FA;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.locationPin {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.locationInfo {
+  flex: 1;
+}
+
+.venueName {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1B1B1B;
+  margin: 0 0 4px 0;
+}
+
+.venueAddress {
+  font-size: 13px;
+  color: #8B95A1;
+  margin: 0;
+}
+
+.mapContainer {
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.transportCard {
+  background: #F8F9FA;
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  gap: 14px;
+}
+
+.transportIcon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.transportContent {
+  flex: 1;
+}
+
+.transportTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1B1B1B;
+  margin: 0 0 6px 0;
+}
+
+.transportText {
+  font-size: 13px;
+  color: #8B95A1;
+  line-height: 1.7;
+  margin: 0;
+  white-space: pre-line;
+}
+
+/* ===== SHARE SECTION ===== */
+.shareSection {
+  padding: 24px 24px 32px;
+  background: #FFFFFF;
+}
+
+.shareButton {
+  width: 100%;
+  padding: 18px;
+  background: #3182F6;
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  box-shadow: 0 4px 16px rgba(49, 130, 246, 0.25);
+}
+
+.shareButton:hover {
+  background: #1A6FE0;
+  box-shadow: 0 8px 24px rgba(49, 130, 246, 0.35);
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  background: #F8F9FA;
+  border-top: 1px solid #E8E8E8;
+  padding: 40px 24px;
+}
+
+.footerContent {
+  text-align: center;
+}
+
+.footerTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1B1B1B;
+  margin: 0 0 6px 0;
+}
+
+.footerDate {
+  font-size: 13px;
+  color: #3182F6;
+  font-weight: 500;
+  margin: 0 0 16px 0;
+}
+
+.footerMessage {
+  font-size: 14px;
+  color: #8B95A1;
+  line-height: 1.8;
+  margin: 0;
+}
+
+/* ===== IMAGE VIEWER MODAL ===== */
+.imageViewerModal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.92);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imageViewerContent {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  padding: 20px;
+}
+
+.closeButton {
+  position: absolute;
+  top: -40px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 36px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.imageViewerSlider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.viewerImage {
+  max-width: 100%;
+  max-height: 80vh;
+  border-radius: 12px;
+  object-fit: contain;
+}
+
+.imageViewerNavigation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 16px;
+}
+
+.navButton {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: white;
+  font-size: 28px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.navButton:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.imageCounter {
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* ===== MY CONTRIBUTION SECTION ===== */
+.myContributionSection {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background: white;
+  border-top: 1px solid #E8E8E8;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.toggleButton {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: #EBF2FF;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  color: #3182F6;
+  font-family: inherit;
+}
+
+.toggleText {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.toggleIcon {
+  font-size: 11px;
+}
+
+.contributionContent {
+  padding: 16px 24px 20px;
+}
+
+.contributionSubtitle {
+  font-size: 12px;
+  color: #8B95A1;
+  margin: 0 0 12px 0;
+}
+
+.contributionSummary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.summaryInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.summaryName {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1B1B1B;
+}
+
+.summaryAmount {
+  font-size: 18px;
+  font-weight: 900;
+  color: #3182F6;
+}
+
+.summaryDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-end;
+}
+
+.summaryRelation, .summarySide {
+  font-size: 11px;
+  color: #8B95A1;
+  background: #F8F9FA;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
+.editButton {
+  background: #3182F6;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-family: inherit;
+}
+
+.editButton:hover {
+  background: #1A6FE0;
+}

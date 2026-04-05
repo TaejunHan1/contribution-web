@@ -43,26 +43,51 @@
   }
 }
 
-/* 헤더 - 토스 스타일 */
+/* 드래그 핸들 */
+.dragHandle {
+  width: 36px;
+  height: 4px;
+  background: #d1d5db;
+  border-radius: 2px;
+  margin: 10px auto 0;
+}
+
+/* 헤더 */
 .header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  position: relative;
-  padding: 24px 20px;
-  border-bottom: 1px solid #f2f4f7;
+  justify-content: flex-end;
+  padding: 4px 16px 0px;
   background: #ffffff;
-  z-index: 1000;
 }
 
-.closeButton {
-  position: absolute;
-  left: 20px;
-  top: 50%;
-  transform: translateY(-50%);
+/* 폰 인증 단계 헤더: 뒤로가기 + 닫기 */
+.sheetHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px 0;
+}
+
+.backButton {
   background: none;
   border: none;
-  padding: 8px;
+  padding: 6px 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.backButton:hover  { background: #f5f5f7; }
+.backButton:active { background: #e8e8ed; }
+
+.closeButton {
+  background: none;
+  border: none;
+  padding: 4px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -71,24 +96,128 @@
   transition: background 0.2s ease;
 }
 
-.closeButton:hover {
-  background: #f5f5f7;
-}
-
-.closeButton:active {
-  background: #e8e8ed;
-}
-
-.headerTitle {
-  font-size: 17px;
-  font-weight: 600;
-  color: #000000;
-  letter-spacing: -0.4px;
-}
+.closeButton:hover { background: #f5f5f7; }
+.closeButton:active { background: #e8e8ed; }
 
 .content {
   padding: 0;
   background: #ffffff;
+}
+
+/* 바텀시트 본인인증 스타일 */
+.sheetTitleSection {
+  padding: 8px 24px 16px;
+}
+
+.sheetTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #191919;
+  line-height: 1.35;
+  margin: 0 0 8px;
+  white-space: pre-line;
+}
+
+.sheetSubtitle {
+  font-size: 14px;
+  color: #8b95a1;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.sheetForm {
+  padding: 0 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sheetInputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sheetLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: #191919;
+}
+
+.sheetInput {
+  width: 100%;
+  padding: 16px;
+  background: #f4f6f8;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  color: #191919;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.sheetInput::placeholder { color: #b0b8c1; }
+.sheetInput:focus { background: #eef1f5; }
+
+.sheetAgreement {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.sheetCheckbox {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #d1d5db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.sheetChecked {
+  background: #3182F6;
+  border-color: #3182F6;
+}
+
+.sheetAgreementText {
+  flex: 1;
+  font-size: 14px;
+  color: #191919;
+}
+
+.sheetAgreementLink {
+  font-size: 14px;
+  color: #3182F6;
+  font-weight: 500;
+}
+
+.sheetSubmitButton {
+  width: 100%;
+  padding: 17px;
+  background: #b0b8c1;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 4px;
+}
+
+.sheetSubmitButton:not(:disabled) {
+  background: #3182F6;
+  cursor: pointer;
+}
+
+.sheetSubmitButton:disabled {
+  background: #b0b8c1;
+  cursor: not-allowed;
 }
 
 /* 상단 섹션 - 토스 스타일 */
@@ -2173,4 +2302,248 @@
   color: #ccc;
   cursor: not-allowed;
   text-decoration: none;
+}
+/* ── verification step 새 디자인 ── */
+.verificationPhone {
+  font-size: 14px;
+  color: #b0b8c1;
+  margin: 6px 0 0;
+}
+
+.verificationInputWrapper {
+  display: flex;
+  align-items: center;
+  background: #f4f6f8;
+  border-radius: 12px;
+  padding: 16px;
+  gap: 8px;
+}
+
+.verificationCodeInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  color: #191919;
+  outline: none;
+  min-width: 0;
+}
+
+.verificationCodeInput::placeholder {
+  color: #b0b8c1;
+}
+
+.verificationTimer {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ef4444;
+  flex-shrink: 0;
+}
+
+.verificationResendRow {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.resendTextButton {
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: #8b95a1;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}
+
+.resendTextButton:disabled {
+  color: #d1d5db;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+.verificationButtonRow {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.prevButton {
+  flex: 1;
+  padding: 17px;
+  background: #f4f6f8;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #191919;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.prevButton:hover { background: #e8ecf0; }
+.prevButton:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.verifyButton {
+  flex: 1;
+  padding: 17px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  transition: background 0.2s;
+}
+
+.verifyButton:not(:disabled) {
+  background: #3182F6;
+  cursor: pointer;
+}
+
+.verifyButton:disabled {
+  background: #b0b8c1;
+  cursor: not-allowed;
+}
+
+/* ── 멀티스텝 폼 ── */
+
+/* 책자 스텝 헤더 (닫기 버튼만) */
+.formBookHeader {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 16px 0;
+}
+
+/* 프로그레스 바 */
+.progressBarWrapper {
+  display: flex;
+  gap: 5px;
+  padding: 12px 24px 0;
+}
+
+.progressStep {
+  flex: 1;
+  height: 3px;
+  background: #e5e8eb;
+  border-radius: 2px;
+  transition: background 0.3s ease;
+}
+
+.progressStepActive {
+  background: #3182F6;
+}
+
+/* 책자 스텝 콘텐츠 */
+.bookStepContent {
+  padding: 8px 24px 32px;
+}
+
+/* 빠른 금액 선택 */
+.quickAmountGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.quickAmountButton {
+  flex: 1;
+  min-width: calc(50% - 4px);
+  padding: 12px 8px;
+  border: 1.5px solid #e5e8eb;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  color: #4e5968;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.quickAmountButton:hover {
+  border-color: #3182F6;
+  color: #3182F6;
+}
+
+.quickAmountActive {
+  border-color: #3182F6 !important;
+  background: #f0f7ff;
+  color: #3182F6 !important;
+  font-weight: 600;
+}
+
+/* 구분 선택 버튼 - sheetForm 내에서 margin 제거 */
+.sheetForm .sideButtonGroup {
+  margin-bottom: 0;
+}
+
+/* 관계 선택 칩 - sheetForm 내에서 margin 제거 */
+.sheetForm .relationshipGroup {
+  margin-bottom: 0;
+}
+
+/* ── 책자 인터랙티브 넘기기 ── */
+
+/* 왼쪽/오른쪽 탭 영역 */
+.bookTapLeft,
+.bookTapRight {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  z-index: 50;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+
+.bookTapLeft {
+  left: 0;
+  border-radius: 4px 0 0 4px;
+}
+
+.bookTapRight {
+  right: 0;
+  border-radius: 0 4px 4px 0;
+}
+
+.bookTapLeft:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.bookTapRight:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.bookTapLeft:active,
+.bookTapRight:active {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* 방향 화살표 */
+.bookTapArrow {
+  font-size: 28px;
+  font-weight: 300;
+  color: rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  user-select: none;
+  line-height: 1;
+}
+
+.bookTapLeft:hover .bookTapArrow,
+.bookTapRight:hover .bookTapArrow {
+  opacity: 1;
+}
+
+/* 페이지 인디케이터 */
+.bookPageIndicator {
+  text-align: center;
+  font-size: 12px;
+  color: #adb5bd;
+  margin-top: 10px;
+  letter-spacing: -0.1px;
+  height: 18px;
+  transition: opacity 0.3s ease;
 }

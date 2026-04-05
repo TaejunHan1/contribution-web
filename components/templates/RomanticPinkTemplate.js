@@ -10,41 +10,7 @@ import CompletionModal from '../CompletionModal';
 import WelcomeChoiceModal from '../WelcomeChoiceModal';
 import styles from './RomanticPinkTemplate.module.css';
 
-// 떨어지는 꽃잎 애니메이션 컴포넌트 (모바일과 동일)
-const FallingPetals = () => {
-  const [petalsSet1] = useState(() => 
-    [...Array(30)].map((_, index) => ({ 
-      id: `petals1-${index}`,
-      left: Math.random() * 100,
-      delay: index * 1000,
-      size: 10,
-      type: '🌸',
-      duration: 10000 + (index * 300),
-    }))
-  );
-
-  return (
-    <div className={styles.fallingPetalsContainer}>
-      {petalsSet1.map((petal) => (
-        <div
-          key={petal.id}
-          className={styles.fallingPetal}
-          style={{
-            left: `${petal.left}%`,
-            animationDelay: `${petal.delay}ms`,
-            animationDuration: `${petal.duration}ms`,
-            fontSize: `${petal.size}px`,
-            animationFillMode: 'both'
-          }}
-        >
-          {petal.type}
-        </div>
-      ))}
-    </div>
-  );
-};
-
-// 랜덤 인사말 목록 (모바일과 동일)
+// ─── 랜덤 인사말 목록 (앱과 동일) ─────────────────────────────────────────
 const RANDOM_GREETINGS = [
   `두 사람이 만나 하나의 길을 걷습니다.
 서로 다른 빛깔이 어우러져
@@ -120,7 +86,7 @@ const RANDOM_GREETINGS = [
 황혼의 노을처럼 아름답게 물들어가는
 평생의 반려자가 되겠습니다.
 
-소중한 분들과 함께 
+소중한 분들과 함께
 이 기쁨을 나누고 싶습니다.`,
 
   `사랑하는 마음 하나로 시작하여
@@ -174,79 +140,60 @@ const RANDOM_GREETINGS = [
 진심으로 감사드립니다.`
 ];
 
-// 한글 이름을 영어로 변환하는 함수 (모바일과 동일)
+// ─── 한글 → 영문 이름 변환 ──────────────────────────────────────────────
 const koreanToEnglish = (koreanName) => {
   const nameMap = {
-    // 성씨
     '김': 'Kim', '이': 'Lee', '박': 'Park', '최': 'Choi', '정': 'Jung',
     '강': 'Kang', '조': 'Jo', '윤': 'Yoon', '장': 'Jang', '임': 'Lim',
     '한': 'Han', '오': 'Oh', '서': 'Seo', '신': 'Shin', '권': 'Kwon',
     '황': 'Hwang', '안': 'Ahn', '송': 'Song', '전': 'Jeon', '홍': 'Hong',
     '유': 'Yoo', '고': 'Ko', '문': 'Moon', '배': 'Bae', '백': 'Baek',
-    
-    // 이름 음절들
-    '민': 'Min', '지': 'Ji', '수': 'Soo', '현': 'Hyun', '준': 'Jun',
-    '영': 'Young', '정': 'Jung', '진': 'Jin', '성': 'Sung', '호': 'Ho',
+    '허': 'Heo', '남': 'Nam', '심': 'Sim', '노': 'Noh', '하': 'Ha',
+    '곽': 'Kwak', '성': 'Sung', '차': 'Cha', '주': 'Joo', '우': 'Woo',
+    '구': 'Koo', '민': 'Min', '진': 'Jin', '나': 'Na', '지': 'Ji',
+    '변': 'Byun', '방': 'Bang', '양': 'Yang',
+    '수': 'Soo', '현': 'Hyun', '준': 'Jun', '영': 'Young', '호': 'Ho',
     '연': 'Yeon', '은': 'Eun', '혜': 'Hye', '미': 'Mi', '선': 'Sun',
-    '희': 'Hee', '경': 'Kyung', '윤': 'Yoon', '서': 'Seo', '아': 'Ah',
-    '나': 'Na', '리': 'Ri', '라': 'Ra', '빈': 'Bin', '원': 'Won',
-    '태': 'Tae', '규': 'Kyu', '재': 'Jae', '한': 'Han', '우': 'Woo',
+    '희': 'Hee', '경': 'Kyung', '아': 'Ah', '리': 'Ri', '라': 'Ra',
+    '빈': 'Bin', '원': 'Won', '태': 'Tae', '규': 'Kyu', '재': 'Jae',
     '동': 'Dong', '훈': 'Hoon', '상': 'Sang', '철': 'Chul', '병': 'Byung',
     '인': 'In', '기': 'Ki', '석': 'Seok', '광': 'Kwang', '용': 'Yong',
+    '솔': 'Sol', '린': 'Rin', '율': 'Yul', '별': 'Byul',
   };
-
   if (!koreanName) return '';
-  
   let result = [];
   for (let i = 0; i < koreanName.length; i++) {
-    const char = koreanName[i];
-    if (nameMap[char]) {
-      result.push(nameMap[char]);
-    } else {
-      result.push(char);
-    }
+    const ch = koreanName[i];
+    result.push(nameMap[ch] || ch);
   }
-  
   if (result.length > 1) {
     const surname = result[0];
-    const givenName = result.slice(1).join('').toLowerCase();
-    return `${surname} ${givenName.charAt(0).toUpperCase() + givenName.slice(1)}`;
+    const given = result.slice(1).join('').toLowerCase();
+    return `${surname} ${given.charAt(0).toUpperCase() + given.slice(1)}`;
   }
-  
   return result.join('');
 };
 
-// 커스텀 오프닝 오버레이 (모바일과 동일한 개념)
+// ─── 오프닝 오버레이 ─────────────────────────────────────────────────────
 const CustomOpeningOverlay = ({ visible, onComplete }) => {
   const [showText, setShowText] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
-  
+
   useEffect(() => {
     if (visible) {
-      // 텍스트 나타내기
-      setTimeout(() => setShowText(true), 500);
-      
-      // 페이드아웃 시작
-      setTimeout(() => {
-        setFadeOut(true);
-      }, 2500);
-      
-      // 완전히 사라진 후 onComplete 호출
-      setTimeout(() => {
-        if (onComplete) onComplete();
-      }, 3500);
+      const t1 = setTimeout(() => setShowText(true), 500);
+      const t2 = setTimeout(() => setFadeOut(true), 2500);
+      const t3 = setTimeout(() => { if (onComplete) onComplete(); }, 3500);
+      return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
     }
-  }, [visible, onComplete]);
-  
+  }, [visible]);
+
   if (!visible) return null;
-  
+
   return (
-    <div 
-      className={styles.openingOverlay} 
-      style={{ 
-        opacity: fadeOut ? 0 : 1,
-        transition: 'opacity 1s ease-out'
-      }}
+    <div
+      className={styles.openingOverlay}
+      style={{ opacity: fadeOut ? 0 : 1, transition: 'opacity 1s ease-out', pointerEvents: fadeOut ? 'none' : 'auto' }}
     >
       {showText && (
         <div className={styles.openingText}>
@@ -257,52 +204,67 @@ const CustomOpeningOverlay = ({ visible, onComplete }) => {
   );
 };
 
-// 메인 사진 슬라이드쇼 컴포넌트
+// ─── 떨어지는 꽃잎 ───────────────────────────────────────────────────────
+const FallingPetals = () => {
+  const [petals] = useState(() =>
+    [...Array(30)].map((_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      delay: i * 1000,
+      size: 10 + Math.random() * 6,
+      duration: 10000 + i * 300,
+    }))
+  );
+
+  return (
+    <div className={styles.fallingPetalsContainer}>
+      {petals.map((p) => (
+        <div
+          key={p.id}
+          className={styles.fallingPetal}
+          style={{
+            left: `${p.left}%`,
+            animationDelay: `${p.delay}ms`,
+            animationDuration: `${p.duration}ms`,
+            fontSize: `${p.size}px`,
+          }}
+        >
+          🌸
+        </div>
+      ))}
+    </div>
+  );
+};
+
+// ─── 메인 사진 슬라이드쇼 ────────────────────────────────────────────────
 const MainPhotoSlideshow = ({ images, onImagePress }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  
+
   useEffect(() => {
     if (images && images.length > 1) {
-      const interval = setInterval(() => {
-        setCurrentIndex((prev) => (prev + 1) % images.length);
-      }, 4000);
-      return () => clearInterval(interval);
+      const iv = setInterval(() => setCurrentIndex((p) => (p + 1) % images.length), 4000);
+      return () => clearInterval(iv);
     }
   }, [images?.length]);
-  
-  const handleImageClick = () => {
-    if (onImagePress) onImagePress(currentIndex);
+
+  const getImageSrc = (img) => {
+    if (!img) return null;
+    if (typeof img === 'string') return img;
+    return img.publicUrl || img.uri || img.url || img.src || null;
   };
 
-  // 이미지 URL 처리 함수 - EventDisplayScreen과 동일한 방식
-  const getImageSrc = (image) => {
-    if (!image) return null;
-    
-    
-    // 문자열인 경우 그대로 반환
-    if (typeof image === 'string') {
-      return image;
-    }
-    
-    // 객체인 경우 publicUrl 우선, 그 다음 uri (EventDisplayScreen과 동일한 순서)
-    return image.publicUrl || image.uri || image.url || image.src || null;
-  };
-  
   return (
-    <div className={styles.mainPhotoContainer} onClick={handleImageClick}>
+    <div className={styles.mainPhotoContainer} onClick={() => onImagePress && onImagePress(currentIndex)}>
       {images && images.length > 0 ? (
         images.map((image, index) => {
-          const imageSrc = getImageSrc(image);
-          return imageSrc ? (
+          const src = getImageSrc(image);
+          return src ? (
             <img
               key={index}
-              src={imageSrc}
+              src={src}
               alt="Wedding"
               className={`${styles.mainPhoto} ${index === currentIndex ? styles.active : ''}`}
-              onError={(e) => {
-                console.error('이미지 로딩 실패:', imageSrc);
-                e.target.style.display = 'none';
-              }}
+              onError={(e) => { e.target.style.display = 'none'; }}
             />
           ) : null;
         })
@@ -315,57 +277,40 @@ const MainPhotoSlideshow = ({ images, onImagePress }) => {
   );
 };
 
-// 로맨틱 핑크 달력 컴포넌트
+// ─── 로맨틱 핑크 달력 ────────────────────────────────────────────────────
 const RomanticPinkCalendar = ({ targetDate }) => {
   const date = new Date(targetDate);
   const year = date.getFullYear();
   const month = date.getMonth();
   const day = date.getDate();
-  
-  const firstDay = new Date(year, month, 1);
-  const lastDay = new Date(year, month + 1, 0);
-  const firstDayOfWeek = firstDay.getDay();
-  const daysInMonth = lastDay.getDate();
-  
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const weekDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-  
+
+  const firstDayOfWeek = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const weekDays = ['S','M','T','W','T','F','S'];
+
   const calendarDays = [];
-  
-  for (let i = 0; i < firstDayOfWeek; i++) {
-    calendarDays.push({ day: '', isCurrentMonth: false, isTargetDate: false });
-  }
-  
-  for (let i = 1; i <= daysInMonth; i++) {
-    calendarDays.push({
-      day: i,
-      isCurrentMonth: true,
-      isTargetDate: i === day,
-    });
-  }
+  for (let i = 0; i < firstDayOfWeek; i++) calendarDays.push({ day: '', isTarget: false });
+  for (let i = 1; i <= daysInMonth; i++) calendarDays.push({ day: i, isTarget: i === day });
 
   return (
     <div className={styles.romanticCalendar}>
       <h3 className={styles.calendarMonth}>{months[month]} {year}</h3>
-      
       <div className={styles.calendarWeekDays}>
-        {weekDays.map((weekDay, index) => (
-          <span key={index} className={`${styles.calendarWeekDay} ${index === 0 ? styles.sunday : ''}`}>
-            {weekDay}
-          </span>
+        {weekDays.map((wd, i) => (
+          <span key={i} className={`${styles.calendarWeekDay} ${i === 0 ? styles.sunday : ''}`}>{wd}</span>
         ))}
       </div>
-      
       <div className={styles.calendarGrid}>
-        {calendarDays.map((dayData, index) => (
-          <div key={index} className={styles.calendarDayWrapper}>
-            {dayData.isTargetDate ? (
+        {calendarDays.map((d, i) => (
+          <div key={i} className={styles.calendarDayWrapper}>
+            {d.isTarget ? (
               <div className={styles.calendarTargetDay}>
-                <span className={styles.calendarTargetDayText}>{dayData.day}</span>
+                <span className={styles.calendarTargetDayText}>{d.day}</span>
               </div>
             ) : (
-              <span className={`${styles.calendarDay} ${!dayData.isCurrentMonth ? styles.inactive : ''} ${index % 7 === 0 ? styles.sunday : ''}`}>
-                {dayData.day}
+              <span className={`${styles.calendarDay} ${!d.day ? styles.inactive : ''} ${i % 7 === 0 && d.day ? styles.sunday : ''}`}>
+                {d.day}
               </span>
             )}
           </div>
@@ -375,7 +320,7 @@ const RomanticPinkCalendar = ({ targetDate }) => {
   );
 };
 
-// 카운트다운 디스플레이 컴포넌트
+// ─── 카운트다운 ──────────────────────────────────────────────────────────
 const CountdownDisplay = ({ timeLeft, isExpired }) => {
   if (isExpired) {
     return (
@@ -385,97 +330,45 @@ const CountdownDisplay = ({ timeLeft, isExpired }) => {
       </div>
     );
   }
-
   return (
     <div className={styles.countdownCards}>
-      <div className={styles.countdownCard}>
-        <div className={styles.countdownNumber}>{timeLeft.days}</div>
-        <div className={styles.countdownLabel}>일</div>
-      </div>
-      <div className={styles.countdownCard}>
-        <div className={styles.countdownNumber}>{timeLeft.hours}</div>
-        <div className={styles.countdownLabel}>시간</div>
-      </div>
-      <div className={styles.countdownCard}>
-        <div className={styles.countdownNumber}>{timeLeft.minutes}</div>
-        <div className={styles.countdownLabel}>분</div>
-      </div>
-      <div className={styles.countdownCard}>
-        <div className={styles.countdownNumber}>{timeLeft.seconds || 0}</div>
-        <div className={styles.countdownLabel}>초</div>
-      </div>
+      {[
+        { value: timeLeft.days, label: '일' },
+        { value: timeLeft.hours, label: '시간' },
+        { value: timeLeft.minutes, label: '분' },
+        { value: timeLeft.seconds || 0, label: '초' },
+      ].map(({ value, label }) => (
+        <div key={label} className={styles.countdownCard}>
+          <div className={styles.countdownNumber}>{value}</div>
+          <div className={styles.countdownLabel}>{label}</div>
+        </div>
+      ))}
     </div>
   );
 };
 
-// 방명록 메시지 컴포넌트
-const GuestBookMessages = ({ messages, onAddMessage }) => {
-  return (
-    <div className={styles.guestBookSection}>
-      <button className={styles.addMessageButton} onClick={onAddMessage}>
-        💌 메시지 남기기
-      </button>
-      
-      <div className={styles.messagesContainer}>
-        {messages.map((message, index) => (
-          <div key={index} className={styles.messageCard}>
-            <div className={styles.messageHeader}>
-              <span className={styles.messageName}>{message.from}</span>
-              <span className={styles.messageDate}>{message.date}</span>
-            </div>
-            <p className={styles.messageContent}>{message.content}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// 내 축의금 섹션 컴포넌트
-const MyContributionSection = ({ eventData, myContribution, onEdit, setMyContribution }) => {
-  const [loading, setLoading] = useState(false);
+// ─── 내 축의금 섹션 (하단 고정) ──────────────────────────────────────────
+const MyContributionSection = ({ myContribution, onEdit }) => {
   const [isExpanded, setIsExpanded] = useState(true);
-  
-  // 데이터 변경 감지
-  useEffect(() => {
-    console.log('🔵 MyContributionSection 렌더링:', {
-      name: myContribution?.guestName,
-      amount: myContribution?.contributionAmount || myContribution?.amount,
-      rawData: myContribution
-    });
-  }, [myContribution]);
+  const verifiedPhone = typeof window !== 'undefined' ? localStorage.getItem('verifiedPhone') : null;
 
-  // realtime으로 데이터가 자동 업데이트되므로 polling 제거
+  if (!verifiedPhone || !myContribution) return null;
 
-  const verifiedPhone = localStorage.getItem('verifiedPhone');
-  
-  // 인증된 사용자가 아니면 표시하지 않음
-  if (!verifiedPhone) return null;
-  
-  // 축의금이 없으면 표시하지 않음 (props로 받아서 처리)
-  if (!myContribution) return null;
-
-  const handleEditContribution = () => {
-    // 축의금 수정 로직 - 기존 데이터로 모달 열기
-    onEdit();
-  };
+  const relationLabel = {
+    family: '가족', relative: '친척', friend: '지인',
+    colleague: '직장동료', senior: '선배', junior: '후배',
+    neighbor: '이웃', other: '기타',
+  }[myContribution.relationship] || myContribution.relationship;
 
   return (
     <div className={styles.myContributionSection}>
-      {/* 토글 버튼 */}
-      <button 
-        className={styles.toggleButton}
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
+      <button className={styles.toggleButton} onClick={() => setIsExpanded(!isExpanded)}>
         <span className={styles.toggleText}>내가 축의한 금액</span>
         <span className={styles.toggleIcon}>{isExpanded ? '▼' : '▲'}</span>
       </button>
-      
-      {/* 확장된 내용 */}
       {isExpanded && (
         <div className={styles.contributionContent}>
           <p className={styles.contributionSubtitle}>본인에게만 보이는 정보입니다</p>
-          
           <div className={styles.contributionSummary}>
             <div className={styles.summaryInfo}>
               <span className={styles.summaryName}>{myContribution.guestName}</span>
@@ -484,27 +377,12 @@ const MyContributionSection = ({ eventData, myContribution, onEdit, setMyContrib
               </span>
             </div>
             <div className={styles.summaryDetails}>
-              <span className={styles.summaryRelation}>
-                {myContribution.relationship === 'family' ? '가족' : 
-                 myContribution.relationship === 'relative' ? '친척' :
-                 myContribution.relationship === 'friend' ? '지인' : 
-                 myContribution.relationship === 'colleague' ? '직장동료' : 
-                 myContribution.relationship === 'senior' ? '선배' :
-                 myContribution.relationship === 'junior' ? '후배' :
-                 myContribution.relationship === 'neighbor' ? '이웃' :
-                 myContribution.relationship === 'other' ? '기타' :
-                 myContribution.relationship}
-              </span>
+              <span className={styles.summaryRelation}>{relationLabel}</span>
               <span className={styles.summarySide}>
                 {myContribution.side === 'groom' ? '신랑측' : '신부측'}
               </span>
             </div>
-            <button 
-              className={styles.editButton}
-              onClick={handleEditContribution}
-            >
-              수정
-            </button>
+            <button className={styles.editButton} onClick={onEdit}>수정</button>
           </div>
         </div>
       )}
@@ -512,1067 +390,580 @@ const MyContributionSection = ({ eventData, myContribution, onEdit, setMyContrib
   );
 };
 
+// ─── 메인 컴포넌트 ────────────────────────────────────────────────────────
 const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessages = false, messageSettings = {} }) => {
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  // additional_info JSON 파싱
+  const additionalInfo = (() => {
+    if (!eventData.additional_info) return {};
+    if (typeof eventData.additional_info === 'string') {
+      try { return JSON.parse(eventData.additional_info); } catch { return {}; }
+    }
+    return typeof eventData.additional_info === 'object' ? eventData.additional_info : {};
+  })();
+
+  // ─ state ──────────────────────────────────────────────────────────────
   const [randomGreeting, setRandomGreeting] = useState(null);
   const [showOpening, setShowOpening] = useState(true);
   const [showImageViewer, setShowImageViewer] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [galleryScrollIndex, setGalleryScrollIndex] = useState(0);
-  const [galleryPairIndex, setGalleryPairIndex] = useState(0); // 갤러리 페어 인덱스 추가
-  const [showDateAnimation, setShowDateAnimation] = useState(false);
+  const [activeAccountToggle, setActiveAccountToggle] = useState('groom');
+  const [guestMessages, setGuestMessages] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+
+  // 모달 상태
+  const [showWelcomeChoice, setShowWelcomeChoice] = useState(false);
   const [showGuestbookModal, setShowGuestbookModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingMessage, setEditingMessage] = useState(null);
-  
-  // 모달 상태들
-  const [showWelcomeChoice, setShowWelcomeChoice] = useState(false);
   const [showArrivalModal, setShowArrivalModal] = useState(false);
   const [showContributionModal, setShowContributionModal] = useState(false);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
-  
-  const [contributionData, setContributionData] = useState(null);
-  const [completionData, setCompletionData] = useState(null); // 완료 모달용 데이터
+  const [completionData, setCompletionData] = useState(null);
   const [myContribution, setMyContribution] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [, forceUpdate] = useState({});
   const [contributionKey, setContributionKey] = useState(0);
-  const [arrivalDismissed, setArrivalDismissed] = useState(false); // 도착 확인 모달 닫음 여부
-  const [guestMessages, setGuestMessages] = useState([]);
-  const [userChoice, setUserChoice] = useState(null); // 'guestbook' 또는 'contribution'
-  const [hasWrittenGuestbook, setHasWrittenGuestbook] = useState(false); // 방명록 작성 여부
-  
-  // 이미지 URL 처리 함수 - EventDisplayScreen과 동일한 방식
-  const getImageSrc = (image) => {
-    if (!image) return null;
-    
-    
-    // 문자열인 경우 그대로 반환
-    if (typeof image === 'string') {
-      return image;
-    }
-    
-    // 객체인 경우 publicUrl 우선, 그 다음 uri (EventDisplayScreen과 동일한 순서)
-    return image.publicUrl || image.uri || image.url || image.src || null;
+  const [, forceUpdate] = useState({});
+  const [arrivalDismissed, setArrivalDismissed] = useState(false);
+  const [userChoice, setUserChoice] = useState(null);
+  const [hasWrittenGuestbook, setHasWrittenGuestbook] = useState(false);
+
+  const modalOpeningRef = useRef(false);
+  const modalClosingRef = useRef(false);
+  const arrivalTimersRef = useRef([]);
+  const arrivalModalOpeningRef = useRef(false);
+  const arrivalModalCheckedRef = useRef(false);
+
+  // ─ 이미지 처리 ──────────────────────────────────────────────────────
+  const getImageSrc = (img) => {
+    if (!img) return null;
+    if (typeof img === 'string') return img;
+    return img.publicUrl || img.uri || img.url || img.src || null;
   };
-  
-  // 기본 이미지 URL들 (Supabase 이미지가 없을 때만 사용)
+
   const defaultImages = {
     main: [
       'https://images.unsplash.com/photo-1519741497674-611481863552?w=400&h=650&fit=crop',
       'https://images.unsplash.com/photo-1465495976277-4387d4b0e4a6?w=400&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&h=650&fit=crop'
+      'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&h=650&fit=crop',
     ],
     gallery: [
       'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=300&h=350&fit=crop',
       'https://images.unsplash.com/photo-1469371670807-013ccf25f16a?w=300&h=350&fit=crop',
       'https://images.unsplash.com/photo-1520854221256-17451cc331bf?w=300&h=350&fit=crop',
-      'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=300&h=350&fit=crop'
+      'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=300&h=350&fit=crop',
     ],
-    groom: ['https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face'],
-    bride: ['https://images.unsplash.com/photo-1494790108755-2616b612b786?w=200&h=200&fit=crop&crop=face']
+    groom: [],
+    bride: [],
   };
 
-  // Supabase Storage에서 실제 이미지 가져오기
   const processImageData = () => {
-    // 1순위: categorizedImages (외부에서 전달된 경우)
-    if (categorizedImages && Object.keys(categorizedImages).length > 0) {
-      return categorizedImages;
-    }
-    
-    // 2순위: Supabase에서 처리된 이미지 (getEventDetails 결과)
-    if (eventData?.processedImages && eventData.processedImages.length > 0) {
-      const categorized = {
-        main: [],
-        gallery: [],
-        groom: [],
-        bride: [],
-        all: []
-      };
-      
+    if (categorizedImages && Object.keys(categorizedImages).length > 0) return categorizedImages;
+    if (eventData?.processedImages?.length > 0) {
+      const cat = { main: [], gallery: [], groom: [], bride: [], all: [] };
       eventData.processedImages.forEach(img => {
-        const imageObj = {
-          uri: img.primaryUrl || img.publicUrl || img.uri,
-          publicUrl: img.publicUrl,
-          category: img.category,
-          id: img.id
-        };
-        
-        if (img.category && categorized[img.category]) {
-          categorized[img.category].push(imageObj);
-        }
-        categorized.all.push(imageObj);
+        const obj = { uri: img.primaryUrl || img.publicUrl || img.uri, publicUrl: img.publicUrl, category: img.category, id: img.id };
+        if (img.category && cat[img.category]) cat[img.category].push(obj);
+        cat.all.push(obj);
       });
-      
-      return categorized;
+      return cat;
     }
-    
-    // 3순위: EventDisplayScreen과 동일한 처리 로직 (image_urls)
-    if (eventData?.image_urls && eventData.image_urls.length > 0) {
-      const normalizedImages = eventData.image_urls.map(img => {
-        if (typeof img === 'string') {
-          return { uri: img, category: 'main' };
-        }
-        return {
-          uri: img.publicUrl || img.uri || img,
-          category: img.category || 'main'
-        };
-      });
-      
-      const processedImages = {
-        main: normalizedImages.filter(img => img.category === 'main'),
-        gallery: normalizedImages.filter(img => img.category === 'gallery'),
-        groom: normalizedImages.filter(img => img.category === 'groom'),
-        bride: normalizedImages.filter(img => img.category === 'bride'),
-        all: normalizedImages
+    if (eventData?.image_urls?.length > 0) {
+      const normalized = eventData.image_urls.map(img =>
+        typeof img === 'string' ? { uri: img, category: 'main' } : { uri: img.publicUrl || img.uri || img, category: img.category || 'main' }
+      );
+      return {
+        main: normalized.filter(i => i.category === 'main'),
+        gallery: normalized.filter(i => i.category === 'gallery'),
+        groom: normalized.filter(i => i.category === 'groom'),
+        bride: normalized.filter(i => i.category === 'bride'),
+        all: normalized,
       };
-      
-      return processedImages;
     }
-    
     return defaultImages;
   };
 
-  const processedImages = processImageData();
+  const processed = processImageData();
   const safeImages = {
-    main: processedImages?.main?.length > 0 ? processedImages.main : defaultImages.main,
-    gallery: processedImages?.gallery?.length > 0 ? processedImages.gallery : defaultImages.gallery,
-    groom: processedImages?.groom?.length > 0 ? processedImages.groom : defaultImages.groom,
-    bride: processedImages?.bride?.length > 0 ? processedImages.bride : defaultImages.bride,
+    main: processed?.main?.length > 0 ? processed.main : defaultImages.main,
+    gallery: processed?.gallery?.length > 0 ? processed.gallery : defaultImages.gallery,
+    groom: processed?.groom?.length > 0 ? processed.groom : [],
+    bride: processed?.bride?.length > 0 ? processed.bride : [],
   };
 
-  // 랜덤 인사말 선택
-  useEffect(() => {
-    if (!eventData.custom_message || eventData.custom_message.trim() === '') {
-      const randomIndex = Math.floor(Math.random() * RANDOM_GREETINGS.length);
-      setRandomGreeting(RANDOM_GREETINGS[randomIndex]);
-    }
-  }, [eventData.custom_message]);
+  const allImages = [...safeImages.main, ...safeImages.gallery, ...safeImages.groom, ...safeImages.bride];
 
-  // 날짜 포맷팅
+  // ─ 날짜/시간 포맷 ──────────────────────────────────────────────────
   const formatDate = (date) => {
-    if (!date) return { full: '2025년 10월 4일 토요일' };
+    if (!date) return { full: '' };
     const d = new Date(date);
-    const days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
-    const year = d.getFullYear();
-    const month = d.getMonth() + 1;
-    const day = d.getDate();
-    const dayOfWeek = days[d.getDay()];
-    
-    return {
-      year: year.toString(),
-      month: month.toString(),
-      day: day.toString(),
-      dayOfWeek,
-      full: `${year}년 ${month}월 ${day}일 ${dayOfWeek}`
-    };
+    const days = ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'];
+    const y = d.getFullYear(), m = d.getMonth() + 1, day = d.getDate();
+    return { year: y, month: m, day, dayOfWeek: days[d.getDay()], full: `${y}년 ${m}월 ${day}일 ${days[d.getDay()]}` };
   };
 
-  const dateInfo = formatDate(eventData.date || eventData.event_date || '2025-10-04');
-  const ceremonyTime = eventData.ceremony_time || '오후 2시';
-  const receptionTime = eventData.reception_time || '오후 3시';
+  const dateInfo = formatDate(eventData.date || eventData.event_date);
 
-  // 영문 날짜 포맷팅
+  const formatKoreanTime = (t) => {
+    if (!t) return '';
+    const parts = t.split(':');
+    if (parts.length < 2) return t;
+    const h = parseInt(parts[0]);
+    const min = parts[1];
+    const period = h >= 12 ? '오후' : '오전';
+    const h12 = h > 12 ? h - 12 : (h === 0 ? 12 : h);
+    return `${period} ${h12}:${min}`;
+  };
+
+  const ceremonyTimeRaw = eventData.ceremony_time || eventData.ceremonyTime || '';
+  const ceremonyTimeDisplay = formatKoreanTime(typeof ceremonyTimeRaw === 'string' ? ceremonyTimeRaw : '');
+
   const getEnglishDate = () => {
-    const date = new Date(eventData.date || eventData.event_date || '2025-10-04');
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+    const d = new Date(eventData.date || eventData.event_date || '');
+    if (isNaN(d)) return '';
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
   };
 
-  // 카운트다운 계산
+  // ─ 카운트다운 ────────────────────────────────────────────────────────
   const calculateTimeLeft = () => {
-    const eventDate = new Date(eventData.date || eventData.event_date || '2025-10-04');
-    const now = new Date();
-    const difference = eventDate - now;
+    const dateStr = eventData.date || eventData.event_date || '';
+    const timeStr = eventData.ceremony_time || eventData.ceremonyTime || '14:00';
 
-    if (difference > 0) {
+    let eventDate;
+    if (dateStr) {
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        const year = parseInt(parts[0]);
+        const month = parseInt(parts[1]) - 1;
+        const day = parseInt(parts[2]);
+        const rawTime = typeof timeStr === 'string' ? timeStr : '14:00';
+        const timeParts = rawTime.split(':');
+        const hours = parseInt(timeParts[0]) || 14;
+        const minutes = parseInt(timeParts[1]) || 0;
+        // 로컬 시간 기준으로 생성 (UTC 파싱 방지)
+        eventDate = new Date(year, month, day, hours, minutes, 0, 0);
+      } else {
+        eventDate = new Date(dateStr);
+      }
+    } else {
+      eventDate = new Date();
+      eventDate.setDate(eventDate.getDate() + 30);
+    }
+
+    const diff = eventDate - new Date();
+    if (diff > 0) {
       return {
-        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-        minutes: Math.floor((difference / 1000 / 60) % 60),
-        seconds: Math.floor((difference / 1000) % 60),
-        isExpired: false
+        days: Math.floor(diff / 86400000),
+        hours: Math.floor((diff / 3600000) % 24),
+        minutes: Math.floor((diff / 60000) % 60),
+        seconds: Math.floor((diff / 1000) % 60),
+        isExpired: false,
       };
     }
     return { days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: true };
   };
 
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
-
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft());
-    }, 1000);
-    return () => clearInterval(timer);
+    const t = setInterval(() => setTimeLeft(calculateTimeLeft()), 1000);
+    return () => clearInterval(t);
   }, [eventData]);
 
-  // 내 축의금 데이터 초기화 및 realtime 구독
+  // ─ 랜덤 인사말 ────────────────────────────────────────────────────
   useEffect(() => {
-    const verifiedPhone = localStorage.getItem('verifiedPhone');
-    if (!verifiedPhone || !eventData?.id) return;
-
-    let isSubscribed = true; // cleanup flag
-
-    // 초기 데이터 로드 (한 번만)
-    const fetchMyContribution = async () => {
-      if (!isSubscribed) return;
-      
-      try {
-        const response = await fetch(`/api/get-my-contribution?eventId=${eventData.id}&phone=${encodeURIComponent(verifiedPhone)}`);
-        const result = await response.json();
-        
-        console.log('🔄 내 축의금 초기 로드:', result);
-        
-        if (result.success && result.contribution && isSubscribed) {
-          // amount 필드 추가 (contributionAmount와 amount 둘 다 지원)
-          const contribution = {
-            ...result.contribution,
-            amount: result.contribution.contributionAmount || result.contribution.amount
-          };
-          setMyContribution(contribution);
-        }
-      } catch (error) {
-        console.error('내 축의금 조회 오류:', error);
-      }
-    };
-
-    fetchMyContribution();
-
-    // Supabase realtime 구독 설정
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    );
-
-    // 필터를 간단하게 event_id만으로 설정하고 클라이언트에서 필터링
-    const subscription = supabase
-      .channel(`guest_book_changes_${eventData.id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'guest_book',
-          filter: `event_id=eq.${eventData.id}`
-        },
-        (payload) => {
-          console.log('📡 guest_book 테이블 변경 감지:', payload);
-          
-          // 변경된 데이터가 현재 사용자의 것인지 확인
-          if (payload.new && payload.new.guest_phone === verifiedPhone) {
-            console.log('✅ 내 축의금 데이터 업데이트 감지!');
-            
-            if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
-              const newContribution = {
-                id: payload.new.id,
-                guestName: payload.new.guest_name,
-                contributionAmount: payload.new.amount,
-                amount: payload.new.amount, // 두 가지 키 모두 제공
-                relationship: payload.new.relation_detail,
-                side: payload.new.relation_category,
-                phone: payload.new.guest_phone,
-                createdAt: payload.new.created_at,
-                updatedAt: payload.new.updated_at
-              };
-              console.log('💚 새로운 축의금 데이터 설정:', newContribution);
-              
-              // 상태 업데이트
-              setMyContribution(newContribution);
-              
-              // 컴포넌트 키 변경으로 완전히 재마운트
-              setContributionKey(prev => prev + 1);
-              
-              // 강제 리렌더링 트리거
-              forceUpdate({});
-            }
-          } else if (payload.old && payload.old.guest_phone === verifiedPhone && payload.eventType === 'DELETE') {
-            console.log('❌ 내 축의금 삭제 감지');
-            setMyContribution(null);
-          }
-        }
-      )
-      .subscribe((status) => {
-        console.log('📡 Realtime 구독 상태:', status);
-      });
-
-    return () => {
-      isSubscribed = false;
-      subscription.unsubscribe();
-    };
-  }, [eventData?.id]);
-
-  // 영문 이름 생성
-  const groomEnglishName = koreanToEnglish(eventData.groom_name || '이민호');
-  const brideEnglishName = koreanToEnglish(eventData.bride_name || '배하윤');
-
-  // 모든 이미지 배열 (메인 + 갤러리 + 신랑신부)
-  const allImages = [
-    ...safeImages.main,
-    ...safeImages.gallery,
-    ...safeImages.groom,
-    ...safeImages.bride
-  ];
-
-  // 방명록 메시지 데이터
-  const defaultMessages = [
-    {
-      from: "민나",
-      date: "2025.04.24 18:52",
-      content: `${eventData.bride_name || '하윤'}아❤️ 결혼을 진심으로 축하한다!\n${eventData.groom_name || '민호'} 오빠랑 둘이 지금처럼 행복하게 백년해로 하기\n항상 웃음 가득한 하루하루 보내길 바랄게!\nHappy Wedding💜`
-    },
-    {
-      from: "sooyeon",
-      date: "2025.04.23 09:41",
-      content: "결혼을 진심으로 축하드립니다💕\n사진도 청첩장도 너무 이쁘요!\n항상 서로를 응원하고 아껴주는 모습이 참 이쁜 커플입니다😊\n행복한 결혼 생활 되길 바래요"
-    },
-    {
-      from: "지현",
-      date: "2025.04.22 14:23",
-      content: `${eventData.bride_name || '하윤'}아 결혼 진심으로 축하해!\n웨딩스냅, 청첩장 모두 너무 예쁘다!💚\n남은 결혼식 준비도 잘 마무리하고!\n행복한 결혼생활 되기를 바래✨`
-    },
-    {
-      from: "유진",
-      date: "2025.04.21 16:35",
-      content: `두 분의 아름다운 사랑이 결실을 맺게 되어 정말 축하드려요🎉\n서로를 아끼고 사랑하는 마음으로\n평생 함께하는 행복한 부부가 되시길 바랍니다\n새로운 시작을 진심으로 응원합니다!`
+    const msg = eventData.custom_message || eventData.customMessage;
+    if (!msg || (typeof msg === 'string' && msg.trim() === '')) {
+      setRandomGreeting(RANDOM_GREETINGS[Math.floor(Math.random() * RANDOM_GREETINGS.length)]);
     }
-  ];
-  
-  // 페이지 로드 시 방명록 데이터 불러오기 및 실시간 구독
+  }, [eventData.custom_message, eventData.customMessage]);
+
+  const rawMsg = eventData.custom_message || eventData.customMessage;
+  let greetingMessage = '';
+  if (rawMsg) {
+    if (typeof rawMsg === 'object') greetingMessage = rawMsg.poem || '';
+    else if (typeof rawMsg === 'string' && rawMsg.trim() !== '') greetingMessage = rawMsg;
+    else greetingMessage = randomGreeting;
+  } else {
+    greetingMessage = randomGreeting;
+  }
+
+  // ─ 방명록 데이터 불러오기 & 실시간 구독 ─────────────────────────
+  const fetchGuestbook = async () => {
+    if (!eventData?.id) return;
+    try {
+      const res = await fetch(`/api/get-guestbook?eventId=${eventData.id}`);
+      const result = await res.json();
+      if (result.success && result.messages) setGuestMessages(result.messages);
+    } catch { /* 조용히 */ }
+  };
+
   useEffect(() => {
-    const fetchGuestbook = async () => {
-      if (!eventData?.id) return;
-      
-      try {
-        const response = await fetch(`/api/get-guestbook?eventId=${eventData.id}`);
-        const result = await response.json();
-        
-        if (result.success && result.messages) {
-          setGuestMessages(result.messages);
-        }
-      } catch (error) {
-        console.error('방명록 로드 오류:', error);
-      }
-    };
-    
-    // 초기 데이터 로드
     fetchGuestbook();
-    
-    // Supabase 실시간 구독 설정
     let subscription = null;
     if (eventData?.id) {
-      // Supabase 클라이언트 생성
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
       const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-      
       if (supabaseUrl && supabaseAnonKey) {
         const supabase = createClient(supabaseUrl, supabaseAnonKey);
-        
-        // guest_book 테이블의 실시간 변경 사항 구독
+        const fmt = (ts) => new Date(ts).toLocaleDateString('ko-KR', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
         subscription = supabase
-          .channel('guestbook-changes')
-          .on(
-            'postgres_changes',
-            {
-              event: 'INSERT',
-              schema: 'public',
-              table: 'guest_book',
-              filter: `event_id=eq.${eventData.id}`
-            },
-            (payload) => {
-              // 새 방명록 등록됨
-              
-              // 새로운 메시지를 state에 추가
-              const newMessage = {
-                id: payload.new.id,
-                from: payload.new.guest_name || '익명',
-                phone: payload.new.guest_phone,
-                date: new Date(payload.new.created_at).toLocaleDateString('ko-KR', {
-                  year: 'numeric',
-                  month: '2-digit',
-                  day: '2-digit',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                }).replace(/\./g, '.').replace(/\s/g, ' '),
-                content: payload.new.message || ''
-              };
-              
-              setGuestMessages(prevMessages => [newMessage, ...prevMessages]);
-            }
-          )
-          .on(
-            'postgres_changes',
-            {
-              event: 'UPDATE',
-              schema: 'public',
-              table: 'guest_book',
-              filter: `event_id=eq.${eventData.id}`
-            },
-            (payload) => {
-              // 방명록 수정됨
-              
-              // 수정된 메시지로 업데이트
-              const updatedMessage = {
-                id: payload.new.id,
-                from: payload.new.guest_name || '익명',
-                phone: payload.new.guest_phone,
-                date: new Date(payload.new.created_at).toLocaleDateString('ko-KR', {
-                  year: 'numeric',
-                  month: '2-digit',
-                  day: '2-digit',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                }).replace(/\./g, '.').replace(/\s/g, ' '),
-                content: payload.new.message || ''
-              };
-              
-              setGuestMessages(prevMessages => 
-                prevMessages.map(msg => 
-                  msg.id === payload.new.id ? updatedMessage : msg
-                )
-              );
-            }
-          )
-          .on(
-            'postgres_changes',
-            {
-              event: 'DELETE',
-              schema: 'public',
-              table: 'guest_book',
-              filter: `event_id=eq.${eventData.id}`
-            },
-            (payload) => {
-              // 방명록 삭제됨
-              
-              // 삭제된 메시지 제거
-              setGuestMessages(prevMessages => 
-                prevMessages.filter(msg => msg.id !== payload.old.id)
-              );
-            }
-          )
+          .channel(`guestbook-${eventData.id}`)
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'guest_book', filter: `event_id=eq.${eventData.id}` }, (payload) => {
+            const msg = { id: payload.new.id, from: payload.new.guest_name || '익명', phone: payload.new.guest_phone, date: fmt(payload.new.created_at), content: payload.new.message || '' };
+            setGuestMessages(prev => [msg, ...prev]);
+          })
+          .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'guest_book', filter: `event_id=eq.${eventData.id}` }, (payload) => {
+            const msg = { id: payload.new.id, from: payload.new.guest_name || '익명', phone: payload.new.guest_phone, date: fmt(payload.new.created_at), content: payload.new.message || '' };
+            setGuestMessages(prev => prev.map(m => m.id === payload.new.id ? msg : m));
+          })
+          .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'guest_book', filter: `event_id=eq.${eventData.id}` }, (payload) => {
+            setGuestMessages(prev => prev.filter(m => m.id !== payload.old.id));
+          })
           .subscribe();
       }
     }
-    
-    // 클린업 함수
-    return () => {
-      if (subscription) {
-        subscription.unsubscribe();
-      }
-    };
+    return () => { if (subscription) subscription.unsubscribe(); };
   }, [eventData?.id]);
 
-  // 현재 사용자가 방명록 메시지를 작성했는지 확인 (메시지 내용이 있는 경우만)
+  // hasWrittenGuestbook 감지
   useEffect(() => {
-    const verifiedPhone = localStorage.getItem('verifiedPhone');
-    if (verifiedPhone && guestMessages.length > 0) {
-      // 메시지 내용이 있는 경우만 작성한 것으로 처리
-      const hasWritten = guestMessages.some(msg =>
-        msg.phone === verifiedPhone && msg.content && msg.content.trim() !== ''
-      );
-      setHasWrittenGuestbook(hasWritten);
+    const phone = typeof window !== 'undefined' ? localStorage.getItem('verifiedPhone') : null;
+    if (phone && guestMessages.length > 0) {
+      setHasWrittenGuestbook(guestMessages.some(m => m.phone === phone && m.content?.trim()));
     } else {
       setHasWrittenGuestbook(false);
     }
   }, [guestMessages]);
 
-  // 실제 메시지 또는 기본 메시지 선택
-  // guestMessages(state)가 최신 데이터이므로 우선 사용, ID로 중복 제거
-  const mergedMessages = useMemo(() => {
-    const stateMessageIds = new Set(guestMessages.map(msg => msg.id));
-    // props에서 온 메시지 중 state에 없는 것만 추가
-    const propsMessages = (eventData.guestMessages || []).filter(
-      msg => !stateMessageIds.has(msg.id)
-    );
-    return [...guestMessages, ...propsMessages];
+  // 내 축의금 실시간 구독
+  useEffect(() => {
+    const verifiedPhone = typeof window !== 'undefined' ? localStorage.getItem('verifiedPhone') : null;
+    if (!verifiedPhone || !eventData?.id) return;
+    let isSubscribed = true;
+    const loadMine = async () => {
+      try {
+        const res = await fetch(`/api/get-my-contribution?eventId=${eventData.id}&phone=${encodeURIComponent(verifiedPhone)}`);
+        const result = await res.json();
+        if (result.success && result.contribution && isSubscribed) {
+          setMyContribution({ ...result.contribution, amount: result.contribution.contributionAmount || result.contribution.amount });
+        }
+      } catch { /* 조용히 */ }
+    };
+    loadMine();
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!supabaseUrl || !supabaseAnonKey) return;
+    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    const sub = supabase
+      .channel(`guest_book_mine_${eventData.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'guest_book', filter: `event_id=eq.${eventData.id}` }, (payload) => {
+        if (payload.new?.guest_phone === verifiedPhone) {
+          if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+            const c = { id: payload.new.id, guestName: payload.new.guest_name, contributionAmount: payload.new.amount, amount: payload.new.amount, relationship: payload.new.relation_detail, side: payload.new.relation_category, phone: payload.new.guest_phone };
+            setMyContribution(c);
+            setContributionKey(p => p + 1);
+            forceUpdate({});
+          }
+        } else if (payload.old?.guest_phone === verifiedPhone && payload.eventType === 'DELETE') {
+          setMyContribution(null);
+        }
+      })
+      .subscribe();
+
+    return () => { isSubscribed = false; sub.unsubscribe(); };
+  }, [eventData?.id]);
+
+  // 메시지 병합 및 페이지네이션
+  const messagesWithContent = useMemo(() => {
+    const stateIds = new Set(guestMessages.map(m => m.id));
+    const propsMessages = (eventData.guestMessages || []).filter(m => !stateIds.has(m.id));
+    return [...guestMessages, ...propsMessages].filter(m => m.content?.trim());
   }, [guestMessages, eventData.guestMessages]);
 
-  // 메시지 내용이 있는 것만 필터링 (삭제된 메시지는 표시하지 않음)
-  const messagesWithContent = mergedMessages.filter(msg => msg.content && msg.content.trim() !== '');
-  const hasRealMessages = messagesWithContent.length > 0;
-  const displayMessages = hasRealMessages ? messagesWithContent : defaultMessages;
-  
-  // 페이지네이션 상태
-  const [currentPage, setCurrentPage] = useState(0);
   const messagesPerPage = 3;
-  const totalPages = Math.ceil(displayMessages.length / messagesPerPage);
-  const currentMessages = displayMessages.slice(currentPage * messagesPerPage, (currentPage + 1) * messagesPerPage);
+  const totalPages = Math.ceil(messagesWithContent.length / messagesPerPage);
+  const currentMessages = messagesWithContent.slice(currentPage * messagesPerPage, (currentPage + 1) * messagesPerPage);
 
-  // 인사말 결정
-  let greetingMessage = '';
-  if (eventData.custom_message) {
-    if (typeof eventData.custom_message === 'object') {
-      greetingMessage = eventData.custom_message.poem || '';
-    } else if (typeof eventData.custom_message === 'string' && eventData.custom_message.trim() !== '') {
-      greetingMessage = eventData.custom_message;
-    } else {
-      greetingMessage = randomGreeting;
-    }
-  } else {
-    greetingMessage = randomGreeting;
-  }
+  // ─ 모달 핸들러 ──────────────────────────────────────────────────────
+  const clearArrivalTimers = () => { arrivalTimersRef.current.forEach(clearTimeout); arrivalTimersRef.current = []; };
 
-  const handleShare = async () => {
-    const shareData = {
-      title: `${eventData.groom_name || '신랑'} ♡ ${eventData.bride_name || '신부'} 결혼식 초대장`,
-      text: `${eventData.groom_name || '신랑'} ♡ ${eventData.bride_name || '신부'}\n${dateInfo.full} ${ceremonyTime}\n${eventData.location || '웨딩홀'}\n\n우리의 특별한 날에 초대합니다 🌸`,
-      url: window.location.href
-    };
-
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        await navigator.clipboard.writeText(window.location.href);
-        alert('링크가 복사되었습니다.');
-      }
-    } catch (error) {
-      // Share error (조용히 처리)
-    }
-  };
-
-  const handleImagePress = (index) => {
-    setCurrentImageIndex(index);
-    setShowImageViewer(true);
-  };
-
-  const openMessageModal = () => {
-    alert('메시지 작성 기능은 준비 중입니다.');
-  };
-
-  // 모달 상태 관리를 위한 ref 추가
-  const modalOpeningRef = useRef(false);
-  const modalClosingRef = useRef(false);
-
-  // 방명록 모달 열기 (중복 방지)
-  const handleGuestbookModalOpen = () => {
-    console.log('🟢 모달 열기 시도:', { modalOpeningRef: modalOpeningRef.current, showGuestbookModal });
-    
-    if (modalOpeningRef.current || showGuestbookModal) {
-      console.log('🟢 모달 열기 차단됨');
-      return;
-    }
-    
-    modalOpeningRef.current = true;
-    console.log('🟢 모달 열기 실행');
-    setShowGuestbookModal(true);
-    
-    setTimeout(() => {
-      modalOpeningRef.current = false;
-    }, 500);
-  };
-
-  // 방명록 모달 닫기 (안전한 닫기)
-  const handleGuestbookModalClose = () => {
-    console.log('🔴 템플릿에서 모달 닫기 호출됨:', { modalClosingRef: modalClosingRef.current, showGuestbookModal });
-    
-    if (modalClosingRef.current) {
-      console.log('🔴 템플릿 모달 닫기 차단됨');
-      return;
-    }
-    
-    modalClosingRef.current = true;
-    console.log('🔴 템플릿 모달 닫기 실행');
-    setShowGuestbookModal(false);
-    
-    setTimeout(() => {
-      modalClosingRef.current = false;
-      console.log('🔴 템플릿 모달 닫기 상태 해제');
-    }, 300);
-  };
-
-  // 방명록 제출 핸들러
-  const handleGuestbookSubmit = async (guestbookData) => {
-    try {
-      console.log('📝 방명록 제출 핸들러 호출됨:', guestbookData);
-
-      // 새 메시지를 즉시 state에 추가 (낙관적 업데이트)
-      const newMessage = {
-        id: `temp-${Date.now()}`, // 임시 ID
-        from: guestbookData.name || '익명',
-        phone: guestbookData.phone,
-        date: new Date().toLocaleDateString('ko-KR', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit'
-        }).replace(/\./g, '.').replace(/\s/g, ' '),
-        content: guestbookData.message || ''
-      };
-
-      setGuestMessages(prevMessages => [newMessage, ...prevMessages]);
-
-      // 방명록 작성 완료 - 버튼 숨김
-      setHasWrittenGuestbook(true);
-
-      // 첫 페이지로 이동
-      setCurrentPage(0);
-
-      // 서버에서 최신 데이터 다시 가져오기 (실제 ID로 업데이트)
-      setTimeout(async () => {
-        await fetchGuestbook();
-      }, 500);
-
-    } catch (error) {
-      console.error('방명록 제출 오류:', error);
-      throw error; // 모달에서 에러 처리
-    }
-  };
-
-  // 방명록 수정 모달 열기
-  const handleEditMessage = (message) => {
-    setEditingMessage(message);
-    setShowEditModal(true);
-  };
-
-  // 방명록 수정 완료 핸들러
-  const handleEditUpdate = async () => {
-    // 실시간 구독으로 자동 업데이트됨
-    await fetchGuestbook();
-  };
-
-  // 방명록 삭제 완료 핸들러 (메시지만 비움, 레코드는 유지)
-  const handleEditDelete = async () => {
-    // 즉시 UI에서 메시지 내용만 비움 (이름, 축의금 등은 유지)
-    if (editingMessage?.id) {
-      setGuestMessages(prevMessages =>
-        prevMessages.map(msg =>
-          msg.id === editingMessage.id
-            ? { ...msg, content: '' }
-            : msg
-        )
-      );
-    }
-    // 방명록 메시지 삭제 완료 - 다시 작성 가능하도록 버튼 표시
-    setHasWrittenGuestbook(false);
-    // 모달 닫기
-    setShowEditModal(false);
-    setEditingMessage(null);
-  };
-
-  // 수정 권한 확인 (본인 전화번호와 일치하는지 체크)
-  const canEditMessage = (message) => {
-    const verifiedPhone = localStorage.getItem('verifiedPhone');
-    // 편집 권한 체크
-    return verifiedPhone && message.phone === verifiedPhone;
-  };
-
-  // 방명록 데이터 새로고침 함수
-  const fetchGuestbook = async () => {
-    if (!eventData?.id) return;
-    
-    try {
-      const response = await fetch(`/api/get-guestbook?eventId=${eventData.id}`);
-      const result = await response.json();
-      
-      if (result.success && result.messages) {
-        setGuestMessages(result.messages);
-      }
-    } catch (error) {
-      console.error('방명록 로드 오류:', error);
-    }
-  };
-
-  // 도착 확인 모달 상태 관리를 위한 ref
-  const arrivalTimersRef = useRef([]);
-  const arrivalModalOpeningRef = useRef(false);
-  const arrivalModalCheckedRef = useRef(false); // 이미 체크했는지 추적
-
-  // 도착 확인 모달 타이머 정리 함수
-  const clearArrivalTimers = () => {
-    arrivalTimersRef.current.forEach(timer => clearTimeout(timer));
-    arrivalTimersRef.current = [];
-  };
-
-  // Welcome Choice 모달 체크 함수
   const checkAndShowWelcomeChoice = () => {
-    // 이미 체크했거나 모달이 열려있으면 즉시 종료
-    if (arrivalModalCheckedRef.current || arrivalModalOpeningRef.current || showWelcomeChoice) {
-      return false;
-    }
-    
-    const verifiedPhone = localStorage.getItem('verifiedPhone');
-    const currentEventArrivalKey = `arrival_checked_${eventData?.id}`;
-    const arrivalCheckedForThisEvent = localStorage.getItem(currentEventArrivalKey);
-    
-    // 이미 이 이벤트에서 도착 확인을 했다면 Welcome Choice 모달을 표시하지 않음
-    if (arrivalCheckedForThisEvent) {
-      return false;
-    }
-    
-    // 인증된 폰이 있고 이미 방명록을 작성했다면 도착 모달만 표시
-    if (verifiedPhone && !arrivalDismissed) {
-      const hasPublicGuestBookForThisEvent = guestMessages.some(msg => 
-        msg.phone === verifiedPhone
-      );
-      
-      if (hasPublicGuestBookForThisEvent) {
-        localStorage.setItem(currentEventArrivalKey, 'true');
+    if (arrivalModalCheckedRef.current || arrivalModalOpeningRef.current || showWelcomeChoice) return false;
+    const phone = typeof window !== 'undefined' ? localStorage.getItem('verifiedPhone') : null;
+    const arrivalKey = `arrival_checked_${eventData?.id}`;
+    if (typeof window !== 'undefined' && localStorage.getItem(arrivalKey)) return false;
+    if (phone && !arrivalDismissed) {
+      const hasEntry = guestMessages.some(m => m.phone === phone);
+      if (hasEntry || userChoice === 'contribution') {
+        if (typeof window !== 'undefined') localStorage.setItem(arrivalKey, 'true');
         return false;
       }
-      
-      // "축의금만 낼게요" 선택한 경우 도착 모달 건너뛰기
-      if (userChoice === 'contribution') {
-        localStorage.setItem(currentEventArrivalKey, 'true');
-        return false;
-      }
-      
-      // 인증된 폰이 있지만 방명록 없으면 도착 모달 표시
       setShowArrivalModal(true);
       return true;
     }
-    
-    // 새 사용자라면 Welcome Choice 모달 표시
     arrivalModalCheckedRef.current = true;
     setShowWelcomeChoice(true);
     return true;
   };
 
-  // 도착 확인 모달 트리거 핸들러 (방명록 완료 후 호출용)
-  const handleTriggerArrival = () => {
-    if (arrivalModalOpeningRef.current || showArrivalModal) {
-      console.log('🟡 도착 모달 중복 트리거 차단됨 (방명록 후)');
-      return;
-    }
-    
-    console.log('🟡 도착 모달 트리거됨 (방명록 후)');
-    arrivalModalOpeningRef.current = true;
-    setShowArrivalModal(true);
-    
-    setTimeout(() => {
-      arrivalModalOpeningRef.current = false;
-    }, 1000);
-  };
-
-  // Welcome Choice 핸들러들
-  const handleSelectGuestbook = () => {
-    setUserChoice('guestbook');
-    setShowWelcomeChoice(false);
-    setShowGuestbookModal(true);
-  };
-
-  const handleSelectContribution = () => {
-    setUserChoice('contribution');
-    setShowWelcomeChoice(false);
-    
-    // arrival_checked는 핸드폰 인증 후에 설정하도록 변경
-    // 여기서는 설정하지 않음
-    
-    setTimeout(() => {
-      setShowContributionModal(true);
-    }, 100);
-  };
-
-  // 도착 확인 핸들러
-  const handleArrivalConfirm = async () => {
-    clearArrivalTimers(); // 모든 대기 중인 타이머 정리
-
-    // 이 이벤트에서 도착 확인했다고 표시
-    const currentEventArrivalKey = `arrival_checked_${eventData?.id}`;
-    localStorage.setItem(currentEventArrivalKey, 'true');
-
-    setShowArrivalModal(false);
-
-    // 이미 축의금을 입력한 경우 모달 스킵
-    const existingAmount = myContribution?.amount || myContribution?.contributionAmount;
-    if (existingAmount) {
-      console.log('✅ 기존 축의금이 있어서 축의금 모달 스킵:', existingAmount);
-      return;
-    }
-
-    // 축의금이 없는 경우에만 모달 표시
-    setTimeout(() => {
-      setShowContributionModal(true);
-    }, 300);
-  };
-
-  // 안전한 도착 모달 닫기
-  const handleArrivalModalClose = () => {
-    clearArrivalTimers(); // 모든 대기 중인 타이머 정리
-    setShowArrivalModal(false);
-    setArrivalDismissed(true);
-    // arrivalModalCheckedRef 설정 제거 - "네 도착했어요" 버튼을 눌러야만 설정되도록
-  };
-
-  // 축의금 제출 핸들러
-  const handleContributionSubmit = async (contributionFormData) => {
-    try {
-      const response = await fetch('/api/submit-contribution', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(contributionFormData),
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        // 축의금만 선택한 경우에만 arrival_checked 설정
-        if (userChoice === 'contribution') {
-          const currentEventArrivalKey = `arrival_checked_${eventData?.id}`;
-          localStorage.setItem(currentEventArrivalKey, 'true');
-          
-          // 상태도 강제 업데이트
-          arrivalModalCheckedRef.current = true;
-          setArrivalDismissed(true);
-        }
-        
-        // 완료 모달용 데이터 저장
-        setCompletionData(contributionFormData);
-        setShowContributionModal(false);
-        setIsEditMode(false);
-        
-        // Realtime이 자동으로 처리하므로 수동 새로고침 제거
-        // 단, 편집 모드일 때만 즉시 업데이트를 위해 로컬 상태 업데이트
-        if (isEditMode && myContribution) {
-          const updatedContribution = {
-            ...myContribution,
-            ...contributionFormData,
-            amount: contributionFormData.contributionAmount
-          };
-          console.log('🟣 편집 완료, 로컬 상태 즉시 업데이트:', updatedContribution);
-          setMyContribution(updatedContribution);
-          setContributionKey(prev => prev + 1);
-        }
-        
-        // 방명록 새로고침해서 랜덤 메시지 표시
-        const refreshGuestbook = async () => {
-          try {
-            const response = await fetch(`/api/get-guestbook?eventId=${eventData.id}`);
-            const result = await response.json();
-            
-            if (result.success && result.messages) {
-              setGuestMessages(result.messages);
-            }
-          } catch (error) {
-            console.error('방명록 새로고침 오류:', error);
-          }
-        };
-        
-        refreshGuestbook();
-        
-        // 잠시 후 완료 모달 표시
-        setTimeout(() => {
-          setShowCompletionModal(true);
-        }, 300);
-      } else {
-        console.error('축의금 등록 실패 응답:', result);
-        throw new Error(result.error || '축의금 등록에 실패했습니다.');
-      }
-    } catch (error) {
-      console.error('축의금 제출 오류:', error);
-      alert(`축의금 등록 중 오류가 발생했습니다:\n${error.message}`);
-      throw error;
-    }
-  };
-
   const handleOpeningComplete = () => {
     setShowOpening(false);
-    
-    // 0.5초 후 Welcome Choice 모달 체크
-    const timer = setTimeout(() => {
-      checkAndShowWelcomeChoice();
-    }, 500);
-    arrivalTimersRef.current.push(timer);
+    const t = setTimeout(() => checkAndShowWelcomeChoice(), 500);
+    arrivalTimersRef.current.push(t);
   };
 
-  // 통합된 도착 모달 체크 useEffect
   useEffect(() => {
-    // 이미 체크했거나 dismissed 상태면 실행하지 않음
-    if (arrivalModalCheckedRef.current || arrivalDismissed) {
-      return;
-    }
-    
-    let checkTimer;
-    
+    if (arrivalModalCheckedRef.current || arrivalDismissed) return;
+    let t;
     if (!showOpening) {
-      // 오프닝이 이미 false인 경우 (새로고침 등) 1초 후 체크
-      checkTimer = setTimeout(() => {
-        checkAndShowWelcomeChoice();
-      }, 1000);
+      t = setTimeout(() => checkAndShowWelcomeChoice(), 1000);
     } else {
-      // 오프닝이 진행 중인 경우 4초 후 체크
-      checkTimer = setTimeout(() => {
-        if (showOpening) {
-          setShowOpening(false);
-          setTimeout(() => {
-            checkAndShowWelcomeChoice();
-          }, 500);
-        }
-      }, 4000);
+      t = setTimeout(() => { setShowOpening(false); setTimeout(() => checkAndShowWelcomeChoice(), 500); }, 4000);
     }
-    
-    arrivalTimersRef.current.push(checkTimer);
-    
-    return () => {
-      clearTimeout(checkTimer);
-    };
+    arrivalTimersRef.current.push(t);
+    return () => clearTimeout(t);
   }, [showOpening, arrivalDismissed]);
 
-  // 컴포넌트 언마운트 시 모든 도착 타이머 정리
-  useEffect(() => {
-    return () => {
-      clearArrivalTimers();
-    };
-  }, []);
+  useEffect(() => () => clearArrivalTimers(), []);
 
-  // additional_info JSON 파싱
-  const additionalInfo = (() => {
-    if (!eventData.additional_info) return {};
-    
-    if (typeof eventData.additional_info === 'string') {
+  const handleGuestbookModalOpen = () => {
+    if (modalOpeningRef.current || showGuestbookModal) return;
+    modalOpeningRef.current = true;
+    setShowGuestbookModal(true);
+    setTimeout(() => { modalOpeningRef.current = false; }, 500);
+  };
+
+  const handleGuestbookModalClose = () => {
+    if (modalClosingRef.current) return;
+    modalClosingRef.current = true;
+    setShowGuestbookModal(false);
+    setTimeout(() => { modalClosingRef.current = false; }, 300);
+  };
+
+  const handleGuestbookSubmit = async (data) => {
+    const newMsg = {
+      id: `temp-${Date.now()}`, from: data.name || '익명', phone: data.phone,
+      date: new Date().toLocaleDateString('ko-KR', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }),
+      content: data.message || '',
+    };
+    setGuestMessages(prev => [newMsg, ...prev]);
+    setHasWrittenGuestbook(true);
+    setCurrentPage(0);
+    setTimeout(fetchGuestbook, 500);
+  };
+
+  const handleEditMessage = (msg) => { setEditingMessage(msg); setShowEditModal(true); };
+
+  const handleEditUpdate = async () => { await fetchGuestbook(); };
+
+  const handleEditDelete = async () => {
+    if (editingMessage?.id) {
+      setGuestMessages(prev => prev.map(m => m.id === editingMessage.id ? { ...m, content: '' } : m));
+    }
+    setHasWrittenGuestbook(false);
+    setShowEditModal(false);
+    setEditingMessage(null);
+  };
+
+  const canEditMessage = (msg) => {
+    const phone = typeof window !== 'undefined' ? localStorage.getItem('verifiedPhone') : null;
+    return phone && msg.phone === phone;
+  };
+
+  const handleSelectGuestbook = () => { setUserChoice('guestbook'); setShowWelcomeChoice(false); setShowGuestbookModal(true); };
+  const handleSelectContribution = () => { setUserChoice('contribution'); setShowWelcomeChoice(false); setTimeout(() => setShowContributionModal(true), 100); };
+
+  const handleArrivalConfirm = async () => {
+    clearArrivalTimers();
+    if (typeof window !== 'undefined') localStorage.setItem(`arrival_checked_${eventData?.id}`, 'true');
+    setShowArrivalModal(false);
+    const existing = myContribution?.amount || myContribution?.contributionAmount;
+    if (!existing) setTimeout(() => setShowContributionModal(true), 300);
+  };
+
+  const handleArrivalModalClose = () => { clearArrivalTimers(); setShowArrivalModal(false); setArrivalDismissed(true); };
+
+  const handleTriggerArrival = () => {
+    if (userChoice === 'guestbook') {
+      setTimeout(() => setShowContributionModal(true), 300);
+      return;
+    }
+    if (arrivalModalOpeningRef.current || showArrivalModal) return;
+    arrivalModalOpeningRef.current = true;
+    setShowArrivalModal(true);
+    setTimeout(() => { arrivalModalOpeningRef.current = false; }, 1000);
+  };
+
+  const handleContributionSubmit = async (formData) => {
+    const res = await fetch('/api/submit-contribution', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });
+    const result = await res.json();
+    if (result.success) {
+      if (userChoice === 'contribution') {
+        if (typeof window !== 'undefined') localStorage.setItem(`arrival_checked_${eventData?.id}`, 'true');
+        arrivalModalCheckedRef.current = true;
+        setArrivalDismissed(true);
+      }
+      setCompletionData(formData);
+      setShowContributionModal(false);
+      setIsEditMode(false);
+      if (isEditMode && myContribution) {
+        setMyContribution({ ...myContribution, ...formData, amount: formData.contributionAmount });
+        setContributionKey(p => p + 1);
+      }
+      await fetchGuestbook();
+      setTimeout(() => setShowCompletionModal(true), 300);
+    } else {
+      throw new Error(result.error || '축의금 등록에 실패했습니다.');
+    }
+  };
+
+  const handleShare = async () => {
+    const groomName = eventData.groom_name || eventData.groomName || '';
+    const brideName = eventData.bride_name || eventData.brideName || '';
+    const url = typeof window !== 'undefined' ? window.location.href : '';
+    const shareData = {
+      title: `${groomName} ♡ ${brideName} 결혼식 초대장`,
+      text: `${groomName} ♡ ${brideName}\n${dateInfo.full} ${ceremonyTimeDisplay}\n${eventData.location || ''}\n\n우리의 특별한 날에 초대합니다 🌸`,
+      url,
+    };
+
+    const copyToClipboard = async (text) => {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+    };
+
+    try {
+      if (typeof navigator !== 'undefined' && navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await copyToClipboard(url);
+        alert('링크가 복사되었습니다.');
+      }
+    } catch (err) {
+      if (err?.name === 'AbortError') return; // 사용자가 공유 취소한 경우
       try {
-        return JSON.parse(eventData.additional_info);
-      } catch (e) {
-        return {};
+        await copyToClipboard(url);
+        alert('링크가 복사되었습니다.');
+      } catch {
+        alert(`링크를 복사해주세요:\n${url}`);
       }
     }
-    
-    if (typeof eventData.additional_info === 'object') {
-      return eventData.additional_info;
-    }
-    
-    return {};
-  })();
-
-  // 계좌 정보 토글 상태
-  const [activeAccountToggle, setActiveAccountToggle] = useState('groom');
-
-  // 계좌 토글 핸들러
-  const handleAccountToggle = (type) => {
-    setActiveAccountToggle(type);
   };
 
-  // 계좌번호 복사 함수
-  const copyAccount = async (accountNumber) => {
-    try {
-      await navigator.clipboard.writeText(accountNumber);
-      alert('계좌번호가 복사되었습니다.');
-    } catch (error) {
-      console.error('계좌번호 복사 실패:', error);
-      alert('계좌번호 복사에 실패했습니다.');
-    }
+  const handleImagePress = (idx) => { setCurrentImageIndex(idx); setShowImageViewer(true); };
+  const handleAccountToggle = (type) => setActiveAccountToggle(type);
+  const copyAccount = async (num) => {
+    try { await navigator.clipboard.writeText(num); alert('계좌번호가 복사되었습니다.'); }
+    catch { alert('계좌번호 복사에 실패했습니다.'); }
   };
 
+  const groomName = eventData.groom_name || eventData.groomName || '';
+  const brideName = eventData.bride_name || eventData.brideName || '';
+
+  // ─ 렌더 ──────────────────────────────────────────────────────────────
   return (
     <div className={styles.container}>
-      {/* 커스텀 오프닝 오버레이 */}
+      {/* 1. 오프닝 오버레이 */}
       <CustomOpeningOverlay visible={showOpening} onComplete={handleOpeningComplete} />
-      
-      {/* 떨어지는 꽃잎 애니메이션 */}
+
+      {/* 2. 떨어지는 꽃잎 */}
       <FallingPetals />
-      
-      {/* 인트로 섹션 */}
+
+      {/* 3. 히어로: 메인 사진 슬라이드쇼 + WEDDING INVITATION */}
       <section className={styles.introSection}>
         <div className={styles.introContent}>
           <p className={styles.subtitle}>WEDDING INVITATION</p>
           <h1 className={styles.loveText}>With Love</h1>
-          
           <div className={styles.mainImageContainer}>
-            <MainPhotoSlideshow 
-              images={safeImages.main}
-              onImagePress={handleImagePress}
-            />
+            <MainPhotoSlideshow images={safeImages.main} onImagePress={handleImagePress} />
           </div>
         </div>
       </section>
 
-      {/* 인사말 섹션 */}
+      {/* 4. 인사말 + 이름 섹션 */}
       <section className={styles.greetingSection}>
         <div className={styles.greetingSectionTitle}>
           <h2 className={styles.greetingTitle}>Greeting</h2>
           <p className={styles.greetingSubtitle}>인사말</p>
         </div>
-        
+
         {greetingMessage && (
-          <p className={styles.poem}>
-            {greetingMessage}
-          </p>
+          <p className={styles.poem}>{greetingMessage}</p>
         )}
-        
+
         <div className={styles.divider}></div>
-        
+
         {/* 신랑/신부 이름 */}
         <div className={styles.coupleNamesSection}>
           <div className={styles.coupleNames}>
             <div className={styles.groomInfo}>
               <span className={styles.roleLabel}>GROOM</span>
-              <span className={styles.nameKorean}>{eventData.groom_name || '이민호'}</span>
+              <span className={styles.nameKorean}>{groomName}</span>
             </div>
-            
             <span className={styles.heartBeat}>♥</span>
-            
             <div className={styles.brideInfo}>
               <span className={styles.roleLabel}>BRIDE</span>
-              <span className={styles.nameKorean}>{eventData.bride_name || '배하윤'}</span>
+              <span className={styles.nameKorean}>{brideName}</span>
             </div>
           </div>
-          
           <div className={styles.coupleSubtext}>
             <span>두 사람이 하나되어 새로운 시작을 합니다</span>
           </div>
         </div>
       </section>
 
-      {/* 갤러리 섹션 */}
+      {/* 5. 갤러리 섹션 */}
       {safeImages.gallery.length > 0 && (
         <section className={styles.gallerySection}>
           <h2 className={styles.galleryTitle}>Our Gallery</h2>
           <p className={styles.gallerySubtitle}>우리의 특별한 순간들</p>
-          
+
           <div className={styles.galleryContainer}>
-            <div 
+            <div
               className={styles.gallerySlider}
               onScroll={(e) => {
-                const scrollLeft = e.target.scrollLeft;
-                const itemWidth = e.target.scrollWidth / safeImages.gallery.length;
-                const newIndex = Math.round(scrollLeft / itemWidth);
-                setGalleryScrollIndex(newIndex);
-                
-                // 페어 인덱스 계산 (2개씩 묶어서)
-                const pairIndex = Math.floor(newIndex / 2);
-                setGalleryPairIndex(pairIndex);
+                const el = e.target;
+                const itemW = el.scrollWidth / safeImages.gallery.length;
+                setGalleryScrollIndex(Math.round(el.scrollLeft / itemW));
               }}
             >
-              {safeImages.gallery.map((image, index) => {
-                const imageSrc = getImageSrc(image);
-                return imageSrc ? (
-                  <div key={index} className={styles.galleryItem} onClick={() => handleImagePress(safeImages.main.length + index)}>
-                    <img 
-                      src={imageSrc} 
-                      alt={`Gallery ${index + 1}`}
-                      onError={(e) => {
-                        console.error('갤러리 이미지 로딩 실패:', imageSrc);
-                        e.target.style.display = 'none';
-                      }}
-                    />
+              {safeImages.gallery.map((img, i) => {
+                const src = getImageSrc(img);
+                return src ? (
+                  <div key={i} className={styles.galleryItem} onClick={() => handleImagePress(safeImages.main.length + i)}>
+                    <img src={src} alt={`Gallery ${i + 1}`} onError={(e) => { e.target.style.display = 'none'; }} />
                   </div>
                 ) : null;
               })}
             </div>
-            
-            {/* 페이지 인디케이터 */}
+
             <div className={styles.galleryIndicator}>
-              <span className={styles.currentPage}>
-                {galleryScrollIndex + 1} / {safeImages.gallery.length}
-              </span>
+              <span className={styles.currentPage}>{galleryScrollIndex + 1} / {safeImages.gallery.length}</span>
             </div>
-            
-            {/* 도트 인디케이터 */}
+
             <div className={styles.galleryDots}>
-              {safeImages.gallery.map((_, index) => (
-                <div 
-                  key={index}
-                  className={`${styles.dot} ${galleryScrollIndex === index ? styles.dotActive : ''}`}
+              {safeImages.gallery.map((_, i) => (
+                <div
+                  key={i}
+                  className={`${styles.dot} ${galleryScrollIndex === i ? styles.dotActive : ''}`}
                   onClick={() => {
                     const slider = document.querySelector(`.${styles.gallerySlider}`);
                     if (slider) {
-                      const itemWidth = slider.scrollWidth / safeImages.gallery.length;
-                      slider.scrollTo({
-                        left: itemWidth * index,
-                        behavior: 'smooth'
-                      });
+                      const iW = slider.scrollWidth / safeImages.gallery.length;
+                      slider.scrollTo({ left: iW * i, behavior: 'smooth' });
                     }
                   }}
                 />
@@ -1582,226 +973,142 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
         </section>
       )}
 
-      {/* 날짜 섹션 */}
+      {/* 6. 영문 날짜 배너 */}
       <section className={styles.dateSection}>
-        <div className={styles.animatedDate}>
-          {getEnglishDate()}
-        </div>
+        <div className={styles.animatedDate}>{getEnglishDate()}</div>
       </section>
 
-      {/* Wedding Day 섹션 */}
+      {/* 7. Wedding Day – 날짜 + 달력 + 카운트다운 */}
       <section className={styles.weddingDaySection}>
         <h2 className={styles.weddingDayTitle}>Wedding Day</h2>
-        
+
         <div className={styles.dateInfo}>
           <p className={styles.dateMain}>{dateInfo.full}</p>
-          <p className={styles.dateSub}>{getEnglishDate()}</p>
+          {ceremonyTimeDisplay && <p className={styles.dateSub}>{ceremonyTimeDisplay}</p>}
         </div>
-        
-        <RomanticPinkCalendar targetDate={eventData.date || eventData.event_date || '2025-10-04'} />
-        
+
+        <RomanticPinkCalendar targetDate={eventData.date || eventData.event_date || ''} />
+
         <div className={styles.countdown}>
           <CountdownDisplay timeLeft={timeLeft} isExpired={timeLeft.isExpired} />
         </div>
-        
-        <p className={styles.countdownMessage}>
-          {eventData.groom_name || '민호'} 
-          <span className={styles.heartText}> ♥ </span>
-          {eventData.bride_name || '하윤'}의 결혼식이{' '}
-          <span className={styles.countdownDays}>{timeLeft.days}일</span> 남았습니다
-        </p>
+
+        {(groomName || brideName) && (
+          <p className={styles.countdownMessage}>
+            {groomName}
+            <span className={styles.heartText}> ♥ </span>
+            {brideName}의 결혼식이{' '}
+            <span className={styles.countdownDays}>{timeLeft.days}일</span> 남았습니다
+          </p>
+        )}
       </section>
 
-      {/* 신랑신부 카드 */}
-      <section className={styles.coupleSection}>
-        <h2 className={styles.coupleTitle}>Meet the Couple</h2>
-        
-        <div className={styles.coupleCards}>
-          {/* 신부 카드 */}
-          <div className={styles.coupleCard}>
-            <div className={styles.couplePhoto}>
-              {safeImages.bride[0] ? (
-                <img 
-                  src={getImageSrc(safeImages.bride[0])} 
-                  alt="신부"
-                  onError={(e) => {
-                    console.error('신부 이미지 로딩 실패:', getImageSrc(safeImages.bride[0]));
-                    e.target.style.display = 'none';
-                  }}
-                />
-              ) : (
-                <div className={styles.photoPlaceholder}>👰</div>
-              )}
-            </div>
-            <span className={styles.coupleRole}>신부</span>
-            <h3 className={styles.coupleName}>{eventData.bride_name || '배하윤'}</h3>
-            <p className={styles.coupleEngName}>{brideEnglishName}</p>
-            <p className={styles.coupleParents}>
-              {eventData.bride_father_name || '배종영'} · {eventData.bride_mother_name || '유미연'}의 딸
-            </p>
-          </div>
-          
-          {/* 신랑 카드 */}
-          <div className={styles.coupleCard}>
-            <div className={styles.couplePhoto}>
-              {safeImages.groom[0] ? (
-                <img 
-                  src={getImageSrc(safeImages.groom[0])} 
-                  alt="신랑"
-                  onError={(e) => {
-                    console.error('신랑 이미지 로딩 실패:', getImageSrc(safeImages.groom[0]));
-                    e.target.style.display = 'none';
-                  }}
-                />
-              ) : (
-                <div className={styles.photoPlaceholder}>🤵</div>
-              )}
-            </div>
-            <span className={styles.coupleRole}>신랑</span>
-            <h3 className={styles.coupleName}>{eventData.groom_name || '이민호'}</h3>
-            <p className={styles.coupleEngName}>{groomEnglishName}</p>
-            <p className={styles.coupleParents}>
-              {eventData.groom_father_name || '이상현'} · {eventData.groom_mother_name || '김미정'}의 아들
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* 축의금 전달 섹션 */}
+      {/* 8. 축의금 전달 (계좌 정보) */}
       <section className={styles.giftSection}>
         <div className={styles.giftHeader}>
           <h2 className={styles.giftTitle}>축의금 전달</h2>
           <p className={styles.giftSubtitle}>따뜻한 마음을 함께 나누어주세요</p>
         </div>
-        
         <div className={styles.giftDescription}>
           <p className={styles.giftDescriptionText}>
-            축복의 마음을 담은 소중한 마음,<br />
-            이렇게 전할 수 있어요
+            축복의 마음을 담은 소중한 마음,<br />이렇게 전할 수 있어요
           </p>
         </div>
 
-        {/* 토글 버튼 */}
         <div className={styles.toggleContainer}>
           <div className={styles.toggleButtons}>
-            <button 
-              className={`${styles.toggleButton} ${activeAccountToggle === 'groom' ? styles.toggleButtonActive : ''}`}
+            <button
+              className={`${styles.accountToggleButton} ${activeAccountToggle === 'groom' ? styles.accountToggleActive : ''}`}
               onClick={() => handleAccountToggle('groom')}
-            >
-              신랑측
-            </button>
-            <button 
-              className={`${styles.toggleButton} ${activeAccountToggle === 'bride' ? styles.toggleButtonActive : ''}`}
+            >신랑측</button>
+            <button
+              className={`${styles.accountToggleButton} ${activeAccountToggle === 'bride' ? styles.accountToggleActive : ''}`}
               onClick={() => handleAccountToggle('bride')}
-            >
-              신부측
-            </button>
+            >신부측</button>
           </div>
         </div>
-        
+
         <div className={styles.accountsContainer}>
-          {/* 신랑측 계좌 */}
-          {activeAccountToggle === 'groom' && (additionalInfo?.groom_account_number || 
-            additionalInfo?.groom_father_account_number || 
-            additionalInfo?.groom_mother_account_number) && (
+          {activeAccountToggle === 'groom' && (additionalInfo?.groom_account_number || additionalInfo?.groom_father_account_number || additionalInfo?.groom_mother_account_number) && (
             <div className={styles.accountGroup}>
               <div className={styles.accountCards}>
                 {additionalInfo?.groom_account_number && (
                   <div className={styles.accountCard} onClick={() => copyAccount(additionalInfo.groom_account_number)}>
                     <div className={styles.accountInfo}>
-                      <div className={styles.accountName}>{eventData.groom_name || '신랑'}</div>
+                      <div className={styles.accountName}>{groomName || '신랑'}</div>
                       <div className={styles.bankInfo}>
                         <span className={styles.bankName}>{additionalInfo.groom_bank_name || '은행'}</span>
                         <span className={styles.accountNumber}>{additionalInfo.groom_account_number}</span>
                       </div>
                     </div>
-                    <div className={styles.copyButton}>
-                      <span className={styles.copyIcon}>복사</span>
-                    </div>
+                    <div className={styles.copyButton}><span className={styles.copyIcon}>복사</span></div>
                   </div>
                 )}
-                
                 {additionalInfo?.groom_father_account_number && (
                   <div className={styles.accountCard} onClick={() => copyAccount(additionalInfo.groom_father_account_number)}>
                     <div className={styles.accountInfo}>
-                      <div className={styles.accountName}>{eventData.groom_father_name || '신랑'} 아버님</div>
+                      <div className={styles.accountName}>{eventData.groom_father_name || eventData.groomFatherName || '신랑'} 아버님</div>
                       <div className={styles.bankInfo}>
                         <span className={styles.bankName}>{additionalInfo.groom_father_bank_name || '은행'}</span>
                         <span className={styles.accountNumber}>{additionalInfo.groom_father_account_number}</span>
                       </div>
                     </div>
-                    <div className={styles.copyButton}>
-                      <span className={styles.copyIcon}>복사</span>
-                    </div>
+                    <div className={styles.copyButton}><span className={styles.copyIcon}>복사</span></div>
                   </div>
                 )}
-                
                 {additionalInfo?.groom_mother_account_number && (
                   <div className={styles.accountCard} onClick={() => copyAccount(additionalInfo.groom_mother_account_number)}>
                     <div className={styles.accountInfo}>
-                      <div className={styles.accountName}>{eventData.groom_mother_name || '신랑'} 어머님</div>
+                      <div className={styles.accountName}>{eventData.groom_mother_name || eventData.groomMotherName || '신랑'} 어머님</div>
                       <div className={styles.bankInfo}>
                         <span className={styles.bankName}>{additionalInfo.groom_mother_bank_name || '은행'}</span>
                         <span className={styles.accountNumber}>{additionalInfo.groom_mother_account_number}</span>
                       </div>
                     </div>
-                    <div className={styles.copyButton}>
-                      <span className={styles.copyIcon}>복사</span>
-                    </div>
+                    <div className={styles.copyButton}><span className={styles.copyIcon}>복사</span></div>
                   </div>
                 )}
               </div>
             </div>
           )}
-          
-          {/* 신부측 계좌 */}
-          {activeAccountToggle === 'bride' && (additionalInfo?.bride_account_number || 
-            additionalInfo?.bride_father_account_number || 
-            additionalInfo?.bride_mother_account_number) && (
+
+          {activeAccountToggle === 'bride' && (additionalInfo?.bride_account_number || additionalInfo?.bride_father_account_number || additionalInfo?.bride_mother_account_number) && (
             <div className={styles.accountGroup}>
               <div className={styles.accountCards}>
                 {additionalInfo?.bride_account_number && (
                   <div className={styles.accountCard} onClick={() => copyAccount(additionalInfo.bride_account_number)}>
                     <div className={styles.accountInfo}>
-                      <div className={styles.accountName}>{eventData.bride_name || '신부'}</div>
+                      <div className={styles.accountName}>{brideName || '신부'}</div>
                       <div className={styles.bankInfo}>
                         <span className={styles.bankName}>{additionalInfo.bride_bank_name || '은행'}</span>
                         <span className={styles.accountNumber}>{additionalInfo.bride_account_number}</span>
                       </div>
                     </div>
-                    <div className={styles.copyButton}>
-                      <span className={styles.copyIcon}>복사</span>
-                    </div>
+                    <div className={styles.copyButton}><span className={styles.copyIcon}>복사</span></div>
                   </div>
                 )}
-                
                 {additionalInfo?.bride_father_account_number && (
                   <div className={styles.accountCard} onClick={() => copyAccount(additionalInfo.bride_father_account_number)}>
                     <div className={styles.accountInfo}>
-                      <div className={styles.accountName}>{eventData.bride_father_name || '신부'} 아버님</div>
+                      <div className={styles.accountName}>{eventData.bride_father_name || eventData.brideFatherName || '신부'} 아버님</div>
                       <div className={styles.bankInfo}>
                         <span className={styles.bankName}>{additionalInfo.bride_father_bank_name || '은행'}</span>
                         <span className={styles.accountNumber}>{additionalInfo.bride_father_account_number}</span>
                       </div>
                     </div>
-                    <div className={styles.copyButton}>
-                      <span className={styles.copyIcon}>복사</span>
-                    </div>
+                    <div className={styles.copyButton}><span className={styles.copyIcon}>복사</span></div>
                   </div>
                 )}
-                
                 {additionalInfo?.bride_mother_account_number && (
                   <div className={styles.accountCard} onClick={() => copyAccount(additionalInfo.bride_mother_account_number)}>
                     <div className={styles.accountInfo}>
-                      <div className={styles.accountName}>{eventData.bride_mother_name || '신부'} 어머님</div>
+                      <div className={styles.accountName}>{eventData.bride_mother_name || eventData.brideMotherName || '신부'} 어머님</div>
                       <div className={styles.bankInfo}>
                         <span className={styles.bankName}>{additionalInfo.bride_mother_bank_name || '은행'}</span>
                         <span className={styles.accountNumber}>{additionalInfo.bride_mother_account_number}</span>
                       </div>
                     </div>
-                    <div className={styles.copyButton}>
-                      <span className={styles.copyIcon}>복사</span>
-                    </div>
+                    <div className={styles.copyButton}><span className={styles.copyIcon}>복사</span></div>
                   </div>
                 )}
               </div>
@@ -1810,212 +1117,91 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
         </div>
       </section>
 
-      {/* 방명록 섹션 */}
-      <section className={styles.messagesSection}>
-        <h2 className={styles.locationTitle}>Messages</h2>
-        
-        {/* 방명록 메시지 목록 */}
-        <div className={styles.messagesList}>
-          {(!hasRealMessages && guestMessages?.length === 0) ? (
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              padding: '40px 20px',
-              backgroundColor: 'white',
-              borderRadius: '15px',
-              marginBottom: '20px'
-            }}>
-              <div style={{ fontSize: '48px', color: '#DDD', marginBottom: '12px' }}>💬</div>
-              <p style={{ fontSize: '16px', color: '#999', margin: '0 0 8px 0' }}>
-                아직 축하 메시지가 없습니다
-              </p>
-            </div>
-          ) : (
-            currentMessages.map((message, index) => (
-              <div key={index} style={{
-                backgroundColor: 'white',
-                borderRadius: '15px',
-                padding: '25px',
-                marginBottom: '20px',
-                boxShadow: '0 5px 15px rgba(0, 0, 0, 0.05)',
-                textAlign: 'left'
-              }}>
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '15px'
-                }}>
-                  <span style={{ color: '#999', fontSize: '13px' }}>
-                    From. {message.from}
-                  </span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    {canEditMessage(message) && (
-                      <button
-                        onClick={() => handleEditMessage(message)}
-                        style={{
-                          backgroundColor: '#3182f6',
-                          color: 'white',
-                          border: 'none',
-                          cursor: 'pointer',
-                          fontSize: '12px',
-                          fontWeight: '600',
-                          padding: '4px 12px',
-                          borderRadius: '12px',
-                          transition: 'all 0.2s ease'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.target.style.backgroundColor = '#2563eb';
-                          e.target.style.transform = 'translateY(-1px)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.backgroundColor = '#3182f6';
-                          e.target.style.transform = 'translateY(0)';
-                        }}
-                      >
-                        수정
-                      </button>
-                    )}
-                    <span style={{ color: '#DDD', fontSize: '12px' }}>
-                      {message.date}
-                    </span>
-                  </div>
-                </div>
-                <div style={{
-                  lineHeight: '24px',
-                  color: '#555',
-                  fontSize: '14px'
-                }}>
-                  {message.content ? message.content.split('\n').map((line, lineIndex) => (
-                    <span key={lineIndex}>
-                      {line}
-                      {lineIndex < message.content.split('\n').length - 1 && <br />}
-                    </span>
-                  )) : ''}
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-        
-        {/* 페이지네이션 */}
-        {totalPages > 1 && (
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: '20px',
-            margin: '30px 0'
-          }}>
-            <button 
-              onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
-              disabled={currentPage === 0}
-              style={{
-                backgroundColor: 'transparent',
-                color: currentPage === 0 ? '#DDD' : '#9B8D82',
-                border: 'none',
-                fontSize: '20px',
-                cursor: currentPage === 0 ? 'not-allowed' : 'pointer',
-                transition: 'all 0.3s ease',
-                opacity: currentPage === 0 ? 0.3 : 1
-              }}
-            >
-              ‹
-            </button>
-            
-            <div style={{
-              display: 'flex',
-              gap: '8px',
-              alignItems: 'center'
-            }}>
-              {Array.from({ length: totalPages }, (_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentPage(i)}
-                  style={{
-                    width: currentPage === i ? '24px' : '8px',
-                    height: '8px',
-                    backgroundColor: currentPage === i ? '#9B8D82' : '#E0D5D1',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    padding: 0
-                  }}
-                  aria-label={`페이지 ${i + 1}`}
-                />
-              ))}
-            </div>
-            
-            <button 
-              onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))}
-              disabled={currentPage === totalPages - 1}
-              style={{
-                backgroundColor: 'transparent',
-                color: currentPage === totalPages - 1 ? '#DDD' : '#9B8D82',
-                border: 'none',
-                fontSize: '20px',
-                cursor: currentPage === totalPages - 1 ? 'not-allowed' : 'pointer',
-                transition: 'all 0.3s ease',
-                opacity: currentPage === totalPages - 1 ? 0.3 : 1
-              }}
-            >
-              ›
-            </button>
-          </div>
-        )}
-        
-        {/* 방명록 작성 버튼 - 이미 작성한 사용자에게는 표시하지 않음 */}
-        {!hasWrittenGuestbook && (
-          <button
-            className={styles.navigationButton}
-            onClick={handleGuestbookModalOpen}
-            disabled={showGuestbookModal}
-          >
-            방명록 남기기
-          </button>
-        )}
-      </section>
-
-      {/* 오시는 길 */}
+      {/* 9. 오시는 길 */}
       <section className={styles.locationSection}>
         <h2 className={styles.locationTitle}>Location</h2>
-        
         <div className={styles.venueInfo}>
-          <p className={styles.venueName}>
-            {eventData.location || '더 플라자 지스텀하우스 22층'}
-          </p>
-          <p className={styles.venueAddress}>
-            {eventData.detailed_address || eventData.detailedAddress || '서울시 중구 소공로 119'}
-          </p>
+          <p className={styles.venueName}>{eventData.location || ''}</p>
+          <p className={styles.venueAddress}>{eventData.detailed_address || eventData.detailedAddress || ''}</p>
         </div>
-        
+
         <div className={styles.mapContainer}>
           <GoogleMapEmbed
-            address={`${eventData?.location || '서울시 중구 소공로 119'} ${eventData?.detailed_address || eventData?.detailedAddress || ''}`.trim()}
+            address={`${eventData?.location || ''} ${eventData?.detailed_address || eventData?.detailedAddress || ''}`.trim()}
             venueName={eventData?.venue_name || eventData?.venueName}
             width="100%"
             height="300px"
           />
         </div>
-        
+
         <div className={styles.transportCard}>
-          <div className={styles.transportIcon}>
-            <span>🅿️</span>
-          </div>
+          <div className={styles.transportIcon}><span>🅿️</span></div>
           <div className={styles.transportContent}>
             <h4 className={styles.transportTitle}>주차 안내</h4>
-            <p className={styles.transportText}>
-              {eventData.parking_info || eventData.parkingInfo || 
-               '더 플라자 호텔 주차장 이용\n하객 3시간 무료 주차\n주차 요원의 안내를 받아주세요'}
-            </p>
+            <p className={styles.transportText}>{eventData.parking_info || eventData.parkingInfo || ''}</p>
           </div>
         </div>
-        
       </section>
 
-      {/* 공유 섹션 */}
+      {/* 10. 방명록 섹션 */}
+      <section className={styles.messagesSection}>
+        <h2 className={styles.messagesTitle}>Messages</h2>
+        <p className={styles.messagesSubtitle}>{messageSettings?.placeholder || '저희 둘에게 따뜻한 방명록을 남겨주세요'}</p>
+
+        <div className={styles.messagesList}>
+          {messagesWithContent.length === 0 ? (
+            <div className={styles.emptyMessages}>
+              <div className={styles.emptyIcon}>💬</div>
+              <p className={styles.emptyText}>아직 축하 메시지가 없습니다</p>
+            </div>
+          ) : (
+            currentMessages.map((msg, i) => (
+              <div key={msg.id || i} className={styles.messageCard}>
+                <div className={styles.messageHeader}>
+                  <span className={styles.messageFrom}>From. {msg.from}</span>
+                  <div className={styles.messageHeaderRight}>
+                    {canEditMessage(msg) && (
+                      <button className={styles.messageEditButton} onClick={() => handleEditMessage(msg)}>수정</button>
+                    )}
+                    <span className={styles.messageDate}>{msg.date}</span>
+                  </div>
+                </div>
+                <div className={styles.messageContent}>
+                  {msg.content?.split('\n').map((line, li) => (
+                    <span key={li}>{line}{li < msg.content.split('\n').length - 1 && <br />}</span>
+                  ))}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* 페이지네이션 */}
+        {totalPages > 1 && (
+          <div className={styles.pagination}>
+            <button className={styles.pageNavButton} onClick={() => setCurrentPage(p => Math.max(0, p - 1))} disabled={currentPage === 0}>‹</button>
+            <div className={styles.pageDots}>
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i}
+                  className={`${styles.pageDot} ${currentPage === i ? styles.pageDotActive : ''}`}
+                  onClick={() => setCurrentPage(i)}
+                  aria-label={`페이지 ${i + 1}`}
+                />
+              ))}
+            </div>
+            <button className={styles.pageNavButton} onClick={() => setCurrentPage(p => Math.min(totalPages - 1, p + 1))} disabled={currentPage === totalPages - 1}>›</button>
+          </div>
+        )}
+
+        {!hasWrittenGuestbook && (
+          <button className={styles.guestbookButton} onClick={handleGuestbookModalOpen} disabled={showGuestbookModal}>
+            축하메시지 남기기
+          </button>
+        )}
+      </section>
+
+      {/* 11. 공유 섹션 */}
       <section className={styles.shareSection}>
         <button className={styles.shareButton} onClick={handleShare}>
           <div className={styles.shareButtonGradient}>
@@ -2025,59 +1211,44 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
         </button>
       </section>
 
-      {/* 푸터 */}
+      {/* 12. 푸터 */}
       <footer className={styles.footer}>
         <div className={styles.footerContent}>
           <h3 className={styles.footerTitle}>Thank You</h3>
           <div className={styles.footerDivider}></div>
           <p className={styles.footerMessage}>
-            저희의 새로운 시작을 축복해주셔서<br />
-            진심으로 감사드립니다
+            저희의 새로운 시작을 축복해주셔서<br />진심으로 감사드립니다
           </p>
         </div>
       </footer>
+
+      {/* 부조 참여하기 플로팅 버튼 */}
+      {!myContribution && !showContributionModal && !showGuestbookModal && !showWelcomeChoice && !showArrivalModal && (
+        <button className={styles.floatingContributeButton} onClick={() => { setUserChoice('contribution'); setShowContributionModal(true); }}>
+          💝 부조 참여하기
+        </button>
+      )}
 
       {/* 이미지 뷰어 모달 */}
       {showImageViewer && (
         <div className={styles.imageViewerModal} onClick={() => setShowImageViewer(false)}>
           <div className={styles.imageViewerContent} onClick={(e) => e.stopPropagation()}>
-            <button 
-              className={styles.closeButton}
-              onClick={() => setShowImageViewer(false)}
-            >
-              ×
-            </button>
+            <button className={styles.closeButton} onClick={() => setShowImageViewer(false)}>×</button>
             <div className={styles.imageViewerSlider}>
               {allImages[currentImageIndex] && (
-                <img 
-                  src={getImageSrc(allImages[currentImageIndex])} 
-                  alt={`이미지 ${currentImageIndex + 1}`}
-                  className={styles.viewerImage}
-                />
+                <img src={getImageSrc(allImages[currentImageIndex])} alt={`이미지 ${currentImageIndex + 1}`} className={styles.viewerImage} />
               )}
             </div>
             <div className={styles.imageViewerNavigation}>
-              <button 
-                className={styles.navButton}
-                onClick={() => setCurrentImageIndex(prev => prev > 0 ? prev - 1 : allImages.length - 1)}
-              >
-                ‹
-              </button>
-              <span className={styles.imageCounter}>
-                {currentImageIndex + 1} / {allImages.length}
-              </span>
-              <button 
-                className={styles.navButton}
-                onClick={() => setCurrentImageIndex(prev => prev < allImages.length - 1 ? prev + 1 : 0)}
-              >
-                ›
-              </button>
+              <button className={styles.navButton} onClick={() => setCurrentImageIndex(p => p > 0 ? p - 1 : allImages.length - 1)}>‹</button>
+              <span className={styles.imageCounter}>{currentImageIndex + 1} / {allImages.length}</span>
+              <button className={styles.navButton} onClick={() => setCurrentImageIndex(p => p < allImages.length - 1 ? p + 1 : 0)}>›</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Welcome Choice 모달 */}
+      {/* 모달들 */}
       <WelcomeChoiceModal
         isOpen={showWelcomeChoice}
         onClose={() => setShowWelcomeChoice(false)}
@@ -2086,7 +1257,6 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
         eventData={eventData}
       />
 
-      {/* 방명록 작성 모달 */}
       <GuestbookModal
         isOpen={showGuestbookModal}
         onClose={handleGuestbookModalClose}
@@ -2095,20 +1265,15 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
         onTriggerArrival={handleTriggerArrival}
       />
 
-      {/* 방명록 수정 모달 */}
       <EditGuestbookModal
         isOpen={showEditModal}
-        onClose={() => {
-          setShowEditModal(false);
-          setEditingMessage(null);
-        }}
+        onClose={() => { setShowEditModal(false); setEditingMessage(null); }}
         message={editingMessage}
         eventData={eventData}
         onUpdate={handleEditUpdate}
         onDelete={handleEditDelete}
       />
 
-      {/* 결혼식장 도착 확인 모달 */}
       <ArrivalConfirmModal
         isOpen={showArrivalModal}
         onClose={handleArrivalModalClose}
@@ -2116,40 +1281,28 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
         eventData={eventData}
       />
 
-      {/* 축의금 입력 모달 */}
       <ContributionModal
         isOpen={showContributionModal}
-        onClose={() => {
-          setShowContributionModal(false);
-          setIsEditMode(false);
-        }}
+        onClose={() => { setShowContributionModal(false); setIsEditMode(false); }}
+        onBack={!isEditMode ? () => { setShowContributionModal(false); setShowWelcomeChoice(true); } : undefined}
         onSubmit={handleContributionSubmit}
         eventData={eventData}
         editData={isEditMode ? myContribution : null}
       />
 
-      {/* 축의금 완료 모달 */}
       <CompletionModal
         isOpen={showCompletionModal}
-        onClose={() => {
-          setShowCompletionModal(false);
-          setCompletionData(null);
-        }}
+        onClose={() => { setShowCompletionModal(false); setCompletionData(null); }}
         contributionData={completionData}
         eventData={eventData}
       />
 
-      {/* 내 축의금 섹션 (하단 고정) */}
+      {/* 내 축의금 (하단 고정) */}
       {myContribution && (
-        <MyContributionSection 
-          key={`contribution-${contributionKey}-${myContribution?.contributionAmount || myContribution?.amount}`}
-          eventData={eventData} 
+        <MyContributionSection
+          key={`mc-${contributionKey}-${myContribution?.contributionAmount || myContribution?.amount}`}
           myContribution={myContribution}
-          onEdit={() => {
-            setIsEditMode(true);
-            setShowContributionModal(true);
-          }}
-          setMyContribution={setMyContribution}
+          onEdit={() => { setIsEditMode(true); setShowContributionModal(true); }}
         />
       )}
     </div>

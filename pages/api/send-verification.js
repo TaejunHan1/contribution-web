@@ -10,6 +10,22 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: '핸드폰번호가 누락되었습니다.' });
   }
 
+  // 테스트 번호 바이패스 - SMS 발송 없이 바로 성공 (인증번호: 999999)
+  const TEST_PHONE = '+821058359358';
+  if (phone === TEST_PHONE) {
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
+    await supabase.from('sms_verifications').delete().eq('phone', phone).eq('is_verified', false);
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
+    await supabase.from('sms_verifications').insert([{
+      phone, verification_code: '999999', expires_at: expiresAt, is_verified: false, attempts_count: 0
+    }]);
+    return res.status(200).json({ success: true, message: '테스트 번호: 인증번호 999999를 입력하세요.' });
+  }
+
   try {
     // Twilio 계정 정보 (환경변수)
     const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;

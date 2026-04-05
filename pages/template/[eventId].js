@@ -8,6 +8,11 @@ import VintageTemplate from '../../components/templates/VintageTemplate';
 import ModernMinimalTemplate from '../../components/templates/ModernMinimalTemplate';
 import RomanticPinkTemplate from '../../components/templates/RomanticPinkTemplate';
 import ElegantGardenTemplate from '../../components/templates/ElegantGardenTemplate';
+import ModernDarkTemplate from '../../components/templates/ModernDarkTemplate';
+import AuroraBlackTemplate from '../../components/templates/AuroraBlackTemplate';
+import WarmOrangeTemplate from '../../components/templates/WarmOrangeTemplate';
+import CleanWhiteTemplate from '../../components/templates/CleanWhiteTemplate';
+import ClassicElegantTemplate from '../../components/templates/ClassicElegantTemplate';
 
 // 템플릿 컴포넌트들 (나중에 구현)
 const ModernTemplate = ({ eventData }) => (
@@ -284,8 +289,10 @@ export default function TemplatePage() {
     
     switch (template) {
       case 'modern':
+      case 'modern-minimal':
         return <ModernMinimalTemplate eventData={event} categorizedImages={categorizedImages} />;
       case 'romantic':
+      case 'romantic-pink':
         return <RomanticPinkTemplate eventData={event} categorizedImages={categorizedImages} />;
       case 'korean':
         return <KoreanElegantTemplate eventData={event} categorizedImages={categorizedImages} />;
@@ -293,6 +300,16 @@ export default function TemplatePage() {
         return <ElegantGardenTemplate eventData={event} categorizedImages={categorizedImages} />;
       case 'vintage':
         return <VintageTemplate eventData={event} categorizedImages={categorizedImages} />;
+      case 'modern-dark':
+        return <ModernDarkTemplate eventData={event} categorizedImages={categorizedImages} />;
+      case 'elegant-garden':
+        return <AuroraBlackTemplate eventData={event} categorizedImages={categorizedImages} />;
+      case 'vintage-app':
+        return <WarmOrangeTemplate eventData={event} categorizedImages={categorizedImages} />;
+      case 'korean-elegant':
+        return <CleanWhiteTemplate eventData={event} categorizedImages={categorizedImages} />;
+      case 'classic-elegant':
+        return <ClassicElegantTemplate eventData={event} categorizedImages={categorizedImages} />;
       default:
         return <ModernTemplate eventData={event} />;
     }

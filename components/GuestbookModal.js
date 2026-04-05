@@ -493,224 +493,200 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
       }}
     >
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.header}>
-          <h3 className={styles.title}>
-            {step === 'info' && '안전한 방명록 작성'}
-            {step === 'verification' && '인증번호 확인'}
-            {step === 'message' && (mode === 'edit' ? '방명록 수정하기' : '방명록 남기기')}
-          </h3>
-          <button 
-            className={styles.closeButton} 
-            onClick={handleClose}
-            disabled={isLoading || isClosing}
-            type="button"
-          >
-            ×
-          </button>
-        </div>
+        {/* 드래그 핸들 */}
+        <div className={styles.dragHandle} />
 
-        <div className={styles.content}>
-          {step === 'info' && (
+        {/* SVG 아이콘 */}
+        {(() => {
+          const BackIcon = () => (
+            <svg width="10" height="18" viewBox="0 0 10 18" fill="none">
+              <path d="M9 1L1 9L9 17" stroke="#8B95A1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          );
+          const CloseIcon = () => (
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M1 1L17 17M17 1L1 17" stroke="#8B95A1" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+          );
+
+          return (
             <>
-              <div className={styles.welcomeSection}>
-                <p className={styles.welcomeDescription}>
-                  스팸이나 부적절한 내용 방지를 위해<br />
-                  간단한 본인인증을 진행해주세요
-                </p>
-              </div>
-
-              <div className={styles.safetyBox}>
-                <div className={styles.safetyHeader}>
-                  <span className={styles.safetyIcon}>🛡️</span>
-                  <span className={styles.safetyTitle}>개인정보 보호 약속</span>
-                </div>
-                <div className={styles.safetyContent}>
-                  <div className={styles.safetyItem}>
-                    <span className={styles.checkmark}>✓</span>
-                    <span>광고나 마케팅 목적으로 절대 사용하지 않습니다</span>
+              {/* ── 스텝 1: 휴대폰 인증 ── */}
+              {step === 'info' && (
+                <>
+                  <div className={styles.sheetHeader}>
+                    <button className={styles.backButton} onClick={handleClose} type="button">
+                      <BackIcon />
+                    </button>
+                    <button className={styles.closeButton} onClick={handleClose} disabled={isLoading || isClosing} type="button">
+                      <CloseIcon />
+                    </button>
                   </div>
-                  <div className={styles.safetyItem}>
-                    <span className={styles.checkmark}>✓</span>
-                    <span>오직 스팸 방지 및 본인인증 목적으로만 사용</span>
+                  <div className={styles.sheetTitleSection}>
+                    <h2 className={styles.sheetTitle}>안전한 방명록 작성을 위해{'\n'}휴대폰 번호를 인증해주세요</h2>
                   </div>
-                </div>
-              </div>
+                  <div className={styles.sheetForm}>
+                    <div className={styles.sheetInputGroup}>
+                      <label className={styles.sheetLabel}>휴대폰 번호</label>
+                      <input
+                        type="tel"
+                        className={styles.sheetInput}
+                        placeholder="010-0000-0000"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: formatPhoneNumber(e.target.value) })}
+                        maxLength={13}
+                      />
+                    </div>
+                    <div className={styles.sheetAgreement} onClick={() => setFormData({ ...formData, agreed: !formData.agreed })}>
+                      <div className={`${styles.sheetCheckbox} ${formData.agreed ? styles.sheetChecked : ''}`}>
+                        {formData.agreed && (
+                          <svg width="12" height="9" viewBox="0 0 12 9" fill="none">
+                            <path d="M1 4L4.5 7.5L11 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        )}
+                      </div>
+                      <span className={styles.sheetAgreementText}>[필수] 개인정보 수집 및 이용 동의</span>
+                      <span className={styles.sheetAgreementLink}>보기</span>
+                    </div>
+                    {error && <div className={styles.errorMessage}>{error}</div>}
+                    <button
+                      className={styles.sheetSubmitButton}
+                      onClick={sendVerificationCode}
+                      disabled={isLoading || !formData.phone || !formData.agreed}
+                    >
+                      {isLoading ? '발송 중...' : '인증번호 받기'}
+                    </button>
+                  </div>
+                </>
+              )}
 
-              <div className={styles.inputGroup}>
-                <label className={styles.label}>
-                  <span className={styles.labelIcon}>📱</span>
-                  휴대폰 번호
-                </label>
-                <input
-                  type="tel"
-                  className={styles.input}
-                  placeholder="010-1234-5678"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: formatPhoneNumber(e.target.value) })}
-                  maxLength={13}
-                />
-              </div>
-
-              <div className={styles.checkboxGroup}>
-                <label className={styles.modernCheckboxLabel}>
-                  <div className={styles.modernCheckbox}>
-                    <input
-                      type="checkbox"
-                      className={styles.hiddenCheckbox}
-                      checked={formData.agreed}
-                      onChange={(e) => setFormData({ ...formData, agreed: e.target.checked })}
-                    />
-                    <div className={styles.customCheckbox}>
-                      {formData.agreed && <span className={styles.checkIcon}>✓</span>}
+              {/* ── 스텝 2: 인증번호 확인 ── */}
+              {step === 'verification' && (
+                <>
+                  <div className={styles.sheetHeader}>
+                    <button className={styles.backButton} onClick={() => setStep('info')} type="button">
+                      <BackIcon />
+                    </button>
+                    <button className={styles.closeButton} onClick={handleClose} disabled={isLoading || isClosing} type="button">
+                      <CloseIcon />
+                    </button>
+                  </div>
+                  <div className={styles.sheetTitleSection}>
+                    <h2 className={styles.sheetTitle}>휴대폰으로 전송된{'\n'}인증번호를 입력해주세요</h2>
+                    <p className={styles.verificationPhone}>{formData.phone}</p>
+                  </div>
+                  <div className={styles.sheetForm}>
+                    <div className={styles.verificationInputWrapper}>
+                      <input
+                        type="text"
+                        className={styles.verificationCodeInput}
+                        placeholder="인증번호 6자리"
+                        value={formData.verificationCode}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/[^\d]/g, '');
+                          if (value.length <= 6) setFormData({ ...formData, verificationCode: value });
+                        }}
+                        maxLength={6}
+                        autoFocus
+                      />
+                      {timer > 0 && <span className={styles.verificationTimer}>{formatTimer(timer)}</span>}
+                    </div>
+                    <div className={styles.verificationResendRow}>
+                      <button
+                        className={styles.resendTextButton}
+                        onClick={sendVerificationCode}
+                        disabled={isLoading || timer > 0}
+                        type="button"
+                      >
+                        인증번호 재전송
+                      </button>
+                    </div>
+                    {error && <div className={styles.errorMessage}>{error}</div>}
+                    <div className={styles.verificationButtonRow}>
+                      <button className={styles.prevButton} onClick={() => setStep('info')} disabled={isLoading} type="button">
+                        이전
+                      </button>
+                      <button
+                        className={styles.verifyButton}
+                        onClick={verifyCode}
+                        disabled={isLoading || formData.verificationCode.length !== 6}
+                        type="button"
+                      >
+                        {isLoading ? '확인 중...' : '인증완료'}
+                      </button>
                     </div>
                   </div>
-                  <div className={styles.checkboxContent}>
-                    <span className={styles.checkboxMainText}>
-                      개인정보 수집 및 이용에 동의합니다
-                    </span>
-                    <span className={styles.checkboxSubText}>
-                      스팸 방지 목적으로만 사용되며, 광고 등 다른 용도로는 절대 사용되지 않습니다
-                    </span>
+                </>
+              )}
+
+              {/* ── 스텝 3: 방명록 작성 ── */}
+              {step === 'message' && (
+                <>
+                  <div className={styles.sheetHeader}>
+                    <button
+                      className={styles.backButton}
+                      onClick={() => {
+                        if (localStorage.getItem('verifiedPhone') && !verificationSent) {
+                          handleClose();
+                        } else {
+                          setStep('verification');
+                        }
+                      }}
+                      type="button"
+                    >
+                      <BackIcon />
+                    </button>
+                    <button className={styles.closeButton} onClick={handleClose} disabled={isLoading || isClosing} type="button">
+                      <CloseIcon />
+                    </button>
                   </div>
-                </label>
-              </div>
-
-              {error && <p className={styles.error}>{error}</p>}
-
-              <button
-                className={styles.primaryButton}
-                onClick={sendVerificationCode}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <span className={styles.spinner}></span>
-                    발송 중...
-                  </>
-                ) : (
-                  <>
-                    <span className={styles.buttonIcon}>🚀</span>
-                    인증번호 받기
-                  </>
-                )}
-              </button>
+                  <div className={styles.sheetTitleSection}>
+                    <h2 className={styles.sheetTitle}>
+                      {mode === 'edit' ? '방명록을 수정해주세요' : '방명록을 남겨주세요'}
+                    </h2>
+                  </div>
+                  <div className={styles.sheetForm}>
+                    <div className={styles.sheetInputGroup}>
+                      <label className={styles.sheetLabel}>이름</label>
+                      <input
+                        type="text"
+                        className={styles.sheetInput}
+                        placeholder="이름을 입력해주세요"
+                        value={formData.guestName}
+                        onChange={(e) => setFormData({ ...formData, guestName: e.target.value })}
+                      />
+                    </div>
+                    <div className={styles.sheetInputGroup}>
+                      <label className={styles.sheetLabel}>
+                        {mode === 'edit'
+                          ? '방명록 수정'
+                          : `${eventData.bride_name || '하윤'}님과 ${eventData.groom_name || '민호'}님에게 전하는 마음`}
+                      </label>
+                      <textarea
+                        className={styles.sheetTextarea}
+                        placeholder={mode === 'edit' ? '방명록을 수정해주세요' : '축하 메시지를 남겨주세요'}
+                        value={formData.message}
+                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                        rows={5}
+                      />
+                    </div>
+                    {error && <div className={styles.errorMessage}>{error}</div>}
+                    <button
+                      className={styles.sheetSubmitButton}
+                      onClick={submitGuestbook}
+                      disabled={isLoading || !formData.guestName.trim() || !formData.message.trim()}
+                      type="button"
+                    >
+                      {isLoading
+                        ? (mode === 'edit' ? '수정 중...' : '등록 중...')
+                        : (mode === 'edit' ? '방명록 수정하기' : '방명록 등록하기')}
+                    </button>
+                  </div>
+                </>
+              )}
             </>
-          )}
-
-          {step === 'verification' && (
-            <>
-              <div className={styles.verificationInfo}>
-                <p className={styles.phoneDisplay}>{formData.phone}</p>
-                <p className={styles.verificationText}>
-                  위 번호로 발송된 6자리 인증번호를 입력해주세요
-                </p>
-                {timer > 0 && (
-                  <p className={styles.timer}>
-                    인증번호 유효시간: {formatTimer(timer)}
-                  </p>
-                )}
-              </div>
-
-              <div className={styles.inputGroup}>
-                <label className={styles.label}>인증번호</label>
-                <input
-                  type="text"
-                  className={`${styles.input} ${styles.verificationInput}`}
-                  placeholder="123456"
-                  value={formData.verificationCode}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/[^\d]/g, '');
-                    if (value.length <= 6) {
-                      setFormData({ ...formData, verificationCode: value });
-                    }
-                  }}
-                  maxLength={6}
-                />
-              </div>
-
-              {error && <p className={styles.error}>{error}</p>}
-
-              <div className={styles.buttonGroup}>
-                <button
-                  className={styles.secondaryButton}
-                  onClick={() => setStep('info')}
-                  disabled={isLoading}
-                >
-                  이전
-                </button>
-                <button
-                  className={styles.primaryButton}
-                  onClick={verifyCode}
-                  disabled={isLoading || formData.verificationCode.length !== 6}
-                >
-                  {isLoading ? '확인 중...' : '인증완료'}
-                </button>
-              </div>
-
-              <button
-                className={styles.resendButton}
-                onClick={sendVerificationCode}
-                disabled={isLoading || timer > 0}
-              >
-                {timer > 0 ? `재전송 (${formatTimer(timer)})` : '인증번호 재전송'}
-              </button>
-            </>
-          )}
-
-          {step === 'message' && (
-            <>
-              <div className={styles.inputGroup}>
-                <label className={styles.label}>이름</label>
-                <input
-                  type="text"
-                  className={styles.input}
-                  placeholder="이름을 입력해주세요"
-                  value={formData.guestName}
-                  onChange={(e) => setFormData({ ...formData, guestName: e.target.value })}
-                />
-              </div>
-
-              <div className={styles.inputGroup}>
-                <label className={styles.label}>
-                  {mode === 'edit' ? '방명록 수정' : `${eventData.bride_name || '하윤'}님과 ${eventData.groom_name || '민호'}님에게 전하는 마음`}
-                </label>
-                <textarea
-                  className={styles.textarea}
-                  placeholder={mode === 'edit' ? '방명록을 수정해주세요' : '축하 메시지를 남겨주세요'}
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  rows={6}
-                />
-              </div>
-
-              {error && <p className={styles.error}>{error}</p>}
-
-              <div className={styles.buttonGroup}>
-                <button
-                  className={styles.secondaryButton}
-                  onClick={() => {
-                    // verifiedPhone으로 바로 온 경우는 모달을 닫고, 인증 과정을 거친 경우는 이전 단계로
-                    if (localStorage.getItem('verifiedPhone') && !verificationSent) {
-                      onClose();
-                    } else {
-                      setStep('verification');
-                    }
-                  }}
-                  disabled={isLoading}
-                >
-                  {localStorage.getItem('verifiedPhone') && !verificationSent ? '취소' : '이전'}
-                </button>
-                <button
-                  className={styles.primaryButton}
-                  onClick={submitGuestbook}
-                  disabled={isLoading || !formData.guestName.trim() || !formData.message.trim()}
-                >
-                  {isLoading ? (mode === 'edit' ? '수정 중...' : '등록 중...') : (mode === 'edit' ? '방명록 수정' : '방명록 등록')}
-                </button>
-              </div>
-            </>
-          )}
-        </div>
+          );
+        })()}
       </div>
     </div>
   );

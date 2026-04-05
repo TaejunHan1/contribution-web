@@ -1,0 +1,1297 @@
+/* ClassicElegantTemplate.module.css - 클래식 전통 청첩장 스타일 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=IM+Fell+English:ital@0;1&display=optional');
+
+/* ===== VARIABLES ===== */
+
+/* ===== BASE ===== */
+.container {
+  min-height: 100vh;
+  background: #FAFAFA;
+  font-family: 'Noto Serif KR', 'Playfair Display', Georgia, serif;
+  overflow-x: hidden;
+  position: relative;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* ===== FALLING FLOWERS ===== */
+.fallingFlowersContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.fallingFlower {
+  position: absolute;
+  animation: flowerFall linear infinite;
+  animation-fill-mode: both;
+  opacity: 0.7;
+}
+
+@keyframes flowerFall {
+  0% { transform: translateY(-60px) translateX(0px) rotate(0deg); opacity: 0; }
+  5% { opacity: 0.6; }
+  30% { transform: translateY(30vh) translateX(10px) rotate(45deg); opacity: 0.5; }
+  60% { transform: translateY(60vh) translateX(-8px) rotate(90deg); opacity: 0.4; }
+  100% { transform: translateY(calc(100vh + 60px)) translateX(6px) rotate(135deg); opacity: 0; }
+}
+
+/* ===== DOOR OPENING OVERLAY ===== */
+.openingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.doorLeft {
+  position: absolute;
+  top: 0; left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, #2C2417, #3D3020);
+  transform-origin: left center;
+  transition: transform 1.2s cubic-bezier(0.77, 0, 0.18, 1);
+  z-index: 2;
+}
+
+.doorLeft.doorOpen {
+  transform: rotateY(-90deg);
+}
+
+.doorRight {
+  position: absolute;
+  top: 0; right: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to left, #2C2417, #3D3020);
+  transform-origin: right center;
+  transition: transform 1.2s cubic-bezier(0.77, 0, 0.18, 1);
+  z-index: 2;
+}
+
+.doorRight.doorOpen {
+  transform: rotateY(90deg);
+}
+
+.doorInner {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.doorInnerVisible {
+  opacity: 1;
+}
+
+.doorOrnament {
+  font-size: 28px;
+  color: #C4B5A5;
+  animation: fadeIn 0.6s ease;
+}
+
+.doorText {
+  font-family: 'Playfair Display', 'IM Fell English', Georgia, serif;
+  font-size: 22px;
+  font-style: italic;
+  color: white;
+  margin: 0;
+  letter-spacing: 1px;
+  animation: fadeIn 0.8s ease;
+}
+
+.doorOrnamentLine {
+  width: 120px;
+  height: 1px;
+  background: #C4B5A5;
+  animation: expandWidth 0.8s ease;
+}
+
+@keyframes expandWidth {
+  from { width: 0; }
+  to { width: 120px; }
+}
+
+.doorSubText {
+  font-size: 14px;
+  color: #C4B5A5;
+  margin: 0;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  font-weight: 300;
+  animation: fadeIn 1s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== SECTION STRUCTURE ===== */
+.sectionOrnament {
+  font-size: 20px;
+  color: #9A8B7A;
+  text-align: center;
+  margin-bottom: 12px;
+  opacity: 0.6;
+}
+
+.sectionTitle {
+  font-size: 22px;
+  font-weight: 500;
+  color: #222222;
+  text-align: center;
+  margin: 0 0 16px 0;
+  letter-spacing: 2px;
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.sectionDividerLine {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 28px;
+}
+
+.dividerLeft, .dividerRight {
+  display: inline-block;
+  height: 1px;
+  width: 80px;
+  background: #C4B5A5;
+}
+
+.dividerDiamond {
+  font-size: 8px;
+  color: #9A8B7A;
+  padding: 0 8px;
+  line-height: 1;
+}
+
+/* ===== INTRO SECTION ===== */
+.introSection {
+  min-height: 100vh;
+  background: #FFFDF9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px 40px;
+  gap: 16px;
+  text-align: center;
+}
+
+.introOrnamentTop, .introOrnamentBottom {
+  font-size: 12px;
+  color: #C4B5A5;
+  letter-spacing: 2px;
+  font-family: serif;
+}
+
+.introSubtitle {
+  font-size: 11px;
+  color: #9A8B7A;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  font-weight: 300;
+  margin: 0;
+}
+
+.introOrnamentLine {
+  width: 60px;
+  height: 1px;
+  background: #C4B5A5;
+}
+
+.introNames {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.introName {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.introNameKo {
+  font-size: 28px;
+  font-weight: 500;
+  color: #222222;
+  letter-spacing: 4px;
+  font-family: 'Noto Serif KR', serif;
+}
+
+.introNameEn {
+  font-size: 13px;
+  color: #777777;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+}
+
+.introAmpersand {
+  font-size: 16px;
+  color: #9A8B7A;
+  letter-spacing: 3px;
+  font-weight: 300;
+  padding: 4px 0;
+}
+
+/* ===== MAIN PHOTO (Classic frame) ===== */
+.mainImageContainer {
+  width: 100%;
+  max-width: 340px;
+}
+
+.classicPhotoContainer {
+  position: relative;
+  width: 100%;
+  padding-bottom: 130%;
+  cursor: pointer;
+  box-shadow: 0 0 0 1px #C4B5A5, 0 0 0 8px #FFFDF9, 0 0 0 9px #C4B5A5, 8px 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.classicPhoto {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+}
+
+.classicPhoto.active {
+  opacity: 1;
+}
+
+.photoPlaceholder {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60px;
+  background: #EDE8E2;
+}
+
+.photoFrame {
+  position: absolute;
+  top: 8px; left: 8px; right: 8px; bottom: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ===== GREETING SECTION ===== */
+.greetingSection {
+  padding: 60px 32px;
+  background: #FAFAFA;
+  text-align: center;
+}
+
+.poem {
+  font-size: 14px;
+  line-height: 2.2;
+  color: #555555;
+  text-align: center;
+  white-space: pre-line;
+  margin: 0 0 32px 0;
+  font-family: 'Noto Serif KR', serif;
+  font-weight: 300;
+  border-top: 1px solid #C4B5A5;
+  border-bottom: 1px solid #C4B5A5;
+  padding: 28px 0;
+}
+
+.coupleNamesSection {
+  text-align: center;
+}
+
+.coupleNames {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+.groomInfo, .brideInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.coupleRole {
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: #9A8B7A;
+  font-weight: 300;
+  text-transform: uppercase;
+}
+
+.coupleName {
+  font-size: 20px;
+  font-weight: 500;
+  color: #222222;
+  letter-spacing: 2px;
+}
+
+.coupleParents {
+  font-size: 11px;
+  color: #777777;
+  font-weight: 300;
+}
+
+.coupleAnd {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.coupleAndText {
+  font-size: 28px;
+  color: #9A8B7A;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-weight: 300;
+}
+
+/* ===== GALLERY SECTION ===== */
+.gallerySection {
+  padding: 60px 0;
+  background: #FFFDF9;
+  text-align: center;
+}
+
+.gallerySection .sectionOrnament,
+.gallerySection .sectionTitle,
+.gallerySection .sectionDividerLine {
+  padding: 0 32px;
+}
+
+.galleryContainer {
+  position: relative;
+}
+
+.gallerySlider {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  gap: 12px;
+  padding: 16px 24px 36px;
+}
+
+.gallerySlider::-webkit-scrollbar {
+  display: none;
+}
+
+.galleryItem {
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  cursor: pointer;
+  position: relative;
+  width: 200px;
+  aspect-ratio: 3/4;
+  box-shadow: 0 0 0 1px #C4B5A5, 4px 4px 16px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.galleryPhoto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.galleryPhoto:hover {
+  transform: scale(1.04);
+}
+
+.galleryBorder {
+  position: absolute;
+  top: 6px; left: 6px; right: 6px; bottom: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+}
+
+.galleryDots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #C4B5A5;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dotActive {
+  background: #9A8B7A;
+  width: 18px;
+  border-radius: 3px;
+}
+
+/* ===== WEDDING DAY SECTION ===== */
+.weddingDaySection {
+  padding: 60px 32px;
+  background: #FAFAFA;
+  text-align: center;
+}
+
+.classicDateBlock {
+  text-align: center;
+  margin-bottom: 28px;
+  padding: 28px;
+  border: 1px solid #C4B5A5;
+  background: #FFFDF9;
+}
+
+.classicDateYear {
+  font-size: 13px;
+  letter-spacing: 4px;
+  color: #9A8B7A;
+  font-weight: 300;
+  margin-bottom: 8px;
+}
+
+.classicDateDivider {
+  font-size: 12px;
+  color: #C4B5A5;
+  margin: 8px 0;
+  letter-spacing: 2px;
+}
+
+.classicDateMonthDay {
+  font-size: 20px;
+  font-weight: 500;
+  color: #222222;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.classicDateEng {
+  font-size: 13px;
+  color: #777777;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  margin-bottom: 8px;
+}
+
+.classicDateTime {
+  font-size: 15px;
+  font-weight: 500;
+  color: #9A8B7A;
+  letter-spacing: 2px;
+}
+
+/* ===== CALENDAR ===== */
+.classicCalendar {
+  background: #FFFDF9;
+  border: 1px solid #C4B5A5;
+  padding: 24px 20px;
+  margin: 0 0 24px 0;
+}
+
+.calendarOrnament {
+  text-align: center;
+  font-size: 12px;
+  color: #C4B5A5;
+  margin-bottom: 12px;
+  letter-spacing: 4px;
+}
+
+.calendarMonth {
+  font-size: 16px;
+  font-weight: 400;
+  color: #222222;
+  text-align: center;
+  margin: 0 0 16px 0;
+  font-family: 'Playfair Display', Georgia, serif;
+  letter-spacing: 1px;
+}
+
+.calendarWeekDays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 8px;
+  border-bottom: 1px solid #EAEAEA;
+  padding-bottom: 8px;
+}
+
+.calendarWeekDay {
+  font-size: 11px;
+  font-weight: 400;
+  color: #777777;
+  text-align: center;
+  padding: 4px 0;
+  letter-spacing: 0.5px;
+}
+
+.calendarWeekDay.sunday {
+  color: #AA6060;
+}
+
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.calendarDayWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 0;
+}
+
+.calendarDay {
+  font-size: 13px;
+  color: #222222;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Noto Serif KR', serif;
+}
+
+.calendarDay.sunday {
+  color: #AA6060;
+}
+
+.calendarDay.inactive {
+  opacity: 0;
+}
+
+.calendarTargetDay {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #9A8B7A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(154, 139, 122, 0.4);
+}
+
+.calendarTargetDayText {
+  font-size: 13px;
+  font-weight: 500;
+  color: white;
+}
+
+/* ===== COUNTDOWN ===== */
+.countdown {
+  margin: 0 0 16px 0;
+}
+
+.countdownCards {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.countdownCard {
+  border: 1px solid #C4B5A5;
+  background: #FFFDF9;
+  padding: 16px 12px;
+  text-align: center;
+  min-width: 60px;
+}
+
+.countdownNumber {
+  font-size: 26px;
+  font-weight: 400;
+  color: #9A8B7A;
+  font-family: 'Playfair Display', Georgia, serif;
+  line-height: 1;
+}
+
+.countdownLabel {
+  font-size: 10px;
+  color: #777777;
+  margin-top: 4px;
+  letter-spacing: 1px;
+}
+
+.weddingComplete {
+  text-align: center;
+  padding: 24px;
+}
+
+.completeIcon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.completeMessage {
+  font-size: 16px;
+  font-weight: 400;
+  color: #9A8B7A;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+}
+
+.countdownMessage {
+  font-size: 13px;
+  color: #777777;
+  text-align: center;
+  margin: 0;
+  font-weight: 300;
+}
+
+.heartText {
+  color: #9A8B7A;
+}
+
+.countdownDays {
+  font-weight: 500;
+  color: #9A8B7A;
+  font-size: 15px;
+}
+
+/* ===== GIFT SECTION ===== */
+.giftSection {
+  padding: 60px 32px;
+  background: #FFFDF9;
+  text-align: center;
+}
+
+.giftSubtitle {
+  font-size: 13px;
+  color: #777777;
+  margin: -12px 0 24px 0;
+  font-weight: 300;
+}
+
+.toggleContainer {
+  margin-bottom: 20px;
+}
+
+.toggleButtons {
+  display: flex;
+  border: 1px solid #C4B5A5;
+  border-radius: 0;
+  overflow: hidden;
+}
+
+.toggleBtn {
+  flex: 1;
+  padding: 12px 0;
+  border: none;
+  background: transparent;
+  color: #777777;
+  font-size: 13px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Noto Serif KR', serif;
+  letter-spacing: 1px;
+}
+
+.toggleBtnActive {
+  background: #9A8B7A;
+  color: white;
+}
+
+.accountsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.accountCards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.accountCard {
+  background: #FAFAFA;
+  border: 1px solid #C4B5A5;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-align: left;
+}
+
+.accountCard:hover {
+  background: #EDE8E2;
+}
+
+.accountInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.accountName {
+  font-size: 14px;
+  font-weight: 500;
+  color: #222222;
+  letter-spacing: 0.5px;
+}
+
+.bankInfo {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.bankName {
+  font-size: 12px;
+  color: #9A8B7A;
+  font-weight: 400;
+}
+
+.accountNumber {
+  font-size: 12px;
+  color: #777777;
+  font-family: 'Courier New', monospace;
+}
+
+.copyButton {
+  font-size: 12px;
+  color: #9A8B7A;
+  font-weight: 400;
+  letter-spacing: 1px;
+  border: 1px solid #C4B5A5;
+  padding: 6px 14px;
+  flex-shrink: 0;
+  background: white;
+  transition: all 0.2s;
+  font-family: 'Noto Serif KR', serif;
+}
+
+.copyButton:hover {
+  background: #9A8B7A;
+  color: white;
+}
+
+/* ===== MESSAGES SECTION ===== */
+.messagesSection {
+  padding: 60px 32px;
+  background: #FAFAFA;
+  text-align: center;
+}
+
+.messagesList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.messageCard {
+  background: #FFFDF9;
+  border: 1px solid #C4B5A5;
+  padding: 20px 24px;
+  transition: border-color 0.2s;
+}
+
+.messageCard:hover {
+  border-color: #9A8B7A;
+}
+
+.messageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #EAEAEA;
+}
+
+.messageName {
+  font-size: 13px;
+  font-weight: 500;
+  color: #9A8B7A;
+  letter-spacing: 0.5px;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+}
+
+.messageDate {
+  font-size: 11px;
+  color: #777777;
+  font-weight: 300;
+}
+
+.messageContent {
+  font-size: 13px;
+  line-height: 2;
+  color: #555555;
+  font-weight: 300;
+}
+
+.emptyMessages {
+  text-align: center;
+  padding: 48px 24px;
+  border: 1px dashed #C4B5A5;
+  background: #FFFDF9;
+}
+
+.emptyIcon {
+  font-size: 32px;
+  margin-bottom: 12px;
+  opacity: 0.4;
+  color: #9A8B7A;
+}
+
+.emptyText {
+  font-size: 14px;
+  color: #777777;
+  margin: 0;
+  font-weight: 300;
+}
+
+.editMsgButton {
+  background: #9A8B7A;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 11px;
+  padding: 4px 12px;
+  transition: background 0.2s;
+  font-family: 'Noto Serif KR', serif;
+  letter-spacing: 1px;
+}
+
+.editMsgButton:hover {
+  background: #7A6B5A;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.pageButton {
+  background: transparent;
+  color: #9A8B7A;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.pageButton:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.pageDots {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.pageDot {
+  width: 6px;
+  height: 6px;
+  background: #C4B5A5;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+.pageDotActive {
+  background: #9A8B7A;
+  width: 20px;
+  border-radius: 3px;
+}
+
+.addMessageButton {
+  width: 100%;
+  padding: 16px;
+  background: #222222;
+  color: white;
+  border: none;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 12px;
+  letter-spacing: 2px;
+  font-family: 'Noto Serif KR', serif;
+}
+
+.addMessageButton:hover {
+  background: #3D3020;
+}
+
+.addMessageButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== LOCATION SECTION ===== */
+.locationSection {
+  padding: 60px 32px;
+  background: #FFFDF9;
+  text-align: center;
+}
+
+.venueCard {
+  background: #FAFAFA;
+  border: 1px solid #C4B5A5;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.venueName {
+  font-size: 15px;
+  font-weight: 500;
+  color: #222222;
+  margin: 0 0 6px 0;
+  letter-spacing: 0.5px;
+}
+
+.venueAddress {
+  font-size: 12px;
+  color: #777777;
+  margin: 0;
+  font-weight: 300;
+}
+
+.mapContainer {
+  margin-bottom: 16px;
+  border: 1px solid #C4B5A5;
+  overflow: hidden;
+}
+
+.transportCard {
+  background: #FAFAFA;
+  border: 1px solid #C4B5A5;
+  padding: 16px 20px;
+  display: flex;
+  gap: 14px;
+  text-align: left;
+}
+
+.transportIcon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.transportContent {
+  flex: 1;
+}
+
+.transportTitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: #222222;
+  margin: 0 0 6px 0;
+  letter-spacing: 0.5px;
+}
+
+.transportText {
+  font-size: 12px;
+  color: #777777;
+  line-height: 1.8;
+  margin: 0;
+  white-space: pre-line;
+  font-weight: 300;
+}
+
+/* ===== SHARE SECTION ===== */
+.shareSection {
+  padding: 24px 32px 48px;
+  background: #FAFAFA;
+}
+
+.shareButton {
+  width: 100%;
+  padding: 18px;
+  background: #222222;
+  color: white;
+  border: none;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background 0.2s;
+  letter-spacing: 2px;
+  font-family: 'Noto Serif KR', serif;
+}
+
+.shareButton:hover {
+  background: #3D3020;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  background: #222222;
+  padding: 56px 32px;
+}
+
+.footerContent {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footerOrnament {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 3px;
+}
+
+.footerTitle {
+  font-size: 20px;
+  font-weight: 400;
+  color: white;
+  margin: 0;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  letter-spacing: 2px;
+}
+
+.footerNames {
+  font-size: 15px;
+  color: #C4B5A5;
+  font-weight: 300;
+  letter-spacing: 2px;
+}
+
+.footerDate {
+  font-size: 12px;
+  color: #C4B5A5;
+  margin: 0;
+  font-weight: 300;
+  letter-spacing: 1px;
+}
+
+.footerMessage {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.9;
+  margin: 0;
+  font-weight: 300;
+}
+
+/* ===== IMAGE VIEWER MODAL ===== */
+.imageViewerModal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.93);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imageViewerContent {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  padding: 20px;
+}
+
+.closeButton {
+  position: absolute;
+  top: -40px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 36px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.imageViewerSlider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.viewerImage {
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.imageViewerNavigation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 16px;
+}
+
+.navButton {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 26px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.navButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.imageCounter {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  font-weight: 300;
+  letter-spacing: 1px;
+}
+
+/* ===== MY CONTRIBUTION SECTION ===== */
+.myContributionSection {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background: white;
+  border-top: 1px solid #C4B5A5;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.toggleButton {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 24px;
+  background: #EDE8E2;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: #9A8B7A;
+  font-family: 'Noto Serif KR', serif;
+  letter-spacing: 1px;
+}
+
+.toggleText {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+.toggleIcon {
+  font-size: 10px;
+}
+
+.contributionContent {
+  padding: 14px 24px 18px;
+}
+
+.contributionSubtitle {
+  font-size: 11px;
+  color: #777777;
+  margin: 0 0 10px 0;
+  font-weight: 300;
+}
+
+.contributionSummary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.summaryInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.summaryName {
+  font-size: 14px;
+  font-weight: 500;
+  color: #222222;
+  letter-spacing: 0.5px;
+}
+
+.summaryAmount {
+  font-size: 17px;
+  font-weight: 500;
+  color: #9A8B7A;
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.summaryDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-end;
+}
+
+.summaryRelation, .summarySide {
+  font-size: 11px;
+  color: #777777;
+  background: #EDE8E2;
+  padding: 2px 8px;
+  font-weight: 300;
+}
+
+.editButton {
+  background: #222222;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 400;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-family: 'Noto Serif KR', serif;
+  letter-spacing: 1px;
+  transition: background 0.2s;
+}
+
+.editButton:hover {
+  background: #9A8B7A;
+}

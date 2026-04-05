@@ -1,8 +1,8 @@
 // components/ContributionModal.js - 축의금 입력 모달 (폰 인증 포함)
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import styles from './ContributionModal.module.css';
 
-const ContributionModal = ({ isOpen, onClose, onSubmit, eventData, editData = null }) => {
+const ContributionModal = ({ isOpen, onClose, onBack, onSubmit, eventData, editData = null }) => {
   const [formData, setFormData] = useState({
     phone: '',
     verificationCode: '',
@@ -17,13 +17,48 @@ const ContributionModal = ({ isOpen, onClose, onSubmit, eventData, editData = nu
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
-  
+
   // 책자 애니메이션 상태
   const [showBook, setShowBook] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [isFlipping, setIsFlipping] = useState(false);
   const [coverOpen, setCoverOpen] = useState(false);
   const [showText, setShowText] = useState(false);
+
+  // 폼 멀티스텝 상태
+  const [formStep, setFormStep] = useState('book');
+
+  // 책자 페이지 랜덤 이름 (마운트 시 1회 생성) - 18면 × 9명 = 162슬롯, 중복 없음
+  const pageNames = useMemo(() => {
+    const pool = [
+      '김민준', '이서준', '박예준', '최도윤', '정시우', '강주원', '조하준', '윤지호', '장준서', '임준혁',
+      '오현우', '한지훈', '신민재', '서유준', '권건우', '황민성', '안준영', '송승현', '류시현', '전정우',
+      '홍지우', '고민규', '문현준', '양우진', '손서연', '배수빈', '백지민', '허지유', '유지현', '남지윤',
+      '심하은', '노수아', '하지아', '곽나은', '성하린', '차주아', '주예은', '우채원', '구소연', '민아름',
+      '김서윤', '이지민', '박지유', '최현서', '정채은', '강예린', '조나연', '윤유진', '장지수', '임하늘',
+      '오도현', '한승민', '신태양', '서민호', '권진우', '황지훈', '안상현', '송재원', '류민아', '전하윤',
+      '홍성준', '고지원', '문예진', '양소희', '손수민', '배민준', '백서윤', '허주연', '유선우', '남도현',
+      '심채린', '노예원', '하도훈', '곽재민', '성예나', '차수연', '주민지', '우예진', '구나래', '민승호',
+      '김지호', '이현우', '박성민', '최지은', '정하린', '강민서', '조예슬', '윤성재', '장하윤', '임채원',
+      '오지우', '한예린', '신민서', '서정우', '권민준', '황서연', '안유진', '송하은', '류지수', '전민재',
+      '홍예나', '고성준', '문서연', '양민준', '손예린', '배지호', '백하은', '허성민', '유예슬', '남채은',
+      '심도현', '노민서', '하지민', '곽서준', '성민준', '차하늘', '주지호', '우민서', '구성현', '민예진',
+      '김하은', '이채원', '박민지', '최지호', '정민준', '강하린', '조서준', '윤예진', '장성민', '임도현',
+      '오채원', '한민서', '신예나', '서지민', '권하은', '황도현', '안채원', '송도현', '류예진', '전성민',
+      '홍하린', '고민서', '문지호', '양하은', '손민준', '배예진', '백도현', '허채원', '유하린', '남민서',
+      '심예나', '노지호', '하채운', '곽민준', '성하은', '차예진', '주도현', '우하린', '구민서', '민채원',
+      '김준서', '이하린', '박채원'
+    ];
+    // Fisher-Yates 셔플
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    // 18 그룹 × 9명 — pool이 162개 이상이므로 순환 없음
+    return Array.from({ length: 18 }, (_, gi) =>
+      Array.from({ length: 9 }, (__, ni) => pool[gi * 9 + ni])
+    );
+  }, []);
 
   // 관계 옵션들
   const relationshipOptions = [
@@ -48,7 +83,16 @@ const ContributionModal = ({ isOpen, onClose, onSubmit, eventData, editData = nu
     return () => clearInterval(interval);
   }, [timer]);
 
-  // 모달이 열릴 때 editData 또는 verifiedPhone 체크
+  // 모달 열릴 때 body 스크롤 방지
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen]);
+
   useEffect(() => {
     if (isOpen) {
       if (editData) {
@@ -62,14 +106,17 @@ const ContributionModal = ({ isOpen, onClose, onSubmit, eventData, editData = nu
           side: editData.side || ''
         });
         setStep('form');
-        setShowBook(false); // 편집 모드에서는 책자 애니메이션 스킵
+        setFormStep('name'); // 편집 모드에서는 책자 애니메이션 스킵
+        setShowBook(false);
       } else {
         const verifiedPhone = localStorage.getItem('verifiedPhone');
         if (verifiedPhone) {
           setStep('form');
-          setShowBook(false); // 이미 인증된 경우 책자 애니메이션 스킵
+          setFormStep('name'); // 이미 인증된 경우 책자 애니메이션 스킵
+          setShowBook(false);
         } else {
           setStep('phone');
+          setFormStep('book');
         }
       }
     } else {
@@ -83,6 +130,7 @@ const ContributionModal = ({ isOpen, onClose, onSubmit, eventData, editData = nu
         side: ''
       });
       setStep('phone');
+      setFormStep('book');
       setError('');
       setIsLoading(false);
       setVerificationSent(false);
@@ -96,38 +144,38 @@ const ContributionModal = ({ isOpen, onClose, onSubmit, eventData, editData = nu
     }
   }, [isOpen, editData]);
 
-  // 축의금 폼 단계에서 책자 애니메이션 시작
+  // 축의금 폼 단계에서 책자 애니메이션 시작 (덮개만 자동, 페이지는 인터랙티브)
   useEffect(() => {
-    if (step === 'form' && !editData) {
-      const timer = setTimeout(() => {
+    if (step === 'form' && formStep === 'book' && !editData) {
+      const bookTimer = setTimeout(() => {
         setShowBook(true);
-        
+
         // 책이 나타난 후 덮개 열기
         const coverTimer = setTimeout(() => {
           setCoverOpen(true);
+          // 덮개 열리고 나면 텍스트/다음 버튼 활성화
+          setTimeout(() => setShowText(true), 500);
         }, 700);
-        
-        // 덮개가 열린 후 잠깐 기다렸다가 페이지 넘김 시작
-        const flipTimer = setTimeout(() => {
-          setIsFlipping(true);
-          const flipSequence = [1, 2, 3, 4, 5, 6, 7, 8];
-          
-          flipSequence.forEach((pageNum, index) => {
-            setTimeout(() => {
-              setCurrentPage(pageNum);
-              if (index === flipSequence.length - 1) {
-                setTimeout(() => {
-                  setCurrentPage(0);
-                  setIsFlipping(false);
-                  setShowText(true);
-                }, 300);
-              }
-            }, index * 200);
-          });
-        }, 1500);
+
+        return () => clearTimeout(coverTimer);
       }, 500);
+
+      return () => clearTimeout(bookTimer);
     }
-  }, [step, editData]);
+  }, [step, formStep, editData]);
+
+  // 책 페이지 인터랙티브 넘기기
+  const handleBookFlipRight = () => {
+    if (coverOpen && currentPage < 8) {
+      setCurrentPage(p => p + 1);
+    }
+  };
+
+  const handleBookFlipLeft = () => {
+    if (coverOpen && currentPage > 0) {
+      setCurrentPage(p => p - 1);
+    }
+  };
 
   // 타이머 포맷팅
   const formatTimer = (seconds) => {
@@ -156,11 +204,11 @@ const ContributionModal = ({ isOpen, onClose, onSubmit, eventData, editData = nu
     try {
       const response = await fetch(`/api/get-my-contribution?eventId=${eventData.id}&phone=${encodeURIComponent(phone)}`);
       const result = await response.json();
-      
+
       if (result.success && result.contribution) {
         return { exists: true, contribution: result.contribution };
       }
-      
+
       return { exists: false };
     } catch (error) {
       console.error('축의금 중복 확인 오류:', error);
@@ -244,6 +292,7 @@ const ContributionModal = ({ isOpen, onClose, onSubmit, eventData, editData = nu
         const phoneNumbers = formData.phone.replace(/[^\d]/g, '');
         const verifiedPhone = `+82${phoneNumbers.slice(1)}`;
         localStorage.setItem('verifiedPhone', verifiedPhone);
+        setFormStep('book');
         setStep('form');
       } else {
         setError(result.error || '인증번호가 올바르지 않습니다.');
@@ -295,7 +344,7 @@ const ContributionModal = ({ isOpen, onClose, onSubmit, eventData, editData = nu
       };
 
       await onSubmit(submitData);
-      
+
       // 폼 초기화
       setFormData({
         phone: '',
@@ -306,8 +355,9 @@ const ContributionModal = ({ isOpen, onClose, onSubmit, eventData, editData = nu
         side: ''
       });
       setStep('phone');
+      setFormStep('book');
       setError('');
-      
+
       onClose();
     } catch (error) {
       setError(error.message || '축의금 등록에 실패했습니다. 다시 시도해주세요.');
@@ -316,87 +366,105 @@ const ContributionModal = ({ isOpen, onClose, onSubmit, eventData, editData = nu
     }
   };
 
+  // 멀티스텝 폼 네비게이션
+  const formSteps = editData ? ['name', 'amount', 'side', 'relation'] : ['book', 'name', 'amount', 'side', 'relation'];
+  const currentFormStepIndex = formSteps.indexOf(formStep);
+
+  const goFormNext = () => {
+    if (currentFormStepIndex < formSteps.length - 1) {
+      setFormStep(formSteps[currentFormStepIndex + 1]);
+      setError('');
+    }
+  };
+
+  const goFormBack = () => {
+    if (currentFormStepIndex > 0) {
+      setFormStep(formSteps[currentFormStepIndex - 1]);
+      setError('');
+    }
+  };
+
   if (!isOpen) return null;
 
   const brideName = eventData?.bride_name || '하윤';
   const groomName = eventData?.groom_name || '민호';
 
+  // 페이지 이름 3열 렌더링 헬퍼
+  const renderNameColumns = (names) => (
+    <div className={styles.guestNames}>
+      {[0, 1, 2].map(col => (
+        <div key={col} className={styles.nameColumn}>
+          {[0, 1, 2].map(row => (
+            <span key={row} className={styles.guestName}>{names[col * 3 + row]}</span>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+
+  // SVG 아이콘 재사용
+  const BackIcon = () => (
+    <svg width="10" height="18" viewBox="0 0 10 18" fill="none">
+      <path d="M9 1L1 9L9 17" stroke="#8B95A1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+  const CloseIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <path d="M1 1L17 17M17 1L1 17" stroke="#8B95A1" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  );
+
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.header}>
-          <button className={styles.closeButton} onClick={onClose}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M1 1L13 13M13 1L1 13" stroke="#8B95A1" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
-          </button>
-          <span className={styles.headerTitle}>
-            {step === 'phone' ? '휴대폰 인증' : step === 'verification' ? '인증번호 입력' : '축의금 전달'}
-          </span>
-        </div>
+        {/* 드래그 핸들 */}
+        <div className={styles.dragHandle} />
 
         <div className={styles.content}>
           {/* 폰 인증 단계 */}
           {step === 'phone' && (
             <>
-              {/* 상단 섹션 */}
-              <div className={styles.topSection}>
-                <div className={styles.iconContainer}>
-                  <div className={styles.iconBackground}>
-                    <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
-                      <path d="M14 6C12.9 6 12 6.9 12 8V36C12 37.1 12.9 38 14 38H30C31.1 38 32 37.1 32 36V8C32 6.9 31.1 6 30 6H14Z" fill="#4A90E2"/>
-                      <rect x="15" y="9" width="14" height="20" rx="1" fill="white"/>
-                      <circle cx="22" cy="33" r="2" fill="white"/>
-                    </svg>
-                  </div>
-                </div>
-                
-                <h2 className={styles.mainTitle}>휴대폰 인증</h2>
-                <p className={styles.mainDescription}>
-                  안전한 축의금 전달을 위해<br />
-                  간단한 본인 확인이 필요해요
-                </p>
+              <div className={styles.sheetHeader}>
+                <button className={styles.backButton} onClick={onBack || onClose}>
+                  <BackIcon />
+                </button>
+                <button className={styles.closeButton} onClick={onClose}>
+                  <CloseIcon />
+                </button>
               </div>
 
-              {/* 개인정보 동의 */}
-              <div className={styles.agreementSection}>
-                <div className={styles.agreementItem} onClick={() => setPrivacyAgreed(!privacyAgreed)}>
-                  <div className={styles.agreementLeft}>
-                    <span className={styles.agreementLabel}>개인정보 수집 동의</span>
-                  </div>
-                  <div className={`${styles.checkbox} ${privacyAgreed ? styles.checked : ''}`}>
-                    {privacyAgreed && (
-                      <svg width="14" height="10" viewBox="0 0 14 10" fill="none">
-                        <path d="M1 5L5 9L13 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    )}
-                  </div>
-                </div>
-                
-                <p className={styles.privacyText}>
-                  수집된 휴대폰번호는 오직 본인 확인 목적으로만 사용됩니다
-                </p>
+              <div className={styles.sheetTitleSection}>
+                <h2 className={styles.sheetTitle}>안전한 축의금 전달을 위해{'\n'}휴대폰 번호를 인증해주세요</h2>
               </div>
 
-              {/* 입력 폼 섹션 */}
-              <div className={styles.formList}>
-                <div className={styles.inputSection}>
-                  <label className={styles.inputLabel}>휴대폰 번호</label>
+              <div className={styles.sheetForm}>
+                <div className={styles.sheetInputGroup}>
+                  <label className={styles.sheetLabel}>휴대폰 번호</label>
                   <input
                     type="tel"
-                    className={styles.phoneInput}
+                    className={styles.sheetInput}
                     placeholder="010-0000-0000"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: formatPhoneNumber(e.target.value) })}
                   />
                 </div>
-              </div>
-              
-              {error && <div className={styles.errorMessage}>{error}</div>}
-              
-              <div className={styles.buttonStack}>
+
+                <div className={styles.sheetAgreement} onClick={() => setPrivacyAgreed(!privacyAgreed)}>
+                  <div className={`${styles.sheetCheckbox} ${privacyAgreed ? styles.sheetChecked : ''}`}>
+                    {privacyAgreed && (
+                      <svg width="12" height="9" viewBox="0 0 12 9" fill="none">
+                        <path d="M1 4L4.5 7.5L11 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    )}
+                  </div>
+                  <span className={styles.sheetAgreementText}>[필수] 개인정보 수집 및 이용 동의</span>
+                  <span className={styles.sheetAgreementLink}>보기</span>
+                </div>
+
+                {error && <div className={styles.errorMessage}>{error}</div>}
+
                 <button
-                  className={styles.submitButton}
+                  className={styles.sheetSubmitButton}
                   onClick={sendVerificationCode}
                   disabled={isLoading || !formData.phone || !privacyAgreed}
                 >
@@ -409,407 +477,460 @@ const ContributionModal = ({ isOpen, onClose, onSubmit, eventData, editData = nu
           {/* 인증번호 확인 단계 */}
           {step === 'verification' && (
             <>
-              {/* 상단 섹션 */}
-              <div className={styles.topSection}>
-                <div className={styles.iconContainer}>
-                  <div className={styles.iconBackground}>
-                    <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
-                      <path d="M12 8C12 6.9 12.9 6 14 6H30C31.1 6 32 6.9 32 8V36C32 37.1 31.1 38 30 38H14C12.9 38 12 37.1 12 36V8Z" fill="#4A90E2"/>
-                      <rect x="15" y="10" width="14" height="18" rx="1" fill="white"/>
-                      <path d="M18 16H26M18 19H26M18 22H24" stroke="#4A90E2" strokeWidth="1.5"/>
-                      <circle cx="22" cy="33" r="2" fill="white"/>
-                    </svg>
-                  </div>
-                </div>
-                
-                <h2 className={styles.mainTitle}>인증번호 입력</h2>
-                <p className={styles.mainDescription}>
-                  {formData.phone}로 발송된<br />
-                  6자리 인증번호를 입력해주세요
-                </p>
+              <div className={styles.sheetHeader}>
+                <button className={styles.backButton} onClick={() => setStep('phone')}>
+                  <BackIcon />
+                </button>
+                <button className={styles.closeButton} onClick={onClose}>
+                  <CloseIcon />
+                </button>
               </div>
 
-              {/* 입력 폼 섹션 */}
-              <div className={styles.formList}>
-                <div className={styles.inputSection}>
-                  <label className={styles.inputLabel}>인증번호</label>
+              <div className={styles.sheetTitleSection}>
+                <h2 className={styles.sheetTitle}>휴대폰으로 전송된{'\n'}인증번호를 입력해주세요</h2>
+                <p className={styles.verificationPhone}>{formData.phone}</p>
+              </div>
+
+              <div className={styles.sheetForm}>
+                <div className={styles.verificationInputWrapper}>
                   <input
                     type="text"
-                    className={styles.codeInput}
-                    placeholder="123456"
+                    className={styles.verificationCodeInput}
+                    placeholder="인증번호 6자리"
                     value={formData.verificationCode}
                     onChange={(e) => {
                       const code = e.target.value.replace(/[^\d]/g, '').slice(0, 6);
                       setFormData({ ...formData, verificationCode: code });
                     }}
                     maxLength={6}
+                    autoFocus
                   />
                   {timer > 0 && (
-                    <div className={styles.timerText}>
-                      {formatTimer(timer)} 후 재발송 가능
-                    </div>
+                    <span className={styles.verificationTimer}>{formatTimer(timer)}</span>
                   )}
                 </div>
-              </div>
 
-              {error && <div className={styles.errorMessage}>{error}</div>}
+                <div className={styles.verificationResendRow}>
+                  <button
+                    className={styles.resendTextButton}
+                    onClick={sendVerificationCode}
+                    disabled={isLoading || timer > 0}
+                  >
+                    인증번호 재전송
+                  </button>
+                </div>
 
-              <div className={styles.buttonStack}>
-                <button
-                  className={styles.submitButton}
-                  onClick={verifyCode}
-                  disabled={isLoading || formData.verificationCode.length !== 6}
-                >
-                  {isLoading ? '확인 중...' : '인증완료'}
-                </button>
-                
-                <button
-                  className={styles.secondaryButton}
-                  onClick={() => setStep('phone')}
-                  disabled={isLoading}
-                >
-                  이전
-                </button>
-                
-                <button
-                  className={styles.resendButton}
-                  onClick={sendVerificationCode}
-                  disabled={isLoading || timer > 0}
-                >
-                  {timer > 0 ? `재전송 (${formatTimer(timer)})` : '인증번호 재전송'}
-                </button>
+                {error && <div className={styles.errorMessage}>{error}</div>}
+
+                <div className={styles.verificationButtonRow}>
+                  <button
+                    className={styles.prevButton}
+                    onClick={() => setStep('phone')}
+                    disabled={isLoading}
+                  >
+                    이전
+                  </button>
+                  <button
+                    className={styles.verifyButton}
+                    onClick={verifyCode}
+                    disabled={isLoading || formData.verificationCode.length !== 6}
+                  >
+                    {isLoading ? '확인 중...' : '인증완료'}
+                  </button>
+                </div>
               </div>
             </>
           )}
 
-          {/* 축의금 입력 폼 */}
+          {/* 축의금 입력 폼 - 멀티스텝 */}
           {step === 'form' && (
-            <div className={styles.formSection}>
-              <p className={styles.subtitle}>
-                {editData ? '축의금 정보를 수정해주세요' : `${brideName}님과 ${groomName}님께 축의금을 전달해주세요`}
-              </p>
+            <>
+              {/* ── 스텝 1: 책자 애니메이션 ── */}
+              {formStep === 'book' && (
+                <>
+                  <div className={styles.formBookHeader}>
+                    <button className={styles.closeButton} onClick={onClose}>
+                      <CloseIcon />
+                    </button>
+                  </div>
+                  <div className={styles.progressBarWrapper}>
+                    {formSteps.map((s, i) => (
+                      <div
+                        key={s}
+                        className={`${styles.progressStep} ${currentFormStepIndex >= i ? styles.progressStepActive : ''}`}
+                      />
+                    ))}
+                  </div>
+                  <div className={styles.bookStepContent}>
+                    <p className={styles.subtitle}>
+                      {brideName}님과 {groomName}님께{'\n'}축의금을 전달해주세요
+                    </p>
 
-              {/* 책자 애니메이션 (편집 모드가 아닐 때만) */}
-              {!editData && (
-                <div className={`${styles.bookContainer} ${showBook ? styles.showBook : ''}`}>
-                  <div className={styles.book}>
-                    {/* 책 덮개 */}
-                    <div className={`${styles.bookCover} ${coverOpen ? styles.coverOpen : ''}`}>
-                      <div className={styles.coverFront}>
-                        <div className={styles.coverContent}>
-                          <div className={styles.coverTitle}>
-                            <span className={styles.coverIcon}>💒</span>
-                            <h3>Wedding</h3>
-                            <p>Guest Book</p>
+                    {/* 책자 애니메이션 */}
+                    <div className={`${styles.bookContainer} ${showBook ? styles.showBook : ''}`}>
+                      <div className={styles.book}>
+                        {/* 책 덮개 */}
+                        <div className={`${styles.bookCover} ${coverOpen ? styles.coverOpen : ''}`}>
+                          <div className={styles.coverFront}>
+                            <div className={styles.coverContent}>
+                              <div className={styles.coverTitle}>
+                                <span className={styles.coverIcon}>💒</span>
+                                <h3>Wedding</h3>
+                                <p>Guest Book</p>
+                              </div>
+                              <div className={styles.coverDecor}>
+                                <span>◆ ◇ ◆</span>
+                              </div>
+                            </div>
                           </div>
-                          <div className={styles.coverDecor}>
-                            <span>◆ ◇ ◆</span>
+                          <div className={styles.coverBack}>
+                            <div className={styles.coverBackContent} />
                           </div>
                         </div>
-                      </div>
-                      <div className={styles.coverBack}>
-                        <div className={styles.coverBackContent}>
-                          {/* 덮개 뒷면 (비어있음) */}
-                        </div>
-                      </div>
-                    </div>
 
-                    {/* 왼쪽 고정 페이지 - 1-1 (첫 번째 장의 왼쪽) */}
-                    <div className={styles.fixedLeftPage} style={{display: currentPage === 0 ? 'flex' : 'none', zIndex: currentPage === 0 ? 2 : 0}}>
-                      <div className={styles.pageContent}>
-                        {showText && (
-                          <div className={styles.guestNames}>
-                            <div className={styles.nameColumn}>
-                              <span className={styles.guestName}>김민수</span>
-                              <span className={styles.guestName}>이지영</span>
-                              <span className={styles.guestName}>박정우</span>
-                            </div>
-                            <div className={styles.nameColumn}>
-                              <span className={styles.guestName}>최수연</span>
-                              <span className={styles.guestName}>정현민</span>
-                              <span className={styles.guestName}>한소희</span>
-                            </div>
-                            <div className={styles.nameColumn}>
-                              <span className={styles.guestName}>장미영</span>
-                              <span className={styles.guestName}>강동혁</span>
-                              <span className={styles.guestName}>윤서정</span>
-                            </div>
+                        {/* 왼쪽 고정 페이지 (currentPage=0 일 때의 왼쪽 베이스) */}
+                        <div className={styles.fixedLeftPage} style={{display: currentPage === 0 ? 'flex' : 'none', zIndex: 2}}>
+                          <div className={styles.pageContent}>
+                            {coverOpen && renderNameColumns(pageNames[0])}
                           </div>
+                        </div>
+
+                        {/* 오른쪽 고정 페이지 (currentPage=8, 모든 페이지 넘긴 후 오른쪽 베이스) */}
+                        <div className={styles.fixedRightPage} style={{display: currentPage >= 8 ? 'flex' : 'none', zIndex: 1}}>
+                          <div className={styles.pageContent}>
+                            {renderNameColumns(pageNames[1])}
+                          </div>
+                        </div>
+
+                        {/*
+                          z-index 전략:
+                          - 미뒤집힘(오른쪽 스택): 낮은 번호가 앞 → zIndex = 16 - N
+                          - 뒤집힘(왼쪽 스택): 높은 번호가 앞(가장 최근 뒤집힌 것이 위) → zIndex = N
+                          이렇게 해야 왼쪽에 현재 펼친 페이지 뒷면이 정확히 보임
+                        */}
+
+                        {/* 페이지 1 */}
+                        <div className={`${styles.page} ${currentPage >= 1 ? styles.flipped : ''}`} style={{ zIndex: currentPage >= 1 ? 1 : 15 }}>
+                          <div className={styles.front}>
+                            <div className={styles.pageContent}>{renderNameColumns(pageNames[2])}</div>
+                          </div>
+                          <div className={styles.back}>
+                            <div className={styles.pageContent}>{renderNameColumns(pageNames[3])}</div>
+                          </div>
+                        </div>
+
+                        {/* 페이지 2 */}
+                        <div className={`${styles.page} ${currentPage >= 2 ? styles.flipped : ''}`} style={{ zIndex: currentPage >= 2 ? 2 : 14 }}>
+                          <div className={styles.front}>
+                            <div className={styles.pageContent}>{renderNameColumns(pageNames[4])}</div>
+                          </div>
+                          <div className={styles.back}>
+                            <div className={styles.pageContent}>{renderNameColumns(pageNames[5])}</div>
+                          </div>
+                        </div>
+
+                        {/* 페이지 3 */}
+                        <div className={`${styles.page} ${currentPage >= 3 ? styles.flipped : ''}`} style={{ zIndex: currentPage >= 3 ? 3 : 13 }}>
+                          <div className={styles.front}>
+                            <div className={styles.pageContent}>{renderNameColumns(pageNames[6])}</div>
+                          </div>
+                          <div className={styles.back}>
+                            <div className={styles.pageContent}>{renderNameColumns(pageNames[7])}</div>
+                          </div>
+                        </div>
+
+                        {/* 페이지 4 */}
+                        <div className={`${styles.page} ${currentPage >= 4 ? styles.flipped : ''}`} style={{ zIndex: currentPage >= 4 ? 4 : 12 }}>
+                          <div className={styles.front}>
+                            <div className={styles.pageContent}>{renderNameColumns(pageNames[8])}</div>
+                          </div>
+                          <div className={styles.back}>
+                            <div className={styles.pageContent}>{renderNameColumns(pageNames[9])}</div>
+                          </div>
+                        </div>
+
+                        {/* 페이지 5 */}
+                        <div className={`${styles.page} ${currentPage >= 5 ? styles.flipped : ''}`} style={{ zIndex: currentPage >= 5 ? 5 : 11 }}>
+                          <div className={styles.front}>
+                            <div className={styles.pageContent}>{renderNameColumns(pageNames[10])}</div>
+                          </div>
+                          <div className={styles.back}>
+                            <div className={styles.pageContent}>{renderNameColumns(pageNames[11])}</div>
+                          </div>
+                        </div>
+
+                        {/* 페이지 6 */}
+                        <div className={`${styles.page} ${currentPage >= 6 ? styles.flipped : ''}`} style={{ zIndex: currentPage >= 6 ? 6 : 10 }}>
+                          <div className={styles.front}>
+                            <div className={styles.pageContent}>{renderNameColumns(pageNames[12])}</div>
+                          </div>
+                          <div className={styles.back}>
+                            <div className={styles.pageContent}>{renderNameColumns(pageNames[13])}</div>
+                          </div>
+                        </div>
+
+                        {/* 페이지 7 */}
+                        <div className={`${styles.page} ${currentPage >= 7 ? styles.flipped : ''}`} style={{ zIndex: currentPage >= 7 ? 7 : 9 }}>
+                          <div className={styles.front}>
+                            <div className={styles.pageContent}>{renderNameColumns(pageNames[14])}</div>
+                          </div>
+                          <div className={styles.back}>
+                            <div className={styles.pageContent}>{renderNameColumns(pageNames[15])}</div>
+                          </div>
+                        </div>
+
+                        {/* 페이지 8 */}
+                        <div className={`${styles.page} ${currentPage >= 8 ? styles.flipped : ''}`} style={{ zIndex: currentPage >= 8 ? 8 : 8 }}>
+                          <div className={styles.front}>
+                            <div className={styles.pageContent}>{renderNameColumns(pageNames[16])}</div>
+                          </div>
+                          <div className={styles.back}>
+                            <div className={styles.pageContent}>{renderNameColumns(pageNames[17])}</div>
+                          </div>
+                        </div>
+
+                        {/* 인터랙티브 터치 영역 - 덮개가 열린 후 표시 */}
+                        {coverOpen && (
+                          <>
+                            {currentPage > 0 && (
+                              <div className={styles.bookTapLeft} onClick={handleBookFlipLeft}>
+                                <span className={styles.bookTapArrow}>‹</span>
+                              </div>
+                            )}
+                            {currentPage < 8 && (
+                              <div className={styles.bookTapRight} onClick={handleBookFlipRight}>
+                                <span className={styles.bookTapArrow}>›</span>
+                              </div>
+                            )}
+                          </>
                         )}
                       </div>
                     </div>
 
-                    {/* 오른쪽 고정 페이지 - 2-2 (두 번째 장의 오른쪽) */}
-                    <div className={styles.fixedRightPage} style={{display: currentPage === 1 && !isFlipping ? 'flex' : 'none', zIndex: 25}}>
-                      <div className={styles.pageContent}>
-                        <h3 style={{color: '#333', fontSize: '16px', lineHeight: '1.4', marginBottom: '10px'}}>QR 찍고<br />바로 축하하기</h3>
-                        <p style={{color: '#666', fontSize: '14px', lineHeight: '1.5'}}>모든 축하가<br />하나의 링크에</p>
+                    {/* 페이지 인디케이터 */}
+                    {coverOpen && (
+                      <div className={styles.bookPageIndicator}>
+                        {currentPage === 0
+                          ? '오른쪽을 눌러 책장을 넘겨보세요'
+                          : currentPage === 8
+                          ? '마지막 페이지예요'
+                          : `${currentPage} / 8`
+                        }
                       </div>
-                    </div>
+                    )}
 
-                    {/* 연속으로 넘어가는 여러 페이지들 - 후루룩 효과! */}
-                    
-                    {/* 페이지 1 */}
-                    <div 
-                      className={`${styles.page} ${currentPage >= 1 ? styles.flipped : ''}`}
-                      style={{ zIndex: 15 }}
-                    >
-                      <div className={styles.front}>
-                        <div className={styles.pageContent}>
-                          {showText && (
-                            <>
-                              <h3>방명록,<br />이제 간편하게</h3>
-                              <p>종이와 펜은 이제 안녕</p>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                      <div className={styles.back}>
-                        <div className={styles.pageContent}>
-                          {/* 2-1: 두 번째 장의 왼쪽 */}
-                          {showText && currentPage === 1 && (
-                            <div className={styles.guestNames}>
-                              <div className={styles.nameColumn}>
-                                <span className={styles.guestName}>조현우</span>
-                                <span className={styles.guestName}>신예은</span>
-                                <span className={styles.guestName}>김태현</span>
-                              </div>
-                              <div className={styles.nameColumn}>
-                                <span className={styles.guestName}>이서현</span>
-                                <span className={styles.guestName}>오민석</span>
-                                <span className={styles.guestName}>황지우</span>
-                              </div>
-                              <div className={styles.nameColumn}>
-                                <span className={styles.guestName}>전소영</span>
-                                <span className={styles.guestName}>김도영</span>
-                                <span className={styles.guestName}>나은하</span>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                    {error && <p className={styles.error}>{error}</p>}
 
-                    {/* 페이지 2 */}
-                    <div 
-                      className={`${styles.page} ${currentPage >= 2 ? styles.flipped : ''}`}
-                      style={{ zIndex: 14 }}
+                    <button
+                      className={styles.sheetSubmitButton}
+                      onClick={goFormNext}
+                      disabled={!showText}
                     >
-                      <div className={styles.front}>
-                        <div className={styles.pageContent}>
-                          {/* 빈 페이지 */}
-                        </div>
-                      </div>
-                      <div className={styles.back}>
-                        <div className={styles.pageContent}>
-                          {/* 빈 페이지 */}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* 페이지 3 */}
-                    <div 
-                      className={`${styles.page} ${currentPage >= 3 ? styles.flipped : ''}`}
-                      style={{ zIndex: 13 }}
-                    >
-                      <div className={styles.front}>
-                        <div className={styles.pageContent}>
-                          {/* 빈 페이지 */}
-                        </div>
-                      </div>
-                      <div className={styles.back}>
-                        <div className={styles.pageContent}>
-                          {/* 빈 페이지 */}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* 페이지 4 */}
-                    <div 
-                      className={`${styles.page} ${currentPage >= 4 ? styles.flipped : ''}`}
-                      style={{ zIndex: 12 }}
-                    >
-                      <div className={styles.front}>
-                        <div className={styles.pageContent}>
-                          {/* 빈 페이지 */}
-                        </div>
-                      </div>
-                      <div className={styles.back}>
-                        <div className={styles.pageContent}>
-                          {/* 빈 페이지 */}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* 페이지 5 */}
-                    <div 
-                      className={`${styles.page} ${currentPage >= 5 ? styles.flipped : ''}`}
-                      style={{ zIndex: 11 }}
-                    >
-                      <div className={styles.front}>
-                        <div className={styles.pageContent}>
-                          {/* 빈 페이지 */}
-                        </div>
-                      </div>
-                      <div className={styles.back}>
-                        <div className={styles.pageContent}>
-                          {/* 빈 페이지 */}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* 페이지 6 */}
-                    <div 
-                      className={`${styles.page} ${currentPage >= 6 ? styles.flipped : ''}`}
-                      style={{ zIndex: 10 }}
-                    >
-                      <div className={styles.front}>
-                        <div className={styles.pageContent}>
-                          {/* 빈 페이지 */}
-                        </div>
-                      </div>
-                      <div className={styles.back}>
-                        <div className={styles.pageContent}>
-                          {/* 빈 페이지 */}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* 페이지 7 */}
-                    <div 
-                      className={`${styles.page} ${currentPage >= 7 ? styles.flipped : ''}`}
-                      style={{ zIndex: 9 }}
-                    >
-                      <div className={styles.front}>
-                        <div className={styles.pageContent}>
-                          {/* 빈 페이지 */}
-                        </div>
-                      </div>
-                      <div className={styles.back}>
-                        <div className={styles.pageContent}>
-                          {showText && (
-                            <div className={styles.guestNames}>
-                              <div className={styles.nameColumn}>
-                                <span className={styles.guestName}>조현우</span>
-                                <span className={styles.guestName}>신예은</span>
-                                <span className={styles.guestName}>김태현</span>
-                              </div>
-                              <div className={styles.nameColumn}>
-                                <span className={styles.guestName}>이서현</span>
-                                <span className={styles.guestName}>오민석</span>
-                                <span className={styles.guestName}>황지우</span>
-                              </div>
-                              <div className={styles.nameColumn}>
-                                <span className={styles.guestName}>전소영</span>
-                                <span className={styles.guestName}>김도영</span>
-                                <span className={styles.guestName}>나은하</span>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* 페이지 8 */}
-                    <div 
-                      className={`${styles.page} ${currentPage >= 8 ? styles.flipped : ''}`}
-                      style={{ zIndex: 8 }}
-                    >
-                      <div className={styles.front}>
-                        <div className={styles.pageContent}>
-                          {/* 빈 페이지 */}
-                        </div>
-                      </div>
-                      <div className={styles.back}>
-                        <div className={styles.pageContent}>
-                          {/* 빈 페이지 */}
-                        </div>
-                      </div>
-                    </div>
+                      다음
+                    </button>
                   </div>
-                </div>
+                </>
               )}
 
-              {/* 이름 입력 */}
-              <div className={styles.inputGroup}>
-                <label className={styles.label}>성함</label>
-                <input
-                  type="text"
-                  className={styles.input}
-                  placeholder="이름을 입력해주세요"
-                  value={formData.guestName}
-                  onChange={(e) => setFormData({ ...formData, guestName: e.target.value })}
-                />
-              </div>
-
-              {/* 축의금 금액 */}
-              <div className={styles.inputGroup}>
-                <label className={styles.label}>축의금 금액</label>
-                <input
-                  type="text"
-                  className={styles.input}
-                  placeholder="100,000"
-                  value={formData.contributionAmount}
-                  onChange={(e) => setFormData({ ...formData, contributionAmount: formatAmount(e.target.value) })}
-                />
-              </div>
-
-              {/* 신랑측/신부측 선택 */}
-              <div className={styles.inputGroup}>
-                <label className={styles.label}>구분</label>
-                <div className={styles.sideButtonGroup}>
-                  <button
-                    type="button"
-                    className={`${styles.sideButton} ${formData.side === 'groom' ? styles.active : ''}`}
-                    onClick={() => setFormData({ ...formData, side: 'groom' })}
-                  >
-                    신랑측
-                  </button>
-                  <button
-                    type="button"
-                    className={`${styles.sideButton} ${formData.side === 'bride' ? styles.active : ''}`}
-                    onClick={() => setFormData({ ...formData, side: 'bride' })}
-                  >
-                    신부측
-                  </button>
-                </div>
-              </div>
-
-              {/* 관계 선택 */}
-              <div className={styles.inputGroup}>
-                <label className={styles.label}>관계</label>
-                <div className={styles.relationshipGroup}>
-                  {relationshipOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      className={`${styles.relationshipChip} ${formData.relationship === option.value ? styles.active : ''}`}
-                      onClick={() => setFormData({ ...formData, relationship: option.value })}
-                    >
-                      {option.label}
+              {/* ── 스텝 2: 성함 ── */}
+              {formStep === 'name' && (
+                <>
+                  <div className={styles.sheetHeader}>
+                    {!editData ? (
+                      <button className={styles.backButton} onClick={goFormBack}>
+                        <BackIcon />
+                      </button>
+                    ) : <div />}
+                    <button className={styles.closeButton} onClick={onClose}>
+                      <CloseIcon />
                     </button>
-                  ))}
-                </div>
-              </div>
+                  </div>
+                  <div className={styles.progressBarWrapper}>
+                    {formSteps.map((s, i) => (
+                      <div key={s} className={`${styles.progressStep} ${currentFormStepIndex >= i ? styles.progressStepActive : ''}`} />
+                    ))}
+                  </div>
+                  <div className={styles.sheetTitleSection}>
+                    <h2 className={styles.sheetTitle}>성함을 입력해주세요</h2>
+                  </div>
+                  <div className={styles.sheetForm}>
+                    <div className={styles.sheetInputGroup}>
+                      <label className={styles.sheetLabel}>성함</label>
+                      <input
+                        type="text"
+                        className={styles.sheetInput}
+                        placeholder="이름을 입력해주세요"
+                        value={formData.guestName}
+                        onChange={(e) => setFormData({ ...formData, guestName: e.target.value })}
+                        autoFocus
+                      />
+                    </div>
+                    {error && <div className={styles.errorMessage}>{error}</div>}
+                    <button
+                      className={styles.sheetSubmitButton}
+                      onClick={goFormNext}
+                      disabled={!formData.guestName.trim()}
+                    >
+                      다음
+                    </button>
+                  </div>
+                </>
+              )}
 
-              {error && <p className={styles.error}>{error}</p>}
+              {/* ── 스텝 3: 축의금 금액 ── */}
+              {formStep === 'amount' && (
+                <>
+                  <div className={styles.sheetHeader}>
+                    <button className={styles.backButton} onClick={goFormBack}>
+                      <BackIcon />
+                    </button>
+                    <button className={styles.closeButton} onClick={onClose}>
+                      <CloseIcon />
+                    </button>
+                  </div>
+                  <div className={styles.progressBarWrapper}>
+                    {formSteps.map((s, i) => (
+                      <div key={s} className={`${styles.progressStep} ${currentFormStepIndex >= i ? styles.progressStepActive : ''}`} />
+                    ))}
+                  </div>
+                  <div className={styles.sheetTitleSection}>
+                    <h2 className={styles.sheetTitle}>축의금 금액을 입력해주세요</h2>
+                  </div>
+                  <div className={styles.sheetForm}>
+                    <div className={styles.sheetInputGroup}>
+                      <label className={styles.sheetLabel}>금액</label>
+                      <input
+                        type="text"
+                        className={styles.sheetInput}
+                        placeholder="100,000"
+                        value={formData.contributionAmount}
+                        onChange={(e) => setFormData({ ...formData, contributionAmount: formatAmount(e.target.value) })}
+                        autoFocus
+                      />
+                    </div>
+                    <div className={styles.quickAmountGroup}>
+                      {['30,000', '50,000', '100,000', '200,000'].map((amt) => (
+                        <button
+                          key={amt}
+                          type="button"
+                          className={`${styles.quickAmountButton} ${formData.contributionAmount === amt ? styles.quickAmountActive : ''}`}
+                          onClick={() => setFormData({ ...formData, contributionAmount: amt })}
+                        >
+                          {amt}원
+                        </button>
+                      ))}
+                    </div>
+                    {error && <div className={styles.errorMessage}>{error}</div>}
+                    <button
+                      className={styles.sheetSubmitButton}
+                      onClick={goFormNext}
+                      disabled={!formData.contributionAmount.replace(/[^\d]/g, '')}
+                    >
+                      다음
+                    </button>
+                  </div>
+                </>
+              )}
 
-              {/* 제출 버튼 */}
-              <button
-                className={styles.submitButton}
-                onClick={handleSubmit}
-                disabled={isLoading || !formData.guestName.trim() || !formData.contributionAmount || !formData.side || !formData.relationship}
-              >
-                {isLoading ? (
-                  <>
-                    <span className={styles.spinner}></span>
-                    {editData ? '수정 중...' : '전달 중...'}
-                  </>
-                ) : (
-                  editData ? '축의금 수정하기' : '축의금 전달하기'
-                )}
-              </button>
-            </div>
+              {/* ── 스텝 4: 구분 ── */}
+              {formStep === 'side' && (
+                <>
+                  <div className={styles.sheetHeader}>
+                    <button className={styles.backButton} onClick={goFormBack}>
+                      <BackIcon />
+                    </button>
+                    <button className={styles.closeButton} onClick={onClose}>
+                      <CloseIcon />
+                    </button>
+                  </div>
+                  <div className={styles.progressBarWrapper}>
+                    {formSteps.map((s, i) => (
+                      <div key={s} className={`${styles.progressStep} ${currentFormStepIndex >= i ? styles.progressStepActive : ''}`} />
+                    ))}
+                  </div>
+                  <div className={styles.sheetTitleSection}>
+                    <h2 className={styles.sheetTitle}>어느 측으로 전달할까요?</h2>
+                  </div>
+                  <div className={styles.sheetForm}>
+                    <div className={styles.sideButtonGroup}>
+                      <button
+                        type="button"
+                        className={`${styles.sideButton} ${formData.side === 'groom' ? styles.active : ''}`}
+                        onClick={() => setFormData({ ...formData, side: 'groom' })}
+                      >
+                        신랑측
+                      </button>
+                      <button
+                        type="button"
+                        className={`${styles.sideButton} ${formData.side === 'bride' ? styles.active : ''}`}
+                        onClick={() => setFormData({ ...formData, side: 'bride' })}
+                      >
+                        신부측
+                      </button>
+                    </div>
+                    {error && <div className={styles.errorMessage}>{error}</div>}
+                    <button
+                      className={styles.sheetSubmitButton}
+                      onClick={goFormNext}
+                      disabled={!formData.side}
+                    >
+                      다음
+                    </button>
+                  </div>
+                </>
+              )}
+
+              {/* ── 스텝 5: 관계 ── */}
+              {formStep === 'relation' && (
+                <>
+                  <div className={styles.sheetHeader}>
+                    <button className={styles.backButton} onClick={goFormBack}>
+                      <BackIcon />
+                    </button>
+                    <button className={styles.closeButton} onClick={onClose}>
+                      <CloseIcon />
+                    </button>
+                  </div>
+                  <div className={styles.progressBarWrapper}>
+                    {formSteps.map((s, i) => (
+                      <div key={s} className={`${styles.progressStep} ${currentFormStepIndex >= i ? styles.progressStepActive : ''}`} />
+                    ))}
+                  </div>
+                  <div className={styles.sheetTitleSection}>
+                    <h2 className={styles.sheetTitle}>관계를 선택해주세요</h2>
+                  </div>
+                  <div className={styles.sheetForm}>
+                    <div className={styles.relationshipGroup}>
+                      {relationshipOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          className={`${styles.relationshipChip} ${formData.relationship === option.value ? styles.active : ''}`}
+                          onClick={() => setFormData({ ...formData, relationship: option.value })}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                    {error && <div className={styles.errorMessage}>{error}</div>}
+                    <button
+                      className={styles.sheetSubmitButton}
+                      onClick={handleSubmit}
+                      disabled={isLoading || !formData.relationship}
+                    >
+                      {isLoading ? (
+                        <>
+                          <span className={styles.spinner}></span>
+                          {editData ? '수정 중...' : '전달 중...'}
+                        </>
+                      ) : (
+                        editData ? '축의금 수정하기' : '축의금 전달하기'
+                      )}
+                    </button>
+                  </div>
+                </>
+              )}
+            </>
           )}
         </div>
       </div>

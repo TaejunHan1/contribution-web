@@ -88,6 +88,288 @@
   color: #4e5968;
 }
 
+/* ── 새 sheet 디자인 (info 스텝) ── */
+.dragHandle {
+  width: 36px;
+  height: 4px;
+  background: #d1d5db;
+  border-radius: 2px;
+  margin: 10px auto 0;
+}
+
+.sheetHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px 0;
+}
+
+.sheetHeader .closeButton {
+  position: static;
+  background: none;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  padding: 4px;
+}
+
+.sheetHeader .closeButton:hover {
+  background: #f5f5f7;
+  border-radius: 50%;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  padding: 6px 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.backButton:hover { background: #f5f5f7; }
+.backButton:active { background: #e8e8ed; }
+
+.sheetTitleSection {
+  padding: 8px 24px 16px;
+}
+
+.sheetTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #191919;
+  line-height: 1.35;
+  margin: 0;
+  white-space: pre-line;
+}
+
+.sheetForm {
+  padding: 0 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sheetInputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sheetLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: #191919;
+}
+
+.sheetInput {
+  width: 100%;
+  padding: 16px;
+  background: #f4f6f8;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  color: #191919;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.sheetInput::placeholder { color: #b0b8c1; }
+.sheetInput:focus { background: #eef1f5; }
+
+.sheetAgreement {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.sheetCheckbox {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #d1d5db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.sheetChecked {
+  background: #3182F6;
+  border-color: #3182F6;
+}
+
+.sheetAgreementText {
+  flex: 1;
+  font-size: 14px;
+  color: #191919;
+}
+
+.sheetAgreementLink {
+  font-size: 14px;
+  color: #3182F6;
+  font-weight: 500;
+}
+
+.sheetSubmitButton {
+  width: 100%;
+  padding: 17px;
+  background: #b0b8c1;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: not-allowed;
+  transition: background 0.2s;
+  margin-top: 4px;
+}
+
+.sheetSubmitButton:not(:disabled) {
+  background: #3182F6;
+  cursor: pointer;
+}
+
+.sheetSubmitButton:disabled {
+  background: #b0b8c1;
+  cursor: not-allowed;
+}
+
+.errorMessage {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* ── 인증번호 스텝 (ContributionModal과 통일) ── */
+.verificationPhone {
+  font-size: 14px;
+  color: #b0b8c1;
+  margin: 6px 0 0;
+}
+
+.verificationInputWrapper {
+  display: flex;
+  align-items: center;
+  background: #f4f6f8;
+  border-radius: 12px;
+  padding: 16px;
+  gap: 8px;
+}
+
+.verificationCodeInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  color: #191919;
+  outline: none;
+  min-width: 0;
+}
+
+.verificationCodeInput::placeholder { color: #b0b8c1; }
+
+.verificationTimer {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ef4444;
+  flex-shrink: 0;
+}
+
+.verificationResendRow {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.resendTextButton {
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: #8b95a1;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}
+
+.resendTextButton:disabled {
+  color: #d1d5db;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+.verificationButtonRow {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.prevButton {
+  flex: 1;
+  padding: 17px;
+  background: #f4f6f8;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #191919;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.prevButton:hover { background: #e8ecf0; }
+.prevButton:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.verifyButton {
+  flex: 1;
+  padding: 17px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  transition: background 0.2s;
+}
+
+.verifyButton:not(:disabled) {
+  background: #3182F6;
+  cursor: pointer;
+}
+
+.verifyButton:disabled {
+  background: #b0b8c1;
+  cursor: not-allowed;
+}
+
+/* ── 방명록 작성 스텝 텍스트에어리어 ── */
+.sheetTextarea {
+  width: 100%;
+  padding: 16px;
+  background: #f4f6f8;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  color: #191919;
+  outline: none;
+  box-sizing: border-box;
+  resize: none;
+  font-family: inherit;
+  line-height: 1.6;
+  min-height: 120px;
+}
+
+.sheetTextarea::placeholder { color: #b0b8c1; }
+.sheetTextarea:focus { background: #eef1f5; }
+
 .content {
   padding: 16px 24px 32px 24px;
 }

@@ -123,7 +123,8 @@ const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }
             border: '1px solid #dee2e6',
             borderRadius: '12px',
             fontSize: '15px',
-            fontWeight: '500',
+            fontWeight: '600',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
             cursor: 'pointer',
             transition: 'all 0.2s ease',
             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
@@ -176,7 +177,8 @@ const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }
             border: '1px solid #dee2e6',
             borderRadius: '12px',
             fontSize: '15px',
-            fontWeight: '500',
+            fontWeight: '600',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
             cursor: 'pointer',
             transition: 'all 0.2s ease',
             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
