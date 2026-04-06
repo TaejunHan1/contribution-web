@@ -3,30 +3,48 @@ const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }
   // 전달받은 주소 또는 기본 주소 사용
   const fullAddress = address || '서울시 중구 소공로 119';
   
-  // 주소에서 불필요한 정보 제거 함수 (호수, 층수, 세부 위치 등)
-  const cleanAddress = (addr) => {
-    // 한국 주소 패턴 분석: 시도 구군 도로명 건물번호까지만 남기기
-    let cleaned = addr
-      // 호수 제거 (숫자+호, 영문+숫자+호)
-      .replace(/\s+[A-Z]?\d+호\b/g, '') 
-      .replace(/\s+\d+호\b/g, '') 
-      // 층수 제거 (숫자+층, B+숫자)
-      .replace(/\s+\d+층\b/g, '') 
-      .replace(/\s+B\d+\b/g, '') 
-      // 층수 + 기타 (3층매점, 2층카페 등)
-      .replace(/\s+\d+층[가-힣]+/g, '') 
-      .replace(/\s+B\d+[가-힣]+/g, '') 
-      // 상호명이나 기타 세부사항 제거
-      .replace(/\s+[가-힣]{2,}\s*$/g, '') // 끝에 있는 한글 상호명
-      .replace(/\s{2,}/g, ' ') // 여러 공백 정리
+  // 도로명주소만 추출 (시/도 이후 부분)
+  const extractRoadAddress = (addr) => {
+    const regionPattern = /(서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충북|충남|전북|전남|경북|경남|제주)/;
+    const match = addr.match(regionPattern);
+    if (match) {
+      // 시도명부터 잘라내고, 층/호 등 불필요 정보 제거
+      let roadAddr = addr.slice(addr.indexOf(match[0]));
+      roadAddr = roadAddr
+        .replace(/\s+\d+층\b.*/g, '')
+        .replace(/\s+B\d+\b.*/g, '')
+        .replace(/\s+\d+호\b.*/g, '')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+      return roadAddr;
+    }
+    // 시도 못 찾으면 층/호만 제거
+    return addr
+      .replace(/\s+\d+층\b.*/g, '')
+      .replace(/\s+\d+호\b.*/g, '')
       .trim();
-    
-    return cleaned;
   };
-  
-  // 정제된 주소만 사용 (venueName 사용하지 않음)
-  const cleanedAddress = cleanAddress(fullAddress);
+
+  // 앱 딥링크 시도 후 웹으로 fallback
+  const tryOpenApp = (appUrl, webUrl) => {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (!isMobile) {
+      window.open(webUrl, '_blank');
+      return;
+    }
+    const start = Date.now();
+    window.location.href = appUrl;
+    setTimeout(() => {
+      if (Date.now() - start < 2500) {
+        window.location.href = webUrl;
+      }
+    }, 1500);
+  };
+
+  const cleanedAddress = extractRoadAddress(fullAddress);
   const searchQuery = encodeURIComponent(cleanedAddress);
+  // 지도 임베드에는 전체 주소 사용 (venueName 포함)
+  const embedQuery = encodeURIComponent(venueName ? `${venueName} ${cleanedAddress}` : cleanedAddress);
   
   // Google Maps Embed API URL (정확한 위치 표시)
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -34,35 +52,21 @@ const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }
   // API key 확인 (에러는 조용히 처리)
   
   // API key 문제 시 fallback URL 사용
-  const mapUrl = apiKey 
-    ? `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${searchQuery}&zoom=16&maptype=roadmap&language=ko&region=KR`
-    : `https://www.google.com/maps?q=${searchQuery}&output=embed&hl=ko`;
-  
+  const mapUrl = apiKey
+    ? `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${embedQuery}&zoom=16&maptype=roadmap&language=ko&region=KR`
+    : `https://www.google.com/maps?q=${embedQuery}&output=embed&hl=ko`;
+
   // 각 지도 앱으로 연결하는 함수들
   const openNaverMap = () => {
-    const naverUrl = `https://map.naver.com/v5/search/${searchQuery}`;
-    window.open(naverUrl, '_blank');
+    const appUrl = `nmap://search?query=${searchQuery}&appname=com.gyeongjo.app`;
+    const webUrl = `https://map.naver.com/v5/search/${searchQuery}`;
+    tryOpenApp(appUrl, webUrl);
   };
-  
+
   const openTmap = () => {
-    // T맵 웹 검색 URL - 정제된 주소 사용
-    const tmapWebUrl = `https://www.tmap.co.kr/tmap2/mobile/route.jsp?name=${searchQuery}`;
-    
-    // 모바일에서는 앱 스토어로, PC에서는 웹으로
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    
-    if (isMobile) {
-      // 모바일에서는 앱 스토어로 이동
-      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-      if (isIOS) {
-        window.open('https://apps.apple.com/kr/app/t-map/id431589174', '_blank');
-      } else {
-        window.open('https://play.google.com/store/apps/details?id=com.skt.tmap.ku', '_blank');
-      }
-    } else {
-      // PC에서는 웹 버전으로
-      window.open(tmapWebUrl, '_blank');
-    }
+    const appUrl = `tmap://search?name=${searchQuery}`;
+    const webUrl = `https://tmap.life/${searchQuery}`;
+    tryOpenApp(appUrl, webUrl);
   };
   
   const openKakaoMap = () => {
