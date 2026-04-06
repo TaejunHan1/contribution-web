@@ -224,7 +224,7 @@ export async function getServerSideProps(context) {
 
     if (supabaseUrl && supabaseKey) {
       const res = await fetch(
-        `${supabaseUrl}/rest/v1/events?id=eq.${eventId}&select=id,groom_name,bride_name,event_date,ceremony_time,location,event_name`,
+        `${supabaseUrl}/rest/v1/events?id=eq.${eventId}&select=*`,
         {
           headers: {
             apikey: supabaseKey,
