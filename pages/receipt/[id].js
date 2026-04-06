@@ -1,6 +1,5 @@
 // pages/receipt/[id].js - 축의금 영수증 전용 페이지
 import Head from 'next/head';
-import Image from 'next/image';
 import styles from './receipt.module.css';
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
@@ -93,7 +92,7 @@ export default function ReceiptPage({ receipt, error }) {
             <div className={styles.paper}>
               {/* 로고 배지 */}
               <div className={styles.logoBadge}>
-                <Image src="/jeongdamlogo.png" alt="정담" width={36} height={36} className={styles.logoImg} />
+                <img src="/jeongdamlogo.png" alt="정담" className={styles.logoImg} />
               </div>
               <p className={styles.brandName}>JEONGDAM · 정담</p>
               <p className={styles.brandSub}>디지털 경조사 · 축의금 영수증</p>
