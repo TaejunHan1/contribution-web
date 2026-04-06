@@ -42,9 +42,6 @@ const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }
   const openNaverApp = () => {
     window.location.href = `nmap://search?query=${searchQuery}&appname=com.gyeongjo.app`;
   };
-  const openNaverWeb = () => {
-    window.open(`https://map.naver.com/v5/search/${searchQuery}`, '_blank');
-  };
 
   const openTmapApp = () => {
     window.location.href = `tmap://search?name=${searchQuery}`;
@@ -100,23 +97,16 @@ const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }
       {/* 지도 앱 연결 버튼들 */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
 
-        {/* 네이버지도 */}
         <div style={{ display: 'flex', gap: '8px' }}>
           <button onClick={openNaverApp} style={btnStyle}>
             <img src="/naver.png" alt="네이버지도" style={iconStyle} />
-            <span>네이버지도 앱</span>
+            <span>네이버지도</span>
           </button>
-          <button onClick={openNaverWeb} style={btnStyle}>
-            <img src="/naver.png" alt="네이버지도" style={iconStyle} />
-            <span>네이버지도 웹</span>
+          <button onClick={openTmapApp} style={btnStyle}>
+            <img src="/tmap.jpeg" alt="T맵" style={iconStyle} />
+            <span>T맵</span>
           </button>
         </div>
-
-        {/* 티맵 (앱만) */}
-        <button onClick={openTmapApp} style={{ ...btnStyle, width: '100%' }}>
-          <img src="/tmap.jpeg" alt="T맵" style={iconStyle} />
-          <span>T맵 앱으로 열기</span>
-        </button>
 
       </div>
     </div>
