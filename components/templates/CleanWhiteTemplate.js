@@ -469,6 +469,17 @@ const CleanWhiteTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
     }
   }, [guestMessages]);
 
+  // 이미 축의금이 있으면 WelcomeChoiceModal 닫고 arrival_checked 저장
+  useEffect(() => {
+    if (myContribution && eventData?.id) {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`arrival_checked_${eventData.id}`, 'true');
+      }
+      arrivalModalCheckedRef.current = true;
+      if (showWelcomeChoice) setShowWelcomeChoice(false);
+    }
+  }, [myContribution]);
+
   const mergedMessages = useMemo(() => {
     const stateMessageIds = new Set(guestMessages.map(msg => msg.id));
     const propsMessages = (eventData.guestMessages || []).filter(msg => !stateMessageIds.has(msg.id));
@@ -985,10 +996,10 @@ const CleanWhiteTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
       <WelcomeChoiceModal isOpen={showWelcomeChoice} onClose={() => setShowWelcomeChoice(false)} onSelectGuestbook={handleSelectGuestbook} onSelectContribution={handleSelectContribution} eventData={eventData} />
       <GuestbookModal isOpen={showGuestbookModal} onClose={handleGuestbookModalClose} onSubmit={handleGuestbookSubmit} eventData={eventData} onTriggerArrival={handleTriggerArrival} />
       <EditGuestbookModal isOpen={showEditModal} onClose={() => { setShowEditModal(false); setEditingMessage(null); }} message={editingMessage} eventData={eventData} onUpdate={handleEditUpdate} onDelete={handleEditDelete} />
-<ContributionModal isOpen={showContributionModal} onClose={() => { setShowContributionModal(false); setIsEditMode(false); }} onBack={!isEditMode ? () => { setShowContributionModal(false); setShowWelcomeChoice(true); } : undefined} onSubmit={handleContributionSubmit} eventData={eventData} editData={isEditMode ? myContribution : null} />
+<ContributionModal isOpen={showContributionModal} onClose={() => { setShowContributionModal(false); setIsEditMode(false); }} onBack={!isEditMode ? () => { setShowContributionModal(false); setShowWelcomeChoice(true); } : undefined} onSubmit={handleContributionSubmit} eventData={eventData} editData={isEditMode ? myContribution : null} onVerifiedExisting={(c) => setMyContribution({ ...c, amount: c.contributionAmount })} />
       <CompletionModal isOpen={showCompletionModal} onClose={() => { setShowCompletionModal(false); setCompletionData(null); }} contributionData={completionData} eventData={eventData} />
 
-      {myContribution && (
+      {myContribution && !showGuestbookModal && !showWelcomeChoice && !showCompletionModal && (
         <MyContributionSection
           key={`contribution-${contributionKey}-${myContribution?.contributionAmount || myContribution?.amount}`}
           eventData={eventData}

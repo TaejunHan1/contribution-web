@@ -1,5 +1,6 @@
 // pages/api/submit-contribution.js - 축의금 저장 API
 import { sendContributionNotification } from '../../lib/notificationService';
+import { sendContributionAlimtalk } from '../../lib/kakaoAlimtalk';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -182,6 +183,28 @@ export default async function handler(req, res) {
         });
       }
       contributionData = insertData;
+    }
+
+    // 📱 카카오 알림톡 발송 (축의금 영수증)
+    try {
+      const { data: eventInfo } = await supabase
+        .from('events')
+        .select('groom_name, bride_name')
+        .eq('id', eventId)
+        .single();
+
+      await sendContributionAlimtalk({
+        phone,
+        guestName,
+        amount: contributionAmount,
+        side,
+        relationship,
+        groomName: eventInfo?.groom_name || '신랑',
+        brideName: eventInfo?.bride_name || '신부',
+        contributionId: contributionData.id,
+      });
+    } catch (alimtalkError) {
+      console.error('[알림톡] 발송 오류 (축의금 저장은 성공):', alimtalkError);
     }
 
     // 🔔 푸시 알림 발송 시도

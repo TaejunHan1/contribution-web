@@ -62,6 +62,34 @@ const WelcomeChoiceModal = ({ isOpen, onClose, onSelectGuestbook, onSelectContri
             </div>
           </div>
 
+          {/* 영수증 카드 */}
+          <div className={styles.receiptWrap}>
+            <div className={styles.receiptSlot} />
+            <div className={styles.receiptPaper}>
+              <div className={styles.receiptHeader}>
+                <div className={styles.receiptIcon}>
+                  {['#4ADE80','#F87171','#60A5FA','#FACC15'].map((c, i) => (
+                    <div key={i} className={styles.receiptIconBar} style={{ backgroundColor: c }} />
+                  ))}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <p className={styles.receiptTitle}>카카오톡 영수증 발송</p>
+                  <p className={styles.receiptDesc}>축의금 전달 완료 시 입력하신 번호로 카카오톡 영수증이 전송됩니다.</p>
+                </div>
+              </div>
+              <div className={styles.receiptDivider} />
+              <div className={styles.receiptRow}>
+                <span className={styles.receiptLabel}>결혼식</span>
+                <span className={styles.receiptVal}>{groomName} · {brideName}</span>
+              </div>
+              <div className={styles.receiptRow}>
+                <span className={styles.receiptLabel}>축의금</span>
+                <span className={styles.receiptValBlue}>입력하실 금액</span>
+              </div>
+              <div className={styles.receiptZigzag} />
+            </div>
+          </div>
+
           {/* 안내 박스 */}
           <div className={styles.infoBox}>
             <span className={styles.infoIcon}>ℹ️</span>

@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import styles from './ContributionModal.module.css';
 
-const ContributionModal = ({ isOpen, onClose, onBack, onSubmit, eventData, editData = null }) => {
+const ContributionModal = ({ isOpen, onClose, onBack, onSubmit, eventData, editData = null, onVerifiedExisting }) => {
   const [formData, setFormData] = useState({
     phone: '',
     verificationCode: '',
@@ -227,14 +227,6 @@ const ContributionModal = ({ isOpen, onClose, onBack, onSubmit, eventData, editD
     setIsLoading(true);
     setError('');
 
-    // 중복 검사 먼저 수행
-    const duplicateCheck = await checkExistingContribution(`+82${phoneNumbers.slice(1)}`);
-    if (duplicateCheck.exists) {
-      setError('이미 이 전화번호로 축의금을 전달하셨습니다.');
-      setIsLoading(false);
-      return;
-    }
-
     try {
       const response = await fetch('/api/send-verification', {
         method: 'POST',
@@ -292,8 +284,17 @@ const ContributionModal = ({ isOpen, onClose, onBack, onSubmit, eventData, editD
         const phoneNumbers = formData.phone.replace(/[^\d]/g, '');
         const verifiedPhone = `+82${phoneNumbers.slice(1)}`;
         localStorage.setItem('verifiedPhone', verifiedPhone);
-        setFormStep('book');
-        setStep('form');
+
+        // 이 이벤트에 이미 축의금을 낸 번호인지 확인
+        const existing = await checkExistingContribution(verifiedPhone);
+        if (existing.exists) {
+          // 기존 축의금 있음 → 모달 닫고 템플릿의 "내가 축의한 금액" 섹션 표시
+          if (onVerifiedExisting) onVerifiedExisting(existing.contribution);
+          onClose();
+        } else {
+          setFormStep('book');
+          setStep('form');
+        }
       } else {
         setError(result.error || '인증번호가 올바르지 않습니다.');
       }
@@ -435,6 +436,34 @@ const ContributionModal = ({ isOpen, onClose, onBack, onSubmit, eventData, editD
 
               <div className={styles.sheetTitleSection}>
                 <h2 className={styles.sheetTitle}>안전한 축의금 전달을 위해{'\n'}휴대폰 번호를 인증해주세요</h2>
+              </div>
+
+              {/* 영수증 카드 */}
+              <div className={styles.receiptWrap}>
+                <div className={styles.receiptSlot} />
+                <div className={styles.receiptPaper}>
+                  <div className={styles.receiptHeader}>
+                    <div className={styles.receiptIcon}>
+                      {['#4ADE80','#F87171','#60A5FA','#FACC15'].map((c, i) => (
+                        <div key={i} className={styles.receiptIconBar} style={{ backgroundColor: c }} />
+                      ))}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <p className={styles.receiptTitle}>카카오톡 영수증 발송</p>
+                      <p className={styles.receiptDesc}>축의금 전달 완료 시 입력하신 번호로 카카오톡 영수증이 전송됩니다.</p>
+                    </div>
+                  </div>
+                  <div className={styles.receiptDivider} />
+                  <div className={styles.receiptRow}>
+                    <span className={styles.receiptLabel}>결혼식</span>
+                    <span className={styles.receiptVal}>{groomName} · {brideName}</span>
+                  </div>
+                  <div className={styles.receiptRow}>
+                    <span className={styles.receiptLabel}>축의금</span>
+                    <span className={styles.receiptValBlue}>입력하실 금액</span>
+                  </div>
+                  <div className={styles.receiptZigzag} />
+                </div>
               </div>
 
               <div className={styles.sheetForm}>

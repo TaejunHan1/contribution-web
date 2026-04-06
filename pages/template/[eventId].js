@@ -351,10 +351,24 @@ export default function TemplatePage({ serverEvent, serverTemplate, serverEventI
   };
 
   if (loading || !fontsLoaded) {
+    const ogEvent = serverEvent;
+    const ogEventId = serverEventId;
+    const ogTemplate = serverTemplate || template;
     return (
       <>
         <Head>
-          <title>청첩장 로딩 중...</title>
+          <title>{ogEvent ? `${ogEvent.groom_name} ♡ ${ogEvent.bride_name} 결혼식에 초대합니다` : '청첩장 로딩 중...'}</title>
+          {ogEvent && (<>
+            <meta property="og:title" content={`${ogEvent.groom_name} ♡ ${ogEvent.bride_name} 결혼식에 초대합니다`} />
+            <meta property="og:description" content={`${ogEvent.event_date ? new Date(ogEvent.event_date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : ''} ${ogEvent.ceremony_time || ''}${ogEvent.location ? ` · ${ogEvent.location}` : ''}`} />
+            <meta property="og:type" content="website" />
+            <meta property="og:image" content={`https://contribution-web-srgt.vercel.app/api/og?eventId=${ogEventId}&template=${ogTemplate}`} />
+            <meta property="og:image:width" content="1200" />
+            <meta property="og:image:height" content="630" />
+            <meta property="og:image:alt" content={`${ogEvent.groom_name} ♡ ${ogEvent.bride_name} 청첩장`} />
+            <meta name="twitter:card" content="summary_large_image" />
+            <meta name="twitter:image" content={`https://contribution-web-srgt.vercel.app/api/og?eventId=${ogEventId}&template=${ogTemplate}`} />
+          </>)}
         </Head>
         <div className="min-h-screen flex items-center justify-center" style={{
           background: 'linear-gradient(135deg, #F8F5F2, #F3EFEC)',

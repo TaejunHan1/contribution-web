@@ -681,6 +681,17 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
   const totalPages = Math.ceil(messagesWithContent.length / messagesPerPage);
   const currentMessages = messagesWithContent.slice(currentPage * messagesPerPage, (currentPage + 1) * messagesPerPage);
 
+  // 이미 축의금이 있으면 WelcomeChoiceModal 닫고 arrival_checked 저장
+  useEffect(() => {
+    if (myContribution && eventData?.id) {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`arrival_checked_${eventData.id}`, 'true');
+      }
+      arrivalModalCheckedRef.current = true;
+      if (showWelcomeChoice) setShowWelcomeChoice(false);
+    }
+  }, [myContribution]);
+
   // ─ 모달 핸들러 ──────────────────────────────────────────────────────
   const checkAndShowWelcomeChoice = () => {
     if (arrivalModalCheckedRef.current || showWelcomeChoice) return false;
@@ -1242,6 +1253,7 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
         onSubmit={handleContributionSubmit}
         eventData={eventData}
         editData={isEditMode ? myContribution : null}
+        onVerifiedExisting={(c) => setMyContribution({ ...c, amount: c.contributionAmount })}
       />
 
       <CompletionModal
@@ -1252,7 +1264,7 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
       />
 
       {/* 내 축의금 (하단 고정) */}
-      {myContribution && (
+      {myContribution && !showGuestbookModal && !showWelcomeChoice && !showCompletionModal && (
         <MyContributionSection
           key={`mc-${contributionKey}-${myContribution?.contributionAmount || myContribution?.amount}`}
           myContribution={myContribution}
