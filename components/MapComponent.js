@@ -24,28 +24,6 @@ const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }
     return roadAddr;
   };
 
-  // 앱 딥링크 시도 후 앱 없으면 웹으로 fallback
-  const tryOpenApp = (appUrl, webUrl) => {
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if (!isMobile) {
-      window.open(webUrl, '_blank');
-      return;
-    }
-    let appOpened = false;
-    const onBlur = () => { appOpened = true; };
-    const onPageHide = () => { appOpened = true; };
-    window.addEventListener('blur', onBlur, { once: true });
-    window.addEventListener('pagehide', onPageHide, { once: true });
-    window.location.href = appUrl;
-    setTimeout(() => {
-      window.removeEventListener('blur', onBlur);
-      window.removeEventListener('pagehide', onPageHide);
-      if (!appOpened && webUrl) {
-        window.location.href = webUrl;
-      }
-    }, 2500);
-  };
-
   const cleanedAddress = extractRoadAddress(fullAddress);
   const searchQuery = encodeURIComponent(cleanedAddress);
   // 지도 임베드에는 전체 주소 사용 (venueName 포함)
@@ -61,37 +39,35 @@ const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }
     ? `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${embedQuery}&zoom=16&maptype=roadmap&language=ko&region=KR`
     : `https://www.google.com/maps?q=${embedQuery}&output=embed&hl=ko`;
 
-  // 각 지도 앱으로 연결하는 함수들
-  const openNaverMap = () => {
-    const appUrl = `nmap://search?query=${searchQuery}&appname=com.gyeongjo.app`;
-    const webUrl = `https://map.naver.com/v5/search/${searchQuery}`;
-    tryOpenApp(appUrl, webUrl);
+  const openNaverApp = () => {
+    window.location.href = `nmap://search?query=${searchQuery}&appname=com.gyeongjo.app`;
+  };
+  const openNaverWeb = () => {
+    window.open(`https://map.naver.com/v5/search/${searchQuery}`, '_blank');
   };
 
-  const openTmap = () => {
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if (!isMobile) {
-      // PC는 웹 없으므로 구글 지도로
-      window.open(`https://www.google.com/maps/search/?api=1&query=${searchQuery}`, '_blank');
-      return;
-    }
-    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    const storeUrl = isIOS
-      ? 'https://apps.apple.com/kr/app/t-map/id431589174'
-      : 'https://play.google.com/store/apps/details?id=com.skt.tmap.ku';
-    // 앱 없으면 앱스토어로
-    tryOpenApp(`tmap://search?name=${searchQuery}`, storeUrl);
+  const openTmapApp = () => {
+    window.location.href = `tmap://search?name=${searchQuery}`;
   };
-  
-  const openKakaoMap = () => {
-    const kakaoUrl = `https://map.kakao.com/link/search/${searchQuery}`;
-    window.open(kakaoUrl, '_blank');
+
+  const btnStyle = {
+    flex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    padding: '14px 12px',
+    backgroundColor: 'white',
+    color: '#333',
+    border: '1px solid #dee2e6',
+    borderRadius: '12px',
+    fontSize: '14px',
+    fontWeight: '600',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    cursor: 'pointer',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
   };
-  
-  const openGoogleMaps = () => {
-    const googleUrl = `https://www.google.com/maps/search/?api=1&query=${searchQuery}`;
-    window.open(googleUrl, '_blank');
-  };
+  const iconStyle = { width: '22px', height: '22px', objectFit: 'contain', borderRadius: '4px' };
 
   return (
     <div style={{ width }}>
@@ -122,119 +98,26 @@ const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }
       </div>
       
       {/* 지도 앱 연결 버튼들 */}
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '8px',
-        marginTop: '12px'
-      }}>
-        <button
-          onClick={openNaverMap}
-          style={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            padding: '16px 20px',
-            backgroundColor: 'white',
-            color: '#333',
-            border: '1px solid #dee2e6',
-            borderRadius: '12px',
-            fontSize: '15px',
-            fontWeight: '600',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.backgroundColor = '#f8f9fa';
-            e.target.style.borderColor = '#03c75a';
-            e.target.style.transform = 'translateY(-1px)';
-            e.target.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.backgroundColor = 'white';
-            e.target.style.borderColor = '#dee2e6';
-            e.target.style.transform = 'translateY(0)';
-            e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
-          }}
-        >
-          <div style={{ 
-            width: '28px', 
-            height: '28px', 
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0
-          }}>
-            <img 
-              src="/naver.png" 
-              alt="네이버지도" 
-              style={{ 
-                width: '100%', 
-                height: '100%', 
-                objectFit: 'contain' 
-              }} 
-            />
-          </div>
-          <span>네이버지도에서 열기</span>
-          <div style={{ marginLeft: 'auto', fontSize: '14px', color: '#adb5bd' }}>→</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
+
+        {/* 네이버지도 */}
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button onClick={openNaverApp} style={btnStyle}>
+            <img src="/naver.png" alt="네이버지도" style={iconStyle} />
+            <span>네이버지도 앱</span>
+          </button>
+          <button onClick={openNaverWeb} style={btnStyle}>
+            <img src="/naver.png" alt="네이버지도" style={iconStyle} />
+            <span>네이버지도 웹</span>
+          </button>
+        </div>
+
+        {/* 티맵 (앱만) */}
+        <button onClick={openTmapApp} style={{ ...btnStyle, width: '100%' }}>
+          <img src="/tmap.jpeg" alt="T맵" style={iconStyle} />
+          <span>T맵 앱으로 열기</span>
         </button>
-        
-        <button
-          onClick={openTmap}
-          style={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            padding: '16px 20px',
-            backgroundColor: 'white',
-            color: '#333',
-            border: '1px solid #dee2e6',
-            borderRadius: '12px',
-            fontSize: '15px',
-            fontWeight: '600',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.backgroundColor = '#f8f9fa';
-            e.target.style.borderColor = '#1e88e5';
-            e.target.style.transform = 'translateY(-1px)';
-            e.target.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.backgroundColor = 'white';
-            e.target.style.borderColor = '#dee2e6';
-            e.target.style.transform = 'translateY(0)';
-            e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
-          }}
-        >
-          <div style={{ 
-            width: '28px', 
-            height: '28px', 
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0
-          }}>
-            <img 
-              src="/tmap.jpeg" 
-              alt="T맵" 
-              style={{ 
-                width: '100%', 
-                height: '100%', 
-                objectFit: 'contain' 
-              }} 
-            />
-          </div>
-          <span>T맵에서 열기</span>
-          <div style={{ marginLeft: 'auto', fontSize: '14px', color: '#adb5bd' }}>→</div>
-        </button>
+
       </div>
     </div>
   );
