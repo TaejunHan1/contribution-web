@@ -31,15 +31,11 @@ const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }
       window.open(webUrl, '_blank');
       return;
     }
-    let appOpened = false;
-    const onVisibilityChange = () => {
-      if (document.hidden) appOpened = true;
-    };
-    document.addEventListener('visibilitychange', onVisibilityChange);
     window.location.href = appUrl;
     setTimeout(() => {
-      document.removeEventListener('visibilitychange', onVisibilityChange);
-      if (!appOpened && webUrl) {
+      // 앱이 열렸으면 페이지가 숨겨진 상태 → redirect 안 함
+      // 앱이 없으면 페이지가 그대로 visible → webUrl로 이동
+      if (!document.hidden && webUrl) {
         window.location.href = webUrl;
       }
     }, 1500);
