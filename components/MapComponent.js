@@ -24,17 +24,22 @@ const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }
     return roadAddr;
   };
 
-  // 앱 딥링크 시도 후 웹으로 fallback
+  // 앱 딥링크 시도 후 앱 없으면 웹으로 fallback
   const tryOpenApp = (appUrl, webUrl) => {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     if (!isMobile) {
       window.open(webUrl, '_blank');
       return;
     }
-    const start = Date.now();
+    let appOpened = false;
+    const onVisibilityChange = () => {
+      if (document.hidden) appOpened = true;
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
     window.location.href = appUrl;
     setTimeout(() => {
-      if (Date.now() - start < 2500) {
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      if (!appOpened && webUrl) {
         window.location.href = webUrl;
       }
     }, 1500);
@@ -63,9 +68,18 @@ const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }
   };
 
   const openTmap = () => {
-    const appUrl = `tmap://search?name=${searchQuery}`;
-    const webUrl = `https://tmap.life/${searchQuery}`;
-    tryOpenApp(appUrl, webUrl);
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (!isMobile) {
+      // PC는 웹 없으므로 구글 지도로
+      window.open(`https://www.google.com/maps/search/?api=1&query=${searchQuery}`, '_blank');
+      return;
+    }
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const storeUrl = isIOS
+      ? 'https://apps.apple.com/kr/app/t-map/id431589174'
+      : 'https://play.google.com/store/apps/details?id=com.skt.tmap.ku';
+    // 앱 없으면 앱스토어로
+    tryOpenApp(`tmap://search?name=${searchQuery}`, storeUrl);
   };
   
   const openKakaoMap = () => {
