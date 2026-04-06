@@ -249,9 +249,6 @@ const nextConfig = {
     ignoreBuildErrors: false,
   },
 
-  // 출력 설정
-  output: 'standalone', // Docker 컨테이너에 최적화
-
   // 국제화 설정 (다국어 지원 시)
   i18n: {
     locales: ['ko', 'en'],
