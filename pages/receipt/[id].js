@@ -176,57 +176,21 @@ export default function ReceiptPage({ receipt, error }) {
   );
 }
 
-export async function getServerSideProps({ params }) {
+export async function getServerSideProps({ params, req }) {
   const { id } = params;
 
   try {
-    const { createClient } = await import('@supabase/supabase-js');
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY
-    );
+    const host = req.headers.host;
+    const protocol = host.includes('localhost') ? 'http' : 'https';
+    const res = await fetch(`${protocol}://${host}/api/get-receipt?id=${id}`);
+    const data = await res.json();
 
-    const { data, error } = await supabase
-      .from('guest_book')
-      .select('id, guest_name, amount, relation_detail, relation_category, created_at, event_id')
-      .eq('id', id)
-      .single();
-
-    if (error || !data) {
-      console.error('[receipt] guest_book query error:', error, 'id:', id);
+    if (!data.success || !data.receipt) {
       return { props: { receipt: null, error: true } };
     }
 
-    let eventInfo = null;
-    if (data.event_id) {
-      const { data: evData } = await supabase
-        .from('events')
-        .select('groom_name, bride_name, event_date, ceremony_time, location')
-        .eq('id', data.event_id)
-        .single();
-      eventInfo = evData;
-    }
-
-    return {
-      props: {
-        receipt: {
-          id: data.id,
-          guestName: data.guest_name,
-          amount: data.amount,
-          relationship: data.relation_detail,
-          side: data.relation_category,
-          createdAt: data.created_at,
-          groomName: eventInfo?.groom_name || '신랑',
-          brideName: eventInfo?.bride_name || '신부',
-          eventDate: eventInfo?.event_date || null,
-          ceremonyTime: eventInfo?.ceremony_time || null,
-          location: eventInfo?.location || null,
-        },
-        error: false,
-      },
-    };
+    return { props: { receipt: data.receipt, error: false } };
   } catch (err) {
-    console.error('[receipt] catch error:', err);
     return { props: { receipt: null, error: true } };
   }
 }
