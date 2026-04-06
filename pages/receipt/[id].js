@@ -1,4 +1,6 @@
 // pages/receipt/[id].js - 축의금 영수증 전용 페이지
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import Head from 'next/head';
 import styles from './receipt.module.css';
 
@@ -47,17 +49,30 @@ function DetailRow({ label, value }) {
   );
 }
 
+export default function ReceiptPage() {
+  const router = useRouter();
+  const { id } = router.query;
+  const [receipt, setReceipt] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-export default function ReceiptPage({ receipt, error }) {
-  if (error || !receipt) {
-    return (
-      <div className={styles.errorWrap}>
-        <p className={styles.errorText}>영수증을 찾을 수 없습니다.</p>
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (!id) return;
+    fetch(`/api/get-receipt?id=${id}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.success && data.receipt) {
+          setReceipt(data.receipt);
+        } else {
+          setError(true);
+        }
+      })
+      .catch(() => setError(true))
+      .finally(() => setLoading(false));
+  }, [id]);
 
   const handleShare = async () => {
+    if (!receipt) return;
     const text = [
       `[정담] 축의금 전달 완료`,
       ``,
@@ -74,6 +89,22 @@ export default function ReceiptPage({ receipt, error }) {
     }
   };
 
+  if (loading) {
+    return (
+      <div className={styles.errorWrap}>
+        <p className={styles.errorText}>불러오는 중...</p>
+      </div>
+    );
+  }
+
+  if (error || !receipt) {
+    return (
+      <div className={styles.errorWrap}>
+        <p className={styles.errorText}>영수증을 찾을 수 없습니다.</p>
+      </div>
+    );
+  }
+
   return (
     <>
       <Head>
@@ -86,7 +117,6 @@ export default function ReceiptPage({ receipt, error }) {
 
           {/* 영수증 */}
           <div className={styles.receiptWrap}>
-            {/* 위 지그재그 */}
             <div className={styles.zigzagTop} />
 
             <div className={styles.paper}>
@@ -141,27 +171,12 @@ export default function ReceiptPage({ receipt, error }) {
                 <p className={styles.appCtaTitle}>내 축의 내역을 앱에서 평생 보관하세요</p>
                 <p className={styles.appCtaSub}>정담 앱에서 모든 경조사 내역을 한눈에</p>
                 <div className={styles.appBtns}>
-              <a
-                href="https://apps.apple.com/app/id6747748534"
-                className={styles.appBtn}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                App Store
-              </a>
-              <a
-                href="https://play.google.com/store/apps/details?id=com.gyeongjo.app"
-                className={styles.appBtn}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Google Play
-              </a>
+                  <a href="https://apps.apple.com/app/id6747748534" className={styles.appBtn} target="_blank" rel="noopener noreferrer">App Store</a>
+                  <a href="https://play.google.com/store/apps/details?id=com.gyeongjo.app" className={styles.appBtn} target="_blank" rel="noopener noreferrer">Google Play</a>
                 </div>
               </div>
             </div>
 
-            {/* 아래 지그재그 */}
             <div className={styles.zigzagBottom} />
           </div>
 
@@ -174,23 +189,4 @@ export default function ReceiptPage({ receipt, error }) {
       </div>
     </>
   );
-}
-
-export async function getServerSideProps({ params, req }) {
-  const { id } = params;
-
-  try {
-    const host = req.headers.host;
-    const protocol = host.includes('localhost') ? 'http' : 'https';
-    const res = await fetch(`${protocol}://${host}/api/get-receipt?id=${id}`);
-    const data = await res.json();
-
-    if (!data.success || !data.receipt) {
-      return { props: { receipt: null, error: true } };
-    }
-
-    return { props: { receipt: data.receipt, error: false } };
-  } catch (err) {
-    return { props: { receipt: null, error: true } };
-  }
 }
