@@ -3,26 +3,25 @@ const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }
   // 전달받은 주소 또는 기본 주소 사용
   const fullAddress = address || '서울시 중구 소공로 119';
   
-  // 도로명주소만 추출 (시/도 이후 부분)
+  // 도로명주소만 추출 (시/도 이후 부분, 중복 제거)
   const extractRoadAddress = (addr) => {
-    const regionPattern = /(서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충북|충남|전북|전남|경북|경남|제주)/;
-    const match = addr.match(regionPattern);
-    if (match) {
-      // 시도명부터 잘라내고, 층/호 등 불필요 정보 제거
-      let roadAddr = addr.slice(addr.indexOf(match[0]));
-      roadAddr = roadAddr
-        .replace(/\s+\d+층\b.*/g, '')
-        .replace(/\s+B\d+\b.*/g, '')
-        .replace(/\s+\d+호\b.*/g, '')
-        .replace(/\s{2,}/g, ' ')
-        .trim();
-      return roadAddr;
+    const regionPattern = /(서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충북|충남|전북|전남|경북|경남|제주)/g;
+    const matches = [...addr.matchAll(regionPattern)];
+    if (matches.length === 0) {
+      return addr.replace(/\s+\d+층\b.*/g, '').replace(/\s+\d+호\b.*/g, '').trim();
     }
-    // 시도 못 찾으면 층/호만 제거
-    return addr
+    // 첫 번째 시도명부터 시작, 두 번째 시도명 직전까지만 사용 (중복 방지)
+    const startIdx = matches[0].index;
+    let roadAddr = matches.length > 1
+      ? addr.slice(startIdx, matches[1].index).trim()
+      : addr.slice(startIdx);
+    roadAddr = roadAddr
       .replace(/\s+\d+층\b.*/g, '')
+      .replace(/\s+B\d+\b.*/g, '')
       .replace(/\s+\d+호\b.*/g, '')
+      .replace(/\s{2,}/g, ' ')
       .trim();
+    return roadAddr;
   };
 
   // 앱 딥링크 시도 후 웹으로 fallback
