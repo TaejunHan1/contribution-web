@@ -117,35 +117,6 @@ const koreanToEnglish = (koreanName) => {
   return result.join('');
 };
 
-// 오프닝 오버레이
-const OpeningOverlay = ({ visible, onComplete }) => {
-  const [showText, setShowText] = useState(false);
-  const [fadeOut, setFadeOut] = useState(false);
-
-  useEffect(() => {
-    if (visible) {
-      setTimeout(() => setShowText(true), 500);
-      setTimeout(() => setFadeOut(true), 2500);
-      setTimeout(() => { if (onComplete) onComplete(); }, 3500);
-    }
-  }, [visible, onComplete]);
-
-  if (!visible) return null;
-
-  return (
-    <div
-      className={styles.openingOverlay}
-      style={{ opacity: fadeOut ? 0 : 1, transition: 'opacity 1s ease-out' }}
-    >
-      {showText && (
-        <div className={styles.openingText}>
-          <div className={styles.openingTitle}>Happy Wedding</div>
-          <div className={styles.openingSubtitle}>forever & always</div>
-        </div>
-      )}
-    </div>
-  );
-};
 
 // 메인 사진 슬라이드쇼
 const MainPhotoSlideshow = ({ images, onImagePress }) => {
@@ -238,6 +209,60 @@ const DarkCalendar = ({ targetDate }) => {
   );
 };
 
+// 앱과 동일한 6주 풀 달력 (이전/다음 달 날짜 포함)
+const FullCalendar = ({ targetDate }) => {
+  const date = new Date(targetDate);
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const day = date.getDate();
+
+  const firstDayOfWeek = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const prevMonthLastDay = new Date(year, month, 0).getDate();
+  const months = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+  const weekDays = ['S','M','T','W','T','F','S'];
+
+  const calendarDays = [];
+  for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+    calendarDays.push({ day: prevMonthLastDay - i, isCurrentMonth: false, isTarget: false });
+  }
+  for (let i = 1; i <= daysInMonth; i++) {
+    calendarDays.push({ day: i, isCurrentMonth: true, isTarget: i === day });
+  }
+  const remaining = 42 - calendarDays.length;
+  for (let i = 1; i <= remaining; i++) {
+    calendarDays.push({ day: i, isCurrentMonth: false, isTarget: false });
+  }
+
+  return (
+    <div className={styles.fullCalendar}>
+      <p className={styles.fullCalendarMonth}>{months[month]} {year}</p>
+      <div className={styles.fullCalendarWeekDays}>
+        {weekDays.map((wd, i) => (
+          <span key={i} className={`${styles.fullCalendarWeekDay} ${i === 0 ? styles.sundayText : ''}`}>{wd}</span>
+        ))}
+      </div>
+      <div className={styles.fullCalendarGrid}>
+        {calendarDays.map((d, i) => (
+          <div key={i} className={styles.fullCalendarCell}>
+            {d.isTarget ? (
+              <div className={styles.fullCalendarTarget}>
+                <span>{d.day}</span>
+              </div>
+            ) : (
+              <span className={`
+                ${styles.fullCalendarDay}
+                ${!d.isCurrentMonth ? styles.dimDay : ''}
+                ${i % 7 === 0 && d.isCurrentMonth ? styles.sundayText : ''}
+              `}>{d.day}</span>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 // 카운트다운
 const CountdownDisplay = ({ timeLeft, isExpired }) => {
   if (isExpired) {
@@ -314,7 +339,6 @@ const MyContributionSection = ({ eventData, myContribution, onEdit, setMyContrib
 const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessages = false, messageSettings = {} }) => {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [randomGreeting, setRandomGreeting] = useState(null);
-  const [showOpening, setShowOpening] = useState(true);
   const [showImageViewer, setShowImageViewer] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [galleryScrollIndex, setGalleryScrollIndex] = useState(0);
@@ -392,7 +416,7 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
   const processedImages = processImageData();
   const safeImages = {
     main: processedImages?.main?.length > 0 ? processedImages.main : defaultImages.main,
-    gallery: processedImages?.gallery?.length > 0 ? processedImages.gallery : defaultImages.gallery,
+    gallery: processedImages?.gallery?.length > 0 ? processedImages.gallery : [],
     groom: processedImages?.groom?.length > 0 ? processedImages.groom : defaultImages.groom,
     bride: processedImages?.bride?.length > 0 ? processedImages.bride : defaultImages.bride,
   };
@@ -415,8 +439,21 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
     return { year: year.toString(), month: month.toString(), day: day.toString(), dayOfWeek, full: `${year}년 ${month}월 ${day}일 ${dayOfWeek}` };
   };
 
+  const formatKoreanTime = (timeString) => {
+    if (!timeString) return '오후 2시';
+    if (typeof timeString === 'string' && timeString.includes(':')) {
+      const [h, m] = timeString.split(':').map(Number);
+      if (!isNaN(h) && !isNaN(m) && h >= 0 && h <= 23 && m >= 0 && m <= 59) {
+        const ampm = h >= 12 ? '오후' : '오전';
+        const displayH = h > 12 ? h - 12 : (h === 0 ? 12 : h);
+        return `${ampm} ${displayH}시${m !== 0 ? ` ${m}분` : ''}`;
+      }
+    }
+    return timeString;
+  };
+
   const dateInfo = formatDate(eventData.date || eventData.event_date || '2025-10-04');
-  const ceremonyTime = eventData.ceremony_time || '오후 2시';
+  const ceremonyTime = formatKoreanTime(eventData.ceremony_time);
 
   const getEnglishDate = () => {
     const date = new Date(eventData.date || eventData.event_date || '2025-10-04');
@@ -756,25 +793,14 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
     }
   };
 
-  const handleOpeningComplete = () => {
-    setShowOpening(false);
-    setTimeout(() => checkAndShowWelcomeChoice(), 500);
-  };
-
   useEffect(() => {
     if (arrivalModalCheckedRef.current) return;
-    let t;
-    if (!showOpening) {
-      t = setTimeout(() => checkAndShowWelcomeChoice(), 1000);
-    } else {
-      t = setTimeout(() => { setShowOpening(false); setTimeout(() => checkAndShowWelcomeChoice(), 500); }, 4000);
-    }
+    const t = setTimeout(() => checkAndShowWelcomeChoice(), 1000);
     return () => clearTimeout(t);
-  }, [showOpening]);
+  }, []);
 
   return (
     <div className={styles.container}>
-      <OpeningOverlay visible={showOpening} onComplete={handleOpeningComplete} />
       <FallingPetals />
 
       {/* 히어로 섹션 */}
@@ -815,113 +841,123 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
         <p className={styles.coupleSubtext}>두 사람이 하나되어 새로운 시작을 합니다</p>
       </section>
 
-      {/* 갤러리 섹션 */}
-      {safeImages.gallery.length > 0 && (
-        <section className={styles.gallerySection}>
-          <div className={styles.sectionHeader}>
-            <p className={styles.sectionEn}>Gallery</p>
-            <h2 className={styles.sectionKo}>우리의 순간</h2>
-            <div className={styles.sectionLine} />
-          </div>
-          <div className={styles.galleryContainer}>
-            <div
-              className={styles.gallerySlider}
-              onScroll={(e) => {
-                const scrollLeft = e.target.scrollLeft;
-                const itemWidth = e.target.scrollWidth / safeImages.gallery.length;
-                setGalleryScrollIndex(Math.round(scrollLeft / itemWidth));
-              }}
-            >
-              {safeImages.gallery.map((image, index) => {
-                const src = getImageSrc(image);
-                return src ? (
-                  <div key={index} className={styles.galleryItem} onClick={() => { setCurrentImageIndex(safeImages.main.length + index); setShowImageViewer(true); }}>
-                    <img src={src} alt={`Gallery ${index + 1}`} onError={(e) => { e.target.style.display = 'none'; }} />
-                    <div className={styles.galleryItemOverlay} />
-                  </div>
-                ) : null;
-              })}
-            </div>
-            <div className={styles.galleryDots}>
-              {safeImages.gallery.map((_, index) => (
-                <div
-                  key={index}
-                  className={`${styles.dot} ${galleryScrollIndex === index ? styles.dotActive : ''}`}
-                  onClick={() => {
-                    const slider = document.querySelector(`.${styles.gallerySlider}`);
-                    if (slider) {
-                      const itemWidth = slider.scrollWidth / safeImages.gallery.length;
-                      slider.scrollTo({ left: itemWidth * index, behavior: 'smooth' });
-                    }
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* 날짜 배너 */}
-      <section className={styles.dateBanner}>
-        <div className={styles.dateBannerText}>{getEnglishDate()}</div>
-      </section>
-
       {/* Wedding Day 섹션 */}
       <section className={styles.weddingDaySection}>
-        <div className={styles.sectionHeader}>
-          <p className={styles.sectionEn}>Wedding Day</p>
-          <h2 className={styles.sectionKo}>예식일</h2>
-          <div className={styles.sectionLine} />
+        <p className={styles.weddingDayTitle}>WEDDING DAY</p>
+
+        {/* 6주 달력 */}
+        <FullCalendar targetDate={eventData.date || eventData.event_date || '2025-10-04'} />
+
+        {/* 카운트다운 */}
+        <div className={styles.weddingCountdown}>
+          {!timeLeft.isExpired ? (
+            <>
+              <p className={styles.countdownTitle}>THE BIG DAY</p>
+              <div className={styles.countdownGrid}>
+                {[
+                  { value: timeLeft.days, label: 'DAYS' },
+                  { value: timeLeft.hours, label: 'HOURS' },
+                  { value: timeLeft.minutes, label: 'MINS' },
+                  { value: timeLeft.seconds || 0, label: 'SECS' },
+                ].map(({ value, label }) => (
+                  <div key={label} className={styles.countdownItem}>
+                    <span className={styles.countdownNumber}>{value}</span>
+                    <span className={styles.countdownLabel}>{label}</span>
+                  </div>
+                ))}
+              </div>
+              <p className={styles.countdownMessage}>
+                우리의 결혼식이 <span className={styles.countdownDays}>{timeLeft.days}일</span> 남았습니다
+              </p>
+            </>
+          ) : (
+            <p className={styles.countdownExpired}>💍 TODAY IS THE DAY 💍</p>
+          )}
         </div>
-        <div className={styles.dateInfoBlock}>
-          <p className={styles.dateMain}>{dateInfo.full}</p>
-          <p className={styles.dateSub}>{ceremonyTime}</p>
-        </div>
-        <DarkCalendar targetDate={eventData.date || eventData.event_date || '2025-10-04'} />
-        <div className={styles.countdown}>
-          <CountdownDisplay timeLeft={timeLeft} isExpired={timeLeft.isExpired} />
-          <p className={styles.countdownMessage}>
-            {eventData.groom_name || '민호'}
-            <span className={styles.heartText}> ♥ </span>
-            {eventData.bride_name || '하윤'}의 결혼식이{' '}
-            <span className={styles.countdownDays}>{timeLeft.days}일</span> 남았습니다
-          </p>
+
+        {/* CEREMONY 정보 */}
+        <div className={styles.ceremonyInfo}>
+          <p className={styles.ceremonyLabel}>CEREMONY</p>
+          <p className={styles.ceremonyDate}>{dateInfo.full}</p>
+          <p className={styles.ceremonyTime}>{ceremonyTime}</p>
         </div>
       </section>
 
-      {/* 신랑신부 카드 */}
-      <section className={styles.coupleSection}>
+      {/* 갤러리 섹션 - gallery 이미지 없으면 main 이미지로 대체 */}
+      {(() => {
+        const galleryImgs = safeImages.gallery.length > 0 ? safeImages.gallery : safeImages.main;
+        if (galleryImgs.length === 0) return null;
+        return (
+          <section className={styles.gallerySection}>
+            <div className={styles.sectionHeader}>
+              <p className={styles.sectionEn}>Gallery</p>
+              <h2 className={styles.sectionKo}>우리의 순간</h2>
+              <div className={styles.sectionLine} />
+            </div>
+            <div className={styles.galleryContainer}>
+              <div
+                className={styles.gallerySlider}
+                onScroll={(e) => {
+                  const scrollLeft = e.target.scrollLeft;
+                  const itemWidth = e.target.scrollWidth / galleryImgs.length;
+                  setGalleryScrollIndex(Math.round(scrollLeft / itemWidth));
+                }}
+              >
+                {galleryImgs.map((image, index) => {
+                  const src = getImageSrc(image);
+                  return src ? (
+                    <div key={index} className={styles.galleryItem} onClick={() => { setCurrentImageIndex(index); setShowImageViewer(true); }}>
+                      <img src={src} alt={`Gallery ${index + 1}`} />
+                      <div className={styles.galleryItemOverlay} />
+                    </div>
+                  ) : null;
+                })}
+              </div>
+              <div className={styles.galleryDots}>
+                {galleryImgs.map((_, index) => (
+                  <div
+                    key={index}
+                    className={`${styles.dot} ${galleryScrollIndex === index ? styles.dotActive : ''}`}
+                    onClick={() => {
+                      const slider = document.querySelector(`.${styles.gallerySlider}`);
+                      if (slider) {
+                        const itemWidth = slider.scrollWidth / galleryImgs.length;
+                        slider.scrollTo({ left: itemWidth * index, behavior: 'smooth' });
+                      }
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      })()}
+
+
+      {/* 오시는 길 */}
+      <section className={styles.locationSection}>
         <div className={styles.sectionHeader}>
-          <p className={styles.sectionEn}>Meet the Couple</p>
-          <h2 className={styles.sectionKo}>신랑 · 신부</h2>
+          <p className={styles.sectionEn}>Location</p>
+          <h2 className={styles.sectionKo}>오시는 길</h2>
           <div className={styles.sectionLine} />
         </div>
-        <div className={styles.coupleCards}>
-          <div className={styles.coupleCard}>
-            <div className={styles.couplePhoto}>
-              {safeImages.bride[0] ? (
-                <img src={getImageSrc(safeImages.bride[0])} alt="신부" onError={(e) => { e.target.style.display = 'none'; }} />
-              ) : (
-                <div className={styles.photoPlaceholder}>👰</div>
-              )}
-            </div>
-            <span className={styles.coupleRole}>신부</span>
-            <h3 className={styles.coupleName}>{eventData.bride_name || '배하윤'}</h3>
-            <p className={styles.coupleEngName}>{brideEnglishName}</p>
-            <p className={styles.coupleParents}>{eventData.bride_father_name || '배종영'} · {eventData.bride_mother_name || '유미연'}의 딸</p>
-          </div>
-          <div className={styles.coupleCard}>
-            <div className={styles.couplePhoto}>
-              {safeImages.groom[0] ? (
-                <img src={getImageSrc(safeImages.groom[0])} alt="신랑" onError={(e) => { e.target.style.display = 'none'; }} />
-              ) : (
-                <div className={styles.photoPlaceholder}>🤵</div>
-              )}
-            </div>
-            <span className={styles.coupleRole}>신랑</span>
-            <h3 className={styles.coupleName}>{eventData.groom_name || '이민호'}</h3>
-            <p className={styles.coupleEngName}>{groomEnglishName}</p>
-            <p className={styles.coupleParents}>{eventData.groom_father_name || '이상현'} · {eventData.groom_mother_name || '김미정'}의 아들</p>
+        <div className={styles.venueInfo}>
+          <p className={styles.venueName}>{eventData.location || '더 플라자 지스텀하우스 22층'}</p>
+          <p className={styles.venueAddress}>{eventData.detailed_address || eventData.detailedAddress || '서울시 중구 소공로 119'}</p>
+        </div>
+        <div className={styles.mapContainer}>
+          <GoogleMapEmbed
+            address={`${eventData?.location || '서울시 중구 소공로 119'} ${eventData?.detailed_address || eventData?.detailedAddress || ''}`.trim()}
+            venueName={eventData?.venue_name || eventData?.venueName}
+            width="100%"
+            height="300px"
+          />
+        </div>
+        <div className={styles.transportCard}>
+          <span className={styles.transportIcon}>🅿️</span>
+          <div className={styles.transportContent}>
+            <h4 className={styles.transportTitle}>주차 안내</h4>
+            <p className={styles.transportText}>{eventData.parking_info || eventData.parkingInfo || '하객 3시간 무료 주차\n주차 요원의 안내를 받아주세요'}</p>
           </div>
         </div>
       </section>
@@ -1062,34 +1098,6 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
             방명록 남기기
           </button>
         )}
-      </section>
-
-      {/* 오시는 길 */}
-      <section className={styles.locationSection}>
-        <div className={styles.sectionHeader}>
-          <p className={styles.sectionEn}>Location</p>
-          <h2 className={styles.sectionKo}>오시는 길</h2>
-          <div className={styles.sectionLine} />
-        </div>
-        <div className={styles.venueInfo}>
-          <p className={styles.venueName}>{eventData.location || '더 플라자 지스텀하우스 22층'}</p>
-          <p className={styles.venueAddress}>{eventData.detailed_address || eventData.detailedAddress || '서울시 중구 소공로 119'}</p>
-        </div>
-        <div className={styles.mapContainer}>
-          <GoogleMapEmbed
-            address={`${eventData?.location || '서울시 중구 소공로 119'} ${eventData?.detailed_address || eventData?.detailedAddress || ''}`.trim()}
-            venueName={eventData?.venue_name || eventData?.venueName}
-            width="100%"
-            height="300px"
-          />
-        </div>
-        <div className={styles.transportCard}>
-          <span className={styles.transportIcon}>🅿️</span>
-          <div className={styles.transportContent}>
-            <h4 className={styles.transportTitle}>주차 안내</h4>
-            <p className={styles.transportText}>{eventData.parking_info || eventData.parkingInfo || '하객 3시간 무료 주차\n주차 요원의 안내를 받아주세요'}</p>
-          </div>
-        </div>
       </section>
 
       {/* 공유 버튼 */}

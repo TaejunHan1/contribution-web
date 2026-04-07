@@ -2075,41 +2075,51 @@ export default function HomePage() {
 
 
         {/* 푸터 */}
-        <footer className="bg-gray-900 text-white py-8 md:py-12">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-              <div className="col-span-2 md:col-span-1">
-                <p className="text-gray-400 text-sm md:text-base">디지털 경조사 관리의 새로운 표준</p>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-3 md:mb-4 text-sm md:text-base">서비스</h4>
-                <ul className="space-y-1 md:space-y-2 text-gray-400 text-xs md:text-sm">
-                  <li>모바일 청첩장</li>
-                  <li>디지털 방명록</li>
-                  <li>부조금 관리</li>
-                  <li>QR코드 생성</li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-3 md:mb-4 text-sm md:text-base">지원</h4>
-                <ul className="space-y-1 md:space-y-2 text-gray-400 text-xs md:text-sm">
-                  <li>사용법 가이드</li>
-                  <li>자주 묻는 질문</li>
-                  <li>고객센터</li>
-                  <li>피드백</li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-3 md:mb-4 text-sm md:text-base">회사</h4>
-                <ul className="space-y-1 md:space-y-2 text-gray-400 text-xs md:text-sm">
-                  <li>이용약관</li>
-                  <li>개인정보처리방침</li>
-                  <li>회사소개</li>
-                </ul>
+        <footer style={{
+          backgroundColor: '#f9f9f9',
+          borderTop: '1px solid #e5e5e5',
+          padding: '28px 20px',
+        }}>
+          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+            {/* 로고 + 링크 */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
+              {/* <span style={{ fontSize: '15px', fontWeight: '700', color: '#333' }}>정담 · JEONGDAM</span> */}
+              <span style={{ fontSize: '15px', fontWeight: '700', color: '#333' }}>스마트패스</span>
+              <div style={{ display: 'flex', gap: '16px' }}>
+                <a href="/terms" style={{ fontSize: '12px', color: '#666', textDecoration: 'none' }}>이용약관</a>
+                <a href="/privacy" style={{ fontSize: '12px', color: '#333', textDecoration: 'none', fontWeight: '600' }}>개인정보처리방침</a>
               </div>
             </div>
-            <div className="border-t border-gray-800 mt-6 md:mt-8 pt-6 md:pt-8 text-center text-gray-400">
-              <p className="text-xs md:text-sm">&copy; 2025 정담. 모든 권리 보유.</p>
+
+            {/* 사업자 정보 1행 */}
+            <p style={{ fontSize: '12px', color: '#555', lineHeight: '1.8', margin: '0 0 4px' }}>
+              <span>스마트패스 대표 한태준</span>
+              <span style={{ margin: '0 8px', color: '#ccc' }}>|</span>
+              <span>주소 : 서울시 강서구 화곡로44가길 9 서경팰리스 405호</span>
+              <span style={{ margin: '0 8px', color: '#ccc' }}>|</span>
+              <span>사업자등록번호 : 221-54-00987</span>
+              <span style={{ margin: '0 8px', color: '#ccc' }}>|</span>
+              <span>호스팅서비스사업자 : 스마트패스</span>
+            </p>
+
+            {/* 사업자 정보 2행 */}
+            <p style={{ fontSize: '12px', color: '#555', lineHeight: '1.8', margin: '0 0 4px' }}>
+              <span>이메일문의 : hsm44444@naver.com</span>
+            </p>
+
+            {/* 고객센터 */}
+            <p style={{ fontSize: '12px', color: '#555', lineHeight: '1.8', margin: '0 0 16px' }}>
+              고객센터 운영시간 : 평일 10:00 ~ 18:00 (주말·공휴일 휴무)
+            </p>
+
+            {/* 구분선 */}
+            <div style={{ borderTop: '1px solid #e5e5e5', paddingTop: '16px' }}>
+              <p style={{ fontSize: '11px', color: '#999', lineHeight: '1.8', margin: '0 0 4px' }}>
+                스마트패스는 통신판매중개자로서 통신판매의 당사자가 아니며 상품의 주문, 배송 및 환불 등과 관련한 의무와 책임은 각 판매자에게 있습니다.
+              </p>
+              <p style={{ fontSize: '11px', color: '#999', lineHeight: '1.8', margin: 0 }}>
+                &copy; 2025 스마트패스. All rights reserved.
+              </p>
             </div>
           </div>
         </footer>

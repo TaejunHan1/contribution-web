@@ -222,14 +222,14 @@
 /* 인사말 섹션 */
 .greetingSection {
   padding: 80px 30px;
-  background: #0A0A0A;
+  background: #ffffff;
   text-align: center;
 }
 
 .greetingPoem {
   font-size: 15px;
   line-height: 30px;
-  color: #AAAAAA;
+  color: #666666;
   white-space: pre-line;
   letter-spacing: 0.5px;
   max-width: 500px;
@@ -242,8 +242,8 @@
   justify-content: center;
   gap: 30px;
   padding: 30px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid #1E1E1E;
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid #eeeeee;
   border-radius: 16px;
   max-width: 400px;
   margin: 0 auto 20px;
@@ -258,21 +258,21 @@
 
 .nameRole {
   font-size: 10px;
-  color: #555555;
+  color: #888888;
   letter-spacing: 3px;
   text-transform: uppercase;
 }
 
 .namePrimary {
   font-size: 20px;
-  color: #FFFFFF;
+  color: #1a1a1a;
   font-weight: 500;
   letter-spacing: 1px;
 }
 
 .nameHeart {
   font-size: 18px;
-  color: #444444;
+  color: #aaaaaa;
   animation: heartbeat 2s ease-in-out infinite;
 }
 
@@ -281,9 +281,34 @@
   50% { transform: scale(1.2); }
 }
 
+/* 인사말 섹션 내 sectionKo/sectionLine 오버라이드 (흰 배경) */
+.greetingSection .sectionKo {
+  color: #1a1a1a;
+}
+
+.greetingSection .sectionLine {
+  background: #dddddd;
+}
+
+.locationSection .sectionKo {
+  color: #1a1a1a;
+}
+
+.locationSection .sectionLine {
+  background: #dddddd;
+}
+
+.messagesSection .sectionKo {
+  color: #1a1a1a;
+}
+
+.messagesSection .sectionLine {
+  background: #dddddd;
+}
+
 .coupleSubtext {
   font-size: 13px;
-  color: #555555;
+  color: #888888;
   letter-spacing: 1px;
   margin: 0;
 }
@@ -389,27 +414,184 @@
 
 /* Wedding Day 섹션 */
 .weddingDaySection {
-  padding: 80px 30px;
-  background: #0A0A0A;
+  padding: 70px 30px;
+  background: linear-gradient(180deg, #1a1a1a 0%, #000000 100%);
   text-align: center;
 }
 
-.dateInfoBlock {
-  margin-bottom: 30px;
+.weddingDayTitle {
+  font-size: 13px;
+  letter-spacing: 6px;
+  color: rgba(255,255,255,0.7);
+  margin: 0 0 32px;
+  font-weight: 200;
 }
 
-.dateMain {
-  font-size: 18px;
-  color: #FFFFFF;
-  margin: 0 0 6px 0;
-  font-weight: 400;
+/* 6주 풀 달력 */
+.fullCalendar {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 25px;
+  max-width: 340px;
+  margin: 0 auto 30px;
+}
+
+.fullCalendarMonth {
+  font-size: 14px;
+  letter-spacing: 3px;
+  color: rgba(255,255,255,0.8);
+  margin: 0 0 20px;
+  font-weight: 200;
+}
+
+.fullCalendarWeekDays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 12px;
+}
+
+.fullCalendarWeekDay {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  text-align: center;
   letter-spacing: 1px;
 }
 
-.dateSub {
-  font-size: 14px;
-  color: #666666;
+.fullCalendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.fullCalendarCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+}
+
+.fullCalendarTarget {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.fullCalendarDay {
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+}
+
+.dimDay {
+  color: rgba(255,255,255,0.2);
+}
+
+.sundayText {
+  color: rgba(255,182,193,0.7) !important;
+}
+
+/* Wedding Day 카운트다운 */
+.weddingCountdown {
+  margin: 0 auto 30px;
+  max-width: 340px;
+  padding: 24px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+}
+
+.countdownTitle {
+  font-size: 11px;
+  letter-spacing: 4px;
+  color: rgba(255,255,255,0.5);
+  margin: 0 0 16px;
+  font-weight: 200;
+}
+
+.countdownGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.countdownItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.countdownNumber {
+  font-size: 28px;
+  font-weight: 200;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.countdownLabel {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.4);
+}
+
+.countdownMessage {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
   margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.countdownDays {
+  color: rgba(255,255,255,0.9);
+  font-weight: 500;
+}
+
+.countdownExpired {
+  font-size: 18px;
+  color: #ffffff;
+  margin: 0;
+}
+
+/* CEREMONY 정보 */
+.ceremonyInfo {
+  max-width: 340px;
+  margin: 0 auto;
+  padding: 24px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+}
+
+.ceremonyLabel {
+  font-size: 11px;
+  letter-spacing: 4px;
+  color: rgba(255,255,255,0.5);
+  margin: 0 0 12px;
+  font-weight: 200;
+}
+
+.ceremonyDate {
+  font-size: 16px;
+  color: rgba(255,255,255,0.85);
+  margin: 0 0 6px;
+  font-weight: 300;
+  letter-spacing: 1px;
+}
+
+.ceremonyTime {
+  font-size: 22px;
+  color: #ffffff;
+  margin: 0;
+  font-weight: 200;
+  letter-spacing: 2px;
 }
 
 /* 다크 달력 */
@@ -758,7 +940,7 @@
 /* 방명록 섹션 */
 .messagesSection {
   padding: 80px 30px;
-  background: #000000;
+  background: #ffffff;
 }
 
 .messagesList {
@@ -769,26 +951,26 @@
 .emptyMessages {
   text-align: center;
   padding: 40px 20px;
-  background: #111111;
-  border: 1px solid #1E1E1E;
+  background: #f8f8f8;
+  border: 1px solid #e5e5e5;
   border-radius: 12px;
 }
 
 .emptyIcon {
   font-size: 40px;
-  color: #333333;
+  color: #cccccc;
   margin-bottom: 12px;
 }
 
 .emptyText {
   font-size: 15px;
-  color: #444444;
+  color: #888888;
   margin: 0;
 }
 
 .messageCard {
-  background: #111111;
-  border: 1px solid #1E1E1E;
+  background: #f8f8f8;
+  border: 1px solid #e5e5e5;
   border-radius: 12px;
   padding: 22px;
   margin-bottom: 12px;
@@ -814,9 +996,9 @@
 }
 
 .editBtn {
-  background: #1E1E1E;
-  color: #AAAAAA;
-  border: 1px solid #2A2A2A;
+  background: #eeeeee;
+  color: #666666;
+  border: 1px solid #dddddd;
   padding: 4px 10px;
   border-radius: 6px;
   font-size: 11px;
@@ -826,18 +1008,18 @@
 }
 
 .editBtn:hover {
-  background: #2A2A2A;
-  color: #FFFFFF;
+  background: #dddddd;
+  color: #333333;
 }
 
 .messageDate {
   font-size: 11px;
-  color: #333333;
+  color: #999999;
 }
 
 .messageContent {
   font-size: 14px;
-  color: #888888;
+  color: #555555;
   line-height: 22px;
 }
 
@@ -851,7 +1033,7 @@
 
 .pageBtn {
   background: transparent;
-  color: #555555;
+  color: #aaaaaa;
   border: none;
   font-size: 22px;
   cursor: pointer;
@@ -861,7 +1043,7 @@
 }
 
 .pageBtn:hover:not(:disabled) {
-  color: #AAAAAA;
+  color: #555555;
 }
 
 .pageBtn:disabled {
@@ -879,7 +1061,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #222222;
+  background: #dddddd;
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -898,8 +1080,8 @@
   max-width: 320px;
   margin: 0 auto;
   background: transparent;
-  color: #AAAAAA;
-  border: 1px solid #2A2A2A;
+  color: #666666;
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
   padding: 14px 24px;
   font-size: 15px;
@@ -911,15 +1093,15 @@
 }
 
 .writeGuestbookBtn:hover {
-  background: #111111;
-  border-color: #444444;
-  color: #FFFFFF;
+  background: #f0f0f0;
+  border-color: #cccccc;
+  color: #333333;
 }
 
 /* 오시는 길 */
 .locationSection {
   padding: 80px 30px;
-  background: #0A0A0A;
+  background: #ffffff;
   text-align: center;
 }
 
@@ -930,7 +1112,7 @@
 .venueName {
   font-size: 18px;
   font-weight: 500;
-  color: #FFFFFF;
+  color: #1a1a1a;
   margin: 0 0 8px 0;
 }
 
@@ -941,8 +1123,8 @@
 }
 
 .mapContainer {
-  background: #111111;
-  border: 1px solid #1E1E1E;
+  background: #f0f0f0;
+  border: 1px solid #e0e0e0;
   border-radius: 12px;
   overflow: hidden;
   margin: 0 auto 24px;
@@ -953,8 +1135,8 @@
   display: flex;
   align-items: flex-start;
   gap: 16px;
-  background: #111111;
-  border: 1px solid #1E1E1E;
+  background: #f8f8f8;
+  border: 1px solid #e5e5e5;
   border-radius: 10px;
   padding: 20px;
   max-width: 600px;
@@ -974,7 +1156,7 @@
 .transportTitle {
   font-size: 15px;
   font-weight: 600;
-  color: #FFFFFF;
+  color: #1a1a1a;
   margin: 0 0 6px 0;
 }
 
@@ -1308,20 +1490,24 @@
   }
 
   .weddingDaySection {
-    padding: 120px 80px;
+    padding: 100px 80px;
   }
 
-  .darkCalendar {
+  .fullCalendar {
     max-width: 420px;
-    padding: 40px;
+    padding: 35px;
   }
 
-  .calendarMonth {
-    font-size: 22px;
+  .weddingCountdown {
+    max-width: 420px;
+  }
+
+  .ceremonyInfo {
+    max-width: 420px;
   }
 
   .countdownNumber {
-    font-size: 40px;
+    font-size: 36px;
   }
 
   .coupleSection {

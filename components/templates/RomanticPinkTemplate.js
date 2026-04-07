@@ -403,6 +403,7 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
   // ─ state ──────────────────────────────────────────────────────────────
   const [randomGreeting, setRandomGreeting] = useState(null);
   const [showOpening, setShowOpening] = useState(true);
+  const [contentVisible, setContentVisible] = useState(false);
   const [showImageViewer, setShowImageViewer] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [galleryScrollIndex, setGalleryScrollIndex] = useState(0);
@@ -704,6 +705,7 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
 
   const handleOpeningComplete = () => {
     setShowOpening(false);
+    setContentVisible(true);
     setTimeout(() => checkAndShowWelcomeChoice(), 500);
   };
 
@@ -711,9 +713,10 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
     if (arrivalModalCheckedRef.current) return;
     let t;
     if (!showOpening) {
+      setContentVisible(true);
       t = setTimeout(() => checkAndShowWelcomeChoice(), 1000);
     } else {
-      t = setTimeout(() => { setShowOpening(false); setTimeout(() => checkAndShowWelcomeChoice(), 500); }, 4000);
+      t = setTimeout(() => { setShowOpening(false); setContentVisible(true); setTimeout(() => checkAndShowWelcomeChoice(), 500); }, 4000);
     }
     return () => clearTimeout(t);
   }, [showOpening]);
@@ -855,7 +858,7 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
       <FallingPetals />
 
       {/* 3. 히어로: 메인 사진 슬라이드쇼 + WEDDING INVITATION */}
-      <section className={styles.introSection}>
+      <section className={styles.introSection} style={{ opacity: contentVisible ? 1 : 0, transition: 'opacity 1s ease-in' }}>
         <div className={styles.introContent}>
           <p className={styles.subtitle}>WEDDING INVITATION</p>
           <h1 className={styles.loveText}>With Love</h1>
