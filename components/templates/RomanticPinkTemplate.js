@@ -203,38 +203,6 @@ const CustomOpeningOverlay = ({ visible, onComplete }) => {
   );
 };
 
-// ─── 떨어지는 꽃잎 ───────────────────────────────────────────────────────
-const FallingPetals = () => {
-  const [petals] = useState(() =>
-    [...Array(30)].map((_, i) => ({
-      id: i,
-      left: Math.random() * 100,
-      delay: i * 1000,
-      size: 10 + Math.random() * 6,
-      duration: 10000 + i * 300,
-    }))
-  );
-
-  return (
-    <div className={styles.fallingPetalsContainer}>
-      {petals.map((p) => (
-        <div
-          key={p.id}
-          className={styles.fallingPetal}
-          style={{
-            left: `${p.left}%`,
-            animationDelay: `${p.delay}ms`,
-            animationDuration: `${p.duration}ms`,
-            fontSize: `${p.size}px`,
-          }}
-        >
-          🌸
-        </div>
-      ))}
-    </div>
-  );
-};
-
 // ─── 메인 사진 슬라이드쇼 ────────────────────────────────────────────────
 const MainPhotoSlideshow = ({ images, onImagePress }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -854,8 +822,6 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
       {/* 1. 오프닝 오버레이 */}
       <CustomOpeningOverlay visible={showOpening} onComplete={handleOpeningComplete} />
 
-      {/* 2. 떨어지는 꽃잎 */}
-      <FallingPetals />
 
       {/* 3. 히어로: 메인 사진 슬라이드쇼 + WEDDING INVITATION */}
       <section className={styles.introSection} style={{ opacity: contentVisible ? 1 : 0, transition: 'opacity 1s ease-in' }}>

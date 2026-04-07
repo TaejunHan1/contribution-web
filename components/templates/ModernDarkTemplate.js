@@ -9,41 +9,6 @@ import CompletionModal from '../CompletionModal';
 import WelcomeChoiceModal from '../WelcomeChoiceModal';
 import styles from './ModernDarkTemplate.module.css';
 
-// 떨어지는 꽃잎 (다크 배경에 맞는 반투명 버전)
-const FallingPetals = () => {
-  const [petals] = useState(() =>
-    [...Array(30)].map((_, index) => ({
-      id: `petal-${index}`,
-      left: Math.random() * 100,
-      delay: index * 1000,
-      size: 10,
-      type: '🌸',
-      duration: 10000 + index * 300,
-    }))
-  );
-
-  return (
-    <div className={styles.fallingPetalsContainer}>
-      {petals.map((petal) => (
-        <div
-          key={petal.id}
-          className={styles.fallingPetal}
-          style={{
-            left: `${petal.left}%`,
-            animationDelay: `${petal.delay}ms`,
-            animationDuration: `${petal.duration}ms`,
-            fontSize: `${petal.size}px`,
-            animationFillMode: 'both',
-            opacity: 0.35,
-          }}
-        >
-          {petal.type}
-        </div>
-      ))}
-    </div>
-  );
-};
-
 // 랜덤 인사말
 const RANDOM_GREETINGS = [
   `두 사람이 만나 하나의 길을 걷습니다.
@@ -121,36 +86,47 @@ const koreanToEnglish = (koreanName) => {
 // 메인 사진 슬라이드쇼
 const MainPhotoSlideshow = ({ images, onImagePress }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    if (images && images.length > 1) {
-      const interval = setInterval(() => {
-        setCurrentIndex((prev) => (prev + 1) % images.length);
-      }, 4000);
-      return () => clearInterval(interval);
-    }
-  }, [images?.length]);
+  const [loadedSet, setLoadedSet] = useState(new Set());
 
   const getImageSrc = (image) => {
     if (!image) return null;
     if (typeof image === 'string') return image;
-    return image.publicUrl || image.uri || image.url || image.src || null;
+    // publicUrl 우선, uri(Supabase public URL일 수 있음), 로컬 파일 URI는 웹에서 사용 불가
+    const src = image.publicUrl || image.uri || image.url || image.src || null;
+    if (!src) return null;
+    if (src.startsWith('file://') || src.startsWith('/var/') || src.startsWith('ph://')) return null;
+    return src;
   };
+
+  // 유효한 URL만 필터링
+  const validImages = (images || []).filter(img => !!getImageSrc(img));
+
+  useEffect(() => {
+    if (validImages.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentIndex((prev) => (prev + 1) % validImages.length);
+      }, 4000);
+      return () => clearInterval(interval);
+    }
+  }, [validImages.length]);
 
   return (
     <div className={styles.mainPhotoContainer} onClick={() => onImagePress && onImagePress(currentIndex)}>
-      {images && images.length > 0 ? (
-        images.map((image, index) => {
+      {validImages.length > 0 ? (
+        validImages.map((image, index) => {
           const src = getImageSrc(image);
-          return src ? (
+          const isActive = index === currentIndex;
+          const isLoaded = loadedSet.has(index);
+          return (
             <img
               key={index}
               src={src}
               alt="Wedding"
-              className={`${styles.mainPhoto} ${index === currentIndex ? styles.active : ''}`}
-              onError={(e) => { e.target.style.display = 'none'; }}
+              className={`${styles.mainPhoto} ${isActive ? styles.active : ''} ${isLoaded ? styles.loaded : ''}`}
+              onLoad={() => { console.log('✅ IMG LOADED', index); setLoadedSet(prev => new Set([...prev, index])); }}
+              onError={(e) => { console.error('❌ IMG FAILED', index, 'FULL URL:', src); e.target.style.display = 'none'; }}
             />
-          ) : null;
+          );
         })
       ) : (
         <div className={styles.photoPlaceholder}>
@@ -366,8 +342,14 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
 
   const getImageSrc = (image) => {
     if (!image) return null;
-    if (typeof image === 'string') return image;
-    return image.publicUrl || image.uri || image.url || image.src || null;
+    if (typeof image === 'string') {
+      if (image.startsWith('file://') || image.startsWith('/var/') || image.startsWith('ph://')) return null;
+      return image;
+    }
+    const src = image.publicUrl || image.uri || image.url || image.src || null;
+    if (!src) return null;
+    if (src.startsWith('file://') || src.startsWith('/var/') || src.startsWith('ph://')) return null;
+    return src;
   };
 
   const defaultImages = {
@@ -387,20 +369,38 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
   };
 
   const processImageData = () => {
-    if (categorizedImages && Object.keys(categorizedImages).length > 0) return categorizedImages;
+    const result = { main: [], gallery: [], groom: [], bride: [], all: [] };
+
+    // 1순위: eventData.processedImages
     if (eventData?.processedImages && eventData.processedImages.length > 0) {
-      const categorized = { main: [], gallery: [], groom: [], bride: [], all: [] };
+      console.log('🖼️ RAW processedImages:', eventData.processedImages.map(i => ({ cat: i.category, primaryUrl: i.primaryUrl?.slice(-40), publicUrl: i.publicUrl?.slice(-40) })));
       eventData.processedImages.forEach(img => {
-        const imageObj = { uri: img.primaryUrl || img.publicUrl || img.uri, publicUrl: img.publicUrl, category: img.category, id: img.id };
-        if (img.category && categorized[img.category]) categorized[img.category].push(imageObj);
-        categorized.all.push(imageObj);
+        const imageObj = { uri: img.primaryUrl || img.publicUrl || img.uri, publicUrl: img.publicUrl || img.primaryUrl || img.uri, category: img.category, id: img.id };
+        if (img.category && result[img.category]) result[img.category].push(imageObj);
+        result.all.push(imageObj);
       });
-      return categorized;
     }
+
+    // 누락된 카테고리는 categorizedImages(additional_info)로 보완
+    const ci = categorizedImages || {};
+    console.log('🖼️ categorizedImages:', { mainLen: ci.main?.length, galleryLen: ci.gallery?.length });
+    ['main', 'gallery', 'groom', 'bride'].forEach(cat => {
+      if (result[cat].length === 0 && ci[cat]?.length > 0) {
+        result[cat] = ci[cat];
+        result.all.push(...ci[cat]);
+      }
+    });
+
+    console.log('🖼️ result after merge:', { main: result.main.length, gallery: result.gallery.length });
+
+    if (result.all.length > 0) return result;
+
+    // 2순위: image_urls 필드
     if (eventData?.image_urls && eventData.image_urls.length > 0) {
       const normalizedImages = eventData.image_urls.map(img => {
-        if (typeof img === 'string') return { uri: img, category: 'main' };
-        return { uri: img.publicUrl || img.uri || img, category: img.category || 'main' };
+        if (typeof img === 'string') return { uri: img, publicUrl: img, category: 'main' };
+        const src = img.publicUrl || img.uri || img;
+        return { uri: src, publicUrl: src, category: img.category || 'main' };
       });
       return {
         main: normalizedImages.filter(img => img.category === 'main'),
@@ -417,9 +417,12 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
   const safeImages = {
     main: processedImages?.main?.length > 0 ? processedImages.main : defaultImages.main,
     gallery: processedImages?.gallery?.length > 0 ? processedImages.gallery : [],
-    groom: processedImages?.groom?.length > 0 ? processedImages.groom : defaultImages.groom,
-    bride: processedImages?.bride?.length > 0 ? processedImages.bride : defaultImages.bride,
+    groom: processedImages?.groom?.length > 0 ? processedImages.groom : [],
+    bride: processedImages?.bride?.length > 0 ? processedImages.bride : [],
   };
+  console.log('🖼️ safeImages:', { mainLen: safeImages.main.length, galleryLen: safeImages.gallery.length });
+  console.log('🖼️ safeImages.main[0] publicUrl:', safeImages.main[0]?.publicUrl?.slice(-60));
+  console.log('🖼️ safeImages.gallery[0] publicUrl:', safeImages.gallery[0]?.publicUrl?.slice(-60));
 
   useEffect(() => {
     if (!eventData.custom_message || eventData.custom_message.trim() === '') {
@@ -801,8 +804,6 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
 
   return (
     <div className={styles.container}>
-      <FallingPetals />
-
       {/* 히어로 섹션 */}
       <section className={styles.heroSection}>
         <MainPhotoSlideshow images={safeImages.main} onImagePress={(i) => { setCurrentImageIndex(i); setShowImageViewer(true); }} />
@@ -883,10 +884,12 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
         </div>
       </section>
 
-      {/* 갤러리 섹션 - gallery 이미지 없으면 main 이미지로 대체 */}
+      {/* 갤러리 섹션 - gallery 이미지 우선, 없으면 main */}
       {(() => {
-        const galleryImgs = safeImages.gallery.length > 0 ? safeImages.gallery : safeImages.main;
+        const hasGallery = safeImages.gallery.length > 0;
+        const galleryImgs = hasGallery ? safeImages.gallery : safeImages.main.length > 0 ? safeImages.main : [];
         if (galleryImgs.length === 0) return null;
+        const galleryIndexOffset = hasGallery ? safeImages.main.length : 0;
         return (
           <section className={styles.gallerySection}>
             <div className={styles.sectionHeader}>
@@ -906,8 +909,8 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
                 {galleryImgs.map((image, index) => {
                   const src = getImageSrc(image);
                   return src ? (
-                    <div key={index} className={styles.galleryItem} onClick={() => { setCurrentImageIndex(index); setShowImageViewer(true); }}>
-                      <img src={src} alt={`Gallery ${index + 1}`} />
+                    <div key={index} className={styles.galleryItem} onClick={() => { setCurrentImageIndex(galleryIndexOffset + index); setShowImageViewer(true); }}>
+                      <img src={src} alt={`Gallery ${index + 1}`} loading="eager" style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }} />
                       <div className={styles.galleryItemOverlay} />
                     </div>
                   ) : null;

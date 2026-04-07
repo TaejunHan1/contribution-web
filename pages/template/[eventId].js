@@ -13,6 +13,8 @@ import AuroraBlackTemplate from '../../components/templates/AuroraBlackTemplate'
 import WarmOrangeTemplate from '../../components/templates/WarmOrangeTemplate';
 import CleanWhiteTemplate from '../../components/templates/CleanWhiteTemplate';
 import ClassicElegantTemplate from '../../components/templates/ClassicElegantTemplate';
+import FallingPetals from '../../components/FallingPetals';
+import BackgroundMusicPlayer from '../../components/BackgroundMusicPlayer';
 
 // 템플릿 컴포넌트들 (나중에 구현)
 const ModernTemplate = ({ eventData }) => (
@@ -462,6 +464,8 @@ export default function TemplatePage({ serverEvent, serverTemplate, serverEventI
       </Head>
 
       {getTemplateComponent()}
+      <FallingPetals type={event.additional_info?.background_petal?.id} />
+      <BackgroundMusicPlayer trackId={event.additional_info?.background_music?.id} />
     </>
   );
 }

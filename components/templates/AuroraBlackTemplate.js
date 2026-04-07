@@ -9,40 +9,6 @@ import CompletionModal from '../CompletionModal';
 import WelcomeChoiceModal from '../WelcomeChoiceModal';
 import styles from './AuroraBlackTemplate.module.css';
 
-// 떨어지는 꽃잎 - 골드 톤
-const FallingPetals = () => {
-  const [petals] = useState(() =>
-    [...Array(30)].map((_, index) => ({
-      id: `aurora-petal-${index}`,
-      left: Math.random() * 100,
-      delay: index * 1000,
-      size: 10 + Math.random() * 4,
-      type: '🌸',
-      duration: 10000 + index * 300,
-    }))
-  );
-
-  return (
-    <div className={styles.fallingPetalsContainer}>
-      {petals.map((petal) => (
-        <div
-          key={petal.id}
-          className={styles.fallingPetal}
-          style={{
-            left: `${petal.left}%`,
-            animationDelay: `${petal.delay}ms`,
-            animationDuration: `${petal.duration}ms`,
-            fontSize: `${petal.size}px`,
-            animationFillMode: 'both',
-          }}
-        >
-          {petal.type}
-        </div>
-      ))}
-    </div>
-  );
-};
-
 // 랜덤 인사말
 const RANDOM_GREETINGS = [
   `두 사람이 만나 하나의 길을 걷습니다.
@@ -754,7 +720,6 @@ const AuroraBlackTemplate = ({ eventData = {}, categorizedImages = {}, allowMess
   return (
     <div className={styles.container}>
       <OpeningOverlay visible={showOpening} onComplete={handleOpeningComplete} />
-      <FallingPetals />
 
       {/* 히어로 섹션 */}
       <section className={styles.heroSection}>

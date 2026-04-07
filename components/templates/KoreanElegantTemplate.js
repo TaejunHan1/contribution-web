@@ -97,23 +97,6 @@ const KoreanElegantTemplate = ({ eventData = {}, categorizedImages = {} }) => {
 
   return (
     <div className={styles.container}>
-      {/* 꽃잎 애니메이션 */}
-      <div className={styles.petalsContainer}>
-        {[...Array(15)].map((_, i) => (
-          <div 
-            key={i} 
-            className={styles.petal}
-            style={{
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${8 + i}s`
-            }}
-          >
-            🌸
-          </div>
-        ))}
-      </div>
-
       {/* 메인 헤더 섹션 */}
       <section className={styles.heroSection}>
         <div className={styles.heroContent}>

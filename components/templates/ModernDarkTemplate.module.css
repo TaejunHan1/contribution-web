@@ -106,11 +106,17 @@
   height: 100%;
   object-fit: cover;
   opacity: 0;
+  z-index: 0;
   transition: opacity 1.5s ease-in-out;
 }
 
 .mainPhoto.active {
   opacity: 1;
+  z-index: 1;
+}
+
+.mainPhoto.loaded {
+  background: transparent;
 }
 
 .photoPlaceholder {
@@ -281,29 +287,26 @@
   50% { transform: scale(1.2); }
 }
 
-/* 인사말 섹션 내 sectionKo/sectionLine 오버라이드 (흰 배경) */
-.greetingSection .sectionKo {
+/* 흰 배경 섹션 오버라이드 */
+.greetingSection .sectionKo,
+.gallerySection .sectionKo,
+.giftSection .sectionKo,
+.shareSection .sectionKo {
   color: #1a1a1a;
 }
 
-.greetingSection .sectionLine {
+.greetingSection .sectionLine,
+.gallerySection .sectionLine,
+.giftSection .sectionLine,
+.shareSection .sectionLine {
   background: #dddddd;
 }
 
-.locationSection .sectionKo {
-  color: #1a1a1a;
-}
-
-.locationSection .sectionLine {
-  background: #dddddd;
-}
-
-.messagesSection .sectionKo {
-  color: #1a1a1a;
-}
-
-.messagesSection .sectionLine {
-  background: #dddddd;
+.greetingSection .sectionEn,
+.gallerySection .sectionEn,
+.giftSection .sectionEn,
+.shareSection .sectionEn {
+  color: #888888;
 }
 
 .coupleSubtext {
@@ -316,7 +319,7 @@
 /* 갤러리 섹션 */
 .gallerySection {
   padding: 80px 0;
-  background: #000000;
+  background: #ffffff;
   overflow: hidden;
 }
 
@@ -345,7 +348,7 @@
   height: 480px;
   border-radius: 4px;
   overflow: hidden;
-  background: #111111;
+  background: #f0f0f0;
   cursor: pointer;
   scroll-snap-align: center;
   position: relative;
@@ -381,33 +384,33 @@
   width: 6px;
   height: 6px;
   border-radius: 3px;
-  background: #333333;
+  background: #cccccc;
   transition: all 0.3s ease;
   cursor: pointer;
 }
 
 .dot:hover {
-  background: #555555;
+  background: #aaaaaa;
 }
 
 .dotActive {
-  background: #888888;
+  background: #555555;
   width: 20px;
 }
 
 /* 날짜 배너 */
 .dateBanner {
   padding: 40px 20px;
-  background: #111111;
+  background: #f5f5f5;
   text-align: center;
-  border-top: 1px solid #1A1A1A;
-  border-bottom: 1px solid #1A1A1A;
+  border-top: 1px solid #e5e5e5;
+  border-bottom: 1px solid #e5e5e5;
 }
 
 .dateBannerText {
   font-family: 'Playfair Display', serif;
   font-size: 28px;
-  color: #FFFFFF;
+  color: #1a1a1a;
   font-style: italic;
   letter-spacing: 2px;
 }
@@ -819,12 +822,12 @@
 /* 축의금 섹션 */
 .giftSection {
   padding: 80px 30px;
-  background: #0A0A0A;
+  background: #ffffff;
 }
 
 .giftSubtitle {
   font-size: 14px;
-  color: #555555;
+  color: #888888;
   text-align: center;
   margin: -20px 0 30px;
 }
@@ -837,8 +840,8 @@
 
 .toggleButtons {
   display: flex;
-  background: #111111;
-  border: 1px solid #1E1E1E;
+  background: #f0f0f0;
+  border: 1px solid #e0e0e0;
   border-radius: 10px;
   padding: 4px;
 }
@@ -850,15 +853,16 @@
   border-radius: 7px;
   font-size: 14px;
   font-weight: 500;
-  color: #555555;
+  color: #999999;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: 'Noto Serif KR', serif;
 }
 
 .toggleBtnActive {
-  background: #1E1E1E;
-  color: #FFFFFF;
+  background: #ffffff;
+  color: #1a1a1a;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
 }
 
 .accountsContainer {
@@ -877,16 +881,16 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px;
-  background: #111111;
-  border: 1px solid #1E1E1E;
+  background: #f8f8f8;
+  border: 1px solid #eeeeee;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .accountCard:hover {
-  background: #161616;
-  border-color: #2A2A2A;
+  background: #f0f0f0;
+  border-color: #dddddd;
   transform: translateY(-1px);
 }
 
@@ -897,20 +901,20 @@
 .accountName {
   font-size: 15px;
   font-weight: 600;
-  color: #FFFFFF;
+  color: #1a1a1a;
   margin-bottom: 6px;
 }
 
 .bankName {
   font-size: 12px;
-  color: #555555;
+  color: #888888;
   letter-spacing: 0.5px;
   margin-bottom: 4px;
 }
 
 .accountNumber {
   font-size: 14px;
-  color: #888888;
+  color: #555555;
   font-family: 'SF Mono', 'Monaco', 'Roboto Mono', monospace;
   letter-spacing: 1px;
 }
@@ -920,21 +924,21 @@
   align-items: center;
   justify-content: center;
   padding: 8px 16px;
-  background: #1E1E1E;
+  background: #eeeeee;
   border-radius: 6px;
   min-width: 52px;
-  border: 1px solid #2A2A2A;
+  border: 1px solid #dddddd;
   transition: all 0.2s ease;
 }
 
 .copyButton:hover {
-  background: #2A2A2A;
+  background: #e0e0e0;
 }
 
 .copyButton span {
   font-size: 12px;
   font-weight: 600;
-  color: #AAAAAA;
+  color: #555555;
 }
 
 /* 방명록 섹션 */
@@ -1101,7 +1105,7 @@
 /* 오시는 길 */
 .locationSection {
   padding: 80px 30px;
-  background: #ffffff;
+  background: #0A0A0A;
   text-align: center;
 }
 
@@ -1112,19 +1116,19 @@
 .venueName {
   font-size: 18px;
   font-weight: 500;
-  color: #1a1a1a;
+  color: #FFFFFF;
   margin: 0 0 8px 0;
 }
 
 .venueAddress {
   font-size: 14px;
-  color: #666666;
+  color: #888888;
   margin: 0;
 }
 
 .mapContainer {
-  background: #f0f0f0;
-  border: 1px solid #e0e0e0;
+  background: #111111;
+  border: 1px solid #1E1E1E;
   border-radius: 12px;
   overflow: hidden;
   margin: 0 auto 24px;
@@ -1135,8 +1139,8 @@
   display: flex;
   align-items: flex-start;
   gap: 16px;
-  background: #f8f8f8;
-  border: 1px solid #e5e5e5;
+  background: #111111;
+  border: 1px solid #1E1E1E;
   border-radius: 10px;
   padding: 20px;
   max-width: 600px;
@@ -1156,13 +1160,13 @@
 .transportTitle {
   font-size: 15px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: #FFFFFF;
   margin: 0 0 6px 0;
 }
 
 .transportText {
   font-size: 13px;
-  color: #666666;
+  color: #888888;
   line-height: 20px;
   margin: 0;
   white-space: pre-line;
