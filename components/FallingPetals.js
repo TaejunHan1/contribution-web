@@ -51,17 +51,18 @@ export default function FallingPetals({ type }) {
   if (!config) return null;
 
   const [particles] = useState(() =>
-    [...Array(config.count)].map((_, i) => ({
-      id: i,
-      left: Math.random() * 100,
-      delay: Math.random() * 12000,
-      duration: config.durationMin + Math.random() * (config.durationMax - config.durationMin),
-      size: config.sizeMin + Math.random() * (config.sizeMax - config.sizeMin),
-      imgIdx: config.imgs ? i % config.imgs.length : 0,
-      // swing offset applied via CSS custom property approach — computed once
-      swingA: (Math.random() - 0.5) * 24,
-      swingB: (Math.random() - 0.5) * 18,
-    }))
+    [...Array(config.count)].map((_, i) => {
+      const duration = config.durationMin + Math.random() * (config.durationMax - config.durationMin);
+      return {
+        id: i,
+        left: Math.random() * 100,
+        // 음수 delay = 애니메이션이 이미 진행 중인 것처럼 시작 → 로드 즉시 화면 전체에 흩날림
+        delay: -(Math.random() * duration),
+        duration,
+        size: config.sizeMin + Math.random() * (config.sizeMax - config.sizeMin),
+        imgIdx: config.imgs ? i % config.imgs.length : 0,
+      };
+    })
   );
 
   return (

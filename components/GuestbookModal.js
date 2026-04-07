@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './GuestbookModal.module.css';
 
-const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival }) => {
+const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival, onBack }) => {
   // 모달 고유 ID 생성 (디버깅용)
   const modalId = useRef(Math.random().toString(36).substr(2, 9));
   
@@ -515,7 +515,7 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
               {step === 'info' && (
                 <>
                   <div className={styles.sheetHeader}>
-                    <button className={styles.backButton} onClick={handleClose} type="button">
+                    <button className={styles.backButton} onClick={onBack || handleClose} type="button">
                       <BackIcon />
                     </button>
                     <button className={styles.closeButton} onClick={handleClose} disabled={isLoading || isClosing} type="button">
@@ -525,6 +525,35 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
                   <div className={styles.sheetTitleSection}>
                     <h2 className={styles.sheetTitle}>안전한 방명록 작성을 위해{'\n'}휴대폰 번호를 인증해주세요</h2>
                   </div>
+
+                  {/* 카카오톡 영수증 카드 */}
+                  <div className={styles.receiptWrap}>
+                    <div className={styles.receiptSlot} />
+                    <div className={styles.receiptPaper}>
+                      <div className={styles.receiptHeader}>
+                        <div className={styles.receiptIcon}>
+                          {['#4ADE80', '#F87171', '#60A5FA', '#FACC15'].map((c, i) => (
+                            <div key={i} className={styles.receiptIconBar} style={{ backgroundColor: c }} />
+                          ))}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <p className={styles.receiptTitle}>카카오톡 영수증 발송</p>
+                          <p className={styles.receiptDesc}>방명록 + 축의금 전달 완료 시 입력하신 번호로 카카오톡 영수증이 전송됩니다.</p>
+                        </div>
+                      </div>
+                      <div className={styles.receiptDivider} />
+                      <div className={styles.receiptRow}>
+                        <span className={styles.receiptLabel}>결혼식</span>
+                        <span className={styles.receiptVal}>{eventData?.groom_name} · {eventData?.bride_name}</span>
+                      </div>
+                      <div className={styles.receiptRow}>
+                        <span className={styles.receiptLabel}>축의금</span>
+                        <span className={styles.receiptValBlue}>입력하실 금액</span>
+                      </div>
+                      <div className={styles.receiptZigzag} />
+                    </div>
+                  </div>
+
                   <div className={styles.sheetForm}>
                     <div className={styles.sheetInputGroup}>
                       <label className={styles.sheetLabel}>휴대폰 번호</label>
@@ -626,8 +655,9 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
                     <button
                       className={styles.backButton}
                       onClick={() => {
-                        if (localStorage.getItem('verifiedPhone') && !verificationSent) {
-                          handleClose();
+                        // verification을 건너뛴 경우(이미 인증된 번호) → info로, 그 외 → verification으로
+                        if (!verificationSent && localStorage.getItem('verifiedPhone')) {
+                          setStep('info');
                         } else {
                           setStep('verification');
                         }
