@@ -132,6 +132,7 @@ const WarmOpeningOverlay = ({ visible, onComplete }) => {
     <div
       className={styles.openingOverlay}
       style={{ opacity: fadeOut ? 0 : 1, transition: 'opacity 1s ease-out' }}
+      onClick={() => window.__gyeongjo_play?.()}
     >
       {showNotif && (
         <div className={styles.notifCard}>
@@ -261,9 +262,6 @@ const CountdownDisplay = ({ timeLeft, isExpired }) => {
 const MyContributionSection = ({ eventData, myContribution, onEdit, setMyContribution }) => {
   const [isExpanded, setIsExpanded] = useState(true);
 
-  useEffect(() => {
-    console.log('WarmOrange MyContributionSection 렌더링:', myContribution);
-  }, [myContribution]);
 
   const verifiedPhone = typeof window !== 'undefined' ? localStorage.getItem('verifiedPhone') : null;
   if (!verifiedPhone || !myContribution) return null;

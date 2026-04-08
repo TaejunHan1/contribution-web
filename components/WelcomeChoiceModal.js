@@ -11,6 +11,7 @@ const WelcomeChoiceModal = ({ isOpen, onClose, onSelectGuestbook, onSelectContri
   const groomName = eventData?.groom_name || '민호';
 
   const handleSubmit = () => {
+    window.__gyeongjo_play?.();
     if (selectedOption === 'guestbook') {
       onSelectGuestbook();
     } else {
@@ -19,13 +20,13 @@ const WelcomeChoiceModal = ({ isOpen, onClose, onSelectGuestbook, onSelectContri
   };
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+    <div className={styles.overlay} onClick={() => { window.__gyeongjo_play?.(); onClose(); }}>
+      <div className={styles.modal} onClick={(e) => { window.__gyeongjo_play?.(); e.stopPropagation(); }}>
         {/* 드래그 핸들 */}
         <div className={styles.dragHandle} />
 
         {/* 닫기 버튼 */}
-        <button className={styles.closeButton} onClick={onClose}>
+        <button className={styles.closeButton} onClick={() => { window.__gyeongjo_play?.(); onClose(); }}>
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
             <path d="M1 1L17 17M17 1L1 17" stroke="#8B95A1" strokeWidth="2" strokeLinecap="round"/>
           </svg>
@@ -43,7 +44,7 @@ const WelcomeChoiceModal = ({ isOpen, onClose, onSelectGuestbook, onSelectContri
           <div className={styles.optionList}>
             <div
               className={`${styles.optionCard} ${selectedOption === 'guestbook' ? styles.optionCardSelected : ''}`}
-              onClick={() => setSelectedOption('guestbook')}
+              onClick={() => { window.__gyeongjo_play?.(); setSelectedOption('guestbook'); }}
             >
               <div className={`${styles.radioCircle} ${selectedOption === 'guestbook' ? styles.radioCircleSelected : ''}`}>
                 {selectedOption === 'guestbook' && <div className={styles.radioInner} />}
@@ -53,7 +54,7 @@ const WelcomeChoiceModal = ({ isOpen, onClose, onSelectGuestbook, onSelectContri
 
             <div
               className={`${styles.optionCard} ${selectedOption === 'contribution' ? styles.optionCardSelected : ''}`}
-              onClick={() => setSelectedOption('contribution')}
+              onClick={() => { window.__gyeongjo_play?.(); setSelectedOption('contribution'); }}
             >
               <div className={`${styles.radioCircle} ${selectedOption === 'contribution' ? styles.radioCircleSelected : ''}`}>
                 {selectedOption === 'contribution' && <div className={styles.radioInner} />}

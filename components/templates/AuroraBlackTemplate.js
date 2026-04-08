@@ -101,6 +101,7 @@ const OpeningOverlay = ({ visible, onComplete }) => {
     <div
       className={styles.openingOverlay}
       style={{ opacity: fadeOut ? 0 : 1, transition: 'opacity 1s ease-out' }}
+      onClick={() => window.__gyeongjo_play?.()}
     >
       {showText && (
         <div className={styles.openingContent}>

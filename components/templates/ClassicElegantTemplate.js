@@ -128,6 +128,7 @@ const ClassicOpeningOverlay = ({ visible, onComplete }) => {
     <div
       className={styles.openingOverlay}
       style={{ opacity: fadeOut ? 0 : 1, transition: 'opacity 1s ease-out', pointerEvents: fadeOut ? 'none' : 'all' }}
+      onClick={() => window.__gyeongjo_play?.()}
     >
       {/* Left door panel */}
       <div className={`${styles.doorLeft} ${openDoors ? styles.doorOpen : ''}`} />

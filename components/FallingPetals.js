@@ -19,7 +19,6 @@ const PETAL_CONFIGS = {
     durationMin: 7000,
     durationMax: 9000,
     opacityPeak: 0.82,
-    swingX: [0, 14, -9, 5],
     rotateDeg: 120,
   },
   classic: {
@@ -30,40 +29,40 @@ const PETAL_CONFIGS = {
     durationMin: 5000,
     durationMax: 7000,
     opacityPeak: 0.68,
-    swingX: [0, 12, -8, 5],
     rotateDeg: 100,
   },
   petal: {
     count: 18,
-    imgs: null, // emoji
+    imgs: null,
     sizeMin: 18,
     sizeMax: 30,
     durationMin: 8000,
     durationMax: 12000,
     opacityPeak: 0.82,
-    swingX: [0, 0, 0, 0],
     rotateDeg: 360,
   },
 };
 
-export default function FallingPetals({ type }) {
-  const config = PETAL_CONFIGS[type];
-  if (!config) return null;
+function makeParticles(config) {
+  return [...Array(config.count)].map((_, i) => {
+    const duration = config.durationMin + Math.random() * (config.durationMax - config.durationMin);
+    return {
+      id: i,
+      left: Math.random() * 100,
+      delay: -(Math.random() * duration),
+      duration,
+      size: config.sizeMin + Math.random() * (config.sizeMax - config.sizeMin),
+      imgIdx: config.imgs ? i % config.imgs.length : 0,
+    };
+  });
+}
 
-  const [particles] = useState(() =>
-    [...Array(config.count)].map((_, i) => {
-      const duration = config.durationMin + Math.random() * (config.durationMax - config.durationMin);
-      return {
-        id: i,
-        left: Math.random() * 100,
-        // 음수 delay = 애니메이션이 이미 진행 중인 것처럼 시작 → 로드 즉시 화면 전체에 흩날림
-        delay: -(Math.random() * duration),
-        duration,
-        size: config.sizeMin + Math.random() * (config.sizeMax - config.sizeMin),
-        imgIdx: config.imgs ? i % config.imgs.length : 0,
-      };
-    })
-  );
+export default function FallingPetals({ type }) {
+  const config = PETAL_CONFIGS[type] || null;
+  // useState는 항상 호출해야 함 (Rules of Hooks)
+  const [particles] = useState(() => config ? makeParticles(config) : []);
+
+  if (!config) return null;
 
   return (
     <div style={{

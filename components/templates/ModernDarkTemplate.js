@@ -123,8 +123,8 @@ const MainPhotoSlideshow = ({ images, onImagePress }) => {
               src={src}
               alt="Wedding"
               className={`${styles.mainPhoto} ${isActive ? styles.active : ''} ${isLoaded ? styles.loaded : ''}`}
-              onLoad={() => { console.log('✅ IMG LOADED', index); setLoadedSet(prev => new Set([...prev, index])); }}
-              onError={(e) => { console.error('❌ IMG FAILED', index, 'FULL URL:', src); e.target.style.display = 'none'; }}
+              onLoad={() => { setLoadedSet(prev => new Set([...prev, index])); }}
+              onError={(e) => { e.target.style.display = 'none'; }}
             />
           );
         })
@@ -373,7 +373,6 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
 
     // 1순위: eventData.processedImages
     if (eventData?.processedImages && eventData.processedImages.length > 0) {
-      console.log('🖼️ RAW processedImages:', eventData.processedImages.map(i => ({ cat: i.category, primaryUrl: i.primaryUrl?.slice(-40), publicUrl: i.publicUrl?.slice(-40) })));
       eventData.processedImages.forEach(img => {
         const imageObj = { uri: img.primaryUrl || img.publicUrl || img.uri, publicUrl: img.publicUrl || img.primaryUrl || img.uri, category: img.category, id: img.id };
         if (img.category && result[img.category]) result[img.category].push(imageObj);
@@ -383,15 +382,12 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
 
     // 누락된 카테고리는 categorizedImages(additional_info)로 보완
     const ci = categorizedImages || {};
-    console.log('🖼️ categorizedImages:', { mainLen: ci.main?.length, galleryLen: ci.gallery?.length });
     ['main', 'gallery', 'groom', 'bride'].forEach(cat => {
       if (result[cat].length === 0 && ci[cat]?.length > 0) {
         result[cat] = ci[cat];
         result.all.push(...ci[cat]);
       }
     });
-
-    console.log('🖼️ result after merge:', { main: result.main.length, gallery: result.gallery.length });
 
     if (result.all.length > 0) return result;
 
@@ -420,10 +416,6 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
     groom: processedImages?.groom?.length > 0 ? processedImages.groom : [],
     bride: processedImages?.bride?.length > 0 ? processedImages.bride : [],
   };
-  console.log('🖼️ safeImages:', { mainLen: safeImages.main.length, galleryLen: safeImages.gallery.length });
-  console.log('🖼️ safeImages.main[0] publicUrl:', safeImages.main[0]?.publicUrl?.slice(-60));
-  console.log('🖼️ safeImages.gallery[0] publicUrl:', safeImages.gallery[0]?.publicUrl?.slice(-60));
-
   useEffect(() => {
     if (!eventData.custom_message || eventData.custom_message.trim() === '') {
       const randomIndex = Math.floor(Math.random() * RANDOM_GREETINGS.length);

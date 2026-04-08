@@ -27,38 +27,33 @@ export default function BackgroundMusicPlayer({ trackId }) {
     audio.volume = 0.6;
     audio.loop = true;
 
+    // 전역 함수로 등록 → WelcomeChoiceModal 버튼 클릭 시 직접 호출 (확실한 유저 제스처)
+    window.__gyeongjo_play = () => {
+      if (!audioRef.current) return;
+      const a = audioRef.current;
+      a.muted = false;
+      if (a.paused) {
+        a.play().then(() => setPlaying(true)).catch(() => {});
+      } else {
+        setPlaying(true);
+      }
+      delete window.__gyeongjo_play;
+    };
+
     // 1) 소리 있는 재생 먼저 시도 (링크 클릭 진입 시 허용됨)
     audio.muted = false;
     audio.play()
-      .then(() => setPlaying(true))
+      .then(() => {
+        setPlaying(true);
+        delete window.__gyeongjo_play; // 이미 재생 중이면 전역 함수 불필요
+      })
       .catch(() => {
-        // 2) 차단됨 (새로고침/직접 입력) → muted로 재생 후 첫 인터랙션에 unmute
+        // 2) 차단됨 → muted로 미리 로딩만
         audio.muted = true;
         audio.play().catch(() => {});
-
-        const unmute = () => {
-          if (!audioRef.current) return;
-          audioRef.current.muted = false;
-          if (audioRef.current.paused) {
-            // muted play failed earlier — retry with sound now that we have a gesture
-            audioRef.current.play()
-              .then(() => setPlaying(true))
-              .catch(() => {});
-          } else {
-            setPlaying(true);
-          }
-          cleanup();
-        };
-        const cleanup = () => {
-          ['pointerdown', 'click', 'touchstart', 'keydown', 'scroll'].forEach(ev =>
-            window.removeEventListener(ev, unmute, true)
-          );
-        };
-        ['pointerdown', 'click', 'touchstart', 'keydown', 'scroll'].forEach(ev =>
-          window.addEventListener(ev, unmute, true)
-        );
-        return cleanup;
       });
+
+    return () => { delete window.__gyeongjo_play; };
   }, [filename]);
 
   const toggle = () => {
@@ -77,7 +72,7 @@ export default function BackgroundMusicPlayer({ trackId }) {
 
   return (
     <>
-      <audio ref={audioRef} src={`/music/${filename}`} preload="auto" style={{ display: 'none' }} />
+      <audio ref={audioRef} src={`/music/${filename}`} style={{ display: 'none' }} />
 
       <style>{`
         @keyframes bar1 { 0%,100%{height:3px} 50%{height:9px} }

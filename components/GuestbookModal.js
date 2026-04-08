@@ -205,7 +205,6 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
           // 세션이 없는 경우 (브라우저를 껐다 켠 경우) - 수정 모드로 인증번호 발송
           setMode('edit');
           setExistingGuestbook(existingEntry);
-          console.log('Debug - 수정 모드로 설정됨:', existingEntry);
         }
       } else {
         // 중복이 없는 경우 - 새 방명록 작성 모드
@@ -271,11 +270,6 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
         const phoneNumbers = formData.phone.replace(/[^\d]/g, '');
         const verifiedPhone = `+82${phoneNumbers.slice(1)}`;
         localStorage.setItem('verifiedPhone', verifiedPhone);
-        console.log('Debug - Original phone:', formData.phone);
-        console.log('Debug - Phone numbers only:', phoneNumbers);
-        console.log('Debug - Saved to session:', verifiedPhone);
-        console.log('Debug - Mode:', mode);
-        
         // 수정 모드인 경우 기존 데이터로 폼 채우기
         if (mode === 'edit' && existingGuestbook) {
           // 기존 방명록 전체 데이터 가져오기
@@ -453,33 +447,21 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
 
   if (!isOpen) return null;
 
-  console.log('🔵 GuestbookModal 렌더링됨:', { modalId: modalId.current, isOpen, step, mode });
-
   // 모달 닫기 핸들러 (중복 실행 방지)
   const handleClose = (e) => {
-    console.log('🔴 모달 닫기 시도:', { modalId: modalId.current, isLoading, isClosing, event: e?.type });
-    
     e?.preventDefault();
     e?.stopPropagation();
-    
-    if (isLoading || isClosing) {
-      console.log('🔴 모달 닫기 차단됨:', { modalId: modalId.current, isLoading, isClosing });
-      return;
-    }
-    
-    console.log('🔴 모달 닫기 실행:', { modalId: modalId.current });
+
+    if (isLoading || isClosing) return;
+
     setIsClosing(true);
-    
-    // 즉시 닫기 실행
     onClose();
-    
-    // 300ms 후에 닫기 상태 해제 (다음 열기를 위해)
+
     if (closeTimeoutRef.current) {
       clearTimeout(closeTimeoutRef.current);
     }
     closeTimeoutRef.current = setTimeout(() => {
       setIsClosing(false);
-      console.log('🔴 모달 닫기 상태 해제:', { modalId: modalId.current });
     }, 300);
   };
 
