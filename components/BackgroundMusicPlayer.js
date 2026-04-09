@@ -79,7 +79,7 @@ export default function BackgroundMusicPlayer({ trackId }) {
         @keyframes bar2 { 0%,100%{height:7px} 40%{height:2px} 70%{height:10px} }
         @keyframes bar3 { 0%,100%{height:5px} 30%{height:10px} 65%{height:3px} }
         @keyframes bar4 { 0%,100%{height:4px} 45%{height:8px} 80%{height:2px} }
-        .mbtn-wrap { position:fixed; top:16px; right:16px; z-index:9998; }
+        .mbtn-wrap { position:fixed; top:16px; right:16px; z-index:999999; }
         .mbtn {
           width:40px; height:40px; border-radius:50%; border:none; cursor:pointer;
           display:flex; align-items:center; justify-content:center;

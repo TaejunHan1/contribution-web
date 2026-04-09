@@ -1,5 +1,5 @@
 // components/FallingPetals.js
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 const FLOWER_IMGS = [
   '/flowers/flower2.png',
@@ -43,6 +43,38 @@ const PETAL_CONFIGS = {
   },
 };
 
+const CUSTOM_PETAL_THEMES = {
+  pink:   ['#ffb7c5', '#ff9eaf', '#ffd1dc', '#fff0f5', '#ffccd5'],
+  yellow: ['#ffd700', '#ffea00', '#ffc100', '#fffacd', '#ffe066'],
+  red:    ['#ff4060', '#d70000', '#ff6b6b', '#ff0000', '#c00000'],
+  blue:   ['#8a2be2', '#4169e1', '#87cefa', '#e6e6fa', '#6ab0f5'],
+  mixed:  ['#ffb7c5', '#ffd700', '#ff4060', '#87cefa', '#c8a2e0', '#ffd1dc', '#ffe066'],
+};
+
+function makeCustomPetals(count, colorTheme) {
+  const colors = CUSTOM_PETAL_THEMES[colorTheme] || CUSTOM_PETAL_THEMES.pink;
+  return [...Array(count)].map((_, i) => {
+    const size    = 1.5 + Math.random() * 1.5;        // 1.5~3px (원 지름)
+    const aspect  = 2.2 + Math.random() * 1.0;        // 2.2~3.2배 (세로 늘이기)
+    const duration = 4000 + Math.random() * 5000;
+    const flipDur  = duration * 0.35;
+    const opPeak   = 0.55 + Math.random() * 0.4;
+    return {
+      id: i,
+      left: Math.random() * 100,
+      size,
+      aspect,
+      color: colors[i % colors.length],
+      duration,
+      delay: -(Math.random() * duration),
+      flipDur,
+      flipDelay: -(Math.random() * flipDur),
+      wobble: 12 + Math.random() * 22,
+      opPeak,
+    };
+  });
+}
+
 function makeParticles(config) {
   return [...Array(config.count)].map((_, i) => {
     const duration = config.durationMin + Math.random() * (config.durationMax - config.durationMin);
@@ -57,13 +89,94 @@ function makeParticles(config) {
   });
 }
 
-export default function FallingPetals({ type }) {
+export default function FallingPetals({ type, color = 'pink' }) {
   const config = PETAL_CONFIGS[type] || null;
-  // useState는 항상 호출해야 함 (Rules of Hooks)
+  const isCustom = type === 'custom_petal';
+
   const [particles] = useState(() => config ? makeParticles(config) : []);
+  const customPetals = useMemo(
+    () => isCustom ? makeCustomPetals(30, color) : [],
+    [isCustom, color]
+  );
 
-  if (!config) return null;
+  if (!config && !isCustom) return null;
 
+  // ── 커스텀꽃비 ──
+  if (isCustom) {
+    return (
+      <div style={{
+        position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+        pointerEvents: 'none', zIndex: 999999, overflow: 'hidden',
+      }}>
+        <style>{`
+          @keyframes cp-fall {
+            0%   { transform: translateY(-60px); }
+            100% { transform: translateY(calc(100vh + 60px)); }
+          }
+          @keyframes cp-wobble {
+            0%   { margin-left: 0px; }
+            25%  { margin-left: var(--wobble); }
+            50%  { margin-left: 0px; }
+            75%  { margin-left: calc(var(--wobble) * -1); }
+            100% { margin-left: 0px; }
+          }
+          @keyframes cp-rotate {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+          }
+          @keyframes cp-flutter {
+            0%   { transform: scaleY(var(--aspect)); }
+            25%  { transform: scaleY(calc(var(--aspect) * 0.12)); }
+            50%  { transform: scaleY(var(--aspect)); }
+            75%  { transform: scaleY(calc(var(--aspect) * 0.12)); }
+            100% { transform: scaleY(var(--aspect)); }
+          }
+          @keyframes cp-fade {
+            0%   { opacity: 0; }
+            4%   { opacity: var(--op); }
+            92%  { opacity: var(--op); }
+            100% { opacity: 0; }
+          }
+        `}</style>
+        {customPetals.map((p) => (
+          <div
+            key={p.id}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: `${p.left}%`,
+              '--wobble': `${p.wobble}px`,
+              '--aspect': p.aspect,
+              '--op': p.opPeak,
+              animation: `cp-fall ${p.duration}ms ${p.delay}ms linear infinite,
+                          cp-wobble ${p.duration}ms ${p.delay}ms ease-in-out infinite,
+                          cp-fade ${p.duration}ms ${p.delay}ms linear infinite`,
+              willChange: 'transform, opacity',
+            }}
+          >
+            {/* 회전 래퍼 */}
+            <div style={{
+              width: p.size,
+              height: p.size,
+              animation: `cp-rotate ${p.duration}ms ${p.delay}ms linear infinite`,
+            }}>
+              {/* 타원 꽃잎: 원 + scaleY flutter */}
+              <div style={{
+                width: p.size,
+                height: p.size,
+                borderRadius: '50%',
+                backgroundColor: p.color,
+                transformOrigin: 'center center',
+                animation: `cp-flutter ${p.flipDur}ms ${p.flipDelay}ms linear infinite`,
+              }} />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // ── 기존 flower / classic / petal ──
   return (
     <div style={{
       position: 'fixed',
@@ -72,7 +185,7 @@ export default function FallingPetals({ type }) {
       width: '100%',
       height: '100%',
       pointerEvents: 'none',
-      zIndex: 9999,
+      zIndex: 999999,
       overflow: 'hidden',
     }}>
       <style>{`

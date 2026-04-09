@@ -15,6 +15,7 @@ import CleanWhiteTemplate from '../../components/templates/CleanWhiteTemplate';
 import ClassicElegantTemplate from '../../components/templates/ClassicElegantTemplate';
 import FallingPetals from '../../components/FallingPetals';
 import BackgroundMusicPlayer from '../../components/BackgroundMusicPlayer';
+import WeddingIntroOverlay from '../../components/WeddingIntroOverlay';
 
 // 템플릿 컴포넌트들 (나중에 구현)
 const ModernTemplate = ({ eventData }) => (
@@ -259,6 +260,7 @@ export default function TemplatePage({ serverEvent, serverTemplate, serverEventI
   const [loading, setLoading] = useState(!serverEvent);
   const [error, setError] = useState(null);
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
 
   useEffect(() => {
     if (eventId && !serverEvent) {
@@ -464,8 +466,17 @@ export default function TemplatePage({ serverEvent, serverTemplate, serverEventI
       </Head>
 
       {getTemplateComponent()}
-      <FallingPetals type={event.additional_info?.background_petal?.id} />
+      <FallingPetals type={event.additional_info?.background_petal?.id} color={event.additional_info?.background_petal?.color} />
       <BackgroundMusicPlayer trackId={event.additional_info?.background_music?.id} />
+      {showIntro && event.additional_info?.intro_effect?.id && event.additional_info.intro_effect.id !== 'none' && (
+        <WeddingIntroOverlay
+          introId={event.additional_info.intro_effect.id}
+          tapToOpen={event.additional_info.intro_effect.tapToOpen || false}
+          groomName={event.groom_name || ''}
+          brideName={event.bride_name || ''}
+          onEnd={() => setShowIntro(false)}
+        />
+      )}
     </>
   );
 }

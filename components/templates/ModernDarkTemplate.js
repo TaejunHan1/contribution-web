@@ -317,6 +317,8 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
   const [randomGreeting, setRandomGreeting] = useState(null);
   const [showImageViewer, setShowImageViewer] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [viewerImages, setViewerImages] = useState([]);
+  const touchStartX = useRef(null);
   const [galleryScrollIndex, setGalleryScrollIndex] = useState(0);
   const [showGuestbookModal, setShowGuestbookModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -339,6 +341,34 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
   const modalOpeningRef = useRef(false);
   const modalClosingRef = useRef(false);
   const arrivalModalCheckedRef = useRef(false);
+  const [pageUrl, setPageUrl] = useState('');
+  const [qrExpanded, setQrExpanded] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    setPageUrl(window.location.href);
+  }, []);
+
+  useEffect(() => {
+    const handleFsChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', handleFsChange);
+    document.addEventListener('webkitfullscreenchange', handleFsChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFsChange);
+      document.removeEventListener('webkitfullscreenchange', handleFsChange);
+    };
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      (document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen)
+        ?.call(document.documentElement);
+      // 최대화 진입 시 열려있는 모달 닫기
+      setShowWelcomeChoice(false);
+    } else {
+      (document.exitFullscreen || document.webkitExitFullscreen)?.call(document);
+    }
+  };
 
   const getImageSrc = (image) => {
     if (!image) return null;
@@ -676,6 +706,7 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
 
   const checkAndShowWelcomeChoice = () => {
     if (arrivalModalCheckedRef.current || showWelcomeChoice) return false;
+    if (isFullscreen) return false; // 최대화(결혼식장 세팅) 모드에서는 모달 미표시
     const arrivalKey = `arrival_checked_${eventData?.id}`;
     if (typeof window !== 'undefined' && localStorage.getItem(arrivalKey)) return false;
     arrivalModalCheckedRef.current = true;
@@ -796,9 +827,9 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
 
   return (
     <div className={styles.container}>
-      {/* 히어로 섹션 */}
+      {/* 히어로 섹션 (태블릿: 좌측 sticky 패널) */}
       <section className={styles.heroSection}>
-        <MainPhotoSlideshow images={safeImages.main} onImagePress={(i) => { setCurrentImageIndex(i); setShowImageViewer(true); }} />
+        <MainPhotoSlideshow images={safeImages.main} onImagePress={(i) => { setViewerImages(safeImages.main); setCurrentImageIndex(i); setShowImageViewer(true); }} />
         <div className={styles.heroOverlay}>
           <div className={styles.heroContent}>
             <p className={styles.heroLabel}>WEDDING INVITATION</p>
@@ -811,6 +842,9 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
           </div>
         </div>
       </section>
+
+      {/* 우측 스크롤 영역 (태블릿) */}
+      <div className={styles.contentSections}>
 
       {/* 인사말 섹션 */}
       <section className={styles.greetingSection}>
@@ -901,7 +935,7 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
                 {galleryImgs.map((image, index) => {
                   const src = getImageSrc(image);
                   return src ? (
-                    <div key={index} className={styles.galleryItem} onClick={() => { setCurrentImageIndex(galleryIndexOffset + index); setShowImageViewer(true); }}>
+                    <div key={index} className={styles.galleryItem} onClick={() => { setViewerImages(galleryImgs); setCurrentImageIndex(index); setShowImageViewer(true); }}>
                       <img src={src} alt={`Gallery ${index + 1}`} loading="eager" style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }} />
                       <div className={styles.galleryItemOverlay} />
                     </div>
@@ -1112,22 +1146,127 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
         </div>
       </footer>
 
+      {/* 태블릿 전용 QR 코드 (우측 하단 고정) */}
+      {pageUrl && (
+        <div
+          className={`${styles.tabletQr} ${qrExpanded ? styles.tabletQrExpanded : ''}`}
+          onClick={() => setQrExpanded(prev => !prev)}
+        >
+          {qrExpanded ? (
+            <>
+              <div className={styles.tabletQrHeader}>
+                <span className={styles.tabletQrTitle}>청첩장 QR</span>
+                <span className={styles.tabletQrClose}>✕</span>
+              </div>
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=240x240&bgcolor=000000&color=ffffff&data=${encodeURIComponent(pageUrl)}`}
+                alt="QR Code"
+                className={styles.tabletQrImgLarge}
+              />
+              <p className={styles.tabletQrUrl}>{pageUrl.replace('https://', '')}</p>
+              <p className={styles.tabletQrHint}>스캔하여 모바일에서 열기</p>
+            </>
+          ) : (
+            <>
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&bgcolor=000000&color=ffffff&data=${encodeURIComponent(pageUrl)}`}
+                alt="QR Code"
+                className={styles.tabletQrImg}
+              />
+              <p className={styles.tabletQrLabel}>청첩장 링크</p>
+            </>
+          )}
+        </div>
+      )}
+
+      </div>{/* end contentSections */}
+
+      {/* 태블릿 전용 전체화면(뷰모드) 버튼 — contentSections 밖 */}
+      <button className={`${styles.fullscreenBtn} ${isFullscreen ? styles.fullscreenBtnActive : ''}`} onClick={toggleFullscreen}>
+        {isFullscreen ? (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M8 3v3a2 2 0 01-2 2H3M21 8h-3a2 2 0 01-2-2V3M3 16h3a2 2 0 012 2v3M16 21v-3a2 2 0 012-2h3" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        ) : (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M8 3H5a2 2 0 00-2 2v3M21 8V5a2 2 0 00-2-2h-3M3 16v3a2 2 0 002 2h3M16 21h3a2 2 0 002-2v-3" stroke="#222" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        )}
+      </button>
+
       {/* 이미지 뷰어 */}
-      {showImageViewer && (
-        <div className={styles.imageViewerModal} onClick={() => setShowImageViewer(false)}>
-          <div className={styles.imageViewerContent} onClick={(e) => e.stopPropagation()}>
-            <button className={styles.closeButton} onClick={() => setShowImageViewer(false)}>×</button>
-            <div className={styles.imageViewerSlider}>
-              {allImages[currentImageIndex] && (
-                <img src={getImageSrc(allImages[currentImageIndex])} alt={`이미지 ${currentImageIndex + 1}`} className={styles.viewerImage} />
-              )}
-            </div>
-            <div className={styles.imageViewerNavigation}>
-              <button className={styles.navButton} onClick={() => setCurrentImageIndex(prev => prev > 0 ? prev - 1 : allImages.length - 1)}>‹</button>
-              <span className={styles.imageCounter}>{currentImageIndex + 1} / {allImages.length}</span>
-              <button className={styles.navButton} onClick={() => setCurrentImageIndex(prev => prev < allImages.length - 1 ? prev + 1 : 0)}>›</button>
-            </div>
+      {showImageViewer && viewerImages.length > 0 && (
+        <div className={styles.imageViewerModal}>
+          {/* 상단 바: X 버튼만 — 화살표와 완전히 분리된 행 */}
+          <div className={styles.viewerTopBar}>
+            <button
+              className={styles.viewerCloseBtn}
+              onClick={() => setShowImageViewer(false)}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M18 6L6 18M6 6l12 12" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+              </svg>
+            </button>
           </div>
+
+          {/* 메인 행: 좌 화살표 | 이미지 | 우 화살표 */}
+          <div
+            className={styles.viewerMain}
+            onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
+            onTouchEnd={(e) => {
+              if (touchStartX.current === null) return;
+              const diff = touchStartX.current - e.changedTouches[0].clientX;
+              if (Math.abs(diff) > 50) {
+                if (diff > 0) setCurrentImageIndex(prev => prev < viewerImages.length - 1 ? prev + 1 : 0);
+                else setCurrentImageIndex(prev => prev > 0 ? prev - 1 : viewerImages.length - 1);
+              }
+              touchStartX.current = null;
+            }}
+          >
+            {viewerImages.length > 1 && (
+              <button
+                className={`${styles.navArrow} ${styles.navArrowLeft}`}
+                onClick={() => setCurrentImageIndex(prev => prev > 0 ? prev - 1 : viewerImages.length - 1)}
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M13 3L6 10L13 17" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            )}
+
+            {viewerImages[currentImageIndex] && (
+              <img
+                src={getImageSrc(viewerImages[currentImageIndex])}
+                alt={`이미지 ${currentImageIndex + 1}`}
+                className={styles.viewerImage}
+              />
+            )}
+
+            {viewerImages.length > 1 && (
+              <button
+                className={`${styles.navArrow} ${styles.navArrowRight}`}
+                onClick={() => setCurrentImageIndex(prev => prev < viewerImages.length - 1 ? prev + 1 : 0)}
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M7 3L14 10L7 17" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            )}
+          </div>
+
+          {/* 하단 dot 페이지네이션 */}
+          {viewerImages.length > 1 && (
+            <div className={styles.viewerDots}>
+              {viewerImages.map((_, i) => (
+                <button
+                  key={i}
+                  className={`${styles.viewerDot} ${i === currentImageIndex ? styles.viewerDotActive : ''}`}
+                  onClick={() => setCurrentImageIndex(i)}
+                />
+              ))}
+              <span className={styles.viewerCounter}>{currentImageIndex + 1} / {viewerImages.length}</span>
+            </div>
+          )}
         </div>
       )}
 
