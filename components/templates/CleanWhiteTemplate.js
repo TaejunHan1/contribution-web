@@ -651,29 +651,35 @@ const CleanWhiteTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
 
   return (
     <div className={styles.container}>
-      {/* 인트로 섹션 - Clean hero */}
-      <section className={styles.introSection}>
-        <div className={styles.heroBadge}>Wedding Invitation</div>
-        <div className={styles.heroNames}>
-          <div className={styles.heroName}>
-            <span className={styles.heroNameKo}>{eventData.groom_name || '이민호'}</span>
-            <span className={styles.heroNameEn}>{groomEnglishName}</span>
-          </div>
-          <div className={styles.heroAmpersand}>&</div>
-          <div className={styles.heroName}>
-            <span className={styles.heroNameKo}>{eventData.bride_name || '배하윤'}</span>
-            <span className={styles.heroNameEn}>{brideEnglishName}</span>
-          </div>
+      <div className={styles.tabletWrapper}>
+        {/* LEFT PANEL: sticky hero */}
+        <div className={styles.leftPanel}>
+          <section className={styles.introSection}>
+            <div className={styles.heroBadge}>Wedding Invitation</div>
+            <div className={styles.heroNames}>
+              <div className={styles.heroName}>
+                <span className={styles.heroNameKo}>{eventData.groom_name || '이민호'}</span>
+                <span className={styles.heroNameEn}>{groomEnglishName}</span>
+              </div>
+              <div className={styles.heroAmpersand}>&</div>
+              <div className={styles.heroName}>
+                <span className={styles.heroNameKo}>{eventData.bride_name || '배하윤'}</span>
+                <span className={styles.heroNameEn}>{brideEnglishName}</span>
+              </div>
+            </div>
+            <div className={styles.heroDateBadge}>
+              <span className={styles.heroDateText}>{dateInfo.full}</span>
+              <span className={styles.heroDateSep}>·</span>
+              <span className={styles.heroDateText}>{ceremonyTime}</span>
+            </div>
+            <div className={styles.mainImageContainer}>
+              <MainPhotoSlideshow images={safeImages.main} onImagePress={(idx) => { setCurrentImageIndex(idx); setShowImageViewer(true); }} />
+            </div>
+          </section>
         </div>
-        <div className={styles.heroDateBadge}>
-          <span className={styles.heroDateText}>{dateInfo.full}</span>
-          <span className={styles.heroDateSep}>·</span>
-          <span className={styles.heroDateText}>{ceremonyTime}</span>
-        </div>
-        <div className={styles.mainImageContainer}>
-          <MainPhotoSlideshow images={safeImages.main} onImagePress={(idx) => { setCurrentImageIndex(idx); setShowImageViewer(true); }} />
-        </div>
-      </section>
+
+        {/* RIGHT PANEL: scrollable content */}
+        <div className={styles.rightPanel}>
 
       {/* 날짜 섹션 - Left blue border card */}
       <div className={styles.sectionDivider} />
@@ -972,6 +978,9 @@ const CleanWhiteTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
           <p className={styles.footerMessage}>저희의 새로운 시작을 축복해주셔서<br />진심으로 감사드립니다</p>
         </div>
       </footer>
+
+        </div>{/* end rightPanel */}
+      </div>{/* end tabletWrapper */}
 
       {/* 이미지 뷰어 모달 */}
       {showImageViewer && (

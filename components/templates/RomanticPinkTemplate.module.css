@@ -68,59 +68,172 @@
   100% { transform: translateY(calc(100vh + 120px)) translateX(10px) rotate(225deg); opacity: 0; }
 }
 
-/* ── 인트로/히어로 섹션 ── */
+/* ── 인트로 섹션: 뮤직 플레이어 카드 ── */
 .introSection {
-  min-height: 100vh;
-  padding: 20px;
-  background: linear-gradient(160deg, #F8F5F2 0%, #F3EFEC 100%);
+  height: 100vh;
+  background: #EAE0D8;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 0;
   position: relative;
-  text-align: center;
 }
 
-.introContent {
+/* 플레이어 카드 */
+.playerCard {
+  width: 100%;
+  flex: 1;
+  background: #E8DDD5;
+  border-radius: 0;
+  padding: 20px 20px 28px;
+  box-shadow: none;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  z-index: 2;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* 사진 */
+.playerPhoto {
+  flex: 1;
+  min-height: 0;
   width: 100%;
-  max-width: 600px;
-}
-
-.subtitle {
-  font-size: 11px;
-  color: #C2B0A2;
-  letter-spacing: 4px;
-  margin-bottom: 8px;
-  font-weight: 300;
-  text-transform: uppercase;
-}
-
-.loveText {
-  font-family: 'Great Vibes', 'Dancing Script', cursive;
-  font-size: 60px;
-  color: #9B8D82;
-  margin: 10px 0 20px;
-  font-weight: 400;
-  line-height: 1.1;
-  text-shadow: 1px 1px 3px rgba(155, 141, 130, 0.25);
-}
-
-/* 메인 사진 컨테이너 – 앱처럼 50% 50% 0 0 (타원 상단) */
-.mainImageContainer {
-  position: relative;
-  width: 88%;
-  max-width: 480px;
-  height: 68vh;
-  max-height: 650px;
-  margin: 20px auto 0;
-  border-radius: 50% 50% 0 0;
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 20px 60px rgba(194, 176, 162, 0.35);
-  z-index: 1;
+  position: relative;
+  background: #d8ccc4;
 }
+
+.playerPhoto img,
+.playerPhoto > div,
+.playerPhoto > button {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* 이름 */
+.playerNames {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin: 22px 0 8px;
+}
+
+.playerName {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: #3D2E28;
+  letter-spacing: -0.5px;
+}
+
+.playerHeart {
+  font-size: 28px;
+  color: #D4605A;
+  line-height: 1;
+  display: inline-block;
+  animation: playerHeartbeat 1.2s ease-in-out infinite;
+}
+
+@keyframes playerHeartbeat {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* 날짜 */
+.playerDate {
+  text-align: center;
+  font-size: 13px;
+  color: #8A7570;
+  letter-spacing: 1px;
+  margin: 0 0 20px;
+  font-family: 'Playfair Display', serif;
+}
+
+/* 프로그레스 바 */
+.playerProgressWrap {
+  padding: 0 4px;
+  margin-bottom: 22px;
+}
+
+.playerProgressTrack {
+  width: 100%;
+  height: 2px;
+  background: rgba(90, 70, 62, 0.18);
+  border-radius: 1px;
+  position: relative;
+}
+
+.playerProgressFill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0%;
+  background: rgba(90, 70, 62, 0.55);
+  border-radius: 1px;
+}
+
+.playerProgressDot {
+  position: absolute;
+  left: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #5A463E;
+}
+
+/* 컨트롤 버튼들 */
+.playerControls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+}
+
+.playerBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #7A6058;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.85;
+  transition: opacity 0.2s;
+}
+
+.playerBtn:hover { opacity: 1; }
+
+.playerPlayBtn {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  border: 1.8px solid rgba(90, 70, 62, 0.5);
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #5A463E;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.playerPlayBtn:hover {
+  background: rgba(90, 70, 62, 0.08);
+  border-color: rgba(90, 70, 62, 0.7);
+}
+
+/* subtitle, loveText — 카드 내부 제거됐으므로 hidden */
+.subtitle { display: none; }
+.loveText  { display: none; }
+.mainImageContainer { display: none; }
+.introContent { display: none; }
 
 .mainPhotoContainer {
   width: 100%;
@@ -1065,6 +1178,16 @@
 }
 
 /* ── 내 축의금 섹션 (하단 고정) ── */
+/* 전체화면 버튼 — 모바일 숨김, 태블릿+ media query에서 활성화 */
+.fullscreenBtn {
+  display: none;
+}
+
+/* QR 코드 — 모바일 숨김 */
+.tabletQr {
+  display: none;
+}
+
 .myContributionSection {
   position: fixed;
   bottom: 0;
@@ -1285,17 +1408,247 @@
   text-align: center;
 }
 
-/* ── 반응형 (태블릿+) ── */
+/* ── 태블릿 가로 레이아웃 ──
+   좌: 히어로(introSection) sticky | 우: contentSections 스크롤
+   ─────────────────────────────────────────────── */
 @media (min-width: 768px) {
-  .loveText {
-    font-size: 80px;
+  .container {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    overflow: hidden;
   }
 
-  .mainImageContainer {
-    max-width: 560px;
-    height: 72vh;
+  /* 좌측: 히어로 패널 (고정) */
+  .introSection {
+    width: 50%;
+    height: 100vh;
+    min-height: 100vh;
+    position: sticky;
+    top: 0;
+    flex-shrink: 0;
+    padding: 0;
+    background: #EAE0D8;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: stretch;
+    overflow: hidden;
   }
 
+  /* 태블릿 플레이어 카드 — 좌측 패널을 채우는 구조 */
+  .playerCard {
+    height: 100%;
+    background: transparent;
+  }
+
+  .playerPhoto {
+    border-radius: 18px;
+  }
+
+  .playerNames {
+    margin: 18px 0 6px;
+    gap: 14px;
+  }
+
+  .playerName {
+    font-size: 26px;
+  }
+
+  .playerHeart {
+    font-size: 26px;
+  }
+
+  .playerDate {
+    margin: 0 0 16px;
+  }
+
+  .playerProgressWrap {
+    margin-bottom: 16px;
+  }
+
+  .playerPlayBtn {
+    width: 58px;
+    height: 58px;
+  }
+
+  /* 우측: 스크롤 패널 */
+  .contentSections {
+    width: 50%;
+    height: 100vh;
+    overflow-y: auto;
+    background: #F8F5F2;
+    scroll-behavior: smooth;
+  }
+
+  .contentSections::-webkit-scrollbar { width: 4px; }
+  .contentSections::-webkit-scrollbar-track { background: #f0ebe6; }
+  .contentSections::-webkit-scrollbar-thumb { background: #d4c5bb; border-radius: 2px; }
+
+  /* 내 축의금 섹션 — 우측 패널 기준 */
+  .myContributionSection {
+    left: 50%;
+    right: 0;
+    width: 50%;
+  }
+
+  /* 전체화면 버튼 */
+  .fullscreenBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 68px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    border: none;
+    cursor: pointer;
+    z-index: 999999;
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.13);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: transform 0.18s ease, box-shadow 0.2s ease;
+  }
+
+  .fullscreenBtn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.18);
+  }
+
+  .fullscreenBtnActive {
+    background: #7a5c68;
+    box-shadow: 0 3px 14px rgba(122, 92, 104, 0.4);
+  }
+
+  /* 섹션 패딩 조정 */
+  .greetingSection,
+  .weddingDaySection,
+  .gallerySection,
+  .locationSection,
+  .giftSection,
+  .messagesSection,
+  .shareSection,
+  .footer,
+  .dateSection {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+
+  .galleryItem {
+    height: 520px;
+    flex: 0 0 75%;
+  }
+
+  /* 플로팅 부조 버튼 — 태블릿 가로에서 숨김 (WelcomeChoiceModal로 대체) */
+  .floatingContributeButton {
+    display: none;
+  }
+
+  /* QR 코드 — 우측 패널 하단 고정 */
+  .tabletQr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 100;
+    background: rgba(250, 245, 240, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    padding: 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(194, 176, 162, 0.3);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 8px 32px rgba(122, 92, 104, 0.18);
+  }
+
+  .tabletQr:hover {
+    border-color: rgba(194, 176, 162, 0.5);
+    box-shadow: 0 12px 40px rgba(122, 92, 104, 0.25);
+  }
+
+  .tabletQrExpanded {
+    padding: 20px;
+    gap: 12px;
+    border-color: rgba(194, 176, 162, 0.45);
+    box-shadow: 0 20px 60px rgba(122, 92, 104, 0.3);
+  }
+
+  .tabletQrHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 32px;
+  }
+
+  .tabletQrTitle {
+    font-size: 12px;
+    color: #7a5c68;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: 'Playfair Display', serif;
+  }
+
+  .tabletQrClose {
+    font-size: 12px;
+    color: #C2B0A2;
+    line-height: 1;
+  }
+
+  .tabletQrImg {
+    width: 88px;
+    height: 88px;
+    border-radius: 8px;
+    display: block;
+  }
+
+  .tabletQrImgLarge {
+    width: 200px;
+    height: 200px;
+    border-radius: 10px;
+    display: block;
+    border: 1px solid rgba(194, 176, 162, 0.25);
+  }
+
+  .tabletQrLabel {
+    font-size: 10px;
+    color: #C2B0A2;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-family: 'Playfair Display', serif;
+    margin: 0;
+  }
+
+  .tabletQrUrl {
+    font-size: 10px;
+    color: #C2B0A2;
+    letter-spacing: 0.5px;
+    margin: 0;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  .tabletQrHint {
+    font-size: 11px;
+    color: #9B8D82;
+    letter-spacing: 0.5px;
+    margin: 0;
+    text-align: center;
+  }
+}
+
+/* ── 반응형 (태블릿+) — 기존 스타일 오버라이드 ── */
+@media (min-width: 768px) {
   .greetingSection {
     padding: 100px 80px;
   }
@@ -1376,10 +1729,5 @@
 
   .animatedDate {
     font-size: 58px;
-  }
-
-  .floatingContributeButton {
-    font-size: 17px;
-    padding: 17px 40px;
   }
 }

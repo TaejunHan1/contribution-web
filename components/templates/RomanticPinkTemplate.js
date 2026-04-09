@@ -173,36 +173,6 @@ const koreanToEnglish = (koreanName) => {
   return result.join('');
 };
 
-// ─── 오프닝 오버레이 ─────────────────────────────────────────────────────
-const CustomOpeningOverlay = ({ visible, onComplete }) => {
-  const [showText, setShowText] = useState(false);
-  const [fadeOut, setFadeOut] = useState(false);
-
-  useEffect(() => {
-    if (visible) {
-      const t1 = setTimeout(() => setShowText(true), 500);
-      const t2 = setTimeout(() => setFadeOut(true), 2500);
-      const t3 = setTimeout(() => { if (onComplete) onComplete(); }, 3500);
-      return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-    }
-  }, [visible]);
-
-  if (!visible) return null;
-
-  return (
-    <div
-      className={styles.openingOverlay}
-      style={{ opacity: fadeOut ? 0 : 1, transition: 'opacity 1s ease-out', pointerEvents: fadeOut ? 'none' : 'auto' }}
-      onClick={() => window.__gyeongjo_play?.()}
-    >
-      {showText && (
-        <div className={styles.openingText}>
-          <div className={styles.animatedSvgText}>Happy Wedding</div>
-        </div>
-      )}
-    </div>
-  );
-};
 
 // ─── 메인 사진 슬라이드쇼 ────────────────────────────────────────────────
 const MainPhotoSlideshow = ({ images, onImagePress }) => {
@@ -371,8 +341,6 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
 
   // ─ state ──────────────────────────────────────────────────────────────
   const [randomGreeting, setRandomGreeting] = useState(null);
-  const [showOpening, setShowOpening] = useState(true);
-  const [contentVisible, setContentVisible] = useState(false);
   const [showImageViewer, setShowImageViewer] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [galleryScrollIndex, setGalleryScrollIndex] = useState(0);
@@ -398,6 +366,59 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
   const modalOpeningRef = useRef(false);
   const modalClosingRef = useRef(false);
   const arrivalModalCheckedRef = useRef(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [pageUrl, setPageUrl] = useState('');
+  const [qrExpanded, setQrExpanded] = useState(false);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const progressRafRef = useRef(null);
+  const progressFillRef = useRef(null);
+  const progressDotRef = useRef(null);
+
+  useEffect(() => {
+    setPageUrl(typeof window !== 'undefined' ? window.location.href : '');
+  }, []);
+
+  // 음악 재생 상태 동기화
+  useEffect(() => {
+    const handler = (e) => setIsMusicPlaying(e.detail.playing);
+    window.addEventListener('gyeongjo-playing-change', handler);
+    return () => window.removeEventListener('gyeongjo-playing-change', handler);
+  }, []);
+
+  // 프로그레스 바 실시간 업데이트 (DOM 직접 조작 — re-render 없음)
+  useEffect(() => {
+    const tick = () => {
+      const audio = window.__gyeongjo_audio;
+      if (audio && audio.duration && !isNaN(audio.duration)) {
+        const pct = (audio.currentTime / audio.duration) * 100;
+        if (progressFillRef.current) progressFillRef.current.style.width = `${pct}%`;
+        if (progressDotRef.current) progressDotRef.current.style.left = `calc(${pct}% - 5px)`;
+      }
+      progressRafRef.current = requestAnimationFrame(tick);
+    };
+    progressRafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(progressRafRef.current);
+  }, []);
+
+  useEffect(() => {
+    const handleFsChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', handleFsChange);
+    document.addEventListener('webkitfullscreenchange', handleFsChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFsChange);
+      document.removeEventListener('webkitfullscreenchange', handleFsChange);
+    };
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      (document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen)
+        ?.call(document.documentElement);
+      setShowWelcomeChoice(false);
+    } else {
+      (document.exitFullscreen || document.webkitExitFullscreen)?.call(document);
+    }
+  };
 
   // ─ 이미지 처리 ──────────────────────────────────────────────────────
   const getImageSrc = (img) => {
@@ -665,6 +686,8 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
   // ─ 모달 핸들러 ──────────────────────────────────────────────────────
   const checkAndShowWelcomeChoice = () => {
     if (arrivalModalCheckedRef.current || showWelcomeChoice) return false;
+    // state 대신 DOM 직접 체크 → stale closure 방지
+    if (typeof document !== 'undefined' && document.fullscreenElement) return false;
     const arrivalKey = `arrival_checked_${eventData?.id}`;
     if (typeof window !== 'undefined' && localStorage.getItem(arrivalKey)) return false;
     arrivalModalCheckedRef.current = true;
@@ -672,23 +695,11 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
     return true;
   };
 
-  const handleOpeningComplete = () => {
-    setShowOpening(false);
-    setContentVisible(true);
-    setTimeout(() => checkAndShowWelcomeChoice(), 500);
-  };
-
   useEffect(() => {
     if (arrivalModalCheckedRef.current) return;
-    let t;
-    if (!showOpening) {
-      setContentVisible(true);
-      t = setTimeout(() => checkAndShowWelcomeChoice(), 1000);
-    } else {
-      t = setTimeout(() => { setShowOpening(false); setContentVisible(true); setTimeout(() => checkAndShowWelcomeChoice(), 500); }, 4000);
-    }
+    const t = setTimeout(() => checkAndShowWelcomeChoice(), 1000);
     return () => clearTimeout(t);
-  }, [showOpening]);
+  }, []);
 
   const handleGuestbookModalOpen = () => {
     if (modalOpeningRef.current || showGuestbookModal) return;
@@ -820,20 +831,79 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
   // ─ 렌더 ──────────────────────────────────────────────────────────────
   return (
     <div className={styles.container}>
-      {/* 1. 오프닝 오버레이 */}
-      <CustomOpeningOverlay visible={showOpening} onComplete={handleOpeningComplete} />
-
-
-      {/* 3. 히어로: 메인 사진 슬라이드쇼 + WEDDING INVITATION */}
-      <section className={styles.introSection} style={{ opacity: contentVisible ? 1 : 0, transition: 'opacity 1s ease-in' }}>
-        <div className={styles.introContent}>
-          <p className={styles.subtitle}>WEDDING INVITATION</p>
-          <h1 className={styles.loveText}>With Love</h1>
-          <div className={styles.mainImageContainer}>
+      {/* 히어로: 뮤직 플레이어 카드 스타일 */}
+      <section className={styles.introSection}>
+        <div className={styles.playerCard}>
+          {/* 사진 */}
+          <div className={styles.playerPhoto}>
             <MainPhotoSlideshow images={safeImages.main} onImagePress={handleImagePress} />
+          </div>
+
+          {/* 이름 */}
+          <div className={styles.playerNames}>
+            <span className={styles.playerName}>{groomName}</span>
+            <span className={styles.playerHeart}>♥</span>
+            <span className={styles.playerName}>{brideName}</span>
+          </div>
+
+          {/* 날짜 */}
+          <p className={styles.playerDate}>
+            {dateInfo.year && `${dateInfo.year}.${String(dateInfo.month).padStart(2,'0')}.${String(dateInfo.day).padStart(2,'0')}`}
+            {' '}
+            {dateInfo.dayOfWeek && ['일','월','화','수','목','금','토'][['일요일','월요일','화요일','수요일','목요일','금요일','토요일'].indexOf(dateInfo.dayOfWeek)]}
+            {ceremonyTimeDisplay && ` ${ceremonyTimeDisplay}`}
+          </p>
+
+          {/* 프로그레스 바 */}
+          <div className={styles.playerProgressWrap}>
+            <div className={styles.playerProgressTrack}>
+              <div ref={progressFillRef} className={styles.playerProgressFill} />
+              <div ref={progressDotRef} className={styles.playerProgressDot} />
+            </div>
+          </div>
+
+          {/* 컨트롤 버튼 */}
+          <div className={styles.playerControls}>
+            <button className={styles.playerBtn} onClick={() => {}} aria-label="rewind">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M11 19l-7-7 7-7M18 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </button>
+            <button className={styles.playerBtn} onClick={() => {}} aria-label="prev">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M19 20L9 12l10-8v16zM5 4v16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </button>
+            <button
+              className={styles.playerPlayBtn}
+              onClick={() => {
+                if (window.__gyeongjo_toggle) {
+                  window.__gyeongjo_toggle();
+                } else if (window.__gyeongjo_play) {
+                  window.__gyeongjo_play();
+                }
+              }}
+              aria-label={isMusicPlaying ? 'pause' : 'play'}
+            >
+              {isMusicPlaying ? (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/>
+                  <rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/>
+                </svg>
+              ) : (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <path d="M8 5l11 7-11 7V5z" fill="currentColor"/>
+                </svg>
+              )}
+            </button>
+            <button className={styles.playerBtn} onClick={() => {}} aria-label="next">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 4l10 8-10 8V4zM19 4v16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </button>
+            <button className={styles.playerBtn} onClick={() => {}} aria-label="forward">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M13 5l7 7-7 7M6 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </button>
           </div>
         </div>
       </section>
+
+      {/* 우측 스크롤 영역 (태블릿 가로) */}
+      <div className={styles.contentSections}>
 
       {/* 4. 인사말 + 이름 섹션 */}
       <section className={styles.greetingSection}>
@@ -1164,12 +1234,54 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
         </div>
       </footer>
 
-      {/* 부조 참여하기 플로팅 버튼 */}
-      {!myContribution && !showContributionModal && !showGuestbookModal && !showWelcomeChoice && (
-        <button className={styles.floatingContributeButton} onClick={() => { setUserChoice('contribution'); setShowContributionModal(true); }}>
-          💝 부조 참여하기
-        </button>
+      {/* 태블릿 전용 QR 코드 (우측 하단 고정) */}
+      {pageUrl && (
+        <div
+          className={`${styles.tabletQr} ${qrExpanded ? styles.tabletQrExpanded : ''}`}
+          onClick={() => setQrExpanded(prev => !prev)}
+        >
+          {qrExpanded ? (
+            <>
+              <div className={styles.tabletQrHeader}>
+                <span className={styles.tabletQrTitle}>청첩장 QR</span>
+                <span className={styles.tabletQrClose}>✕</span>
+              </div>
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=240x240&bgcolor=faf5f0&color=7a5c68&data=${encodeURIComponent(pageUrl)}`}
+                alt="QR Code"
+                className={styles.tabletQrImgLarge}
+              />
+              <p className={styles.tabletQrUrl}>{pageUrl.replace('https://', '')}</p>
+              <p className={styles.tabletQrHint}>스캔하여 모바일에서 열기</p>
+            </>
+          ) : (
+            <>
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&bgcolor=faf5f0&color=7a5c68&data=${encodeURIComponent(pageUrl)}`}
+                alt="QR Code"
+                className={styles.tabletQrImg}
+              />
+              <p className={styles.tabletQrLabel}>청첩장 링크</p>
+            </>
+          )}
+        </div>
       )}
+
+      </div>{/* end contentSections */}
+
+      {/* 전체화면 버튼 — 태블릿 가로 전용 */}
+      <button className={`${styles.fullscreenBtn} ${isFullscreen ? styles.fullscreenBtnActive : ''}`} onClick={toggleFullscreen}>
+        {isFullscreen ? (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M8 3v3a2 2 0 01-2 2H3M21 8h-3a2 2 0 01-2-2V3M3 16h3a2 2 0 012 2v3M16 21v-3a2 2 0 012-2h3" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        ) : (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M8 3H5a2 2 0 00-2 2v3M21 8V5a2 2 0 00-2-2h-3M3 16v3a2 2 0 002 2h3M16 21h3a2 2 0 002-2v-3" stroke="#7a5c68" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        )}
+      </button>
+
 
       {/* 이미지 뷰어 모달 */}
       {showImageViewer && (

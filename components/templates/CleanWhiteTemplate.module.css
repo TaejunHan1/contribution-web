@@ -14,6 +14,16 @@
   margin: 0 auto;
 }
 
+/* ===== TABLET WRAPPER ===== */
+.tabletWrapper {
+  /* mobile: no special layout */
+}
+
+.leftPanel,
+.rightPanel {
+  /* mobile: stack naturally */
+}
+
 /* ===== SECTION DIVIDER ===== */
 .sectionDivider {
   height: 8px;
@@ -1073,4 +1083,97 @@
 
 .editButton:hover {
   background: #1A6FE0;
+}
+
+/* ===== TABLET LAYOUT (768px+) ===== */
+@media (min-width: 768px) {
+  .container {
+    max-width: none;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .tabletWrapper {
+    display: flex;
+    height: 100vh;
+  }
+
+  .leftPanel {
+    width: 50%;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    flex-shrink: 0;
+    overflow: hidden;
+    background: #F7F6F4;
+  }
+
+  .rightPanel {
+    width: 50%;
+    height: 100vh;
+    overflow-y: auto;
+    background: #FFFFFF;
+    border-left: 1px solid #EFEFEF;
+  }
+
+  /* Left panel: intro section fills full height */
+  .introSection {
+    height: 100%;
+    padding: 40px 32px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .mainImageContainer {
+    max-width: none;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .heroPhotoContainer {
+    padding-bottom: 0;
+    height: 100%;
+    border-radius: 18px;
+    box-shadow: 0 8px 48px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Right panel: sections padding */
+  .dateSection,
+  .greetingSection,
+  .gallerySection,
+  .weddingDaySection,
+  .giftSection,
+  .messagesSection,
+  .locationSection,
+  .shareSection {
+    padding: 28px 32px;
+  }
+
+  .sectionDivider {
+    height: 1px;
+    background: #F0F0F0;
+  }
+
+  .footer {
+    padding: 32px 32px 40px;
+  }
+
+  /* Gallery: 3 columns on tablet */
+  .galleryGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Contribution section anchors to right panel */
+  .myContributionSection {
+    left: 50%;
+    right: 0;
+    width: 50%;
+    max-width: 50%;
+    transform: none;
+    border-radius: 16px 16px 0 0;
+  }
 }

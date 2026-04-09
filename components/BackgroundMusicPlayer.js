@@ -15,6 +15,10 @@ const TRACK_MAP = {
   track11: 'viacheslavstarostin-romantic-wedding-background-music-357203.mp3',
 };
 
+function notifyPlaying(val) {
+  window.dispatchEvent(new CustomEvent('gyeongjo-playing-change', { detail: { playing: val } }));
+}
+
 export default function BackgroundMusicPlayer({ trackId }) {
   const filename = TRACK_MAP[trackId];
   const audioRef = useRef(null);
@@ -26,6 +30,7 @@ export default function BackgroundMusicPlayer({ trackId }) {
 
     audio.volume = 0.6;
     audio.loop = true;
+    window.__gyeongjo_audio = audio;
 
     // 전역 함수로 등록 → WelcomeChoiceModal 버튼 클릭 시 직접 호출 (확실한 유저 제스처)
     window.__gyeongjo_play = () => {
@@ -33,19 +38,32 @@ export default function BackgroundMusicPlayer({ trackId }) {
       const a = audioRef.current;
       a.muted = false;
       if (a.paused) {
-        a.play().then(() => setPlaying(true)).catch(() => {});
+        a.play().then(() => { setPlaying(true); notifyPlaying(true); }).catch(() => {});
       } else {
-        setPlaying(true);
+        setPlaying(true); notifyPlaying(true);
       }
       delete window.__gyeongjo_play;
+    };
+
+    // 토글 함수 (플레이어 카드 버튼에서 사용)
+    window.__gyeongjo_toggle = () => {
+      const a = audioRef.current;
+      if (!a) return;
+      if (!a.paused) {
+        a.pause();
+        setPlaying(false); notifyPlaying(false);
+      } else {
+        a.muted = false;
+        a.play().then(() => { setPlaying(true); notifyPlaying(true); }).catch(() => {});
+      }
     };
 
     // 1) 소리 있는 재생 먼저 시도 (링크 클릭 진입 시 허용됨)
     audio.muted = false;
     audio.play()
       .then(() => {
-        setPlaying(true);
-        delete window.__gyeongjo_play; // 이미 재생 중이면 전역 함수 불필요
+        setPlaying(true); notifyPlaying(true);
+        delete window.__gyeongjo_play;
       })
       .catch(() => {
         // 2) 차단됨 → muted로 미리 로딩만
@@ -53,7 +71,11 @@ export default function BackgroundMusicPlayer({ trackId }) {
         audio.play().catch(() => {});
       });
 
-    return () => { delete window.__gyeongjo_play; };
+    return () => {
+      delete window.__gyeongjo_play;
+      delete window.__gyeongjo_toggle;
+      delete window.__gyeongjo_audio;
+    };
   }, [filename]);
 
   const toggle = () => {
@@ -61,10 +83,10 @@ export default function BackgroundMusicPlayer({ trackId }) {
     if (!audio) return;
     if (!audio.paused) {
       audio.pause();
-      setPlaying(false);
+      setPlaying(false); notifyPlaying(false);
     } else {
       audio.muted = false;
-      audio.play().then(() => setPlaying(true)).catch(() => {});
+      audio.play().then(() => { setPlaying(true); notifyPlaying(true); }).catch(() => {});
     }
   };
 
