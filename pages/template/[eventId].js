@@ -216,54 +216,10 @@ const GardenTemplate = ({ eventData }) => (
 
 // VintageTemplate은 이미 import됨 - 중복 제거
 
-export async function getServerSideProps(context) {
-  try {
-    const { eventId } = context.params;
-    const template = context.query.template || 'classic-elegant';
-
-    let serverEvent = null;
-    try {
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-      const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-      if (supabaseUrl && supabaseKey) {
-        const res = await fetch(
-          `${supabaseUrl}/rest/v1/events?id=eq.${eventId}&select=*`,
-          {
-            headers: {
-              apikey: supabaseKey,
-              Authorization: `Bearer ${supabaseKey}`,
-            },
-          }
-        );
-        const rows = await res.json();
-        const raw = Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
-        // JSON 직렬화 불가능한 값(undefined, Date 등) 제거
-        serverEvent = raw ? JSON.parse(JSON.stringify(raw)) : null;
-      }
-    } catch (_) {
-      // 클라이언트에서 재시도
-    }
-
-    return {
-      props: {
-        serverEvent,
-        serverTemplate: template,
-        serverEventId: eventId,
-      },
-    };
-  } catch (err) {
-    return {
-      props: {
-        serverEvent: null,
-        serverTemplate: context.query?.template || 'classic-elegant',
-        serverEventId: context.params?.eventId || '',
-      },
-    };
-  }
-}
-
-export default function TemplatePage({ serverEvent, serverTemplate, serverEventId }) {
+export default function TemplatePage() {
+  const serverEvent = null;
+  const serverTemplate = null;
+  const serverEventId = null;
   const router = useRouter();
   const { eventId } = router.query;
   const template = router.query.template || serverTemplate || 'modern';
