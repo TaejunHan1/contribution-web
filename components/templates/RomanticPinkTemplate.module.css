@@ -686,31 +686,39 @@
 }
 
 .giftHeader {
-  margin-bottom: 16px;
+  margin-bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.giftHeaderEn {
+  font-size: 11px;
+  color: #C2A08A;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin: 0 0 8px;
 }
 
 .giftTitle {
   font-family: 'Playfair Display', serif;
-  font-size: 26px;
-  color: #333;
+  font-size: 24px;
+  font-weight: 400;
+  color: #5C3D2E;
+  margin: 0 0 14px;
+  letter-spacing: 2px;
+}
 
-  margin: 0 0 8px;
+.giftHeaderLine {
+  width: 30px;
+  height: 1px;
+  background: #E8C4A8;
+  margin-bottom: 12px;
 }
 
 .giftSubtitle {
-  font-size: 14px;
-  color: #9B8D82;
-  margin: 0;
-}
-
-.giftDescription {
-  margin-bottom: 28px;
-}
-
-.giftDescriptionText {
-  font-size: 14px;
-  color: #666;
-  line-height: 22px;
+  font-size: 13px;
+  color: #C2A08A;
   margin: 0;
 }
 
@@ -749,82 +757,94 @@
   font-weight: 600;
 }
 
-.accountsContainer {
+.personCardsContainer {
   max-width: 440px;
   margin: 0 auto;
 }
 
-.accountGroup {
+.personCardGroup {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
-.accountCards {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.accountCard {
-  background: #fff;
-  border-radius: 14px;
-  padding: 18px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border: 1px solid rgba(255, 182, 193, 0.3);
-}
-
-.accountCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(255, 20, 147, 0.12);
-}
-
-.accountInfo {
-  flex: 1;
+.personCard {
+  background: #FFF5EE;
+  border: 1px solid #F0D5C0;
+  border-radius: 10px;
+  overflow: hidden;
   text-align: left;
 }
 
-.accountName {
-  font-size: 15px;
+.personCardLabel {
+  font-size: 11px;
   font-weight: 600;
-  color: #333;
-  margin-bottom: 6px;
+  color: #C2A08A;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 12px 16px 8px;
 }
 
-.bankInfo {
+.personCardRow {
   display: flex;
-  flex-direction: column;
-  gap: 3px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 16px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease;
 }
 
-.bankName {
-  font-size: 12px;
-  color: #9B8D82;
+.personCardRow:hover {
+  background: rgba(0,0,0,0.02);
 }
 
-.accountNumber {
+.personCardRowInfo {
+  flex: 1;
+  margin-right: 12px;
+}
+
+.personCardBank {
+  font-size: 11px;
+  color: #C2A08A;
+  letter-spacing: 0.3px;
+  margin-bottom: 2px;
+}
+
+.personCardValue {
   font-size: 14px;
-  color: #555;
-  font-family: 'Noto Serif KR', serif;
+  color: #5C3D2E;
   letter-spacing: 0.5px;
 }
 
-.copyButton {
-  background: #f0f0f0;
-  border-radius: 6px;
-  padding: 6px 12px;
-  margin-left: 12px;
+.personCardDivider {
+  height: 1px;
+  background: #F0D5C0;
+  margin: 0 16px;
 }
 
-.copyIcon {
+.personActionBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  background: #F5E0D0;
+  border: 1px solid #E8CAAF;
+  border-radius: 5px;
   font-size: 12px;
-  color: #555;
   font-weight: 600;
+  color: #9B6B5A;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.personActionBtn:hover {
+  background: #EDD0BC;
+}
+
+.personCallBtn {
+  text-decoration: none;
 }
 
 /* ── 오시는 길 ── */

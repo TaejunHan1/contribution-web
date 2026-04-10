@@ -825,8 +825,23 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
     catch { alert('계좌번호 복사에 실패했습니다.'); }
   };
 
+  const formatPhone = (phone) => {
+    if (!phone) return '';
+    const d = phone.replace(/\D/g, '');
+    if (d.length === 8) return `010-${d.slice(0,4)}-${d.slice(4)}`;
+    if (d.length === 10) return `${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`;
+    if (d.length === 11) return `${d.slice(0,3)}-${d.slice(3,7)}-${d.slice(7)}`;
+    return phone;
+  };
+
   const groomName = eventData.groom_name || eventData.groomName || '';
   const brideName = eventData.bride_name || eventData.brideName || '';
+  const groomContact = eventData.groom_contact || eventData.groomContact || '';
+  const brideContact = eventData.bride_contact || eventData.brideContact || '';
+  const groomFatherContact = additionalInfo?.groom_father_contact || eventData.groomFatherContact || '';
+  const groomMotherContact = additionalInfo?.groom_mother_contact || eventData.groomMotherContact || '';
+  const brideFatherContact = additionalInfo?.bride_father_contact || eventData.brideFatherContact || '';
+  const brideMotherContact = additionalInfo?.bride_mother_contact || eventData.brideMotherContact || '';
 
   // ─ 렌더 ──────────────────────────────────────────────────────────────
   return (
@@ -1015,147 +1030,7 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
         )}
       </section>
 
-      {/* 8. 축의금 전달 (계좌 정보) */}
-      <section className={styles.giftSection}>
-        <div className={styles.giftHeader}>
-          <h2 className={styles.giftTitle}>축의금 전달</h2>
-          <p className={styles.giftSubtitle}>따뜻한 마음을 함께 나누어주세요</p>
-        </div>
-        <div className={styles.giftDescription}>
-          <p className={styles.giftDescriptionText}>
-            축복의 마음을 담은 소중한 마음,<br />이렇게 전할 수 있어요
-          </p>
-        </div>
-
-        <div className={styles.toggleContainer}>
-          <div className={styles.toggleButtons}>
-            <button
-              className={`${styles.accountToggleButton} ${activeAccountToggle === 'groom' ? styles.accountToggleActive : ''}`}
-              onClick={() => handleAccountToggle('groom')}
-            >신랑측</button>
-            <button
-              className={`${styles.accountToggleButton} ${activeAccountToggle === 'bride' ? styles.accountToggleActive : ''}`}
-              onClick={() => handleAccountToggle('bride')}
-            >신부측</button>
-          </div>
-        </div>
-
-        <div className={styles.accountsContainer}>
-          {activeAccountToggle === 'groom' && (additionalInfo?.groom_account_number || additionalInfo?.groom_father_account_number || additionalInfo?.groom_mother_account_number) && (
-            <div className={styles.accountGroup}>
-              <div className={styles.accountCards}>
-                {additionalInfo?.groom_account_number && (
-                  <div className={styles.accountCard} onClick={() => copyAccount(additionalInfo.groom_account_number)}>
-                    <div className={styles.accountInfo}>
-                      <div className={styles.accountName}>{groomName || '신랑'}</div>
-                      <div className={styles.bankInfo}>
-                        <span className={styles.bankName}>{additionalInfo.groom_bank_name || '은행'}</span>
-                        <span className={styles.accountNumber}>{additionalInfo.groom_account_number}</span>
-                      </div>
-                    </div>
-                    <div className={styles.copyButton}><span className={styles.copyIcon}>복사</span></div>
-                  </div>
-                )}
-                {additionalInfo?.groom_father_account_number && (
-                  <div className={styles.accountCard} onClick={() => copyAccount(additionalInfo.groom_father_account_number)}>
-                    <div className={styles.accountInfo}>
-                      <div className={styles.accountName}>{eventData.groom_father_name || eventData.groomFatherName || '신랑'} 아버님</div>
-                      <div className={styles.bankInfo}>
-                        <span className={styles.bankName}>{additionalInfo.groom_father_bank_name || '은행'}</span>
-                        <span className={styles.accountNumber}>{additionalInfo.groom_father_account_number}</span>
-                      </div>
-                    </div>
-                    <div className={styles.copyButton}><span className={styles.copyIcon}>복사</span></div>
-                  </div>
-                )}
-                {additionalInfo?.groom_mother_account_number && (
-                  <div className={styles.accountCard} onClick={() => copyAccount(additionalInfo.groom_mother_account_number)}>
-                    <div className={styles.accountInfo}>
-                      <div className={styles.accountName}>{eventData.groom_mother_name || eventData.groomMotherName || '신랑'} 어머님</div>
-                      <div className={styles.bankInfo}>
-                        <span className={styles.bankName}>{additionalInfo.groom_mother_bank_name || '은행'}</span>
-                        <span className={styles.accountNumber}>{additionalInfo.groom_mother_account_number}</span>
-                      </div>
-                    </div>
-                    <div className={styles.copyButton}><span className={styles.copyIcon}>복사</span></div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {activeAccountToggle === 'bride' && (additionalInfo?.bride_account_number || additionalInfo?.bride_father_account_number || additionalInfo?.bride_mother_account_number) && (
-            <div className={styles.accountGroup}>
-              <div className={styles.accountCards}>
-                {additionalInfo?.bride_account_number && (
-                  <div className={styles.accountCard} onClick={() => copyAccount(additionalInfo.bride_account_number)}>
-                    <div className={styles.accountInfo}>
-                      <div className={styles.accountName}>{brideName || '신부'}</div>
-                      <div className={styles.bankInfo}>
-                        <span className={styles.bankName}>{additionalInfo.bride_bank_name || '은행'}</span>
-                        <span className={styles.accountNumber}>{additionalInfo.bride_account_number}</span>
-                      </div>
-                    </div>
-                    <div className={styles.copyButton}><span className={styles.copyIcon}>복사</span></div>
-                  </div>
-                )}
-                {additionalInfo?.bride_father_account_number && (
-                  <div className={styles.accountCard} onClick={() => copyAccount(additionalInfo.bride_father_account_number)}>
-                    <div className={styles.accountInfo}>
-                      <div className={styles.accountName}>{eventData.bride_father_name || eventData.brideFatherName || '신부'} 아버님</div>
-                      <div className={styles.bankInfo}>
-                        <span className={styles.bankName}>{additionalInfo.bride_father_bank_name || '은행'}</span>
-                        <span className={styles.accountNumber}>{additionalInfo.bride_father_account_number}</span>
-                      </div>
-                    </div>
-                    <div className={styles.copyButton}><span className={styles.copyIcon}>복사</span></div>
-                  </div>
-                )}
-                {additionalInfo?.bride_mother_account_number && (
-                  <div className={styles.accountCard} onClick={() => copyAccount(additionalInfo.bride_mother_account_number)}>
-                    <div className={styles.accountInfo}>
-                      <div className={styles.accountName}>{eventData.bride_mother_name || eventData.brideMotherName || '신부'} 어머님</div>
-                      <div className={styles.bankInfo}>
-                        <span className={styles.bankName}>{additionalInfo.bride_mother_bank_name || '은행'}</span>
-                        <span className={styles.accountNumber}>{additionalInfo.bride_mother_account_number}</span>
-                      </div>
-                    </div>
-                    <div className={styles.copyButton}><span className={styles.copyIcon}>복사</span></div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* 9. 오시는 길 */}
-      <section className={styles.locationSection}>
-        <h2 className={styles.locationTitle}>Location</h2>
-        <div className={styles.venueInfo}>
-          <p className={styles.venueName}>{eventData.location || ''}</p>
-          <p className={styles.venueAddress}>{eventData.detailed_address || eventData.detailedAddress || ''}</p>
-        </div>
-
-        <div className={styles.mapContainer}>
-          <GoogleMapEmbed
-            address={`${eventData?.location || ''} ${eventData?.detailed_address || eventData?.detailedAddress || ''}`.trim()}
-            venueName={eventData?.venue_name || eventData?.venueName}
-            width="100%"
-            height="300px"
-          />
-        </div>
-
-        <div className={styles.transportCard}>
-          <div className={styles.transportIcon}><span>🅿️</span></div>
-          <div className={styles.transportContent}>
-            <h4 className={styles.transportTitle}>주차 안내</h4>
-            <p className={styles.transportText}>{eventData.parking_info || eventData.parkingInfo || ''}</p>
-          </div>
-        </div>
-      </section>
-
-      {/* 10. 방명록 섹션 */}
+      {/* 8. 방명록 섹션 */}
       <section className={styles.messagesSection}>
         <h2 className={styles.messagesTitle}>Messages</h2>
         <p className={styles.messagesSubtitle}>{messageSettings?.placeholder || '저희 둘에게 따뜻한 방명록을 남겨주세요'}</p>
@@ -1188,7 +1063,6 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
           )}
         </div>
 
-        {/* 페이지네이션 */}
         {totalPages > 1 && (
           <div className={styles.pagination}>
             <button className={styles.pageNavButton} onClick={() => setCurrentPage(p => Math.max(0, p - 1))} disabled={currentPage === 0}>‹</button>
@@ -1211,6 +1085,231 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
             축하메시지 남기기
           </button>
         )}
+      </section>
+
+      {/* 9. 오시는 길 */}
+      <section className={styles.locationSection}>
+        <h2 className={styles.locationTitle}>Location</h2>
+        <div className={styles.venueInfo}>
+          <p className={styles.venueName}>{eventData.location || ''}</p>
+          <p className={styles.venueAddress}>{eventData.detailed_address || eventData.detailedAddress || ''}</p>
+        </div>
+
+        <div className={styles.mapContainer}>
+          <GoogleMapEmbed
+            address={`${eventData?.location || ''} ${eventData?.detailed_address || eventData?.detailedAddress || ''}`.trim()}
+            venueName={eventData?.venue_name || eventData?.venueName}
+            width="100%"
+            height="300px"
+          />
+        </div>
+
+        <div className={styles.transportCard}>
+          <div className={styles.transportIcon}><span>🅿️</span></div>
+          <div className={styles.transportContent}>
+            <h4 className={styles.transportTitle}>주차 안내</h4>
+            <p className={styles.transportText}>{eventData.parking_info || eventData.parkingInfo || ''}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* 10. 축의금 & 연락처 */}
+      <section className={styles.giftSection}>
+        <div className={styles.giftHeader}>
+          <p className={styles.giftHeaderEn}>Contribution & Contact</p>
+          <h2 className={styles.giftTitle}>축의금 & 연락처</h2>
+          <div className={styles.giftHeaderLine} />
+          <p className={styles.giftSubtitle}>따뜻한 마음을 함께 나누어주세요</p>
+        </div>
+
+        <div className={styles.toggleContainer}>
+          <div className={styles.toggleButtons}>
+            <button
+              className={`${styles.accountToggleButton} ${activeAccountToggle === 'groom' ? styles.accountToggleActive : ''}`}
+              onClick={() => handleAccountToggle('groom')}
+            >신랑측</button>
+            <button
+              className={`${styles.accountToggleButton} ${activeAccountToggle === 'bride' ? styles.accountToggleActive : ''}`}
+              onClick={() => handleAccountToggle('bride')}
+            >신부측</button>
+          </div>
+        </div>
+
+        <div className={styles.personCardsContainer}>
+          {/* 신랑측 */}
+          {activeAccountToggle === 'groom' && (
+            <div className={styles.personCardGroup}>
+              {/* 신랑 */}
+              {(additionalInfo?.groom_account_number || groomContact) && (
+                <div className={styles.personCard}>
+                  <div className={styles.personCardLabel}>{groomName || '신랑'}</div>
+                  {additionalInfo?.groom_account_number && (
+                    <div className={styles.personCardRow} onClick={() => copyAccount(additionalInfo.groom_account_number)} style={{cursor:'pointer'}}>
+                      <div className={styles.personCardRowInfo}>
+                        {additionalInfo.groom_bank_name && <div className={styles.personCardBank}>{additionalInfo.groom_bank_name}</div>}
+                        <div className={styles.personCardValue}>{additionalInfo.groom_account_number}</div>
+                      </div>
+                      <div className={styles.personActionBtn}>복사</div>
+                    </div>
+                  )}
+                  {additionalInfo?.groom_account_number && groomContact && <div className={styles.personCardDivider} />}
+                  {groomContact && (
+                    <a className={styles.personCardRow} href={`tel:${groomContact.replace(/\D/g,'').length===8?'010'+groomContact.replace(/\D/g,''):groomContact.replace(/\D/g,'')}`}>
+                      <div className={styles.personCardRowInfo}>
+                        <div className={styles.personCardValue}>{formatPhone(groomContact)}</div>
+                      </div>
+                      <div className={`${styles.personActionBtn} ${styles.personCallBtn}`}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+                        전화
+                      </div>
+                    </a>
+                  )}
+                </div>
+              )}
+              {/* 신랑 아버님 */}
+              {(additionalInfo?.groom_father_account_number || groomFatherContact) && (
+                <div className={styles.personCard}>
+                  <div className={styles.personCardLabel}>{eventData.groom_father_name || '아버님'}</div>
+                  {additionalInfo?.groom_father_account_number && (
+                    <div className={styles.personCardRow} onClick={() => copyAccount(additionalInfo.groom_father_account_number)} style={{cursor:'pointer'}}>
+                      <div className={styles.personCardRowInfo}>
+                        {additionalInfo.groom_father_bank_name && <div className={styles.personCardBank}>{additionalInfo.groom_father_bank_name}</div>}
+                        <div className={styles.personCardValue}>{additionalInfo.groom_father_account_number}</div>
+                      </div>
+                      <div className={styles.personActionBtn}>복사</div>
+                    </div>
+                  )}
+                  {additionalInfo?.groom_father_account_number && groomFatherContact && <div className={styles.personCardDivider} />}
+                  {groomFatherContact && (
+                    <a className={styles.personCardRow} href={`tel:${groomFatherContact.replace(/\D/g,'').length===8?'010'+groomFatherContact.replace(/\D/g,''):groomFatherContact.replace(/\D/g,'')}`}>
+                      <div className={styles.personCardRowInfo}>
+                        <div className={styles.personCardValue}>{formatPhone(groomFatherContact)}</div>
+                      </div>
+                      <div className={`${styles.personActionBtn} ${styles.personCallBtn}`}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+                        전화
+                      </div>
+                    </a>
+                  )}
+                </div>
+              )}
+              {/* 신랑 어머님 */}
+              {(additionalInfo?.groom_mother_account_number || groomMotherContact) && (
+                <div className={styles.personCard}>
+                  <div className={styles.personCardLabel}>{eventData.groom_mother_name || '어머님'}</div>
+                  {additionalInfo?.groom_mother_account_number && (
+                    <div className={styles.personCardRow} onClick={() => copyAccount(additionalInfo.groom_mother_account_number)} style={{cursor:'pointer'}}>
+                      <div className={styles.personCardRowInfo}>
+                        {additionalInfo.groom_mother_bank_name && <div className={styles.personCardBank}>{additionalInfo.groom_mother_bank_name}</div>}
+                        <div className={styles.personCardValue}>{additionalInfo.groom_mother_account_number}</div>
+                      </div>
+                      <div className={styles.personActionBtn}>복사</div>
+                    </div>
+                  )}
+                  {additionalInfo?.groom_mother_account_number && groomMotherContact && <div className={styles.personCardDivider} />}
+                  {groomMotherContact && (
+                    <a className={styles.personCardRow} href={`tel:${groomMotherContact.replace(/\D/g,'').length===8?'010'+groomMotherContact.replace(/\D/g,''):groomMotherContact.replace(/\D/g,'')}`}>
+                      <div className={styles.personCardRowInfo}>
+                        <div className={styles.personCardValue}>{formatPhone(groomMotherContact)}</div>
+                      </div>
+                      <div className={`${styles.personActionBtn} ${styles.personCallBtn}`}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+                        전화
+                      </div>
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* 신부측 */}
+          {activeAccountToggle === 'bride' && (
+            <div className={styles.personCardGroup}>
+              {/* 신부 */}
+              {(additionalInfo?.bride_account_number || brideContact) && (
+                <div className={styles.personCard}>
+                  <div className={styles.personCardLabel}>{brideName || '신부'}</div>
+                  {additionalInfo?.bride_account_number && (
+                    <div className={styles.personCardRow} onClick={() => copyAccount(additionalInfo.bride_account_number)} style={{cursor:'pointer'}}>
+                      <div className={styles.personCardRowInfo}>
+                        {additionalInfo.bride_bank_name && <div className={styles.personCardBank}>{additionalInfo.bride_bank_name}</div>}
+                        <div className={styles.personCardValue}>{additionalInfo.bride_account_number}</div>
+                      </div>
+                      <div className={styles.personActionBtn}>복사</div>
+                    </div>
+                  )}
+                  {additionalInfo?.bride_account_number && brideContact && <div className={styles.personCardDivider} />}
+                  {brideContact && (
+                    <a className={styles.personCardRow} href={`tel:${brideContact.replace(/\D/g,'').length===8?'010'+brideContact.replace(/\D/g,''):brideContact.replace(/\D/g,'')}`}>
+                      <div className={styles.personCardRowInfo}>
+                        <div className={styles.personCardValue}>{formatPhone(brideContact)}</div>
+                      </div>
+                      <div className={`${styles.personActionBtn} ${styles.personCallBtn}`}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+                        전화
+                      </div>
+                    </a>
+                  )}
+                </div>
+              )}
+              {/* 신부 아버님 */}
+              {(additionalInfo?.bride_father_account_number || brideFatherContact) && (
+                <div className={styles.personCard}>
+                  <div className={styles.personCardLabel}>{eventData.bride_father_name || '아버님'}</div>
+                  {additionalInfo?.bride_father_account_number && (
+                    <div className={styles.personCardRow} onClick={() => copyAccount(additionalInfo.bride_father_account_number)} style={{cursor:'pointer'}}>
+                      <div className={styles.personCardRowInfo}>
+                        {additionalInfo.bride_father_bank_name && <div className={styles.personCardBank}>{additionalInfo.bride_father_bank_name}</div>}
+                        <div className={styles.personCardValue}>{additionalInfo.bride_father_account_number}</div>
+                      </div>
+                      <div className={styles.personActionBtn}>복사</div>
+                    </div>
+                  )}
+                  {additionalInfo?.bride_father_account_number && brideFatherContact && <div className={styles.personCardDivider} />}
+                  {brideFatherContact && (
+                    <a className={styles.personCardRow} href={`tel:${brideFatherContact.replace(/\D/g,'').length===8?'010'+brideFatherContact.replace(/\D/g,''):brideFatherContact.replace(/\D/g,'')}`}>
+                      <div className={styles.personCardRowInfo}>
+                        <div className={styles.personCardValue}>{formatPhone(brideFatherContact)}</div>
+                      </div>
+                      <div className={`${styles.personActionBtn} ${styles.personCallBtn}`}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+                        전화
+                      </div>
+                    </a>
+                  )}
+                </div>
+              )}
+              {/* 신부 어머님 */}
+              {(additionalInfo?.bride_mother_account_number || brideMotherContact) && (
+                <div className={styles.personCard}>
+                  <div className={styles.personCardLabel}>{eventData.bride_mother_name || '어머님'}</div>
+                  {additionalInfo?.bride_mother_account_number && (
+                    <div className={styles.personCardRow} onClick={() => copyAccount(additionalInfo.bride_mother_account_number)} style={{cursor:'pointer'}}>
+                      <div className={styles.personCardRowInfo}>
+                        {additionalInfo.bride_mother_bank_name && <div className={styles.personCardBank}>{additionalInfo.bride_mother_bank_name}</div>}
+                        <div className={styles.personCardValue}>{additionalInfo.bride_mother_account_number}</div>
+                      </div>
+                      <div className={styles.personActionBtn}>복사</div>
+                    </div>
+                  )}
+                  {additionalInfo?.bride_mother_account_number && brideMotherContact && <div className={styles.personCardDivider} />}
+                  {brideMotherContact && (
+                    <a className={styles.personCardRow} href={`tel:${brideMotherContact.replace(/\D/g,'').length===8?'010'+brideMotherContact.replace(/\D/g,''):brideMotherContact.replace(/\D/g,'')}`}>
+                      <div className={styles.personCardRowInfo}>
+                        <div className={styles.personCardValue}>{formatPhone(brideMotherContact)}</div>
+                      </div>
+                      <div className={`${styles.personActionBtn} ${styles.personCallBtn}`}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+                        전화
+                      </div>
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </section>
 
       {/* 11. 공유 섹션 */}

@@ -16,12 +16,33 @@
 
 /* ===== TABLET WRAPPER ===== */
 .tabletWrapper {
-  /* mobile: no special layout */
+  /* mobile: stack naturally */
 }
 
 .leftPanel,
 .rightPanel {
-  /* mobile: stack naturally */
+  /* mobile: full width */
+}
+
+/* ===== HERO PHOTO ===== */
+.heroPhotoWrap {
+  width: 100%;
+  height: 72vh;
+  overflow: hidden;
+  background: #F8F9FA;
+  position: relative;
+}
+
+.heroPhotoWrap .heroPhotoContainer {
+  padding-bottom: 0 !important;
+  height: 100% !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.heroPhotoWrap .mainImageContainer {
+  max-width: 100% !important;
+  height: 100%;
 }
 
 /* ===== SECTION DIVIDER ===== */
@@ -41,12 +62,12 @@
 
 /* ===== INTRO SECTION ===== */
 .introSection {
-  padding: 60px 24px 40px;
+  padding: 36px 24px;
   background: #FFFFFF;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
 }
 
 .heroBadge {
@@ -610,6 +631,108 @@
   background: #1A6FE0;
 }
 
+/* ===== PERSON CARDS (축의금 & 연락처) ===== */
+.personCardsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.personCard {
+  background: #F8F9FA;
+  border: 1px solid #E8E8E8;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.personCardLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: #3182F6;
+  letter-spacing: 1px;
+  padding: 12px 16px 8px;
+  text-transform: uppercase;
+}
+
+.personCardRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px 12px;
+  gap: 10px;
+}
+
+.personCardRowInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.personCardBank {
+  font-size: 12px;
+  color: #8B95A1;
+  font-weight: 400;
+}
+
+.personCardValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1B1B1B;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.personCardDivider {
+  height: 1px;
+  background: #E8E8E8;
+  margin: 0 16px;
+}
+
+.personCopyBtn {
+  background: #3182F6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+
+.personCopyBtn:hover {
+  background: #1A6FE0;
+}
+
+.personCallBtn {
+  border: 1px solid #3182F6;
+  color: #3182F6;
+  background: transparent;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-family: inherit;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s;
+}
+
+.personCallBtn:hover {
+  background: #EBF2FF;
+}
+
 /* ===== MESSAGES SECTION ===== */
 .messagesSection {
   padding: 32px 24px;
@@ -842,6 +965,75 @@
   line-height: 1.7;
   margin: 0;
   white-space: pre-line;
+}
+
+/* ===== 전체화면 버튼 ===== */
+.fullscreenBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 64px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  border: none;
+  cursor: pointer;
+  z-index: 999999;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.13);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: transform 0.18s ease, box-shadow 0.2s ease;
+}
+
+.fullscreenBtn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.18);
+}
+
+.fullscreenBtnActive {
+  background: #3182F6;
+  box-shadow: 0 3px 14px rgba(49, 130, 246, 0.4);
+}
+
+@media (max-width: 767px) {
+  .fullscreenBtn {
+    display: none;
+  }
+}
+
+/* ===== QR 코드 — 모바일 숨김 ===== */
+.tabletQr {
+  display: none;
+}
+
+/* ===== NAV BUTTONS ===== */
+.navButtons {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.navBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #F2F4F6;
+  border-radius: 14px;
+  padding: 14px 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #4E5968;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.navBtn:hover {
+  background: #E8EAED;
 }
 
 /* ===== SHARE SECTION ===== */
@@ -1106,6 +1298,8 @@
     flex-shrink: 0;
     overflow: hidden;
     background: #F7F6F4;
+    display: flex;
+    flex-direction: column;
   }
 
   .rightPanel {
@@ -1116,33 +1310,21 @@
     border-left: 1px solid #EFEFEF;
   }
 
-  /* Left panel: intro section fills full height */
-  .introSection {
-    height: 100%;
-    padding: 40px 32px 32px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-  }
-
-  .mainImageContainer {
-    max-width: none;
-    width: 100%;
+  /* 왼쪽 패널: 사진이 남은 공간 채우기 */
+  .heroPhotoWrap {
     flex: 1;
+    height: auto;
     min-height: 0;
   }
 
-  .heroPhotoContainer {
-    padding-bottom: 0;
-    height: 100%;
-    border-radius: 18px;
-    box-shadow: 0 8px 48px rgba(0, 0, 0, 0.1);
+  /* 왼쪽 패널: 이름/날짜 섹션 */
+  .introSection {
+    padding: 24px 28px;
+    gap: 12px;
+    border-top: 1px solid #EFEFEF;
   }
 
-  /* Right panel: sections padding */
-  .dateSection,
+  /* 오른쪽 패널: 섹션 패딩 */
   .greetingSection,
   .gallerySection,
   .weddingDaySection,
@@ -1162,12 +1344,10 @@
     padding: 32px 32px 40px;
   }
 
-  /* Gallery: 3 columns on tablet */
   .galleryGrid {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  /* Contribution section anchors to right panel */
   .myContributionSection {
     left: 50%;
     right: 0;
@@ -1175,5 +1355,100 @@
     max-width: 50%;
     transform: none;
     border-radius: 16px 16px 0 0;
+  }
+
+  /* QR 코드 — 우측 하단 고정 */
+  .tabletQr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    padding: 12px;
+    border-radius: 14px;
+    border: 1px solid #E8E8E8;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 8px 32px rgba(49, 130, 246, 0.12);
+  }
+
+  .tabletQr:hover {
+    border-color: #3182F6;
+    box-shadow: 0 12px 40px rgba(49, 130, 246, 0.2);
+  }
+
+  .tabletQrExpanded {
+    padding: 20px;
+    gap: 12px;
+    border-color: #3182F6;
+    box-shadow: 0 20px 60px rgba(49, 130, 246, 0.2);
+  }
+
+  .tabletQrHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 32px;
+  }
+
+  .tabletQrTitle {
+    font-size: 12px;
+    font-weight: 700;
+    color: #3182F6;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .tabletQrClose {
+    font-size: 12px;
+    color: #8B95A1;
+    line-height: 1;
+  }
+
+  .tabletQrImg {
+    width: 88px;
+    height: 88px;
+    border-radius: 8px;
+    display: block;
+  }
+
+  .tabletQrImgLarge {
+    width: 200px;
+    height: 200px;
+    border-radius: 10px;
+    display: block;
+    border: 1px solid #E8E8E8;
+  }
+
+  .tabletQrLabel {
+    font-size: 10px;
+    color: #8B95A1;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin: 0;
+  }
+
+  .tabletQrUrl {
+    font-size: 10px;
+    color: #8B95A1;
+    letter-spacing: 0.5px;
+    word-break: break-all;
+    text-align: center;
+    max-width: 200px;
+    margin: 0;
+  }
+
+  .tabletQrHint {
+    font-size: 11px;
+    color: #3182F6;
+    letter-spacing: 0.5px;
+    margin: 0;
   }
 }

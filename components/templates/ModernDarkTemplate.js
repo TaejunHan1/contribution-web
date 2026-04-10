@@ -980,6 +980,58 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
       })()}
 
 
+      {/* 방명록 섹션 */}
+      <section className={styles.messagesSection}>
+        <div className={styles.sectionHeader}>
+          <p className={styles.sectionEn}>Messages</p>
+          <h2 className={styles.sectionKo}>방명록</h2>
+          <div className={styles.sectionLine} />
+        </div>
+        <div className={styles.messagesList}>
+          {(!hasRealMessages && guestMessages?.length === 0) ? (
+            <div className={styles.emptyMessages}>
+              <div className={styles.emptyIcon}>💬</div>
+              <p className={styles.emptyText}>아직 축하 메시지가 없습니다</p>
+            </div>
+          ) : (
+            currentMessages.map((message, index) => (
+              <div key={index} className={styles.messageCard}>
+                <div className={styles.messageHeader}>
+                  <span className={styles.messageFrom}>From. {message.from}</span>
+                  <div className={styles.messageActions}>
+                    {canEditMessage(message) && (
+                      <button className={styles.editBtn} onClick={() => handleEditMessage(message)}>수정</button>
+                    )}
+                    <span className={styles.messageDate}>{message.date}</span>
+                  </div>
+                </div>
+                <div className={styles.messageContent}>
+                  {message.content ? message.content.split('\n').map((line, lineIndex) => (
+                    <span key={lineIndex}>{line}{lineIndex < message.content.split('\n').length - 1 && <br />}</span>
+                  )) : ''}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+        {totalPages > 1 && (
+          <div className={styles.pagination}>
+            <button onClick={() => setCurrentPage(Math.max(0, currentPage - 1))} disabled={currentPage === 0} className={styles.pageBtn}>‹</button>
+            <div className={styles.pageDots}>
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button key={i} onClick={() => setCurrentPage(i)} className={`${styles.pageDot} ${currentPage === i ? styles.pageDotActive : ''}`} />
+              ))}
+            </div>
+            <button onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))} disabled={currentPage === totalPages - 1} className={styles.pageBtn}>›</button>
+          </div>
+        )}
+        {!hasWrittenGuestbook && (
+          <button className={styles.writeGuestbookBtn} onClick={handleGuestbookModalOpen} disabled={showGuestbookModal}>
+            방명록 남기기
+          </button>
+        )}
+      </section>
+
       {/* 오시는 길 */}
       <section className={styles.locationSection}>
         <div className={styles.sectionHeader}>
@@ -1198,58 +1250,6 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
             </div>
           )}
         </div>
-      </section>
-
-      {/* 방명록 섹션 */}
-      <section className={styles.messagesSection}>
-        <div className={styles.sectionHeader}>
-          <p className={styles.sectionEn}>Messages</p>
-          <h2 className={styles.sectionKo}>방명록</h2>
-          <div className={styles.sectionLine} />
-        </div>
-        <div className={styles.messagesList}>
-          {(!hasRealMessages && guestMessages?.length === 0) ? (
-            <div className={styles.emptyMessages}>
-              <div className={styles.emptyIcon}>💬</div>
-              <p className={styles.emptyText}>아직 축하 메시지가 없습니다</p>
-            </div>
-          ) : (
-            currentMessages.map((message, index) => (
-              <div key={index} className={styles.messageCard}>
-                <div className={styles.messageHeader}>
-                  <span className={styles.messageFrom}>From. {message.from}</span>
-                  <div className={styles.messageActions}>
-                    {canEditMessage(message) && (
-                      <button className={styles.editBtn} onClick={() => handleEditMessage(message)}>수정</button>
-                    )}
-                    <span className={styles.messageDate}>{message.date}</span>
-                  </div>
-                </div>
-                <div className={styles.messageContent}>
-                  {message.content ? message.content.split('\n').map((line, lineIndex) => (
-                    <span key={lineIndex}>{line}{lineIndex < message.content.split('\n').length - 1 && <br />}</span>
-                  )) : ''}
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-        {totalPages > 1 && (
-          <div className={styles.pagination}>
-            <button onClick={() => setCurrentPage(Math.max(0, currentPage - 1))} disabled={currentPage === 0} className={styles.pageBtn}>‹</button>
-            <div className={styles.pageDots}>
-              {Array.from({ length: totalPages }, (_, i) => (
-                <button key={i} onClick={() => setCurrentPage(i)} className={`${styles.pageDot} ${currentPage === i ? styles.pageDotActive : ''}`} />
-              ))}
-            </div>
-            <button onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))} disabled={currentPage === totalPages - 1} className={styles.pageBtn}>›</button>
-          </div>
-        )}
-        {!hasWrittenGuestbook && (
-          <button className={styles.writeGuestbookBtn} onClick={handleGuestbookModalOpen} disabled={showGuestbookModal}>
-            방명록 남기기
-          </button>
-        )}
       </section>
 
       {/* 공유 & 푸터 통합 섹션 */}
