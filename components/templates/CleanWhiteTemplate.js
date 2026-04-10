@@ -669,8 +669,8 @@ const CleanWhiteTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
     return phone;
   };
 
-  const groomContact = eventData.groom_contact || eventData.groomContact || '';
-  const brideContact = eventData.bride_contact || eventData.brideContact || '';
+  const groomContact = eventData.groom_contact || eventData.groomContact || additionalInfo?.groom_contact || '';
+  const brideContact = eventData.bride_contact || eventData.brideContact || additionalInfo?.bride_contact || '';
   const groomFatherContact = additionalInfo?.groom_father_contact || eventData.groomFatherContact || '';
   const groomMotherContact = additionalInfo?.groom_mother_contact || eventData.groomMotherContact || '';
   const brideFatherContact = additionalInfo?.bride_father_contact || eventData.brideFatherContact || '';
