@@ -98,56 +98,6 @@ const CompletionModal = ({ isOpen, onClose, contributionData, eventData }) => {
             {groomName} · {brideName} 결혼식에<br />축의금이 전달되었습니다
           </p>
 
-          {/* 영수증 카드 */}
-          <div className={styles.receiptCard}>
-            <div className={styles.receiptHeader}>
-              <span className={styles.receiptLabel}>축의금 영수증</span>
-              <span className={styles.receiptDot} />
-            </div>
-
-            <div className={styles.amountRow}>
-              <span className={styles.amountValue}>
-                {formatAmount(contributionData?.contributionAmount)}
-                <span className={styles.amountUnit}>원</span>
-              </span>
-            </div>
-
-            <div className={styles.divider} />
-
-            <div className={styles.infoList}>
-              <div className={styles.infoRow}>
-                <span className={styles.infoLabel}>성함</span>
-                <span className={styles.infoValue}>{contributionData?.guestName}</span>
-              </div>
-              {sideText && (
-                <div className={styles.infoRow}>
-                  <span className={styles.infoLabel}>구분</span>
-                  <span className={styles.infoValue}>{sideText}</span>
-                </div>
-              )}
-              {relationText && (
-                <div className={styles.infoRow}>
-                  <span className={styles.infoLabel}>관계</span>
-                  <span className={styles.infoValue}>{relationText}</span>
-                </div>
-              )}
-              <div className={styles.infoRow}>
-                <span className={styles.infoLabel}>일시</span>
-                <span className={styles.infoValue}>{contributionDateTime}</span>
-              </div>
-              {eventData?.location && (
-                <div className={styles.infoRow}>
-                  <span className={styles.infoLabel}>장소</span>
-                  <span className={styles.infoValue}>{eventData.location}</span>
-                </div>
-              )}
-            </div>
-
-            <div className={styles.receiptFooter}>
-              <span>정담 · 디지털 경조사</span>
-            </div>
-          </div>
-
           {/* 공유 버튼 */}
           <button className={styles.shareBtn} onClick={handleShare}>
             <span className={styles.shareBtnIcon}>
