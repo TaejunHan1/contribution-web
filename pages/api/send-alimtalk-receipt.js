@@ -13,15 +13,15 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { phone, guestName, amount, side, relationship, eventId, contributionId } = req.body;
+  const { phone, guestName, amount, side, relationship, eventId, contributionId, isResend } = req.body;
 
   if (!phone || !guestName || !amount || !eventId) {
     return res.status(400).json({ success: false, error: '필수 정보 누락' });
   }
 
   try {
-    // 이미 재발송된 경우 차단
-    if (contributionId) {
+    // 재발송 요청인 경우에만 중복 차단
+    if (isResend && contributionId) {
       const { data: entry } = await supabaseAdmin
         .from('guest_book')
         .select('alimtalk_sent')
@@ -50,8 +50,8 @@ export default async function handler(req, res) {
       contributionId,
     });
 
-    // 발송 성공 시 alimtalk_sent = true 기록
-    if (contributionId) {
+    // 재발송인 경우에만 alimtalk_sent = true 기록
+    if (isResend && contributionId) {
       await supabaseAdmin
         .from('guest_book')
         .update({ alimtalk_sent: true })
