@@ -20,6 +20,18 @@ export default async function handler(req, res) {
   }
 
   try {
+    // 이미 재발송된 경우 차단
+    if (contributionId) {
+      const { data: entry } = await supabaseAdmin
+        .from('guest_book')
+        .select('alimtalk_sent')
+        .eq('id', contributionId)
+        .single();
+      if (entry?.alimtalk_sent) {
+        return res.status(409).json({ success: false, error: '이미 재발송된 영수증입니다.' });
+      }
+    }
+
     // 이벤트에서 신랑/신부 이름 가져오기
     const { data: eventInfo } = await supabaseAdmin
       .from('events')
@@ -37,6 +49,14 @@ export default async function handler(req, res) {
       brideName: eventInfo?.bride_name || '신부',
       contributionId,
     });
+
+    // 발송 성공 시 alimtalk_sent = true 기록
+    if (contributionId) {
+      await supabaseAdmin
+        .from('guest_book')
+        .update({ alimtalk_sent: true })
+        .eq('id', contributionId);
+    }
 
     return res.status(200).json({ success: true, result });
   } catch (err) {
