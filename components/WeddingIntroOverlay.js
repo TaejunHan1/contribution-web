@@ -47,7 +47,7 @@ function TapHint({ textColor, pillBg, visible }) {
       <span style={{
         fontSize: 11, letterSpacing: 2.5, color: textColor,
         fontWeight: '600', fontFamily: SERIF,
-      }}>터치해주세요</span>
+      }}>초대장 열기</span>
     </div>
   );
 }
