@@ -1,4 +1,5 @@
 // components/templates/WarmOrangeTemplate.js
+// 앱의 VintageAppTemplate(웜 오렌지)과 1:1 디자인 매칭 버전
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import GoogleMapEmbed from '../MapComponent';
@@ -9,436 +10,552 @@ import CompletionModal from '../CompletionModal';
 import WelcomeChoiceModal from '../WelcomeChoiceModal';
 import styles from './WarmOrangeTemplate.module.css';
 
-// 떨어지는 꽃 애니메이션 컴포넌트
-const FallingFlowers = () => {
-  const [flowers] = useState(() =>
-    [...Array(25)].map((_, index) => ({
-      id: `flower-${index}`,
-      left: Math.random() * 100,
-      delay: index * 900,
-      size: 10 + Math.random() * 6,
-      type: index % 3 === 0 ? '🌼' : index % 3 === 1 ? '🌸' : '🍊',
-      duration: 9000 + index * 400,
-    }))
-  );
-
-  return (
-    <div className={styles.fallingFlowersContainer}>
-      {flowers.map((flower) => (
-        <div
-          key={flower.id}
-          className={styles.fallingFlower}
-          style={{
-            left: `${flower.left}%`,
-            animationDelay: `${flower.delay}ms`,
-            animationDuration: `${flower.duration}ms`,
-            fontSize: `${flower.size}px`,
-            animationFillMode: 'both',
-          }}
-        >
-          {flower.type}
-        </div>
-      ))}
-    </div>
-  );
+// ══════════════════════════════════════════════════════
+// 유틸
+// ══════════════════════════════════════════════════════
+const getImageSrc = (image) => {
+  if (!image) return null;
+  if (typeof image === 'string') return image;
+  return image.publicUrl || image.uri || image.url || image.src || null;
 };
 
-// 랜덤 인사말
-const RANDOM_GREETINGS = [
-  `두 사람이 만나 하나의 길을 걷습니다.
-서로 다른 빛깔이 어우러져
-더 아름다운 무지개가 되듯이
-두 분의 사랑이 영원히 빛나길 바랍니다.
+const formatPhone = (phone) => {
+  const d = (phone || '').replace(/\D/g, '');
+  if (d.length === 11) return `${d.slice(0,3)}-${d.slice(3,7)}-${d.slice(7)}`;
+  if (d.length === 10) return `${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`;
+  return phone || '';
+};
 
-봄날 아침이슬처럼 맑고 투명한 마음으로
-서로를 아끼고 보살피며
-매일매일 새로운 행복을 만들어가는
-아름다운 부부가 되시길 기원합니다.
-
-저희 두 사람이 함께하는 새로운 시작에
-귀한 발걸음으로 축복해 주시면 감사하겠습니다.`,
-
-  `봄날의 꽃처럼 피어난 사랑이
-여름의 태양처럼 뜨겁게 타오르고
-가을의 결실처럼 풍성하며
-겨울의 눈처럼 순수하길 바랍니다.
-
-계절이 바뀌어도 변치 않는 사랑으로
-서로에게 든든한 버팀목이 되어주며
-평생 함께 걸어갈 동반자로서
-아름다운 동행을 이어가시길 기도합니다.
-
-소중한 날, 함께해 주시는 모든 분들께
-진심으로 감사드립니다.`,
-
-  `서로를 향한 믿음과 사랑으로
-평생을 함께하기로 약속했습니다.
-따뜻한 격려와 축복 속에서
-더욱 단단한 가정을 이루겠습니다.
-
-귀한 시간 내어 축하해 주시면
-큰 기쁨이 되겠습니다.`,
+const GALLERY_CAPTIONS = [
+  '함께라서 좋은 날 ☀️',
+  '웃음이 가득한 하루 😊',
+  '소중한 우리의 기록 📸',
+  '같이 걸어온 길 🌿',
+  '오늘도 사랑해 💕',
+  '둘만의 특별한 순간 ✨',
+  '설레는 매일 🌸',
+  '행복을 담다 🎞️',
 ];
 
-// 한글 이름 → 영어 변환
-const koreanToEnglish = (koreanName) => {
-  const nameMap = {
-    '김': 'Kim', '이': 'Lee', '박': 'Park', '최': 'Choi', '정': 'Jung',
-    '강': 'Kang', '조': 'Jo', '윤': 'Yoon', '장': 'Jang', '임': 'Lim',
-    '한': 'Han', '오': 'Oh', '서': 'Seo', '신': 'Shin', '권': 'Kwon',
-    '황': 'Hwang', '안': 'Ahn', '송': 'Song', '전': 'Jeon', '홍': 'Hong',
-    '유': 'Yoo', '고': 'Ko', '문': 'Moon', '배': 'Bae', '백': 'Baek',
-    '민': 'Min', '지': 'Ji', '수': 'Soo', '현': 'Hyun', '준': 'Jun',
-    '영': 'Young', '진': 'Jin', '성': 'Sung', '호': 'Ho',
-    '연': 'Yeon', '은': 'Eun', '혜': 'Hye', '미': 'Mi', '선': 'Sun',
-    '희': 'Hee', '경': 'Kyung', '서': 'Seo', '아': 'Ah',
-    '나': 'Na', '리': 'Ri', '라': 'Ra', '빈': 'Bin', '원': 'Won',
-    '태': 'Tae', '규': 'Kyu', '재': 'Jae', '우': 'Woo',
-    '동': 'Dong', '훈': 'Hoon', '상': 'Sang', '철': 'Chul',
-    '인': 'In', '기': 'Ki', '석': 'Seok', '광': 'Kwang', '용': 'Yong',
-  };
-  if (!koreanName) return '';
-  let result = [];
-  for (let i = 0; i < koreanName.length; i++) {
-    const char = koreanName[i];
-    result.push(nameMap[char] || char);
-  }
-  if (result.length > 1) {
-    const surname = result[0];
-    const givenName = result.slice(1).join('').toLowerCase();
-    return `${surname} ${givenName.charAt(0).toUpperCase() + givenName.slice(1)}`;
-  }
-  return result.join('');
-};
+const DEFAULT_GREETING =
+  '같은 곳을 바라보며 걸어온 두 사람이\n이제 한 길을 같이 걸어가려 합니다.\n\n저희 두 사람의 새로운 시작을\n따뜻한 마음으로 축복해주시면\n더 없는 기쁨으로 간직하겠습니다.';
 
-// 웜 오렌지 오프닝 오버레이
-const WarmOpeningOverlay = ({ visible, onComplete }) => {
-  const [showText, setShowText] = useState(false);
-  const [showNotif, setShowNotif] = useState(false);
-  const [fadeOut, setFadeOut] = useState(false);
+const INITIAL_REVIEWS = [
+  { name: '김영희', emoji: '❤️', message: '두 분 정말 축하드려요! 행복하게 잘 살아요~', time: '방금 전' },
+  { name: '박철수', emoji: '🎉', message: '결혼 축하해! 정말 잘 어울리는 커플이야', time: '1시간 전' },
+  { name: '이수진', emoji: '💐', message: '예쁜 사랑 오래오래 하세요 ♥', time: '3시간 전' },
+];
 
-  useEffect(() => {
-    if (visible) {
-      setTimeout(() => setShowNotif(true), 300);
-      setTimeout(() => setShowText(true), 800);
-      setTimeout(() => setFadeOut(true), 2600);
-      setTimeout(() => { if (onComplete) onComplete(); }, 3600);
-    }
-  }, [visible, onComplete]);
-
+// ══════════════════════════════════════════════════════
+// 인트로 오버레이 (당근 알림 스타일)
+// ══════════════════════════════════════════════════════
+const IntroOverlay = ({ visible, groomName, brideName, onDismiss }) => {
   if (!visible) return null;
-
   return (
-    <div
-      className={styles.openingOverlay}
-      style={{ opacity: fadeOut ? 0 : 1, transition: 'opacity 1s ease-out' }}
-      onClick={() => window.__gyeongjo_play?.()}
-    >
-      {showNotif && (
-        <div className={styles.notifCard}>
-          <div className={styles.notifIcon}>🔔</div>
-          <div className={styles.notifText}>
-            <span className={styles.notifTitle}>새 청첩장이 도착했어요!</span>
-            <span className={styles.notifSub}>지금 확인해보세요 💌</span>
-          </div>
+    <div className={styles.introOverlay} onClick={onDismiss}>
+      <div className={styles.introBlur} />
+      <div className={styles.notifCard} onClick={onDismiss}>
+        <div className={styles.notifIcon}>
+          <span>🥕</span>
         </div>
-      )}
-      {showText && (
-        <div className={styles.openingSubText}>두 사람의 특별한 날에 초대합니다</div>
-      )}
+        <div className={styles.notifContent}>
+          <div className={styles.notifTopRow}>
+            <div className={styles.notifAppRow}>
+              <span className={styles.notifAppName}>경조앱</span>
+              <span className={styles.notifDot} />
+            </div>
+            <span className={styles.notifTime}>방금 전</span>
+          </div>
+          <p className={styles.notifMessage}>
+            따뜻한 이웃,{' '}
+            <strong className={styles.notifCouple}>{groomName || '신랑'} ♥ {brideName || '신부'}</strong>
+            {' '}님의 모바일 청첩장이 도착했어요! 💌
+          </p>
+          <span className={styles.notifHint}>터치해서 열어보기</span>
+        </div>
+      </div>
     </div>
   );
 };
 
-// 메인 사진 슬라이드쇼
-const MainPhotoSlideshow = ({ images, onImagePress }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
+// ══════════════════════════════════════════════════════
+// 히어로 사진 크로스페이드 (클릭 시 확대)
+// ══════════════════════════════════════════════════════
+const HeroSlideshow = ({ images, onPress }) => {
+  const [idx, setIdx] = useState(0);
   useEffect(() => {
-    if (images && images.length > 1) {
-      const interval = setInterval(() => {
-        setCurrentIndex((prev) => (prev + 1) % images.length);
-      }, 4000);
-      return () => clearInterval(interval);
-    }
+    if (!images || images.length <= 1) return;
+    const t = setInterval(() => setIdx((i) => (i + 1) % images.length), 4000);
+    return () => clearInterval(t);
   }, [images?.length]);
-
-  const getImageSrc = (image) => {
-    if (!image) return null;
-    if (typeof image === 'string') return image;
-    return image.publicUrl || image.uri || image.url || image.src || null;
-  };
-
-  return (
-    <div className={styles.polaroidFrame} onClick={() => onImagePress && onImagePress(currentIndex)}>
-      <div className={styles.polaroidInner}>
-        {images && images.length > 0 ? (
-          images.map((image, index) => {
-            const src = getImageSrc(image);
-            return src ? (
-              <img
-                key={index}
-                src={src}
-                alt="Wedding"
-                className={`${styles.polaroidPhoto} ${index === currentIndex ? styles.active : ''}`}
-                onError={(e) => { e.target.style.display = 'none'; }}
-              />
-            ) : null;
-          })
-        ) : (
-          <div className={styles.photoPlaceholder}><span>🧡</span></div>
-        )}
-      </div>
-      <div className={styles.polaroidCaption}>Our Special Day 💑</div>
-    </div>
-  );
-};
-
-// 달력 컴포넌트
-const WarmCalendar = ({ targetDate }) => {
-  const date = new Date(targetDate);
-  const year = date.getFullYear();
-  const month = date.getMonth();
-  const day = date.getDate();
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
-
-  const calendarDays = [];
-  for (let i = 0; i < firstDay; i++) calendarDays.push({ day: '', empty: true });
-  for (let i = 1; i <= daysInMonth; i++) calendarDays.push({ day: i, isTarget: i === day });
-
-  return (
-    <div className={styles.warmCalendar}>
-      <h3 className={styles.calendarMonth}>{months[month]} {year}</h3>
-      <div className={styles.calendarWeekDays}>
-        {weekDays.map((d, i) => (
-          <span key={i} className={`${styles.calendarWeekDay} ${i === 0 ? styles.sunday : ''}`}>{d}</span>
-        ))}
-      </div>
-      <div className={styles.calendarGrid}>
-        {calendarDays.map((d, i) => (
-          <div key={i} className={styles.calendarDayWrapper}>
-            {d.isTarget ? (
-              <div className={styles.calendarTargetDay}>
-                <span className={styles.calendarTargetDayText}>{d.day}</span>
-              </div>
-            ) : (
-              <span className={`${styles.calendarDay} ${!d.day ? styles.inactive : ''} ${i % 7 === 0 && d.day ? styles.sunday : ''}`}>
-                {d.day}
-              </span>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// 카운트다운
-const CountdownDisplay = ({ timeLeft, isExpired }) => {
-  if (isExpired) {
-    return (
-      <div className={styles.weddingComplete}>
-        <div className={styles.completeIcon}>🎊</div>
-        <p className={styles.completeMessage}>D-Day! 축하합니다! 🧡</p>
-      </div>
-    );
+  if (!images || images.length === 0) {
+    return <div className={styles.heroPlaceholder}>🧡</div>;
   }
+  const currentSrc = getImageSrc(images[idx]);
   return (
-    <div className={styles.countdownCards}>
-      {[{ v: timeLeft.days, l: '일' }, { v: timeLeft.hours, l: '시간' }, { v: timeLeft.minutes, l: '분' }, { v: timeLeft.seconds || 0, l: '초' }].map((item, i) => (
-        <div key={i} className={styles.countdownCard}>
-          <div className={styles.countdownNumber}>{item.v}</div>
-          <div className={styles.countdownLabel}>{item.l}</div>
+    <>
+      {images.map((img, i) => {
+        const src = getImageSrc(img);
+        if (!src) return null;
+        return (
+          <img
+            key={i}
+            src={src}
+            alt=""
+            className={`${styles.heroImage} ${i === idx ? styles.heroImageActive : ''}`}
+          />
+        );
+      })}
+      {/* 클릭으로 뷰어 열기 — 하단 텍스트 영역은 제외하려 top만 차지 */}
+      <button
+        type="button"
+        className={styles.heroClickZone}
+        aria-label="크게 보기"
+        onClick={() => currentSrc && onPress && onPress(currentSrc)}
+      />
+    </>
+  );
+};
+
+// ══════════════════════════════════════════════════════
+// 당근 스타일 달력
+// ══════════════════════════════════════════════════════
+const DaangnCalendar = ({ targetDate, dDayText, dateStr, timeStr }) => {
+  const wd = new Date(targetDate);
+  if (isNaN(wd.getTime())) return null;
+  const year = wd.getFullYear();
+  const month = wd.getMonth();
+  const day = wd.getDate();
+  const firstDow = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const cells = [];
+  for (let i = 0; i < firstDow; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+  while (cells.length % 7 !== 0) cells.push(null);
+  const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+
+  return (
+    <div className={styles.calCard}>
+      <div className={styles.calHeader}>
+        <span className={styles.calMonthText}>{year}년 {month + 1}월</span>
+        {dDayText ? <span className={styles.calDdayBadge}>{dDayText}</span> : null}
+      </div>
+      <div className={styles.calWeekRow}>
+        {dayNames.map((n, i) => (
+          <span
+            key={n}
+            className={`${styles.calWeekCell} ${i === 0 ? styles.calSunday : ''} ${i === 6 ? styles.calSaturday : ''}`}
+          >
+            {n}
+          </span>
+        ))}
+      </div>
+      <div className={styles.calGrid}>
+        {cells.map((d, idx) => {
+          const col = idx % 7;
+          const isTarget = d === day;
+          return (
+            <div key={idx} className={styles.calDayCell}>
+              {d ? (
+                isTarget ? (
+                  <div className={styles.calDayHighlight}>
+                    <span>{d}</span>
+                  </div>
+                ) : (
+                  <span
+                    className={`${styles.calDayText} ${col === 0 ? styles.calSunday : ''} ${col === 6 ? styles.calSaturday : ''}`}
+                  >
+                    {d}
+                  </span>
+                )
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
+      {timeStr ? (
+        <div className={styles.calTimeRow}>
+          <span>⏰</span>
+          <span>{dateStr} {timeStr}</span>
         </div>
-      ))}
+      ) : null}
     </div>
   );
 };
 
-// 내 축의금 섹션
-const MyContributionSection = ({ eventData, myContribution, onEdit, setMyContribution }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
-
-
-  const verifiedPhone = typeof window !== 'undefined' ? localStorage.getItem('verifiedPhone') : null;
-  if (!verifiedPhone || !myContribution) return null;
-
+// ══════════════════════════════════════════════════════
+// 축의금 + 연락처 아코디언 (한쪽, 앱 동일)
+// ══════════════════════════════════════════════════════
+const GiftAccordion = ({ side, isGroom, people, activeKey, onToggle, onCopy, onToast }) => {
+  const open = activeKey === side;
   return (
-    <div className={styles.myContributionSection}>
-      <button className={styles.toggleButton} onClick={() => setIsExpanded(!isExpanded)}>
-        <span className={styles.toggleText}>내가 축의한 금액</span>
-        <span className={styles.toggleIcon}>{isExpanded ? '▼' : '▲'}</span>
-      </button>
-      {isExpanded && (
-        <div className={styles.contributionContent}>
-          <p className={styles.contributionSubtitle}>본인에게만 보이는 정보입니다</p>
-          <div className={styles.contributionSummary}>
-            <div className={styles.summaryInfo}>
-              <span className={styles.summaryName}>{myContribution.guestName}</span>
-              <span className={styles.summaryAmount}>
-                {(myContribution.contributionAmount || myContribution.amount)?.toLocaleString()}원
-              </span>
-            </div>
-            <div className={styles.summaryDetails}>
-              <span className={styles.summaryRelation}>
-                {myContribution.relationship === 'family' ? '가족' :
-                 myContribution.relationship === 'relative' ? '친척' :
-                 myContribution.relationship === 'friend' ? '지인' :
-                 myContribution.relationship === 'colleague' ? '직장동료' :
-                 myContribution.relationship === 'senior' ? '선배' :
-                 myContribution.relationship === 'junior' ? '후배' :
-                 myContribution.relationship === 'neighbor' ? '이웃' :
-                 myContribution.relationship === 'other' ? '기타' :
-                 myContribution.relationship}
-              </span>
-              <span className={styles.summarySide}>
-                {myContribution.side === 'groom' ? '신랑측' : '신부측'}
-              </span>
-            </div>
-            <button className={styles.editButton} onClick={onEdit}>수정</button>
+    <div className={styles.accordionCard}>
+      <button
+        type="button"
+        className={styles.accordionHeader}
+        onClick={() => onToggle(side)}
+      >
+        <div className={styles.accordionHeaderLeft}>
+          <div
+            className={styles.sideBadge}
+            style={{ backgroundColor: isGroom ? '#FFF1E8' : '#FFF0F6' }}
+          >
+            <span>{isGroom ? '🤵' : '👰'}</span>
           </div>
+          <span className={styles.accordionTitle}>{isGroom ? '신랑측' : '신부측'}</span>
         </div>
-      )}
+        <span className={styles.accordionChevron}>{open ? '▲' : '▼'}</span>
+      </button>
+      <div className={`${styles.accordionBody} ${open ? styles.accordionBodyOpen : ''}`}>
+        {people.map((p, idx) => (
+          <div key={idx} className={styles.personCard}>
+            <div className={styles.personCardLabel}>{p.name}</div>
+            {p.number ? (
+              <button
+                type="button"
+                className={styles.personRow}
+                onClick={() => onCopy(p.number)}
+              >
+                <span className={styles.personRowValue}>{p.bank} {p.number}</span>
+                <span className={styles.copyBtn}>복사</span>
+              </button>
+            ) : null}
+            {p.number && p.contact ? <div className={styles.personDivider} /> : null}
+            {p.contact ? (
+              <a
+                className={styles.personRow}
+                href={`tel:${p.contact.replace(/\D/g, '')}`}
+              >
+                <span className={styles.personRowValue}>📞 {formatPhone(p.contact)}</span>
+                <span className={styles.callBtn}>전화</span>
+              </a>
+            ) : null}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
 
-const WarmOrangeTemplate = ({ eventData = {}, categorizedImages = {}, allowMessages = false, messageSettings = {} }) => {
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-  const [randomGreeting, setRandomGreeting] = useState(null);
-  const [showOpening, setShowOpening] = useState(true);
-  const [showImageViewer, setShowImageViewer] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [galleryScrollIndex, setGalleryScrollIndex] = useState(0);
+// ══════════════════════════════════════════════════════
+// 메인 컴포넌트
+// ══════════════════════════════════════════════════════
+const WarmOrangeTemplate = ({
+  eventData = {},
+  categorizedImages = {},
+  allowMessages,
+  messageSettings = {},
+}) => {
+  // 후기 섹션 노출 여부 — prop 우선, 없으면 eventData.allow_messages, 그것도 없으면 기본 true
+  const shouldShowReviews =
+    allowMessages !== undefined
+      ? allowMessages !== false
+      : (eventData?.allow_messages !== false);
+  // ── 인트로 ──
+  const [showIntro, setShowIntro] = useState(true);
+
+  // ── 기본 상태 ── (신랑측 기본 펼침 — 앱은 닫혀있지만 웹은 바로 볼 수 있게)
+  const [activeAccount, setActiveAccount] = useState('groom');
+  const [viewerImage, setViewerImage] = useState(null);
+  const [toast, setToast] = useState({ visible: false, message: '' });
+  // 사랑 온도 — DB에서 초기값 로드 후 realtime 구독
+  const [temperature, setTemperature] = useState(() => {
+    const t = Number(eventData?.love_temperature);
+    return Number.isFinite(t) ? t : 36.5;
+  });
+  const [tempReached100, setTempReached100] = useState(false);
+  const [reviews] = useState(INITIAL_REVIEWS);
+
+  // ── 모달 상태 (기존 유지) ──
   const [showGuestbookModal, setShowGuestbookModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingMessage, setEditingMessage] = useState(null);
   const [showWelcomeChoice, setShowWelcomeChoice] = useState(false);
   const [showContributionModal, setShowContributionModal] = useState(false);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
-  const [contributionData, setContributionData] = useState(null);
   const [completionData, setCompletionData] = useState(null);
   const [myContribution, setMyContribution] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [, forceUpdate] = useState({});
   const [contributionKey, setContributionKey] = useState(0);
   const [guestMessages, setGuestMessages] = useState([]);
-  const [userChoice, setUserChoice] = useState(null);
   const [hasWrittenGuestbook, setHasWrittenGuestbook] = useState(false);
-  const [activeAccountToggle, setActiveAccountToggle] = useState('groom');
   const [currentPage, setCurrentPage] = useState(0);
+  const [, forceUpdate] = useState({});
 
-  const getImageSrc = (image) => {
-    if (!image) return null;
-    if (typeof image === 'string') return image;
-    return image.publicUrl || image.uri || image.url || image.src || null;
-  };
+  const modalOpeningRef = useRef(false);
+  const modalClosingRef = useRef(false);
+  const arrivalModalCheckedRef = useRef(false);
 
+  // ── 이름 ──
+  const groomName = eventData.groomName || eventData.groom_name || '';
+  const brideName = eventData.brideName || eventData.bride_name || '';
+
+  const ai = (() => {
+    if (!eventData.additional_info) return {};
+    if (typeof eventData.additional_info === 'string') {
+      try { return JSON.parse(eventData.additional_info); } catch { return {}; }
+    }
+    return eventData.additional_info || {};
+  })();
+
+  // ── 부모님 ──
+  const groomFather = eventData.groomFatherName || eventData.groom_father_name || '';
+  const groomMother = eventData.groomMotherName || eventData.groom_mother_name || '';
+  const brideFather = eventData.brideFatherName || eventData.bride_father_name || '';
+  const brideMother = eventData.brideMotherName || eventData.bride_mother_name || '';
+
+  // ── 연락처 (eventData / additional_info 양쪽 다 체크, 다양한 필드명 지원) ──
+  const groomContact =
+    eventData.groomContact || eventData.groom_contact ||
+    eventData.groom_phone || eventData.groomPhone ||
+    ai.groom_contact || ai.groom_phone || '';
+  const brideContact =
+    eventData.brideContact || eventData.bride_contact ||
+    eventData.bride_phone || eventData.bridePhone ||
+    ai.bride_contact || ai.bride_phone || '';
+  const groomFatherContact =
+    eventData.groomFatherContact || eventData.groom_father_contact ||
+    ai.groom_father_contact || ai.groom_father_phone || '';
+  const groomMotherContact =
+    eventData.groomMotherContact || eventData.groom_mother_contact ||
+    ai.groom_mother_contact || ai.groom_mother_phone || '';
+  const brideFatherContact =
+    eventData.brideFatherContact || eventData.bride_father_contact ||
+    ai.bride_father_contact || ai.bride_father_phone || '';
+  const brideMotherContact =
+    eventData.brideMotherContact || eventData.bride_mother_contact ||
+    ai.bride_mother_contact || ai.bride_mother_phone || '';
+
+  // ── 날짜/시간 ──
+  const weddingDate = eventData.date || eventData.event_date;
+  const dateInfo = (() => {
+    if (!weddingDate) return { full: '', year: '', month: '', day: '', dayOfWeek: '' };
+    const d = new Date(weddingDate);
+    if (isNaN(d.getTime())) return { full: '', year: '', month: '', day: '', dayOfWeek: '' };
+    const days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+    const y = d.getFullYear();
+    const m = d.getMonth() + 1;
+    const day = d.getDate();
+    return { year: y, month: m, day, dayOfWeek: days[d.getDay()], full: `${y}년 ${m}월 ${day}일 ${days[d.getDay()]}` };
+  })();
+  const dateStr = dateInfo.full;
+  const timeStr = eventData.ceremonyTime || eventData.ceremony_time || '';
+
+  // ── D-day ──
+  let dDayText = '';
+  if (weddingDate) {
+    const diff = Math.ceil((new Date(weddingDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+    if (diff > 0) dDayText = `D-${diff}`;
+    else if (diff === 0) dDayText = 'D-Day';
+    else dDayText = `D+${Math.abs(diff)}`;
+  }
+
+  // ── 장소 ──
+  const locName = eventData.hallName || eventData.hall_name || eventData.location || '';
+  const locAddr = eventData.detailedAddress || eventData.detailed_address || eventData.address || '';
+
+  // ── 이미지 처리 ──
   const defaultImages = {
     main: [
-      'https://images.unsplash.com/photo-1519741497674-611481863552?w=400&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1465495976277-4387d4b0e4a6?w=400&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1519741497674-611481863552?w=800&h=1000&fit=crop',
+      'https://images.unsplash.com/photo-1465495976277-4387d4b0e4a6?w=800&h=1000&fit=crop',
+      'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&h=1000&fit=crop',
     ],
     gallery: [
-      'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=300&h=350&fit=crop',
-      'https://images.unsplash.com/photo-1469371670807-013ccf25f16a?w=300&h=350&fit=crop',
-      'https://images.unsplash.com/photo-1520854221256-17451cc331bf?w=300&h=350&fit=crop',
-      'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=300&h=350&fit=crop',
+      'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=600&h=700&fit=crop',
+      'https://images.unsplash.com/photo-1469371670807-013ccf25f16a?w=600&h=700&fit=crop',
+      'https://images.unsplash.com/photo-1520854221256-17451cc331bf?w=600&h=700&fit=crop',
+      'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=600&h=700&fit=crop',
     ],
-    groom: ['https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face'],
-    bride: ['https://images.unsplash.com/photo-1494790108755-2616b612b786?w=200&h=200&fit=crop&crop=face'],
   };
-
   const processImageData = () => {
     if (categorizedImages && Object.keys(categorizedImages).length > 0) return categorizedImages;
     if (eventData?.processedImages && eventData.processedImages.length > 0) {
-      const categorized = { main: [], gallery: [], groom: [], bride: [], all: [] };
-      eventData.processedImages.forEach(img => {
-        const imageObj = { uri: img.primaryUrl || img.publicUrl || img.uri, publicUrl: img.publicUrl, category: img.category, id: img.id };
-        if (img.category && categorized[img.category]) categorized[img.category].push(imageObj);
-        categorized.all.push(imageObj);
+      const c = { main: [], gallery: [], groom: [], bride: [], all: [] };
+      eventData.processedImages.forEach((img) => {
+        const o = { uri: img.primaryUrl || img.publicUrl || img.uri, publicUrl: img.publicUrl, category: img.category };
+        if (img.category && c[img.category]) c[img.category].push(o);
+        c.all.push(o);
       });
-      return categorized;
+      return c;
     }
     if (eventData?.image_urls && eventData.image_urls.length > 0) {
-      const normalizedImages = eventData.image_urls.map(img => {
-        if (typeof img === 'string') return { uri: img, category: 'main' };
-        return { uri: img.publicUrl || img.uri || img, category: img.category || 'main' };
-      });
+      const norm = eventData.image_urls.map((img) =>
+        typeof img === 'string' ? { uri: img, category: 'main' } : { uri: img.publicUrl || img.uri || img, category: img.category || 'main' }
+      );
       return {
-        main: normalizedImages.filter(img => img.category === 'main'),
-        gallery: normalizedImages.filter(img => img.category === 'gallery'),
-        groom: normalizedImages.filter(img => img.category === 'groom'),
-        bride: normalizedImages.filter(img => img.category === 'bride'),
-        all: normalizedImages,
+        main: norm.filter((i) => i.category === 'main'),
+        gallery: norm.filter((i) => i.category === 'gallery'),
+        groom: norm.filter((i) => i.category === 'groom'),
+        bride: norm.filter((i) => i.category === 'bride'),
+        all: norm,
       };
     }
     return defaultImages;
   };
-
-  const processedImages = processImageData();
+  const processed = processImageData();
   const safeImages = {
-    main: processedImages?.main?.length > 0 ? processedImages.main : defaultImages.main,
-    gallery: processedImages?.gallery?.length > 0 ? processedImages.gallery : defaultImages.gallery,
-    groom: processedImages?.groom?.length > 0 ? processedImages.groom : defaultImages.groom,
-    bride: processedImages?.bride?.length > 0 ? processedImages.bride : defaultImages.bride,
+    main: processed?.main?.length > 0 ? processed.main : defaultImages.main,
+    gallery: processed?.gallery?.length > 0 ? processed.gallery : defaultImages.gallery,
+    groom: processed?.groom?.length > 0 ? processed.groom : [],
+    bride: processed?.bride?.length > 0 ? processed.bride : [],
   };
 
-  const allImages = [...safeImages.main, ...safeImages.gallery, ...safeImages.groom, ...safeImages.bride];
+  // ── 축의금 & 연락처 통합 데이터 ──
+  const buildPerson = (name, role, bank, number, contact) => {
+    if (!number && !contact) return null;
+    return { name: name || role, role, bank: bank || '', number: number || '', contact: contact || '' };
+  };
+  const accounts = {
+    groom: [
+      buildPerson(groomName || '신랑', '신랑', ai.groom_bank_name, ai.groom_account_number, groomContact),
+      buildPerson(groomFather ? `${groomFather} 아버님` : '아버님', '아버님', ai.groom_father_bank_name, ai.groom_father_account_number, groomFatherContact),
+      buildPerson(groomMother ? `${groomMother} 어머님` : '어머님', '어머님', ai.groom_mother_bank_name, ai.groom_mother_account_number, groomMotherContact),
+    ].filter(Boolean),
+    bride: [
+      buildPerson(brideName || '신부', '신부', ai.bride_bank_name, ai.bride_account_number, brideContact),
+      buildPerson(brideFather ? `${brideFather} 아버님` : '아버님', '아버님', ai.bride_father_bank_name, ai.bride_father_account_number, brideFatherContact),
+      buildPerson(brideMother ? `${brideMother} 어머님` : '어머님', '어머님', ai.bride_mother_bank_name, ai.bride_mother_account_number, brideMotherContact),
+    ].filter(Boolean),
+  };
+  const hasAnyAccount = accounts.groom.length > 0 || accounts.bride.length > 0;
 
-  useEffect(() => {
-    if (!eventData.custom_message || eventData.custom_message.trim() === '') {
-      const idx = Math.floor(Math.random() * RANDOM_GREETINGS.length);
-      setRandomGreeting(RANDOM_GREETINGS[idx]);
+  // ── 토스트 ──
+  const toastTimerRef = useRef(null);
+  const showToast = (message) => {
+    setToast({ visible: true, message });
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = setTimeout(() => setToast({ visible: false, message: '' }), 2200);
+  };
+
+  const copyToClipboard = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast('계좌번호가 복사되었어요');
+    } catch {
+      showToast('복사에 실패했습니다');
     }
-  }, [eventData.custom_message]);
-
-  const formatDate = (date) => {
-    if (!date) return { full: '2025년 10월 4일 토요일' };
-    const d = new Date(date);
-    const days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
-    const year = d.getFullYear();
-    const month = d.getMonth() + 1;
-    const day = d.getDate();
-    return { year: year.toString(), month: month.toString(), day: day.toString(), dayOfWeek: days[d.getDay()], full: `${year}년 ${month}월 ${day}일 ${days[d.getDay()]}` };
   };
 
-  const dateInfo = formatDate(eventData.date || eventData.event_date || '2025-10-04');
-  const ceremonyTime = eventData.ceremony_time || '오후 2시';
-
-  const getEnglishDate = () => {
-    const date = new Date(eventData.date || eventData.event_date || '2025-10-04');
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+  // ── 아코디언 토글 ──
+  const toggleAccount = (side) => {
+    setActiveAccount((prev) => (prev === side ? null : side));
   };
 
-  const calculateTimeLeft = () => {
-    const eventDate = new Date(eventData.date || eventData.event_date || '2025-10-04');
-    const now = new Date();
-    const difference = eventDate - now;
-    if (difference > 0) {
-      return {
-        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-        minutes: Math.floor((difference / 1000 / 60) % 60),
-        seconds: Math.floor((difference / 1000) % 60),
-        isExpired: false,
-      };
-    }
-    return { days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: true };
-  };
+  // ── 사랑 온도 (아무나 누를 수 있고, 연타해도 되돌아가지 않음) ──
+  const [floatingHearts, setFloatingHearts] = useState([]);
 
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+  // eventData 로드/변경 시 DB의 love_temperature 값으로 초기화 (새로고침 복원)
   useEffect(() => {
-    const timer = setInterval(() => setTimeLeft(calculateTimeLeft()), 1000);
-    return () => clearInterval(timer);
-  }, [eventData]);
+    if (eventData?.love_temperature == null) return;
+    const t = Number(eventData.love_temperature);
+    if (!Number.isFinite(t)) return;
+    setTemperature((prev) => Math.max(prev, t));
+    if (t >= 100) setTempReached100(true);
+  }, [eventData?.love_temperature, eventData?.id]);
 
-  // 내 축의금 데이터 로드 및 realtime 구독
+  // realtime 구독: 다른 사람이 올려도 즉시 반영 (단, 내 로컬값보다 낮으면 무시 — 되돌아감 방지)
+  useEffect(() => {
+    if (!eventData?.id) return;
+    const u = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const k = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!u || !k) return;
+    const supabase = createClient(u, k);
+    const sub = supabase
+      .channel(`love_temp_${eventData.id}`)
+      .on('postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'events', filter: `id=eq.${eventData.id}` },
+        (payload) => {
+          const t = Number(payload?.new?.love_temperature);
+          if (!Number.isFinite(t)) return;
+          setTemperature((prev) => {
+            const next = Math.max(prev, t); // 항상 단조 증가
+            if (next >= 100 && !tempReached100) setTempReached100(true);
+            return next;
+          });
+        })
+      .subscribe();
+    return () => { sub.unsubscribe(); };
+  }, [eventData?.id]); // eslint-disable-line
+
+  const handleTempPress = () => {
+    // 로컬 즉시 반영 — setState 함수형으로 현재값 기준 증가 (연타해도 누락 없음)
+    setTemperature((prev) => {
+      if (prev >= 100) return prev;
+      const next = Math.min(Number((prev + 0.1).toFixed(1)), 100);
+      if (next >= 100 && !tempReached100) {
+        setTempReached100(true);
+        showToast('🎉 사랑 온도 100도 달성! 축하합니다!');
+      }
+      return next;
+    });
+
+    // 떠오르는 하트
+    const id = Date.now() + Math.random();
+    const x = Math.random() * 260 + 20;
+    setFloatingHearts((prev) => [...prev, { id, x }]);
+    setTimeout(() => setFloatingHearts((prev) => prev.filter((h) => h.id !== id)), 1500);
+
+    // 서버 호출 — 가드 없음, 매 탭마다 발사. RPC가 원자적이라 동시 호출도 안전.
+    // 응답값은 "현재값보다 높을 때만" 반영 → 로컬 누적치를 절대 되돌리지 않음
+    if (!eventData?.id) return;
+    fetch('/api/increment-love-temp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ eventId: eventData.id }),
+    })
+      .then((r) => r.json())
+      .then((result) => {
+        if (!result?.success) return;
+        const serverT = Number(result.temperature);
+        if (!Number.isFinite(serverT)) return;
+        setTemperature((prev) => Math.max(prev, serverT));
+      })
+      .catch(() => {});
+  };
+  const tempRatio = Math.min((temperature - 36.5) / (100 - 36.5), 1);
+
+  // ── 공유 — 브라우저 기본 OS 공유창 (Web Share API) ──
+  const handleShare = async () => {
+    if (typeof window === 'undefined') return;
+    const url = window.location.href;
+    const title = `${groomName || '신랑'} ♡ ${brideName || '신부'} 결혼식 초대장`;
+    const text = `${groomName || '신랑'} ♡ ${brideName || '신부'}의 결혼식 초대장이 도착했어요!\n${dateStr}${timeStr ? ' ' + timeStr : ''}\n${locName || ''}`;
+
+    // Web Share API — 모바일 Safari/Chrome에서 OS 기본 공유창 (카톡/메시지/인스타 등)
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, text, url });
+        return;
+      } catch (err) {
+        if (err && err.name === 'AbortError') return; // 유저가 취소
+        // 실패 시 아래 클립보드 복사로 fallthrough
+      }
+    }
+
+    // 공유 API 미지원 (데스크톱·HTTP 환경) → 링크 복사
+    try {
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = url;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      showToast('초대장 링크가 복사됐어요 📋');
+    } catch {
+      showToast('공유에 실패했어요. 주소창을 복사해주세요');
+    }
+  };
+
+  // ═════════════════════════════════════════════════
+  // 기존 데이터 연동 로직 (유지)
+  // ═════════════════════════════════════════════════
   useEffect(() => {
     const verifiedPhone = typeof window !== 'undefined' ? localStorage.getItem('verifiedPhone') : null;
     if (!verifiedPhone || !eventData?.id) return;
@@ -447,24 +564,23 @@ const WarmOrangeTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
     const fetchMyContribution = async () => {
       if (!isSubscribed) return;
       try {
-        const response = await fetch(`/api/get-my-contribution?eventId=${eventData.id}&phone=${encodeURIComponent(verifiedPhone)}`);
-        const result = await response.json();
+        const r = await fetch(`/api/get-my-contribution?eventId=${eventData.id}&phone=${encodeURIComponent(verifiedPhone)}`);
+        const result = await r.json();
         if (result.success && result.contribution && isSubscribed) {
           setMyContribution({ ...result.contribution, amount: result.contribution.contributionAmount || result.contribution.amount });
         }
-      } catch (error) {
-        console.error('내 축의금 조회 오류:', error);
-      }
+      } catch {}
     };
     fetchMyContribution();
 
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-    const subscription = supabase
+    const sub = supabase
       .channel(`warm_orange_guest_book_${eventData.id}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'guest_book', filter: `event_id=eq.${eventData.id}` }, (payload) => {
-        if (payload.new && payload.new.guest_phone === verifiedPhone) {
-          if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
-            const newContribution = {
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'guest_book', filter: `event_id=eq.${eventData.id}` },
+        (payload) => {
+          if (payload.new && payload.new.guest_phone === verifiedPhone) {
+            const c = {
               id: payload.new.id,
               guestName: payload.new.guest_name,
               contributionAmount: payload.new.amount,
@@ -472,84 +588,64 @@ const WarmOrangeTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
               relationship: payload.new.relation_detail,
               side: payload.new.relation_category,
               phone: payload.new.guest_phone,
-              createdAt: payload.new.created_at,
-              updatedAt: payload.new.updated_at,
             };
-            setMyContribution(newContribution);
-            setContributionKey(prev => prev + 1);
+            setMyContribution(c);
+            setContributionKey((p) => p + 1);
             forceUpdate({});
+          } else if (payload.old && payload.old.guest_phone === verifiedPhone && payload.eventType === 'DELETE') {
+            setMyContribution(null);
           }
-        } else if (payload.old && payload.old.guest_phone === verifiedPhone && payload.eventType === 'DELETE') {
-          setMyContribution(null);
-        }
-      })
+        })
       .subscribe();
 
-    return () => { isSubscribed = false; subscription.unsubscribe(); };
+    return () => { isSubscribed = false; sub.unsubscribe(); };
   }, [eventData?.id]);
 
-  // 방명록 데이터 로드 및 실시간 구독
   const fetchGuestbook = async () => {
     if (!eventData?.id) return;
     try {
-      const response = await fetch(`/api/get-guestbook?eventId=${eventData.id}`);
-      const result = await response.json();
+      const r = await fetch(`/api/get-guestbook?eventId=${eventData.id}`);
+      const result = await r.json();
       if (result.success && result.messages) setGuestMessages(result.messages);
-    } catch (error) {
-      console.error('방명록 로드 오류:', error);
-    }
+    } catch {}
   };
 
   useEffect(() => {
     fetchGuestbook();
-    let subscription = null;
+    let sub = null;
     if (eventData?.id) {
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-      if (supabaseUrl && supabaseAnonKey) {
-        const supabase = createClient(supabaseUrl, supabaseAnonKey);
-        subscription = supabase
+      const u = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const k = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+      if (u && k) {
+        const supabase = createClient(u, k);
+        sub = supabase
           .channel('warm-orange-guestbook-changes')
-          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'guest_book', filter: `event_id=eq.${eventData.id}` }, (payload) => {
-            const newMessage = {
-              id: payload.new.id,
-              from: payload.new.guest_name || '익명',
-              phone: payload.new.guest_phone,
-              date: new Date(payload.new.created_at).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(/\./g, '.').replace(/\s/g, ' '),
-              content: payload.new.message || '',
-            };
-            setGuestMessages(prev => [newMessage, ...prev]);
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'guest_book', filter: `event_id=eq.${eventData.id}` }, (p) => {
+            const m = { id: p.new.id, from: p.new.guest_name || '익명', phone: p.new.guest_phone, date: new Date(p.new.created_at).toLocaleDateString('ko-KR'), content: p.new.message || '' };
+            setGuestMessages((prev) => [m, ...prev]);
           })
-          .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'guest_book', filter: `event_id=eq.${eventData.id}` }, (payload) => {
-            const updatedMessage = {
-              id: payload.new.id,
-              from: payload.new.guest_name || '익명',
-              phone: payload.new.guest_phone,
-              date: new Date(payload.new.created_at).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(/\./g, '.').replace(/\s/g, ' '),
-              content: payload.new.message || '',
-            };
-            setGuestMessages(prev => prev.map(msg => msg.id === payload.new.id ? updatedMessage : msg));
+          .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'guest_book', filter: `event_id=eq.${eventData.id}` }, (p) => {
+            const m = { id: p.new.id, from: p.new.guest_name || '익명', phone: p.new.guest_phone, date: new Date(p.new.created_at).toLocaleDateString('ko-KR'), content: p.new.message || '' };
+            setGuestMessages((prev) => prev.map((x) => (x.id === p.new.id ? m : x)));
           })
-          .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'guest_book', filter: `event_id=eq.${eventData.id}` }, (payload) => {
-            setGuestMessages(prev => prev.filter(msg => msg.id !== payload.old.id));
+          .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'guest_book', filter: `event_id=eq.${eventData.id}` }, (p) => {
+            setGuestMessages((prev) => prev.filter((x) => x.id !== p.old.id));
           })
           .subscribe();
       }
     }
-    return () => { if (subscription) subscription.unsubscribe(); };
+    return () => { if (sub) sub.unsubscribe(); };
   }, [eventData?.id]);
 
   useEffect(() => {
     const verifiedPhone = typeof window !== 'undefined' ? localStorage.getItem('verifiedPhone') : null;
     if (verifiedPhone && guestMessages.length > 0) {
-      const hasWritten = guestMessages.some(msg => msg.phone === verifiedPhone && msg.content && msg.content.trim() !== '');
-      setHasWrittenGuestbook(hasWritten);
+      setHasWrittenGuestbook(guestMessages.some((m) => m.phone === verifiedPhone && m.content && m.content.trim() !== ''));
     } else {
       setHasWrittenGuestbook(false);
     }
   }, [guestMessages]);
 
-  // 이미 축의금이 있으면 WelcomeChoiceModal 닫고 arrival_checked 저장
   useEffect(() => {
     if (myContribution && eventData?.id) {
       if (typeof window !== 'undefined') {
@@ -558,48 +654,24 @@ const WarmOrangeTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
       arrivalModalCheckedRef.current = true;
       if (showWelcomeChoice) setShowWelcomeChoice(false);
     }
-  }, [myContribution]);
+  }, [myContribution]); // eslint-disable-line
 
   const mergedMessages = useMemo(() => {
-    const stateMessageIds = new Set(guestMessages.map(msg => msg.id));
-    const propsMessages = (eventData.guestMessages || []).filter(msg => !stateMessageIds.has(msg.id));
-    return [...guestMessages, ...propsMessages];
+    const ids = new Set(guestMessages.map((m) => m.id));
+    const fromProps = (eventData.guestMessages || []).filter((m) => !ids.has(m.id));
+    return [...guestMessages, ...fromProps];
   }, [guestMessages, eventData.guestMessages]);
 
-  const messagesWithContent = mergedMessages.filter(msg => msg.content && msg.content.trim() !== '');
-  const hasRealMessages = messagesWithContent.length > 0;
-  const defaultMessages = [
-    { from: '지현', date: '2025.04.22 14:23', content: '결혼을 진심으로 축하해!\n행복한 결혼생활 되기를 바래 ✨' },
-    { from: '유진', date: '2025.04.21 16:35', content: '두 분의 아름다운 사랑이 결실을 맺게 되어 정말 축하드려요 🎉' },
-  ];
-  const displayMessages = hasRealMessages ? messagesWithContent : defaultMessages;
+  // 실제 DB에서 온 메시지만 표시 (더미 데이터 없음)
+  const displayMessages = useMemo(() => {
+    return mergedMessages.filter((m) => m.content && m.content.trim() !== '');
+  }, [mergedMessages]);
+
   const messagesPerPage = 3;
   const totalPages = Math.ceil(displayMessages.length / messagesPerPage);
-  const currentMessages = displayMessages.slice(currentPage * messagesPerPage, (currentPage + 1) * messagesPerPage);
+  const pagedMessages = displayMessages.slice(currentPage * messagesPerPage, (currentPage + 1) * messagesPerPage);
 
-  let greetingMessage = '';
-  if (eventData.custom_message) {
-    if (typeof eventData.custom_message === 'object') greetingMessage = eventData.custom_message.poem || '';
-    else if (typeof eventData.custom_message === 'string' && eventData.custom_message.trim() !== '') greetingMessage = eventData.custom_message;
-    else greetingMessage = randomGreeting;
-  } else {
-    greetingMessage = randomGreeting;
-  }
-
-  const additionalInfo = (() => {
-    if (!eventData.additional_info) return {};
-    if (typeof eventData.additional_info === 'string') { try { return JSON.parse(eventData.additional_info); } catch { return {}; } }
-    if (typeof eventData.additional_info === 'object') return eventData.additional_info;
-    return {};
-  })();
-
-  const groomEnglishName = koreanToEnglish(eventData.groom_name || '이민호');
-  const brideEnglishName = koreanToEnglish(eventData.bride_name || '배하윤');
-
-  const modalOpeningRef = useRef(false);
-  const modalClosingRef = useRef(false);
-  const arrivalModalCheckedRef = useRef(false);
-
+  // ── 모달 핸들러 ──
   const checkAndShowWelcomeChoice = () => {
     if (arrivalModalCheckedRef.current || showWelcomeChoice) return false;
     const arrivalKey = `arrival_checked_${eventData?.id}`;
@@ -629,443 +701,428 @@ const WarmOrangeTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
     setTimeout(() => { modalClosingRef.current = false; }, 300);
   };
 
-  const handleGuestbookSubmit = async (guestbookData) => {
+  const handleGuestbookSubmit = async (g) => {
     try {
-      const newMessage = {
+      const newMsg = {
         id: `temp-${Date.now()}`,
-        from: guestbookData.name || '익명',
-        phone: guestbookData.phone,
-        date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(/\./g, '.').replace(/\s/g, ' '),
-        content: guestbookData.message || '',
+        from: g.name || '익명',
+        phone: g.phone,
+        date: new Date().toLocaleDateString('ko-KR'),
+        content: g.message || '',
       };
-      setGuestMessages(prev => [newMessage, ...prev]);
+      setGuestMessages((prev) => [newMsg, ...prev]);
       setHasWrittenGuestbook(true);
       setCurrentPage(0);
       setTimeout(async () => { await fetchGuestbook(); }, 500);
-    } catch (error) {
-      console.error('방명록 제출 오류:', error);
-      throw error;
+    } catch (e) {
+      throw e;
     }
   };
 
-  const handleEditMessage = (message) => { setEditingMessage(message); setShowEditModal(true); };
+  const handleEditMessage = (m) => { setEditingMessage(m); setShowEditModal(true); };
   const handleEditUpdate = async () => { await fetchGuestbook(); };
   const handleEditDelete = async () => {
     if (editingMessage?.id) {
-      setGuestMessages(prev => prev.map(msg => msg.id === editingMessage.id ? { ...msg, content: '' } : msg));
+      setGuestMessages((prev) => prev.map((m) => (m.id === editingMessage.id ? { ...m, content: '' } : m)));
     }
     setHasWrittenGuestbook(false);
     setShowEditModal(false);
     setEditingMessage(null);
   };
-  const canEditMessage = (message) => {
+  const canEditMessage = (m) => {
     const verifiedPhone = typeof window !== 'undefined' ? localStorage.getItem('verifiedPhone') : null;
-    return verifiedPhone && message.phone === verifiedPhone;
+    return verifiedPhone && m.phone === verifiedPhone;
   };
 
-  const handleSelectGuestbook = () => { setUserChoice('guestbook'); setShowWelcomeChoice(false); setShowGuestbookModal(true); };
+  const handleSelectGuestbook = () => { setShowWelcomeChoice(false); setShowGuestbookModal(true); };
   const handleSelectContribution = () => {
-    setUserChoice('contribution');
     setShowWelcomeChoice(false);
-    setTimeout(() => { setShowContributionModal(true); }, 100);
+    setTimeout(() => setShowContributionModal(true), 100);
   };
 
-  const handleContributionSubmit = async (contributionFormData) => {
+  const handleContributionSubmit = async (data) => {
     try {
-      const response = await fetch('/api/submit-contribution', {
+      const r = await fetch('/api/submit-contribution', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(contributionFormData),
+        body: JSON.stringify(data),
       });
-      const result = await response.json();
+      const result = await r.json();
       if (result.success) {
         if (typeof window !== 'undefined') localStorage.setItem(`arrival_checked_${eventData?.id}`, 'true');
         arrivalModalCheckedRef.current = true;
-        setCompletionData(contributionFormData);
+        setCompletionData(data);
         setShowContributionModal(false);
         setIsEditMode(false);
         if (isEditMode && myContribution) {
-          setMyContribution({ ...myContribution, ...contributionFormData, amount: contributionFormData.contributionAmount });
-          setContributionKey(prev => prev + 1);
+          setMyContribution({ ...myContribution, ...data, amount: data.contributionAmount });
+          setContributionKey((p) => p + 1);
         }
-        setTimeout(() => { setShowCompletionModal(true); }, 300);
+        setTimeout(() => setShowCompletionModal(true), 300);
       } else {
-        throw new Error(result.error || '축의금 등록에 실패했습니다.');
+        throw new Error(result.error || '축의금 등록 실패');
       }
-    } catch (error) {
-      alert(`축의금 등록 중 오류가 발생했습니다:\n${error.message}`);
-      throw error;
+    } catch (e) {
+      alert(`축의금 등록 중 오류가 발생했습니다:\n${e.message}`);
+      throw e;
     }
   };
 
-  const handleOpeningComplete = () => {
-    setShowOpening(false);
+  // 인트로 닫힌 뒤 Welcome choice
+  const dismissIntro = () => {
+    setShowIntro(false);
     setTimeout(() => checkAndShowWelcomeChoice(), 500);
   };
 
-  useEffect(() => {
-    if (arrivalModalCheckedRef.current) return;
-    let t;
-    if (!showOpening) {
-      t = setTimeout(() => checkAndShowWelcomeChoice(), 1000);
-    } else {
-      t = setTimeout(() => { setShowOpening(false); setTimeout(() => checkAndShowWelcomeChoice(), 500); }, 4000);
-    }
-    return () => clearTimeout(t);
-  }, [showOpening]);
+  // 인사말
+  const greetingMessage = (() => {
+    const m = eventData.customMessage || eventData.custom_message;
+    if (typeof m === 'string' && m.trim()) return m;
+    if (typeof m === 'object' && m?.poem) return m.poem;
+    return DEFAULT_GREETING;
+  })();
 
-  const copyAccount = async (accountNumber) => {
-    try {
-      await navigator.clipboard.writeText(accountNumber);
-      alert('계좌번호가 복사되었습니다.');
-    } catch {
-      alert('계좌번호 복사에 실패했습니다.');
-    }
-  };
+  // 갤러리 회전값 (index 기반 고정)
+  const galleryItems = safeImages.gallery.map((img, idx) => ({
+    src: getImageSrc(img),
+    caption: GALLERY_CAPTIONS[idx % GALLERY_CAPTIONS.length],
+    rotate: [-2.5, 1.8, -1.2, 2, -1.8, 1.2][idx % 6],
+    height: [220, 180, 200][idx % 3],
+  })).filter((i) => i.src);
 
-  const handleShare = async () => {
-    const shareData = {
-      title: `${eventData.groom_name || '신랑'} ♡ ${eventData.bride_name || '신부'} 결혼식 초대장`,
-      text: `${eventData.groom_name || '신랑'} ♡ ${eventData.bride_name || '신부'}\n${dateInfo.full} ${ceremonyTime}\n${eventData.location || '웨딩홀'}`,
-      url: window.location.href,
-    };
-    try {
-      if (navigator.share) await navigator.share(shareData);
-      else { await navigator.clipboard.writeText(window.location.href); alert('링크가 복사되었습니다.'); }
-    } catch {}
-  };
+  const allImages = [...safeImages.main, ...safeImages.gallery];
 
   return (
-    <div className={styles.container}>
-      <WarmOpeningOverlay visible={showOpening} onComplete={handleOpeningComplete} />
-      <FallingFlowers />
+    <>
+      {/* ═══ 인트로 오버레이 ═══ */}
+      <IntroOverlay
+        visible={showIntro}
+        groomName={groomName}
+        brideName={brideName}
+        onDismiss={dismissIntro}
+      />
 
-      {/* 인트로 섹션 - Polaroid Hero */}
-      <section className={styles.introSection}>
-        <div className={styles.introContent}>
-          <p className={styles.subtitle}>🧡 WEDDING INVITATION</p>
-          <h1 className={styles.loveText}>우리 결혼해요</h1>
-          <div className={styles.mainImageContainer}>
-            <MainPhotoSlideshow images={safeImages.main} onImagePress={(idx) => { setCurrentImageIndex(idx); setShowImageViewer(true); }} />
+      <div className={styles.root} style={{ opacity: showIntro ? 0.3 : 1 }}>
+        {/* ═══ 1. 히어로 ═══ */}
+        <section className={styles.hero}>
+          <HeroSlideshow images={safeImages.main} onPress={setViewerImage} />
+          <div className={styles.heroBottomFade} />
+          <div className={styles.heroContent}>
+            <div className={styles.heroBadge}>
+              <span>저희 결혼합니다 🥕</span>
+            </div>
+            <h1 className={styles.heroNames}>
+              <span>{groomName || '이민호'}</span>
+              <span className={styles.heroHeart}>♥</span>
+              <span>{brideName || '배하윤'}</span>
+            </h1>
+            <p className={styles.heroDate}>{dateStr} {timeStr}</p>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* 인사말 섹션 */}
-      <section className={styles.greetingSection}>
-        <div className={styles.sectionHeader}>
-          <div className={styles.sectionTag}>💌 Greeting</div>
-          <h2 className={styles.sectionTitle}>인사말</h2>
-        </div>
-        {greetingMessage && <p className={styles.poem}>{greetingMessage}</p>}
-        <div className={styles.divider}></div>
-        <div className={styles.coupleNamesSection}>
-          <div className={styles.coupleNames}>
-            <div className={styles.groomInfo}>
-              <span className={styles.roleTag}>신랑</span>
-              <span className={styles.nameKorean}>{eventData.groom_name || '이민호'}</span>
-              <span className={styles.nameParents}>{eventData.groom_father_name || '아버님'} · {eventData.groom_mother_name || '어머님'}의 아들</span>
+        {/* ═══ 2. 인사말 (앱: 단독 흰 섹션, 주황 타이틀, 부모 정보 항상 노출) ═══ */}
+        <section className={styles.greetingSection}>
+          <h2 className={styles.greetingTitle}>초대합니다</h2>
+          <p className={styles.greetingText}>{greetingMessage}</p>
+          <div className={styles.parentsBox}>
+            <div className={styles.parentsRow}>
+              <span className={styles.parentsNames}>
+                {groomFather || '아버지'}
+                {' · '}
+                {groomMother || '어머니'}
+              </span>
+              <span className={styles.parentsRole}>의 아들</span>
+              <span className={styles.parentsChild}>{groomName || '신랑'}</span>
             </div>
-            <span className={styles.heartBeat}>🧡</span>
-            <div className={styles.brideInfo}>
-              <span className={styles.roleTag}>신부</span>
-              <span className={styles.nameKorean}>{eventData.bride_name || '배하윤'}</span>
-              <span className={styles.nameParents}>{eventData.bride_father_name || '아버님'} · {eventData.bride_mother_name || '어머님'}의 딸</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 갤러리 섹션 - Instax Polaroid style */}
-      {safeImages.gallery.length > 0 && (
-        <section className={styles.gallerySection}>
-          <div className={styles.sectionHeader}>
-            <div className={styles.sectionTag}>📸 Gallery</div>
-            <h2 className={styles.sectionTitle}>우리의 특별한 순간들</h2>
-          </div>
-          <div className={styles.galleryContainer}>
-            <div
-              className={styles.gallerySlider}
-              onScroll={(e) => {
-                const scrollLeft = e.target.scrollLeft;
-                const itemWidth = e.target.scrollWidth / safeImages.gallery.length;
-                setGalleryScrollIndex(Math.round(scrollLeft / itemWidth));
-              }}
-            >
-              {safeImages.gallery.map((image, index) => {
-                const imageSrc = getImageSrc(image);
-                const rotations = [-2, 1.5, -1, 2, -1.5, 1];
-                const rotation = rotations[index % rotations.length];
-                return imageSrc ? (
-                  <div
-                    key={index}
-                    className={styles.instaxFrame}
-                    style={{ transform: `rotate(${rotation}deg)` }}
-                    onClick={() => { setCurrentImageIndex(safeImages.main.length + index); setShowImageViewer(true); }}
-                  >
-                    <img src={imageSrc} alt={`Gallery ${index + 1}`} className={styles.instaxPhoto} onError={(e) => { e.target.style.display = 'none'; }} />
-                    <div className={styles.instaxCaption}>Photo {index + 1}</div>
-                  </div>
-                ) : null;
-              })}
-            </div>
-            <div className={styles.galleryDots}>
-              {safeImages.gallery.map((_, index) => (
-                <div key={index} className={`${styles.dot} ${galleryScrollIndex === index ? styles.dotActive : ''}`} />
-              ))}
+            <div className={styles.parentsRow} style={{ marginTop: 12 }}>
+              <span className={styles.parentsNames}>
+                {brideFather || '아버지'}
+                {' · '}
+                {brideMother || '어머니'}
+              </span>
+              <span className={styles.parentsRole}>의 딸</span>
+              <span className={styles.parentsChild}>{brideName || '신부'}</span>
             </div>
           </div>
         </section>
-      )}
 
-      {/* 웨딩 날짜 & 카운트다운 섹션 */}
-      <section className={styles.dateSection}>
-        <div className={styles.sectionHeader}>
-          <div className={styles.sectionTag}>📅 Wedding Day</div>
-          <h2 className={styles.sectionTitle}>{dateInfo.full}</h2>
-          <p className={styles.dateSub}>{ceremonyTime} · {eventData.location || '웨딩홀'}</p>
-        </div>
-        <WarmCalendar targetDate={eventData.date || eventData.event_date || '2025-10-04'} />
-        <div className={styles.countdown}>
-          <CountdownDisplay timeLeft={timeLeft} isExpired={timeLeft.isExpired} />
-        </div>
-        <p className={styles.countdownMessage}>
-          {eventData.groom_name || '민호'}<span className={styles.heartText}> 🧡 </span>{eventData.bride_name || '하윤'}의 결혼식이{' '}
-          <span className={styles.countdownDays}>{timeLeft.days}일</span> 남았습니다
-        </p>
-      </section>
-
-      {/* 계좌 정보 섹션 */}
-      <section className={styles.giftSection}>
-        <div className={styles.sectionHeader}>
-          <div className={styles.sectionTag}>💳 마음 전하기</div>
-          <h2 className={styles.sectionTitle}>축의금 전달</h2>
-          <p className={styles.giftSubtitle}>따뜻한 마음을 함께 나누어주세요</p>
-        </div>
-
-        <div className={styles.toggleContainer}>
-          <div className={styles.toggleButtons}>
-            <button className={`${styles.toggleBtn} ${activeAccountToggle === 'groom' ? styles.toggleBtnActive : ''}`} onClick={() => setActiveAccountToggle('groom')}>신랑측</button>
-            <button className={`${styles.toggleBtn} ${activeAccountToggle === 'bride' ? styles.toggleBtnActive : ''}`} onClick={() => setActiveAccountToggle('bride')}>신부측</button>
+        {/* ═══ 3. 사랑 온도 카드 ═══ */}
+        <button type="button" className={styles.tempCard} onClick={handleTempPress}>
+          <p className={styles.tempGuide}>터치해서 두 사람의 사랑 온도를 올려주세요!</p>
+          <div className={styles.tempRow}>
+            <span className={styles.tempFireIcon}>🔥</span>
+            <div className={styles.tempBarArea}>
+              <div className={styles.tempValueRow}>
+                <span className={styles.tempValue}>{temperature.toFixed(1)}°C</span>
+                <span className={styles.tempMax}>100°C</span>
+              </div>
+              <div className={styles.tempBarBg}>
+                <div
+                  className={styles.tempBarFill}
+                  style={{ width: `${tempRatio * 100}%` }}
+                />
+              </div>
+            </div>
           </div>
-        </div>
-
-        <div className={styles.accountsContainer}>
-          {activeAccountToggle === 'groom' && (additionalInfo?.groom_account_number || additionalInfo?.groom_father_account_number || additionalInfo?.groom_mother_account_number) && (
-            <div className={styles.accountCards}>
-              {additionalInfo?.groom_account_number && (
-                <div className={styles.accountCard} onClick={() => copyAccount(additionalInfo.groom_account_number)}>
-                  <div className={styles.accountInfo}>
-                    <div className={styles.accountName}>{eventData.groom_name || '신랑'}</div>
-                    <div className={styles.bankInfo}>
-                      <span className={styles.bankName}>{additionalInfo.groom_bank_name || '은행'}</span>
-                      <span className={styles.accountNumber}>{additionalInfo.groom_account_number}</span>
-                    </div>
-                  </div>
-                  <div className={styles.copyButton}>복사</div>
-                </div>
-              )}
-              {additionalInfo?.groom_father_account_number && (
-                <div className={styles.accountCard} onClick={() => copyAccount(additionalInfo.groom_father_account_number)}>
-                  <div className={styles.accountInfo}>
-                    <div className={styles.accountName}>{eventData.groom_father_name || '신랑'} 아버님</div>
-                    <div className={styles.bankInfo}>
-                      <span className={styles.bankName}>{additionalInfo.groom_father_bank_name || '은행'}</span>
-                      <span className={styles.accountNumber}>{additionalInfo.groom_father_account_number}</span>
-                    </div>
-                  </div>
-                  <div className={styles.copyButton}>복사</div>
-                </div>
-              )}
-              {additionalInfo?.groom_mother_account_number && (
-                <div className={styles.accountCard} onClick={() => copyAccount(additionalInfo.groom_mother_account_number)}>
-                  <div className={styles.accountInfo}>
-                    <div className={styles.accountName}>{eventData.groom_mother_name || '신랑'} 어머님</div>
-                    <div className={styles.bankInfo}>
-                      <span className={styles.bankName}>{additionalInfo.groom_mother_bank_name || '은행'}</span>
-                      <span className={styles.accountNumber}>{additionalInfo.groom_mother_account_number}</span>
-                    </div>
-                  </div>
-                  <div className={styles.copyButton}>복사</div>
-                </div>
-              )}
-            </div>
+          {tempReached100 && (
+            <p className={styles.tempCongrats}>🎉 축하해주셔서 감사합니다!</p>
           )}
-          {activeAccountToggle === 'bride' && (additionalInfo?.bride_account_number || additionalInfo?.bride_father_account_number || additionalInfo?.bride_mother_account_number) && (
-            <div className={styles.accountCards}>
-              {additionalInfo?.bride_account_number && (
-                <div className={styles.accountCard} onClick={() => copyAccount(additionalInfo.bride_account_number)}>
-                  <div className={styles.accountInfo}>
-                    <div className={styles.accountName}>{eventData.bride_name || '신부'}</div>
-                    <div className={styles.bankInfo}>
-                      <span className={styles.bankName}>{additionalInfo.bride_bank_name || '은행'}</span>
-                      <span className={styles.accountNumber}>{additionalInfo.bride_account_number}</span>
-                    </div>
-                  </div>
-                  <div className={styles.copyButton}>복사</div>
-                </div>
-              )}
-              {additionalInfo?.bride_father_account_number && (
-                <div className={styles.accountCard} onClick={() => copyAccount(additionalInfo.bride_father_account_number)}>
-                  <div className={styles.accountInfo}>
-                    <div className={styles.accountName}>{eventData.bride_father_name || '신부'} 아버님</div>
-                    <div className={styles.bankInfo}>
-                      <span className={styles.bankName}>{additionalInfo.bride_father_bank_name || '은행'}</span>
-                      <span className={styles.accountNumber}>{additionalInfo.bride_father_account_number}</span>
-                    </div>
-                  </div>
-                  <div className={styles.copyButton}>복사</div>
-                </div>
-              )}
-              {additionalInfo?.bride_mother_account_number && (
-                <div className={styles.accountCard} onClick={() => copyAccount(additionalInfo.bride_mother_account_number)}>
-                  <div className={styles.accountInfo}>
-                    <div className={styles.accountName}>{eventData.bride_mother_name || '신부'} 어머님</div>
-                    <div className={styles.bankInfo}>
-                      <span className={styles.bankName}>{additionalInfo.bride_mother_bank_name || '은행'}</span>
-                      <span className={styles.accountNumber}>{additionalInfo.bride_mother_account_number}</span>
-                    </div>
-                  </div>
-                  <div className={styles.copyButton}>복사</div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </section>
+        </button>
+        {/* 떠오르는 하트 */}
+        {floatingHearts.length > 0 && (
+          <div className={styles.floatingHeartsLayer}>
+            {floatingHearts.map((h) => (
+              <span key={h.id} className={styles.floatingHeart} style={{ left: h.x }}>❤️</span>
+            ))}
+          </div>
+        )}
 
-      {/* 방명록 섹션 */}
-      <section className={styles.messagesSection}>
-        <div className={styles.sectionHeader}>
-          <div className={styles.sectionTag}>💬 Messages</div>
-          <h2 className={styles.sectionTitle}>축하 메시지</h2>
-        </div>
-        <div className={styles.messagesList}>
-          {(!hasRealMessages && guestMessages?.length === 0) ? (
-            <div className={styles.emptyMessages}>
-              <div className={styles.emptyIcon}>💬</div>
-              <p className={styles.emptyText}>아직 축하 메시지가 없습니다</p>
+        {/* ═══ 4. 스크랩북 갤러리 (2행 × N열 가로 스크롤) ═══ */}
+        {galleryItems.length > 0 && (
+          <section className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <span className={styles.sectionEmoji}>📷</span>
+              <h2 className={styles.sectionTitle}>우리의 스크랩북</h2>
             </div>
-          ) : (
-            currentMessages.map((message, index) => (
-              <div key={index} className={styles.messageCard}>
-                <div className={styles.messageHeader}>
-                  <span className={styles.messageName}>From. {message.from}</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    {canEditMessage(message) && (
-                      <button className={styles.editMsgButton} onClick={() => handleEditMessage(message)}>수정</button>
-                    )}
-                    <span className={styles.messageDate}>{message.date}</span>
-                  </div>
-                </div>
-                <div className={styles.messageContent}>
-                  {message.content ? message.content.split('\n').map((line, lineIndex) => (
-                    <span key={lineIndex}>{line}{lineIndex < message.content.split('\n').length - 1 && <br />}</span>
-                  )) : ''}
+            <div className={styles.galleryOuter}>
+              <div className={styles.galleryScrollWrap}>
+                <div className={styles.galleryGrid}>
+                  {galleryItems.map((item, idx) => (
+                    <button
+                      type="button"
+                      key={idx}
+                      className={styles.polaroid}
+                      style={{
+                        '--r': `${item.rotate}deg`,
+                        animationDelay: `${(idx % 6) * 0.4}s`,
+                      }}
+                      onClick={() => setViewerImage(item.src)}
+                    >
+                      <div className={styles.polaroidTape}>
+                        <div className={styles.tapeStrip} />
+                      </div>
+                      <img src={item.src} alt="" className={styles.polaroidImage} style={{ height: item.height }} />
+                      <span className={styles.polaroidCaption}>{item.caption}</span>
+                    </button>
+                  ))}
                 </div>
               </div>
-            ))
-          )}
-        </div>
-        {totalPages > 1 && (
-          <div className={styles.pagination}>
-            <button onClick={() => setCurrentPage(Math.max(0, currentPage - 1))} disabled={currentPage === 0} className={styles.pageButton}>‹</button>
-            <div className={styles.pageDots}>
-              {Array.from({ length: totalPages }, (_, i) => (
-                <button key={i} onClick={() => setCurrentPage(i)} className={`${styles.pageDot} ${currentPage === i ? styles.pageDotActive : ''}`} />
-              ))}
+              {/* 4장 초과일 때 우측 페이드 (더 있다는 시각 힌트) */}
+              {galleryItems.length > 4 && <div className={styles.galleryFadeRight} aria-hidden="true" />}
             </div>
-            <button onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))} disabled={currentPage === totalPages - 1} className={styles.pageButton}>›</button>
-          </div>
+            {galleryItems.length > 4 && (
+              <p className={styles.galleryHint}>
+                옆으로 밀면 사진 {galleryItems.length - 4}장이 더 있어요
+              </p>
+            )}
+          </section>
         )}
-        {!hasWrittenGuestbook && (
-          <button className={styles.addMessageButton} onClick={handleGuestbookModalOpen} disabled={showGuestbookModal}>
-            💌 방명록 남기기
-          </button>
-        )}
-      </section>
 
-      {/* 오시는 길 섹션 */}
-      <section className={styles.locationSection}>
-        <div className={styles.sectionHeader}>
-          <div className={styles.sectionTag}>📍 Location</div>
-          <h2 className={styles.sectionTitle}>오시는 길</h2>
-        </div>
-        <div className={styles.venueCard}>
-          <p className={styles.venueName}>{eventData.location || '더 플라자 지스텀하우스 22층'}</p>
-          <p className={styles.venueAddress}>{eventData.detailed_address || eventData.detailedAddress || '서울시 중구 소공로 119'}</p>
-        </div>
-        <div className={styles.mapContainer}>
-          <GoogleMapEmbed
-            address={`${eventData?.location || '서울시 중구 소공로 119'} ${eventData?.detailed_address || eventData?.detailedAddress || ''}`.trim()}
-            venueName={eventData?.venue_name || eventData?.venueName}
-            width="100%"
-            height="300px"
-          />
-        </div>
-        {(eventData.parking_info || eventData.parkingInfo) && (
-          <div className={styles.transportCard}>
-            <span className={styles.transportIcon}>🅿️</span>
-            <div className={styles.transportContent}>
-              <h4 className={styles.transportTitle}>주차 안내</h4>
-              <p className={styles.transportText}>{eventData.parking_info || eventData.parkingInfo}</p>
+        {/* ═══ 5. 지인들의 따뜻한 후기 (실제 DB 데이터만, 더미 없음) ═══ */}
+        {shouldShowReviews && (
+          <section className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <span className={styles.sectionEmoji}>💬</span>
+              <h2 className={styles.sectionTitle}>지인들의 따뜻한 후기</h2>
             </div>
-          </div>
+            {displayMessages.length === 0 ? (
+              <div className={styles.emptyReviews}>
+                <span className={styles.emptyReviewsIcon}>💌</span>
+                <p className={styles.emptyReviewsText}>
+                  아직 축하 메시지가 없어요.<br />
+                  첫 번째 응원의 메시지를 남겨보세요!
+                </p>
+              </div>
+            ) : (
+              <>
+                {pagedMessages.map((msg, idx) => (
+                  <div key={msg.id || idx} className={styles.reviewCard}>
+                    <div className={styles.reviewTop}>
+                      <div className={styles.reviewAvatar}>
+                        <span>{['🧡','🎉','💐','✨','🌸'][idx % 5]}</span>
+                      </div>
+                      <div className={styles.reviewMeta}>
+                        <span className={styles.reviewName}>{msg.from}</span>
+                        <span className={styles.reviewTime}>{msg.date}</span>
+                      </div>
+                      {canEditMessage(msg) && (
+                        <button
+                          type="button"
+                          className={styles.editMsgBtn}
+                          onClick={() => handleEditMessage(msg)}
+                        >
+                          수정
+                        </button>
+                      )}
+                    </div>
+                    <p className={styles.reviewMessage}>{msg.content}</p>
+                  </div>
+                ))}
+                {totalPages > 1 && (
+                  <div className={styles.pagination}>
+                    <button type="button" onClick={() => setCurrentPage(Math.max(0, currentPage - 1))} disabled={currentPage === 0}>‹</button>
+                    <div className={styles.pageDots}>
+                      {Array.from({ length: totalPages }).map((_, i) => (
+                        <button key={i} type="button" className={`${styles.pageDot} ${i === currentPage ? styles.pageDotActive : ''}`} onClick={() => setCurrentPage(i)} />
+                      ))}
+                    </div>
+                    <button type="button" onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))} disabled={currentPage === totalPages - 1}>›</button>
+                  </div>
+                )}
+              </>
+            )}
+            {!hasWrittenGuestbook && (
+              <button
+                type="button"
+                className={styles.addReviewBtn}
+                onClick={handleGuestbookModalOpen}
+                disabled={showGuestbookModal}
+              >
+                + 축하 메시지 남기기
+              </button>
+            )}
+          </section>
         )}
-      </section>
 
-      {/* 공유 섹션 */}
-      <section className={styles.shareSection}>
-        <button className={styles.shareButton} onClick={handleShare}>
-          <span>🔗 청첩장 공유하기</span>
+        {/* ═══ 6. 축의금 + 연락처 ═══ */}
+        {hasAnyAccount && (
+          <section className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <span className={styles.sectionEmoji}>🧡</span>
+              <h2 className={styles.sectionTitle}>축의금 보내기</h2>
+            </div>
+            <p className={styles.giftDesc}>계좌번호 터치하면 복사, 연락처 터치하면 전화가 연결됩니다</p>
+            {accounts.groom.length > 0 && (
+              <GiftAccordion
+                side="groom"
+                isGroom={true}
+                people={accounts.groom}
+                activeKey={activeAccount}
+                onToggle={toggleAccount}
+                onCopy={copyToClipboard}
+                onToast={showToast}
+              />
+            )}
+            {accounts.bride.length > 0 && (
+              <GiftAccordion
+                side="bride"
+                isGroom={false}
+                people={accounts.bride}
+                activeKey={activeAccount}
+                onToggle={toggleAccount}
+                onCopy={copyToClipboard}
+                onToast={showToast}
+              />
+            )}
+          </section>
+        )}
+
+        {/* ═══ 7. 당근 스타일 달력 ═══ */}
+        {weddingDate && (
+          <section className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <span className={styles.sectionEmoji}>📅</span>
+              <h2 className={styles.sectionTitle}>우리의 그날</h2>
+            </div>
+            <DaangnCalendar targetDate={weddingDate} dDayText={dDayText} dateStr={dateStr} timeStr={timeStr} />
+          </section>
+        )}
+
+        {/* ═══ 8. 오시는 길 ═══ */}
+        {locName && (
+          <section className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <span className={styles.sectionEmoji}>📍</span>
+              <h2 className={styles.sectionTitle}>오시는 길</h2>
+            </div>
+            <p className={styles.locName}>{locName}</p>
+            {locAddr && <p className={styles.locAddr}>{locAddr}</p>}
+            <p className={styles.locDate}>{dateStr} {timeStr}</p>
+            <div className={styles.mapContainer}>
+              <GoogleMapEmbed
+                address={`${locName} ${locAddr}`.trim()}
+                venueName={locName}
+                width="100%"
+                height="240px"
+              />
+            </div>
+            {(eventData.parking_info || eventData.parkingInfo) && (
+              <div className={styles.parkingCard}>
+                <span>🅿️</span>
+                <div>
+                  <div className={styles.parkingTitle}>주차 안내</div>
+                  <div className={styles.parkingText}>{eventData.parking_info || eventData.parkingInfo}</div>
+                </div>
+              </div>
+            )}
+          </section>
+        )}
+
+        <div style={{ height: 120 }} />
+      </div>
+
+      {/* ═══ 하단 고정 버튼 ═══ */}
+      <div className={styles.bottomBar}>
+        <button type="button" className={styles.shareMainBtn} onClick={handleShare}>
+          주변 지인에게 공유하기 🥕
         </button>
-      </section>
+      </div>
 
-      {/* 푸터 */}
-      <footer className={styles.footer}>
-        <div className={styles.footerContent}>
-          <p className={styles.footerEmoji}>🧡</p>
-          <h3 className={styles.footerTitle}>Thank You</h3>
-          <p className={styles.footerMessage}>저희의 새로운 시작을 축복해주셔서<br />진심으로 감사드립니다</p>
-        </div>
-      </footer>
-
-      {/* 이미지 뷰어 모달 */}
-      {showImageViewer && (
-        <div className={styles.imageViewerModal} onClick={() => setShowImageViewer(false)}>
-          <div className={styles.imageViewerContent} onClick={(e) => e.stopPropagation()}>
-            <button className={styles.closeButton} onClick={() => setShowImageViewer(false)}>×</button>
-            <div className={styles.imageViewerSlider}>
-              {allImages[currentImageIndex] && (
-                <img src={getImageSrc(allImages[currentImageIndex])} alt={`이미지 ${currentImageIndex + 1}`} className={styles.viewerImage} />
-              )}
-            </div>
-            <div className={styles.imageViewerNavigation}>
-              <button className={styles.navButton} onClick={() => setCurrentImageIndex(prev => prev > 0 ? prev - 1 : allImages.length - 1)}>‹</button>
-              <span className={styles.imageCounter}>{currentImageIndex + 1} / {allImages.length}</span>
-              <button className={styles.navButton} onClick={() => setCurrentImageIndex(prev => prev < allImages.length - 1 ? prev + 1 : 0)}>›</button>
-            </div>
-          </div>
+      {/* ═══ 토스트 ═══ */}
+      {toast.visible && (
+        <div className={styles.toast}>
+          <span>{toast.message}</span>
         </div>
       )}
 
-      {/* 모달들 */}
-      <WelcomeChoiceModal isOpen={showWelcomeChoice} onClose={() => setShowWelcomeChoice(false)} onSelectGuestbook={handleSelectGuestbook} onSelectContribution={handleSelectContribution} eventData={eventData} />
-      <GuestbookModal isOpen={showGuestbookModal} onClose={handleGuestbookModalClose} onSubmit={handleGuestbookSubmit} eventData={eventData} onTriggerArrival={handleTriggerArrival} onBack={() => { setShowGuestbookModal(false); setShowWelcomeChoice(true); }} />
-      <EditGuestbookModal isOpen={showEditModal} onClose={() => { setShowEditModal(false); setEditingMessage(null); }} message={editingMessage} eventData={eventData} onUpdate={handleEditUpdate} onDelete={handleEditDelete} />
-<ContributionModal isOpen={showContributionModal} onClose={() => { setShowContributionModal(false); setIsEditMode(false); }} onBack={!isEditMode ? () => { setShowContributionModal(false); setShowWelcomeChoice(true); } : undefined} onSubmit={handleContributionSubmit} eventData={eventData} editData={isEditMode ? myContribution : null} onVerifiedExisting={(c) => setMyContribution({ ...c, amount: c.contributionAmount })} />
-      <CompletionModal isOpen={showCompletionModal} onClose={() => { setShowCompletionModal(false); setCompletionData(null); }} contributionData={completionData} eventData={eventData} />
-
-      {myContribution && !showGuestbookModal && !showWelcomeChoice && !showCompletionModal && (
-        <MyContributionSection
-          key={`contribution-${contributionKey}-${myContribution?.contributionAmount || myContribution?.amount}`}
-          eventData={eventData}
-          myContribution={myContribution}
-          onEdit={() => { setIsEditMode(true); setShowContributionModal(true); }}
-          setMyContribution={setMyContribution}
-        />
+      {/* ═══ 이미지 뷰어 ═══ */}
+      {viewerImage && (
+        <div className={styles.viewerBg} onClick={() => setViewerImage(null)}>
+          <button type="button" className={styles.viewerClose} onClick={() => setViewerImage(null)}>✕</button>
+          <img src={viewerImage} className={styles.viewerImage} alt="" />
+        </div>
       )}
-    </div>
+
+      {/* ═══ 모달들 (기존 기능 유지) ═══ */}
+      <WelcomeChoiceModal
+        isOpen={showWelcomeChoice}
+        onClose={() => setShowWelcomeChoice(false)}
+        onSelectGuestbook={handleSelectGuestbook}
+        onSelectContribution={handleSelectContribution}
+        eventData={eventData}
+      />
+      <GuestbookModal
+        isOpen={showGuestbookModal}
+        onClose={handleGuestbookModalClose}
+        onSubmit={handleGuestbookSubmit}
+        eventData={eventData}
+        onTriggerArrival={handleTriggerArrival}
+        onBack={() => { setShowGuestbookModal(false); setShowWelcomeChoice(true); }}
+      />
+      <EditGuestbookModal
+        isOpen={showEditModal}
+        onClose={() => { setShowEditModal(false); setEditingMessage(null); }}
+        message={editingMessage}
+        eventData={eventData}
+        onUpdate={handleEditUpdate}
+        onDelete={handleEditDelete}
+      />
+      <ContributionModal
+        isOpen={showContributionModal}
+        onClose={() => { setShowContributionModal(false); setIsEditMode(false); }}
+        onBack={!isEditMode ? () => { setShowContributionModal(false); setShowWelcomeChoice(true); } : undefined}
+        onSubmit={handleContributionSubmit}
+        eventData={eventData}
+        editData={isEditMode ? myContribution : null}
+        onVerifiedExisting={(c) => setMyContribution({ ...c, amount: c.contributionAmount })}
+      />
+      <CompletionModal
+        isOpen={showCompletionModal}
+        onClose={() => { setShowCompletionModal(false); setCompletionData(null); }}
+        contributionData={completionData}
+        eventData={eventData}
+      />
+    </>
   );
 };
 

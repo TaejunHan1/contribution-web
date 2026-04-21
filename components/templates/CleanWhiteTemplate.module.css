@@ -301,7 +301,7 @@
 
 .coupleHeart {
   font-size: 24px;
-  color: #3182F6;
+  color: #EF4444;
   font-weight: 300;
 }
 
@@ -1113,15 +1113,24 @@
 }
 
 .closeButton {
-  position: absolute;
-  top: -40px;
-  right: 20px;
-  background: none;
-  border: none;
-  color: white;
-  font-size: 36px;
+  position: fixed;
+  top: max(20px, env(safe-area-inset-top, 20px));
+  left: 20px;
+  background: rgba(0,0,0,0.7);
+  border: 2px solid rgba(255,255,255,0.8);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
   cursor: pointer;
   line-height: 1;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
 }
 
 .imageViewerSlider {

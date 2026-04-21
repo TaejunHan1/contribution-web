@@ -1278,33 +1278,38 @@
   flex-direction: column;
 }
 
-/* 상단 바: X 버튼 전용 행 */
+/* 상단 바: X 버튼 전용 행 — 좌측 정렬 (음악 버튼과 겹치지 않도록) */
 .viewerTopBar {
   flex-shrink: 0;
   height: 56px;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  padding: 0 12px;
+  justify-content: flex-start;
+  padding: max(8px, env(safe-area-inset-top, 8px)) 12px 0 20px;
 }
 
 /* X 닫기 버튼 */
 .viewerCloseBtn {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.7);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: background 0.2s ease;
   flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  z-index: 100000;
 }
 
 .viewerCloseBtn:hover {
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(0, 0, 0, 0.9);
 }
 
 /* 메인 행: 좌 화살표 | 이미지 | 우 화살표 */

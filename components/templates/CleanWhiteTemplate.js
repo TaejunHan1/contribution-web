@@ -702,25 +702,6 @@ const CleanWhiteTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
           <div className={styles.heroPhotoWrap}>
             <MainPhotoSlideshow images={safeImages.main} onImagePress={(idx) => { setCurrentImageIndex(idx); setShowImageViewer(true); }} />
           </div>
-          <section className={styles.introSection}>
-            <div className={styles.heroBadge}>Wedding Invitation</div>
-            <div className={styles.heroNames}>
-              <div className={styles.heroName}>
-                <span className={styles.heroNameKo}>{eventData.groom_name || '이민호'}</span>
-                <span className={styles.heroNameEn}>{groomEnglishName}</span>
-              </div>
-              <div className={styles.heroAmpersand}>&</div>
-              <div className={styles.heroName}>
-                <span className={styles.heroNameKo}>{eventData.bride_name || '배하윤'}</span>
-                <span className={styles.heroNameEn}>{brideEnglishName}</span>
-              </div>
-            </div>
-            <div className={styles.heroDateBadge}>
-              <span className={styles.heroDateText}>{dateInfo.full}</span>
-              <span className={styles.heroDateSep}>·</span>
-              <span className={styles.heroDateText}>{ceremonyTime}</span>
-            </div>
-          </section>
         </div>
 
         {/* RIGHT PANEL: 스크롤 콘텐츠 */}
@@ -737,7 +718,7 @@ const CleanWhiteTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
             <span className={styles.coupleName}>{eventData.groom_name || '이민호'}</span>
             <span className={styles.coupleParents}>{eventData.groom_father_name || '아버지'} · {eventData.groom_mother_name || '어머니'}의 아들</span>
           </div>
-          <div className={styles.coupleHeart}>♡</div>
+          <div className={styles.coupleHeart}>♥</div>
           <div className={styles.coupleItem}>
             <span className={styles.coupleRole}>신부</span>
             <span className={styles.coupleName}>{eventData.bride_name || '배하윤'}</span>

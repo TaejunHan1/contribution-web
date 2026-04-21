@@ -1352,13 +1352,14 @@
 }
 
 .closeButton {
-  position: absolute;
-  top: -52px;
-  right: 0;
-  background: rgba(255, 255, 255, 0.12);
-  border: none;
+  position: fixed;
+  top: max(20px, env(safe-area-inset-top, 20px));
+  left: 20px;
+  background: rgba(0,0,0,0.7);
+  border: 2px solid rgba(255,255,255,0.8);
   color: #fff;
-  font-size: 34px;
+  font-size: 22px;
+  font-weight: 700;
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -1367,11 +1368,12 @@
   align-items: center;
   justify-content: center;
   transition: background 0.2s ease;
-  z-index: 10001;
+  z-index: 100000;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
 }
 
 .closeButton:hover {
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(0,0,0,0.9);
 }
 
 .imageViewerSlider {
