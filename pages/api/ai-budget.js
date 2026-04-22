@@ -5,6 +5,7 @@
 import { createClient } from '@supabase/supabase-js';
 
 const FEATURE = 'budget';
+const COST = 5;                   // 1회 호출당 크레딧 차감량
 const DEEPSEEK_URL = 'https://api.deepseek.com/v1/chat/completions';
 
 const supabaseAdmin = createClient(
@@ -41,6 +42,7 @@ export default async function handler(req, res) {
     const { data, error } = await supabaseAdmin.rpc('consume_ai_credit', {
       p_user_id: userId,
       p_feature: FEATURE,
+      p_cost: COST,
     });
     if (error) throw error;
     const row = Array.isArray(data) ? data[0] : data;
@@ -49,6 +51,7 @@ export default async function handler(req, res) {
         success: false,
         error: row?.error || 'credit_failed',
         balance: row?.new_balance ?? 0,
+        cost: COST,
       });
     }
     usedFree = !!row.used_free;
@@ -94,6 +97,7 @@ export default async function handler(req, res) {
         p_user_id: userId,
         p_feature: FEATURE,
         p_was_free: usedFree,
+        p_cost: COST,
         p_reason: `deepseek_${r.status}`,
       });
       return res.status(502).json({ success: false, error: 'ai_upstream_error', status: r.status });
@@ -106,6 +110,7 @@ export default async function handler(req, res) {
         p_user_id: userId,
         p_feature: FEATURE,
         p_was_free: usedFree,
+        p_cost: COST,
         p_reason: 'empty_response',
       });
       return res.status(502).json({ success: false, error: 'ai_empty_response' });
@@ -116,6 +121,7 @@ export default async function handler(req, res) {
       content,
       usedFree,
       balance,
+      cost: COST,
     });
   } catch (e) {
     console.error('[ai-budget] network error', e);
@@ -123,6 +129,7 @@ export default async function handler(req, res) {
       p_user_id: userId,
       p_feature: FEATURE,
       p_was_free: usedFree,
+      p_cost: COST,
       p_reason: 'network_error',
     });
     return res.status(500).json({ success: false, error: 'ai_network_error' });
