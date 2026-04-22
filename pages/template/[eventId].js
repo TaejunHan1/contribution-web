@@ -13,6 +13,8 @@ import AuroraBlackTemplate from '../../components/templates/AuroraBlackTemplate'
 import WarmOrangeTemplate from '../../components/templates/WarmOrangeTemplate';
 import CleanWhiteTemplate from '../../components/templates/CleanWhiteTemplate';
 import ClassicElegantTemplate from '../../components/templates/ClassicElegantTemplate';
+import TicketFlightTemplate from '../../components/templates/TicketFlightTemplate';
+import CinemaTemplate from '../../components/templates/CinemaTemplate';
 import FallingPetals from '../../components/FallingPetals';
 import BackgroundMusicPlayer from '../../components/BackgroundMusicPlayer';
 import WeddingIntroOverlay from '../../components/WeddingIntroOverlay';
@@ -241,29 +243,16 @@ export default function TemplatePage() {
     const loadFonts = async () => {
       try {
         // 웹폰트가 로딩될 때까지 기다림
-        await document.fonts.ready;
-        
-        // 추가로 특정 폰트들이 로딩되었는지 확인
-        const fontChecks = [
-          new FontFace('Great Vibes', 'url(https://fonts.gstatic.com/s/greatvibes/v18/RWmMoKWR9v4ksMfaWd_JN-XCg6UKDXlq.woff2)'),
-          new FontFace('Dancing Script', 'url(https://fonts.gstatic.com/s/dancingscript/v25/If2cXTr6YS-zF4S-kcSWSVi_sxjsohD9F50Ruu7BMSoHTeB9ptDqpw.woff2)')
-        ];
-
-        await Promise.all(fontChecks.map(font => {
-          document.fonts.add(font);
-          return font.load();
-        }));
-
-        // 모든 폰트가 로딩된 후 1초 더 기다려서 확실하게 함
-        setTimeout(() => {
-          setFontsLoaded(true);
-        }, 1000);
+        // 폰트가 느려도 최대 800ms까지만 대기 → 그 이후에는 본문 즉시 렌더
+        // (폰트는 백그라운드에서 계속 로딩되며 자연스럽게 교체됨 — FOUT)
+        await Promise.race([
+          document.fonts.ready,
+          new Promise((resolve) => setTimeout(resolve, 800)),
+        ]);
+        setFontsLoaded(true);
       } catch (error) {
         console.log('Font loading error:', error);
-        // 폰트 로딩 실패해도 3초 후에는 표시
-        setTimeout(() => {
-          setFontsLoaded(true);
-        }, 3000);
+        setFontsLoaded(true);
       }
     };
 
@@ -317,6 +306,10 @@ export default function TemplatePage() {
         return <CleanWhiteTemplate eventData={event} categorizedImages={categorizedImages} />;
       case 'classic-elegant':
         return <ClassicElegantTemplate eventData={event} categorizedImages={categorizedImages} />;
+      case 'ticket-flight':
+        return <TicketFlightTemplate eventData={event} categorizedImages={categorizedImages} />;
+      case 'cinema-romance':
+        return <CinemaTemplate eventData={event} categorizedImages={categorizedImages} />;
       default:
         return <ModernTemplate eventData={event} />;
     }

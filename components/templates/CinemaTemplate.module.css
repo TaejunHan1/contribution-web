@@ -1,0 +1,921 @@
+/* components/templates/CinemaTemplate.module.css */
+
+.root {
+  position: relative;
+  min-height: 100vh;
+  background: #111111;
+  overflow: hidden;
+  color: #e0e0e0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════════════════════════════════════════════════
+   커튼
+   ═══════════════════════════════════════════════════════ */
+.curtain {
+  position: fixed;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  background: #8b0000;
+  box-shadow: 0 0 20px rgba(0,0,0,0.8);
+  z-index: 150;
+  transition: transform 2s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.curtainLeft { left: 0; transform-origin: left center; }
+.curtainRight { right: 0; transform-origin: right center; }
+.curtainOpenLeft { transform: scaleX(0); }
+.curtainOpenRight { transform: scaleX(0); }
+
+/* 플래시 */
+.flash {
+  position: fixed;
+  inset: 0;
+  background: #fff;
+  z-index: 200;
+  pointer-events: none;
+  animation: flashFade 0.8s ease-out forwards;
+}
+@keyframes flashFade {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   인트로 레이어
+   ═══════════════════════════════════════════════════════ */
+.introLayer {
+  position: fixed;
+  inset: 0;
+  z-index: 160;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.6s ease;
+}
+.introFading { opacity: 0; pointer-events: none; }
+.tapHint {
+  margin-top: 48px;
+  font-size: 18px;
+  letter-spacing: 4px;
+  color: #f8f9fa;
+  font-weight: 600;
+  animation: blink 1.5s ease-in-out infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.3; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   클래퍼보드
+   ═══════════════════════════════════════════════════════ */
+.clapWrapBtn {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.clapWrap {
+  width: 280px;
+  transform: rotate(-5deg);
+  transition: transform 0.15s ease-out;
+}
+.clapping { animation: clapPress 0.25s ease-out; }
+@keyframes clapPress {
+  0%, 100% { transform: rotate(-5deg) scale(1); }
+  50%      { transform: rotate(-5deg) scale(0.95); }
+}
+
+.clapStick {
+  width: 100%;
+  height: 40px;
+  background: #111;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #333;
+  position: relative;
+  transform: rotate(-25deg);
+  transform-origin: bottom left;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 2;
+}
+.clapping .clapStick { transform: rotate(0deg); }
+
+.clapStripe {
+  position: absolute;
+  top: 0;
+  width: 14.28%;
+  height: 100%;
+}
+
+.clapBoard {
+  background: #111;
+  border-radius: 0 0 8px 8px;
+  padding: 20px;
+  border: 2px solid #333;
+  border-top: none;
+}
+.clapTopRow {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 2px solid #333;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+}
+.clapTopCell { display: flex; flex-direction: column; align-items: flex-start; }
+.clapTopLabel {
+  font-size: 9px;
+  color: #777;
+  letter-spacing: 2px;
+  margin-bottom: 2px;
+}
+.clapTopValue {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 1px;
+}
+
+.clapTitle {
+  text-align: center;
+  font-size: 30px;
+  font-weight: 800;
+  color: #d4af37;
+  letter-spacing: 6px;
+  margin-bottom: 14px;
+}
+
+.clapFooter {
+  display: flex;
+  align-items: center;
+  border-top: 1px solid #2a2a2a;
+  padding-top: 12px;
+}
+.clapFooterCell { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.clapFooterLabel {
+  font-size: 9px;
+  color: #d4af37;
+  letter-spacing: 3px;
+  margin-bottom: 4px;
+  font-weight: 700;
+}
+.clapFooterValue {
+  font-size: 13px;
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.clapFooterDivider {
+  width: 1px;
+  align-self: stretch;
+  background: #333;
+  margin: 0 14px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   본문 페이드인
+   ═══════════════════════════════════════════════════════ */
+.content {
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+.contentIn { opacity: 1; }
+
+/* ═══════════════════════════════════════════════════════
+   포스터 (메인 사진, 텍스트 없음)
+   ═══════════════════════════════════════════════════════ */
+.poster {
+  width: 100%;
+  height: 75vh;
+  position: relative;
+  background: #0a0a0a;
+}
+.posterImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  cursor: zoom-in;
+}
+
+/* ═══════════════════════════════════════════════════════
+   섹션
+   ═══════════════════════════════════════════════════════ */
+.section {
+  padding: 56px 24px;
+  background: #111;
+}
+.sectionAlt { background: #1a1a1a; }
+.sectionNoPad { padding: 56px 0; background: #111; }
+
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 36px;
+}
+.sectionTitle {
+  font-size: 28px;
+  font-weight: 800;
+  color: #d4af37;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin: 0 0 8px;
+}
+.sectionSubtitle {
+  font-size: 13px;
+  color: #a0a0a0;
+  letter-spacing: 3px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   타이틀 카드
+   ═══════════════════════════════════════════════════════ */
+.titleCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 10px;
+}
+.creditsDividerRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 280px;
+  justify-content: center;
+}
+.creditsLine {
+  flex: 1;
+  height: 1px;
+  background: #d4af37;
+  opacity: 0.6;
+}
+.creditsStar { color: #d4af37; font-size: 14px; }
+.creditsLabel {
+  font-size: 13px;
+  letter-spacing: 6px;
+  color: #d4af37;
+  font-weight: 700;
+  margin: 14px 0;
+  text-align: center;
+}
+.creditsNames {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 3px;
+  text-align: center;
+  margin-bottom: 14px;
+  text-shadow: 0 0 10px rgba(212,175,55,0.35);
+}
+.creditsAmp {
+  color: #d4af37;
+  font-size: 20px;
+  font-weight: 400;
+}
+.titleMain {
+  font-size: 54px;
+  font-weight: 800;
+  color: #fff;
+  text-align: center;
+  line-height: 58px;
+  letter-spacing: 2px;
+  margin: 20px 0 14px;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.8);
+}
+.titleSubtitle {
+  font-size: 15px;
+  letter-spacing: 5px;
+  color: #ccc;
+  font-weight: 300;
+  margin-bottom: 28px;
+}
+.titleDateBadge {
+  border-top: 1px solid rgba(212,175,55,0.35);
+  border-bottom: 1px solid rgba(212,175,55,0.35);
+  padding: 10px 22px;
+}
+.titleDate {
+  font-size: 15px;
+  letter-spacing: 4px;
+  color: #d4af37;
+  font-weight: 600;
+}
+.titleDDay {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #d4af37;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+
+/* ═══════════════════════════════════════════════════════
+   시놉시스
+   ═══════════════════════════════════════════════════════ */
+.synopsisText {
+  font-size: 16px;
+  line-height: 34px;
+  text-align: center;
+  font-weight: 300;
+  color: #ddd;
+  margin: 0;
+}
+.synopGold { color: #d4af37; font-weight: 600; }
+.parentsWrap {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-top: 1px solid #333;
+  padding-top: 24px;
+  gap: 10px;
+}
+.parentsText {
+  font-size: 14px;
+  color: #bbb;
+  text-align: center;
+}
+.parentsRole { color: #a0a0a0; font-size: 13px; }
+.parentsChild { color: #d4af37; font-weight: 700; font-size: 16px; }
+
+/* ═══════════════════════════════════════════════════════
+   상영 안내
+   ═══════════════════════════════════════════════════════ */
+.showtimeCard {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 28px;
+  text-align: center;
+}
+.stDate {
+  font-size: 26px;
+  font-weight: 800;
+  color: #f8f9fa;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+}
+.stTime {
+  font-size: 18px;
+  color: #d4af37;
+  font-weight: 600;
+  letter-spacing: 3px;
+  margin-bottom: 20px;
+}
+.stVenue {
+  font-size: 16px;
+  color: #e0e0e0;
+  margin-bottom: 8px;
+}
+.stAddress {
+  font-size: 13px;
+  color: #a0a0a0;
+  line-height: 22px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   달력
+   ═══════════════════════════════════════════════════════ */
+.calWrap {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 18px;
+}
+.calTopRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.calTopLine {
+  flex: 1;
+  height: 1px;
+  background: #d4af37;
+  opacity: 0.5;
+}
+.calTopCenter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 18px;
+}
+.calMonthBig {
+  font-size: 32px;
+  font-weight: 800;
+  color: #d4af37;
+  letter-spacing: 6px;
+  line-height: 1;
+}
+.calYearSmall {
+  font-size: 11px;
+  color: #a0a0a0;
+  letter-spacing: 6px;
+  margin-top: 4px;
+}
+.calHeaderRow {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+.calDayLabel {
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 8px 0;
+}
+.calDivider { height: 1px; background: #333; margin-bottom: 8px; }
+.calGrid { display: grid; grid-template-columns: repeat(7, 1fr); }
+.calCell {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.calDay { font-size: 14px; font-weight: 500; }
+.calWeddingMark {
+  width: 36px;
+  height: 36px;
+  border-radius: 18px;
+  background: #d4af37;
+  color: #111;
+  font-size: 14px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 8px rgba(212,175,55,0.8);
+}
+
+/* 카운트다운 */
+.countdownBox {
+  margin-top: 22px;
+  background: #000;
+  border: 1px solid #d4af37;
+  border-radius: 8px;
+  padding: 18px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.countdownLabel {
+  font-size: 11px;
+  color: #d4af37;
+  letter-spacing: 4px;
+  margin-bottom: 14px;
+  font-weight: 600;
+}
+.countdownRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+.countCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 54px;
+}
+.countNum {
+  font-size: 26px;
+  font-weight: 800;
+  color: #d4af37;
+  letter-spacing: 1px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.countUnit {
+  font-size: 9px;
+  color: #a0a0a0;
+  letter-spacing: 2px;
+  margin-top: 6px;
+}
+.countColon {
+  font-size: 22px;
+  color: #d4af37;
+  font-weight: 700;
+  margin: 0 4px 13px;
+  opacity: 0.6;
+}
+.dDayLine {
+  margin-top: 22px;
+  font-size: 13px;
+  color: #ccc;
+  text-align: center;
+  letter-spacing: 1px;
+}
+.dDayAccent { color: #d4af37; font-weight: 800; }
+
+/* ═══════════════════════════════════════════════════════
+   필름 스트립
+   ═══════════════════════════════════════════════════════ */
+.filmStripScroll {
+  overflow-x: auto;
+  padding: 0 24px;
+  -webkit-overflow-scrolling: touch;
+}
+.filmStripScroll::-webkit-scrollbar { display: none; }
+
+.filmStrip {
+  background: #000;
+  padding: 14px 12px;
+  border: 2px solid #222;
+  display: inline-block;
+  min-width: 100%;
+}
+.filmHolesRow {
+  display: flex;
+  justify-content: space-around;
+  gap: 8px;
+  padding: 0 8px;
+  margin: 10px 0;
+}
+.filmHole {
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background: #444;
+  flex-shrink: 0;
+}
+.filmFrames {
+  display: flex;
+  gap: 10px;
+  padding: 0 12px;
+}
+.filmFrame {
+  width: 220px;
+  height: 165px;
+  background: #fff;
+  padding: 3px;
+  flex-shrink: 0;
+  cursor: zoom-in;
+}
+.filmFrame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.galleryHint {
+  font-size: 12px;
+  color: #a0a0a0;
+  text-align: center;
+  margin-top: 16px;
+  letter-spacing: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   오시는 길
+   ═══════════════════════════════════════════════════════ */
+.locName {
+  font-size: 20px;
+  color: #f8f9fa;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 6px;
+}
+.locAddr {
+  font-size: 13px;
+  color: #a0a0a0;
+  text-align: center;
+  line-height: 22px;
+  margin-bottom: 22px;
+}
+.mapBox {
+  width: 100%;
+  height: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  border: 1px solid #333;
+  background: #111;
+}
+.navRow {
+  display: flex;
+  gap: 8px;
+}
+.navBtn {
+  flex: 1;
+  background: transparent;
+  border: 1px solid #d4af37;
+  padding: 10px 0;
+  border-radius: 30px;
+  color: #d4af37;
+  font-size: 12px;
+  letter-spacing: 1px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.navBtn:hover {
+  background: rgba(212,175,55,0.08);
+}
+
+/* 교통편 */
+.transportWrap {
+  margin-top: 28px;
+  border-top: 1px solid #333;
+  padding-top: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.transportItem {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.transportDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background: #d4af37;
+  margin-top: 8px;
+  flex-shrink: 0;
+}
+.transportTitle {
+  font-size: 13px;
+  color: #d4af37;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+}
+.transportDesc {
+  font-size: 13px;
+  color: #bbb;
+  line-height: 20px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   계좌
+   ═══════════════════════════════════════════════════════ */
+.accDesc {
+  font-size: 13px;
+  color: #888;
+  line-height: 22px;
+  text-align: center;
+  margin-bottom: 22px;
+}
+.accGroupLabel {
+  font-size: 13px;
+  color: #d4af37;
+  letter-spacing: 3px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+.accItem {
+  margin-bottom: 12px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.accBtn {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent;
+  border: 0;
+  padding: 16px 18px;
+  color: #eee;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.accBtnLabel { display: flex; align-items: center; gap: 10px; }
+.accIcon { font-size: 16px; color: #d4af37; }
+.accChev { color: #a0a0a0; font-size: 12px; }
+.accPanel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  padding: 0 16px;
+}
+.accPanelOpen {
+  max-height: 300px;
+  padding-bottom: 16px;
+}
+.accPersonCard {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 14px;
+}
+.accPersonLabel {
+  font-size: 12px;
+  color: #d4af37;
+  letter-spacing: 2px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.accRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.accValue {
+  font-size: 13px;
+  color: #ccc;
+  flex: 1;
+  text-align: left;
+  margin-right: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.accDivider { height: 1px; background: #333; margin: 10px 0; }
+.accCopyBtn {
+  background: #8b0000;
+  color: #fff;
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.accCallBtn {
+  background: #d4af37;
+  color: #111;
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════════════
+   관람평
+   ═══════════════════════════════════════════════════════ */
+.reviewItem {
+  background: #111;
+  padding: 18px;
+  border-radius: 8px;
+  border-left: 3px solid #d4af37;
+  margin-bottom: 12px;
+}
+.reviewStars {
+  color: #d4af37;
+  font-size: 13px;
+  margin-bottom: 6px;
+  letter-spacing: 3px;
+}
+.reviewText {
+  font-size: 14px;
+  line-height: 22px;
+  color: #e0e0e0;
+  font-weight: 300;
+  margin-bottom: 10px;
+  white-space: pre-wrap;
+}
+.reviewBottom {
+  display: flex;
+  justify-content: space-between;
+}
+.reviewAuthor { font-size: 12px; color: #a0a0a0; }
+.reviewDate { font-size: 12px; color: #a0a0a0; }
+.reviewEmpty {
+  background: #111;
+  padding: 30px 18px;
+  border-radius: 8px;
+  border: 1px dashed #333;
+  color: #888;
+  text-align: center;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+.gbWriteBtn {
+  width: 100%;
+  background: #d4af37;
+  color: #111;
+  padding: 14px;
+  border-radius: 4px;
+  border: 0;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: opacity 0.2s;
+}
+.gbWriteBtn:hover { opacity: 0.88; }
+
+/* ═══════════════════════════════════════════════════════
+   푸터
+   ═══════════════════════════════════════════════════════ */
+.footer {
+  padding: 48px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #111;
+  border-top: 1px solid #333;
+}
+.footerThankYou {
+  font-size: 26px;
+  font-weight: 800;
+  color: #d4af37;
+  letter-spacing: 6px;
+  margin-bottom: 8px;
+}
+.footerNames {
+  font-size: 14px;
+  color: #bbb;
+  letter-spacing: 2px;
+  margin-bottom: 24px;
+}
+.footerBtns {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.footerBtn {
+  background: transparent;
+  border: 1px solid #d4af37;
+  padding: 12px 20px;
+  border-radius: 30px;
+  color: #d4af37;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.footerBtn:hover { background: rgba(212,175,55,0.1); }
+.footerBtnPrimary { background: #d4af37; color: #111; }
+.footerBtnPrimary:hover { opacity: 0.88; background: #d4af37; }
+.footerCopy {
+  font-size: 11px;
+  color: #555;
+  text-align: center;
+}
+
+/* ═══════════════════════════════════════════════════════
+   토스트
+   ═══════════════════════════════════════════════════════ */
+.toast {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(212,175,55,0.95);
+  color: #111;
+  padding: 12px 18px;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  z-index: 300;
+  animation: toastFade 2.2s ease;
+}
+@keyframes toastFade {
+  0%   { opacity: 0; transform: translate(-50%, 20px); }
+  10%  { opacity: 1; transform: translate(-50%, 0); }
+  90%  { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, 20px); }
+}
+
+/* ═══════════════════════════════════════════════════════
+   이미지 뷰어
+   ═══════════════════════════════════════════════════════ */
+.viewerBg {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.95);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+}
+.viewerImage {
+  max-width: 95%;
+  max-height: 95%;
+  object-fit: contain;
+  cursor: default;
+}
+.viewerClose {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 44px;
+  height: 44px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 10;
+}
+.viewerClose:hover { background: rgba(255,255,255,0.28); }

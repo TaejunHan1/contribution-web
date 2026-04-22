@@ -1,0 +1,857 @@
+/* ──────────────────────────────────────────────
+   러브 티켓 (Love Ticket) — 앱 TicketFlightTemplate 매칭
+   ────────────────────────────────────────────── */
+
+/* ═══ 컬러 ═══ */
+/* navy #1e3799 / skyBlue #74b9ff / brand #ff7675 / main #2d3436 / sub #636e72 / bg #f0f2f5 */
+
+/* ═══ 공통 ═══ */
+.introRoot {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: #74b9ff;
+  position: relative;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', sans-serif;
+  transition: opacity 0.5s ease;
+  opacity: 1;
+}
+.introRoot.fadingOut {
+  opacity: 0;
+}
+.boardedRoot {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: #f0f2f5;
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', sans-serif;
+  padding-bottom: 40px;
+  animation: boardedFadeIn 0.6s ease;
+}
+@keyframes boardedFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══ INTRO 하늘 + 구름 ═══ */
+.sky {
+  position: absolute;
+  inset: 0;
+  background: #74b9ff;
+  pointer-events: none;
+  overflow: hidden;
+}
+.cloud {
+  position: absolute;
+  width: 110px;
+  height: 66px;
+}
+.cloud1 { top: 10%; animation: drift 28s linear infinite; }
+.cloud2 { top: 30%; width: 130px; height: 78px; animation: drift 32s linear infinite; animation-delay: -10s; }
+.cloud3 { top: 70%; width: 90px; height: 54px; animation: drift 26s linear infinite; animation-delay: -18s; }
+@keyframes drift {
+  0%   { transform: translateX(-140px); }
+  100% { transform: translateX(calc(100vw + 140px)); }
+}
+.cloudBase {
+  position: absolute;
+  left: 8%; bottom: 0;
+  width: 84%; height: 60%;
+  background: rgba(255,255,255,0.95);
+  border-radius: 50%;
+}
+.cloudBumpL {
+  position: absolute;
+  left: 0; bottom: 15%;
+  width: 42%; height: 70%;
+  background: rgba(255,255,255,0.95);
+  border-radius: 50%;
+}
+.cloudBumpC {
+  position: absolute;
+  left: 28%; top: 0;
+  width: 52%; height: 87%;
+  background: rgba(255,255,255,0.95);
+  border-radius: 50%;
+}
+.cloudBumpR {
+  position: absolute;
+  right: 0; bottom: 20%;
+  width: 40%; height: 67%;
+  background: rgba(255,255,255,0.95);
+  border-radius: 50%;
+}
+
+/* ═══ INTRO 중앙 티켓 ═══ */
+.introContainer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 20px 140px;
+  z-index: 2;
+}
+.ticketFloating {
+  width: min(88vw, 400px);
+  background: #fff;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+  animation: ticketFloat 4.4s ease-in-out infinite;
+  position: relative;
+}
+@keyframes ticketFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+.airlineRow { margin-bottom: 14px; }
+.airlineText {
+  font-size: 16px;
+  font-weight: 800;
+  color: #1e3799;
+  letter-spacing: 0.5px;
+}
+.routeRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.cityLeft { flex: 1; min-width: 0; text-align: left; }
+.cityRight { flex: 1; min-width: 0; text-align: right; }
+.cityName {
+  font-size: 26px;
+  font-weight: 800;
+  color: #2d3436;
+  line-height: 32px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cityParents {
+  font-size: 11px;
+  font-weight: 500;
+  color: #636e72;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cityRole {
+  font-size: 11px;
+  font-weight: 400;
+  color: #636e72;
+  margin-top: 1px;
+}
+.planeWrap {
+  width: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: planeSway 3.2s ease-in-out infinite;
+}
+@keyframes planeSway {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(3px); }
+  75%      { transform: translateX(-3px); }
+}
+.ticketPhoto, .ticketPhotoPlaceholder {
+  width: 100%;
+  aspect-ratio: 16/10;
+  border-radius: 12px;
+  object-fit: cover;
+  background: #eee;
+  margin-bottom: 14px;
+}
+.ticketPhotoPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 56px;
+  background: #74b9ff;
+}
+.ticketDivider {
+  position: relative;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  margin: 0 -20px 8px;   /* 카드 패딩만큼 밖으로 확장 → 원이 진짜 가장자리에 붙음 */
+}
+.ticketDividerLine {
+  flex: 1;
+  height: 0;
+  border-bottom: 2px dashed rgba(0,0,0,0.12);
+  margin: 0 10px;        /* 원 바로 옆까지 점선 */
+}
+.ticketDivider::before,
+.ticketDivider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #74b9ff;
+  transform: translateY(-50%);
+}
+.ticketDivider::before { left: -10px; }
+.ticketDivider::after { right: -10px; }
+.ticketInfo {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+.ticketInfoItem { width: 50%; margin-bottom: 12px; }
+.ticketInfoItemFull { width: 100%; margin-bottom: 12px; }
+.ticketInfoLabel {
+  font-size: 10px;
+  color: #636e72;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 3px;
+  letter-spacing: 1px;
+}
+.ticketInfoValue {
+  font-size: 15px;
+  font-weight: 800;
+  color: #2d3436;
+}
+/* BOARDED 도장 */
+.boardedStamp {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(3) rotate(-15deg);
+  opacity: 0;
+  border: 4px solid #ff7675;
+  border-radius: 10px;
+  padding: 5px 20px;
+  font-size: 26px;
+  font-weight: 800;
+  color: #ff7675;
+  letter-spacing: 2px;
+  z-index: 10;
+  animation: stampIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  pointer-events: none;
+}
+@keyframes stampIn {
+  0%   { transform: translate(-50%, -50%) scale(3) rotate(-15deg); opacity: 0; }
+  100% { transform: translate(-50%, -50%) scale(1) rotate(-15deg); opacity: 0.9; }
+}
+.boardedStampGone {
+  animation: stampOut 0.4s ease forwards;
+}
+@keyframes stampOut {
+  to { opacity: 0; }
+}
+
+/* ═══ 하단 슬라이더 ═══ */
+.slider {
+  position: fixed;
+  bottom: max(32px, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(88vw, 400px);
+  height: 56px;
+  background: rgba(255,255,255,0.3);
+  border: 1px solid rgba(255,255,255,0.5);
+  border-radius: 28px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  z-index: 20;
+  user-select: none;
+}
+.sliderText {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+.sliderThumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  touch-action: none;
+}
+.sliderThumb:active { cursor: grabbing; }
+.sliderThumbUnlocked { background: #ff7675; }
+.sliderThumbIcon {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0984e3;
+}
+.sliderThumbUnlocked .sliderThumbIcon { color: #fff; }
+
+/* ═══ 폭죽 ═══ */
+.confettiLayer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 30;
+}
+.confettiPiece {
+  position: absolute;
+  top: 55%;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  animation: confettiBurst 1.2s ease-out forwards;
+}
+@keyframes confettiBurst {
+  0%   { transform: translate(0, 0) rotate(0); opacity: 1; }
+  100% { transform: translate(var(--dx, 0), 400px) rotate(720deg); opacity: 0; }
+}
+
+/* ═══════════════════════════════════════════════════ */
+/* ═══ BOARDED 화면 ═══ */
+/* ═══════════════════════════════════════════════════ */
+
+/* 히어로 사진 */
+.heroPhotoWrap {
+  width: 100%;
+  height: 60vh;
+  max-height: 560px;
+  position: relative;
+  background: #222;
+  overflow: hidden;
+}
+.heroPhoto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.heroPhotoPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 72px;
+  background: #74b9ff;
+}
+.heroOverlay {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 80px 24px 40px;
+  background: rgba(0,0,0,0.35);
+  text-align: center;
+}
+.approvedStamp {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  border: 3px dashed rgba(255,255,255,0.9);
+  padding: 4px 14px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.95);
+  letter-spacing: 1px;
+  transform: rotate(15deg);
+}
+.flightTitle {
+  font-size: 36px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 4px;
+  line-height: 40px;
+  margin: 0 0 10px;
+  text-align: center;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+.flightNames {
+  font-size: 15px;
+  font-weight: 500;
+  color: #e0e0e0;
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+.cardsContainer {
+  padding: 20px 16px 0;
+}
+
+/* ═══ StubCard ═══ */
+.stubCard {
+  background: #fff;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+.stubHeader {
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #1e3799;
+}
+.stubHeaderIcon { font-size: 18px; }
+.stubHeaderText {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 2px;
+}
+.stubBody { padding: 20px; position: relative; }
+.dividerWrap {
+  height: 20px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  overflow: visible;
+}
+.dividerLine {
+  flex: 1;
+  height: 0;
+  border-top: 2px dashed rgba(0,0,0,0.12);
+  margin: 0 8px;
+}
+.nub {
+  position: absolute;
+  top: 50%;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #f0f2f5;
+  transform: translateY(-50%);
+}
+.barcodeBody { padding: 10px 20px 18px; }
+.barcodeRow {
+  display: flex;
+  height: 44px;
+  width: 100%;
+}
+.footerBody {
+  padding: 14px 20px 18px;
+  text-align: center;
+}
+
+/* ═══ 초대의 인사 ═══ */
+.greetingWrap { position: relative; }
+.watermarkCentered {
+  position: absolute;
+  top: 50%;
+  left: 0; right: 0;
+  text-align: center;
+  font-size: 56px;
+  font-weight: 900;
+  color: rgba(0,0,0,0.05);
+  letter-spacing: 8px;
+  transform: translateY(-50%);
+  z-index: 0;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.greetingText {
+  font-size: 15px;
+  line-height: 28px;
+  color: #333;
+  text-align: center;
+  white-space: pre-line;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* ═══ 달력 ═══ */
+.calTopRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+}
+.calMonth {
+  font-size: 36px;
+  font-weight: 800;
+  color: #1e3799;
+  line-height: 40px;
+}
+.calDetailBox { text-align: right; }
+.calDetailLabel {
+  font-size: 10px;
+  color: #636e72;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.calDetailValue {
+  font-size: 18px;
+  font-weight: 800;
+  color: #ff7675;
+}
+.calHeaderRow {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 8px;
+}
+.calDayLabel {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #636e72;
+}
+.calGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+.calCell {
+  aspect-ratio: 1/1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.calDay { font-size: 14px; color: #2d3436; font-weight: 600; }
+.calDday {
+  font-size: 14px;
+  color: #ff7675;
+  font-weight: 700;
+  z-index: 1;
+}
+.calPulse {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ff7675;
+  animation: calPulse 2s ease-in-out infinite;
+}
+@keyframes calPulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50%      { transform: scale(1.3); opacity: 0.8; }
+}
+.ddayText {
+  font-size: 12px;
+  color: #636e72;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ═══ 갤러리 ═══ */
+.galleryFull {
+  width: 100%;
+  height: 200px;
+  background: #fff;
+  padding: 6px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+.galleryFull img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.galleryRow {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+.galleryItem {
+  flex: 1;
+  aspect-ratio: 1/1;
+  background: #fff;
+  padding: 5px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+.galleryItem img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ═══ 오시는 길 ═══ */
+.locName { font-size: 15px; font-weight: 700; color: #1e3799; margin: 0 0 4px; }
+.locAddr { font-size: 13px; color: #777; margin: 0 0 6px; }
+.locDate { font-size: 13px; color: #2d3436; font-weight: 600; margin: 0 0 14px; }
+.mapContainer {
+  width: 100%;
+  height: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  background: #dfe6e9;
+}
+.mapContainer iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.navBtns {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.navBtn {
+  flex: 1;
+  padding: 11px 0;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #e5e8eb;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2d3436;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.navBtn:hover { background: #f8f9fa; }
+.parkingRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+}
+.parkingBadge {
+  background: #636e72;
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.parkingText { font-size: 13px; color: #444; flex: 1; }
+
+/* ═══ 계좌 ═══ */
+.accDesc {
+  font-size: 14px;
+  color: #555;
+  text-align: center;
+  line-height: 24px;
+  margin: 0 0 18px;
+}
+.accGroupLabel {
+  font-size: 12px;
+  font-weight: 800;
+  color: #1e3799;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.accItem { margin-bottom: 10px; }
+.accBtn {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #2d3436;
+  cursor: pointer;
+  font-family: inherit;
+}
+.accPanel {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-top: 0;
+  border-radius: 0 0 8px 8px;
+  padding: 14px;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.accPanelOpen { display: flex; }
+.accPanelText { font-size: 13px; color: #555; flex: 1; }
+.accCopyBtn {
+  background: #1e3799;
+  color: #fff;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ═══ 방명록 ═══ */
+.emptyReviews {
+  padding: 32px 20px;
+  text-align: center;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px dashed #e5e8eb;
+}
+.emptyIcon { font-size: 36px; margin-bottom: 10px; }
+.emptyText {
+  font-size: 13px;
+  color: #636e72;
+  line-height: 1.7;
+  margin: 0;
+}
+.reviewCard {
+  background: #fdfbf7;
+  padding: 14px;
+  border-radius: 6px;
+  border-left: 3px solid #ff7675;
+  margin-bottom: 10px;
+}
+.reviewTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.reviewName { font-size: 14px; font-weight: 700; color: #1e3799; }
+.reviewMeta { display: flex; align-items: center; gap: 10px; }
+.reviewDate { font-size: 11px; color: #999; font-weight: 500; }
+.reviewEditBtn {
+  border: 1px solid #e5e8eb;
+  background: #fff;
+  border-radius: 4px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #ff7675;
+  cursor: pointer;
+}
+.reviewText {
+  font-size: 13px;
+  color: #444;
+  line-height: 20px;
+  margin: 0;
+  white-space: pre-line;
+}
+.addReviewBtn {
+  width: 100%;
+  margin-top: 12px;
+  border: 1px dashed #ff7675;
+  border-radius: 6px;
+  padding: 14px;
+  background: rgba(255, 118, 117, 0.05);
+  font-size: 14px;
+  font-weight: 700;
+  color: #ff7675;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+}
+
+/* ═══ BON VOYAGE 푸터 ═══ */
+.footerSection {
+  margin-top: 20px;
+  padding: 40px 24px;
+  text-align: center;
+}
+.footerTitle {
+  font-size: 30px;
+  font-weight: 900;
+  color: #1e3799;
+  letter-spacing: 2px;
+  margin: 0 0 10px;
+}
+.footerSub {
+  font-size: 13px;
+  color: #636e72;
+  font-weight: 500;
+  letter-spacing: 1px;
+  margin: 0 0 24px;
+}
+.footerNames {
+  font-size: 15px;
+  color: #2d3436;
+  font-weight: 700;
+  letter-spacing: 3px;
+  margin: 0 0 32px;
+}
+.shareBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #1e3799;
+  color: #fff;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(30, 55, 153, 0.25);
+}
+.shareBtn:hover { background: #1a3180; }
+
+/* ═══ 이미지 뷰어 ═══ */
+.viewerBg {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.92);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.viewerClose {
+  position: fixed;
+  top: max(20px, env(safe-area-inset-top, 20px));
+  left: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.8);
+  border: 2px solid rgba(255,255,255,0.9);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+}
+.viewerClose:hover { background: rgba(0,0,0,1); }
+.viewerImage {
+  max-width: 92vw;
+  max-height: 90vh;
+  object-fit: contain;
+}
+
+/* ═══ 토스트 ═══ */
+.toast {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.82);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 200;
+  animation: toastFade 2.2s ease;
+  max-width: 90vw;
+  white-space: nowrap;
+}
+@keyframes toastFade {
+  0%   { opacity: 0; transform: translate(-50%, 20px); }
+  15%  { opacity: 1; transform: translate(-50%, 0); }
+  85%  { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -20px); }
+}
