@@ -380,6 +380,19 @@
   color: #777;
   line-height: 1.5;
 }
+.parkingImageWrap {
+  margin-top: 12px;
+  border: 1px solid #EAEAEA;
+  background: #fff;
+  overflow: hidden;
+}
+.parkingImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
 
 /* ═══ 계좌 + 연락처 ═══ */
 .accountDesc {

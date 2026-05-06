@@ -64,6 +64,7 @@ const DEFAULT_GREETING =
   '서로가 마주보며 다져온 사랑을\n이제 함께 한 곳을 바라보며\n걸어갈 수 있는 큰 사랑으로 키우고자 합니다.\n\n저희 두 사람이 사랑의 이름으로\n지켜나갈 수 있게 앞날을\n축복해 주시면 감사하겠습니다.';
 
 const CAL_DAYS = ['일', '월', '화', '수', '목', '금', '토'];
+const PARKING_IMAGE_EVENT_ID = '640a5d7e-059d-46f5-bef2-7bae63ce93e1';
 
 // ══════════════════════════════════════════════════════
 // 히어로 사진 크로스페이드
@@ -180,11 +181,17 @@ const ElegantCalendar = ({ targetDate, dDayText, groomName, brideName }) => {
 const MindAccordion = ({ side, people, activeKey, onToggle, onCopy }) => {
   const open = activeKey === side;
   const isGroom = side === 'groom';
+  const hasNumber = people.some((person) => person.number);
+  const hasContact = people.some((person) => person.contact);
+  const titleSuffix =
+    hasNumber && hasContact ? '계좌·연락처' :
+    hasNumber ? '계좌' :
+    hasContact ? '연락처' : '';
   return (
     <div className={styles.accordionCard}>
       <button type="button" className={styles.accordionHeader} onClick={() => onToggle(side)}>
         <span className={styles.accordionTitle}>
-          {isGroom ? '신랑측 계좌·연락처' : '신부측 계좌·연락처'}
+          {isGroom ? '신랑측' : '신부측'} {titleSuffix}
         </span>
         <span className={`${styles.accordionChevron} ${open ? styles.chevronOpen : ''}`}>▼</span>
       </button>
@@ -309,6 +316,7 @@ const ClassicElegantTemplate = ({
   const locName = eventData.hallName || eventData.hall_name || eventData.location || '';
   const locAddr = eventData.detailedAddress || eventData.detailed_address || eventData.address || '';
   const locationLines = getLocationLines(locName, locAddr);
+  const shouldShowParkingImage = eventData.id === PARKING_IMAGE_EVENT_ID;
 
   // ── 이미지 처리 ──
   const defaultImages = {
@@ -908,13 +916,23 @@ const ClassicElegantTemplate = ({
                 height="240px"
               />
             </div>
-            {(eventData.parking_info || eventData.parkingInfo) && (
+            {!shouldShowParkingImage && (eventData.parking_info || eventData.parkingInfo) && (
               <div className={styles.parkingCard}>
                 <span>🅿️</span>
                 <div>
                   <div className={styles.parkingTitle}>주차 안내</div>
                   <div className={styles.parkingText}>{eventData.parking_info || eventData.parkingInfo}</div>
                 </div>
+              </div>
+            )}
+            {shouldShowParkingImage && (
+              <div className={styles.parkingImageWrap}>
+                <img
+                  src="/test1.png"
+                  alt="주차 안내 이미지"
+                  className={styles.parkingImage}
+                  draggable={false}
+                />
               </div>
             )}
           </section>

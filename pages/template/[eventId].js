@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import { getEventDetails, supabase } from '../../lib/supabase';
+import { getEventDetails } from '../../lib/supabase';
 import KoreanElegantTemplate from '../../components/templates/KoreanElegantTemplate';
 import VintageTemplate from '../../components/templates/VintageTemplate';
 import ModernMinimalTemplate from '../../components/templates/ModernMinimalTemplate';
@@ -18,6 +18,51 @@ import CinemaTemplate from '../../components/templates/CinemaTemplate';
 import FallingPetals from '../../components/FallingPetals';
 import BackgroundMusicPlayer from '../../components/BackgroundMusicPlayer';
 import WeddingIntroOverlay from '../../components/WeddingIntroOverlay';
+
+const DEFAULT_SITE_URL = 'https://contribution-web-srgt.vercel.app';
+
+const parseJsonField = (value, fallback) => {
+  if (!value) return fallback;
+  if (typeof value === 'object') return value;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+};
+
+const parseJsonArrayItems = (value, fallback = []) => {
+  const items = parseJsonField(value, fallback);
+  if (!Array.isArray(items)) return fallback;
+
+  return items.map((item) => {
+    if (typeof item !== 'string') return item;
+    return parseJsonField(item, item);
+  });
+};
+
+const buildInvitationTitle = (event) => {
+  if (!event) return '모바일 청첩장';
+  return `${event.groom_name || '신랑'} ♡ ${event.bride_name || '신부'} 결혼식에 초대합니다`;
+};
+
+const buildInvitationDescription = (event) => {
+  if (!event) return '소중한 분들을 결혼식에 초대합니다';
+
+  const date = event.event_date
+    ? new Date(event.event_date).toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
+    : '';
+  return [date, event.ceremony_time, event.location].filter(Boolean).join(' · ');
+};
+
+const buildPublicUrl = (path = '') => {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || DEFAULT_SITE_URL;
+  return `${siteUrl.replace(/\/$/, '')}${path}`;
+};
 
 // 템플릿 컴포넌트들 (나중에 구현)
 const ModernTemplate = ({ eventData }) => (
@@ -218,13 +263,21 @@ const GardenTemplate = ({ eventData }) => (
 
 // VintageTemplate은 이미 import됨 - 중복 제거
 
-export default function TemplatePage() {
-  const serverEvent = null;
-  const serverTemplate = null;
-  const serverEventId = null;
+export default function TemplatePage({
+  serverEvent = null,
+  serverTemplate = null,
+  serverEventId = null,
+}) {
   const router = useRouter();
   const { eventId } = router.query;
   const template = router.query.template || serverTemplate || 'modern';
+  const currentEventId = serverEventId || eventId;
+  const invitationUrl = currentEventId
+    ? buildPublicUrl(`/template/${currentEventId}?template=${template}`)
+    : buildPublicUrl();
+  const ogImageUrl = currentEventId
+    ? buildPublicUrl(`/api/og?eventId=${currentEventId}&template=${template}`)
+    : buildPublicUrl('/api/og');
 
   const [event, setEvent] = useState(serverEvent);
   const [loading, setLoading] = useState(!serverEvent);
@@ -382,25 +435,35 @@ export default function TemplatePage() {
     const ogEvent = serverEvent;
     const ogEventId = serverEventId;
     const ogTemplate = serverTemplate || template;
+    const loadingOgImageUrl = ogEventId
+      ? buildPublicUrl(`/api/og?eventId=${ogEventId}&template=${ogTemplate}`)
+      : ogImageUrl;
+    const loadingTitle = buildInvitationTitle(ogEvent);
+    const loadingDescription = buildInvitationDescription(ogEvent);
     return (
       <>
         <Head>
-          <title>{ogEvent ? `${ogEvent.groom_name} ♡ ${ogEvent.bride_name} 결혼식에 초대합니다` : '청첩장 로딩 중...'}</title>
+          <title>{ogEvent ? loadingTitle : '청첩장 로딩 중...'}</title>
           <meta
             key="viewport"
             name="viewport"
             content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover"
           />
           {ogEvent && (<>
-            <meta property="og:title" content={`${ogEvent.groom_name} ♡ ${ogEvent.bride_name} 결혼식에 초대합니다`} />
-            <meta property="og:description" content={`${ogEvent.event_date ? new Date(ogEvent.event_date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : ''} ${ogEvent.ceremony_time || ''}${ogEvent.location ? ` · ${ogEvent.location}` : ''}`} />
-            <meta property="og:type" content="website" />
-            <meta property="og:image" content={`https://contribution-web-srgt.vercel.app/api/og?eventId=${ogEventId}&template=${ogTemplate}`} />
-            <meta property="og:image:width" content="1200" />
-            <meta property="og:image:height" content="630" />
-            <meta property="og:image:alt" content={`${ogEvent.groom_name} ♡ ${ogEvent.bride_name} 청첩장`} />
-            <meta name="twitter:card" content="summary_large_image" />
-            <meta name="twitter:image" content={`https://contribution-web-srgt.vercel.app/api/og?eventId=${ogEventId}&template=${ogTemplate}`} />
+            <meta key="description" name="description" content={loadingDescription} />
+            <meta key="og:title" property="og:title" content={loadingTitle} />
+            <meta key="og:description" property="og:description" content={loadingDescription} />
+            <meta key="og:type" property="og:type" content="website" />
+            <meta key="og:url" property="og:url" content={invitationUrl} />
+            <meta key="og:image" property="og:image" content={loadingOgImageUrl} />
+            <meta key="og:image:secure_url" property="og:image:secure_url" content={loadingOgImageUrl} />
+            <meta key="og:image:width" property="og:image:width" content="1200" />
+            <meta key="og:image:height" property="og:image:height" content="630" />
+            <meta key="og:image:alt" property="og:image:alt" content={`${ogEvent.groom_name} ♡ ${ogEvent.bride_name} 청첩장`} />
+            <meta key="twitter:card" name="twitter:card" content="summary_large_image" />
+            <meta key="twitter:title" name="twitter:title" content={loadingTitle} />
+            <meta key="twitter:description" name="twitter:description" content={loadingDescription} />
+            <meta key="twitter:image" name="twitter:image" content={loadingOgImageUrl} />
           </>)}
         </Head>
         <div className="min-h-screen flex items-center justify-center" style={{
@@ -446,22 +509,14 @@ export default function TemplatePage() {
     );
   }
 
-  const getTemplateTitle = () => {
-    switch (template) {
-      case 'modern': return '모던 미니멀';
-      case 'romantic': return '로맨틱 핑크';
-      case 'korean': return '한국 전통';
-      case 'garden': return '엘레간트 가든';
-      case 'vintage': return '빈티지';
-      default: return '모바일 청첩장';
-    }
-  };
+  const pageTitle = buildInvitationTitle(event);
+  const pageDescription = buildInvitationDescription(event);
 
   return (
     <>
       <Head>
-        <title>{event.event_name} - {getTemplateTitle()}</title>
-        <meta name="description" content={`${event.groom_name} & ${event.bride_name}의 결혼식에 초대합니다`} />
+        <title>{pageTitle}</title>
+        <meta key="description" name="description" content={pageDescription} />
         <meta
           key="viewport"
           name="viewport"
@@ -482,15 +537,19 @@ export default function TemplatePage() {
         />
         
         {/* 소셜 미디어 OG 메타 태그 */}
-        <meta property="og:title" content={`${event.groom_name} ♡ ${event.bride_name} 결혼식에 초대합니다`} />
-        <meta property="og:description" content={`${event.event_date ? new Date(event.event_date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : ''} ${event.ceremony_time || ''}${event.location ? ` · ${event.location}` : ''}`} />
-        <meta property="og:type" content="website" />
-        <meta property="og:image" content={`https://contribution-web-srgt.vercel.app/api/og?eventId=${serverEventId || eventId}&template=${template}`} />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content={`${event.groom_name} ♡ ${event.bride_name} 청첩장`} />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image" content={`https://contribution-web-srgt.vercel.app/api/og?eventId=${serverEventId || eventId}&template=${template}`} />
+        <meta key="og:title" property="og:title" content={pageTitle} />
+        <meta key="og:description" property="og:description" content={pageDescription} />
+        <meta key="og:type" property="og:type" content="website" />
+        <meta key="og:url" property="og:url" content={invitationUrl} />
+        <meta key="og:image" property="og:image" content={ogImageUrl} />
+        <meta key="og:image:secure_url" property="og:image:secure_url" content={ogImageUrl} />
+        <meta key="og:image:width" property="og:image:width" content="1200" />
+        <meta key="og:image:height" property="og:image:height" content="630" />
+        <meta key="og:image:alt" property="og:image:alt" content={`${event.groom_name} ♡ ${event.bride_name} 청첩장`} />
+        <meta key="twitter:card" name="twitter:card" content="summary_large_image" />
+        <meta key="twitter:title" name="twitter:title" content={pageTitle} />
+        <meta key="twitter:description" name="twitter:description" content={pageDescription} />
+        <meta key="twitter:image" name="twitter:image" content={ogImageUrl} />
         
         {/* 모바일 최적화 */}
         <meta name="format-detection" content="telephone=no" />
@@ -512,4 +571,86 @@ export default function TemplatePage() {
       )}
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  const eventId = context.params?.eventId || null;
+  const serverTemplate = context.query?.template || null;
+
+  if (!eventId) {
+    return {
+      props: {
+        serverEvent: null,
+        serverTemplate,
+        serverEventId: null,
+      },
+    };
+  }
+
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!supabaseUrl || !supabaseKey) {
+      return {
+        props: {
+          serverEvent: null,
+          serverTemplate,
+          serverEventId: eventId,
+        },
+      };
+    }
+
+    const res = await fetch(
+      `${supabaseUrl}/rest/v1/events?id=eq.${encodeURIComponent(eventId)}&status=eq.active&select=*`,
+      {
+        headers: {
+          apikey: supabaseKey,
+          Authorization: `Bearer ${supabaseKey}`,
+        },
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Supabase fetch failed: ${res.status}`);
+    }
+
+    const rows = await res.json();
+    const event = Array.isArray(rows) ? rows[0] : null;
+
+    if (!event) {
+      return {
+        props: {
+          serverEvent: null,
+          serverTemplate,
+          serverEventId: eventId,
+        },
+      };
+    }
+
+    const serverEvent = {
+      ...event,
+      additional_info: parseJsonField(event.additional_info, {}),
+      image_urls: parseJsonArrayItems(event.image_urls),
+      family_relations: parseJsonField(event.family_relations, event.family_relations || []),
+      preset_amounts: parseJsonField(event.preset_amounts, event.preset_amounts || []),
+    };
+
+    return {
+      props: {
+        serverEvent,
+        serverTemplate: serverTemplate || event.template_style || null,
+        serverEventId: eventId,
+      },
+    };
+  } catch (error) {
+    console.error('Template SSR event fetch error:', error);
+    return {
+      props: {
+        serverEvent: null,
+        serverTemplate,
+        serverEventId: eventId,
+      },
+    };
+  }
 }
