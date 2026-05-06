@@ -1,8 +1,13 @@
 // pages/_app.js - 토스 스타일 앱 설정
 import { useEffect } from 'react';
 import Head from 'next/head';
-import { Toaster } from 'react-hot-toast';
+import dynamic from 'next/dynamic';
 import '../styles/globals.css';
+
+const Toaster = dynamic(
+  () => import('react-hot-toast').then(module => module.Toaster),
+  { ssr: false }
+);
 
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
