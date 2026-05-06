@@ -52,7 +52,8 @@ export default async function handler(req) {
   const { searchParams } = new URL(req.url);
   const eventId = searchParams.get('eventId');
   const template = searchParams.get('template') || 'classic-elegant';
-  const ogTemplateParam = Number(searchParams.get('ogTemplate'));
+  const ogTemplateParamRaw = searchParams.get('ogTemplate');
+  const ogTemplateParam = ogTemplateParamRaw ? Number(ogTemplateParamRaw) : null;
   const origin = new URL(req.url).origin;
 
   // 이벤트 데이터 Supabase REST로 직접 조회
@@ -84,7 +85,7 @@ export default async function handler(req) {
   const brideName = eventData?.bride_name || '신부';
   const location = eventData?.location || '';
   const ceremonyTime = eventData?.ceremony_time || '';
-  const forcedTemplateIndex = Number.isInteger(ogTemplateParam)
+  const forcedTemplateIndex = Number.isInteger(ogTemplateParam) && ogTemplateParam >= 1
     ? Math.min(Math.max(ogTemplateParam - 1, 0), TEMPLATE_BACKGROUNDS.length - 1)
     : null;
   const templateIndex = forcedTemplateIndex ?? getTemplateIndex(eventId);
