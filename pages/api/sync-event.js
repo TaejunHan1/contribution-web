@@ -1,5 +1,6 @@
 // pages/api/sync-event.js - 앱에서 웹으로 이벤트 동기화
 import { createClient } from '@supabase/supabase-js';
+import { buildSlugCandidate, buildWeddingSlugBase } from '../../lib/slug';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -14,6 +15,33 @@ const supabaseAdmin = supabaseUrl && supabaseServiceKey ? createClient(
     }
   }
 ) : null;
+
+const createUniquePublicSlug = async (eventData) => {
+  const baseSlug = buildWeddingSlugBase({
+    groomName: eventData.groom_name,
+    brideName: eventData.bride_name,
+    fallbackId: eventData.id,
+  });
+
+  for (let index = 1; index <= 100; index += 1) {
+    const candidate = buildSlugCandidate(baseSlug, index);
+    const { data, error } = await supabaseAdmin
+      .from('events')
+      .select('id')
+      .eq('public_slug', candidate)
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data || data.id === eventData.id) {
+      return candidate;
+    }
+  }
+
+  return `${baseSlug}-${String(eventData.id).slice(0, 6)}`;
+};
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -48,7 +76,7 @@ export default async function handler(req, res) {
     // 기존 이벤트가 있는지 확인
     const { data: existingEvent, error: checkError } = await supabaseAdmin
       .from('events')
-      .select('id, status')
+      .select('id, status, public_slug')
       .eq('id', eventData.id)
       .single();
 
@@ -57,6 +85,8 @@ export default async function handler(req, res) {
     if (existingEvent) {
       // 기존 이벤트 업데이트
       console.log('🔄 기존 이벤트 업데이트:', eventData.id);
+
+      const publicSlug = existingEvent.public_slug || await createUniquePublicSlug(eventData);
       
       const { data, error } = await supabaseAdmin
         .from('events')
@@ -77,6 +107,7 @@ export default async function handler(req, res) {
           secondary_contact: eventData.secondary_contact,
           custom_message: eventData.custom_message,
           template_style: eventData.template_style,
+          public_slug: publicSlug,
           status: eventData.status || 'active',
           updated_at: new Date().toISOString()
         })
@@ -98,6 +129,8 @@ export default async function handler(req, res) {
     } else {
       // 새 이벤트 생성
       console.log('🆕 새 이벤트 생성:', eventData.id);
+
+      const publicSlug = await createUniquePublicSlug(eventData);
       
       const { data, error } = await supabaseAdmin
         .from('events')
@@ -119,6 +152,7 @@ export default async function handler(req, res) {
           secondary_contact: eventData.secondary_contact,
           custom_message: eventData.custom_message,
           template_style: eventData.template_style || 'modern',
+          public_slug: publicSlug,
           status: eventData.status || 'active',
           user_id: 'synced-from-app', // 앱에서 동기화된 것 표시
           created_at: new Date().toISOString(),

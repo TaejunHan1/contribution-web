@@ -278,14 +278,15 @@ export default function TemplatePage({
   serverOgEvent = null,
   serverTemplate = null,
   serverEventId = null,
+  serverInvitationPath = null,
 }) {
   const router = useRouter();
   const { eventId } = router.query;
   const template = router.query.template || serverTemplate || 'modern';
   const currentEventId = serverEventId || eventId;
-  const invitationUrl = currentEventId
-    ? buildPublicUrl(`/template/${currentEventId}?template=${template}`)
-    : buildPublicUrl();
+  const invitationPath = serverInvitationPath
+    || (currentEventId ? `/template/${currentEventId}?template=${template}` : '');
+  const invitationUrl = buildPublicUrl(invitationPath);
   const ogImageUrl = currentEventId
     ? buildOgImageUrl(currentEventId, template)
     : buildPublicUrl('/api/og');
@@ -360,10 +361,10 @@ export default function TemplatePage({
   }, []);
 
   useEffect(() => {
-    if (eventId && !serverEvent) {
-      loadEventData();
+    if (currentEventId && !serverEvent) {
+      loadEventData(currentEventId);
     }
-  }, [eventId]);
+  }, [currentEventId]);
 
   // 웹폰트 로딩 감지
   useEffect(() => {
@@ -386,10 +387,10 @@ export default function TemplatePage({
     loadFonts();
   }, []);
 
-  const loadEventData = async () => {
+  const loadEventData = async (targetEventId = currentEventId) => {
     try {
       setLoading(true);
-      const result = await getEventDetails(eventId);
+      const result = await getEventDetails(targetEventId);
 
       if (result.success) {
         setEvent(result.data);
