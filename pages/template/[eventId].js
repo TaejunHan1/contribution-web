@@ -580,15 +580,6 @@ export async function getServerSideProps(context) {
   const eventId = context.params?.eventId || null;
   const serverTemplate = context.query?.template || null;
 
-  return {
-    props: {
-      serverEvent: null,
-      serverOgEvent: null,
-      serverTemplate,
-      serverEventId: eventId,
-    },
-  };
-
   if (!eventId) {
     return {
       props: {
