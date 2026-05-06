@@ -33,7 +33,7 @@
   },
   "scripts": {
     "dev": "next dev -H 0.0.0.0",
-    "build": "next build",
+    "build": "rm -rf .next && next build",
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
