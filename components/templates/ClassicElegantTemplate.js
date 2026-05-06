@@ -373,6 +373,21 @@ const ClassicElegantTemplate = ({
     ].filter(Boolean),
   };
   const hasAnyAccount = accounts.groom.length > 0 || accounts.bride.length > 0;
+  const accountPeople = [...accounts.groom, ...accounts.bride];
+  const hasAccountNumber = accountPeople.some((person) => person.number);
+  const hasContactNumber = accountPeople.some((person) => person.contact);
+  const accountGuideText = (() => {
+    if (hasAccountNumber && hasContactNumber) {
+      return (
+        <>
+          계좌번호는 터치하면 복사되고,<br />연락처는 터치하면 전화가 연결됩니다.
+        </>
+      );
+    }
+    if (hasAccountNumber) return '계좌번호는 터치하면 복사됩니다.';
+    if (hasContactNumber) return '연락처는 터치하면 전화가 연결됩니다.';
+    return '';
+  })();
 
   const toggleAccount = (side) => setActiveAccount((prev) => (prev === side ? null : side));
 
@@ -910,9 +925,9 @@ const ClassicElegantTemplate = ({
           <section className={styles.section}>
             <div className={styles.sectionLabel}>Mind</div>
             <div className={styles.divider} />
-            <p className={styles.accountDesc}>
-              계좌번호는 터치하면 복사되고,<br />연락처는 터치하면 전화가 연결됩니다.
-            </p>
+            {accountGuideText && (
+              <p className={styles.accountDesc}>{accountGuideText}</p>
+            )}
             {accounts.groom.length > 0 && (
               <MindAccordion
                 side="groom"
