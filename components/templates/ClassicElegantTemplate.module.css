@@ -302,6 +302,10 @@
 .galleryNavPrev { left: 8px; }
 .galleryNavNext { right: 8px; }
 .galleryHint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   margin: 16px auto 0;
   padding: 10px 14px;
   background: #FAFAFA;
@@ -313,11 +317,11 @@
   text-align: center;
   width: fit-content;
 }
-
-@media (hover: none) and (pointer: coarse) {
-  .galleryNavButton {
-    display: none;
-  }
+.galleryHintArrow {
+  font-family: Georgia, serif;
+  font-size: 18px;
+  line-height: 1;
+  color: #9A8B7A;
 }
 
 /* ═══ 오시는 길 ═══ */
@@ -334,6 +338,10 @@
   color: #777;
   text-align: center;
   margin: 0 0 20px;
+  line-height: 1.7;
+}
+.locationAddr span {
+  display: block;
 }
 .mapContainer {
   width: 100%;
@@ -636,6 +644,43 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+}
+.viewerNavButton {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.8);
+  background: rgba(0,0,0,0.58);
+  color: #fff;
+  font-family: Georgia, serif;
+  font-size: 34px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.viewerNavPrev { left: 16px; }
+.viewerNavNext { right: 16px; }
+.viewerCounter {
+  position: fixed;
+  left: 50%;
+  bottom: max(24px, env(safe-area-inset-bottom, 24px));
+  transform: translateX(-50%);
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.62);
+  color: #fff;
+  font-size: 13px;
+  z-index: 100000;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 .viewerImage {
   max-width: 92vw;

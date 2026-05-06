@@ -26,6 +26,40 @@ const formatPhone = (phone) => {
   return phone || '';
 };
 
+const trimFamilyName = (name) => {
+  const clean = (name || '').trim();
+  if (clean.length <= 2) return clean;
+  return clean.slice(1);
+};
+
+const isAddressLike = (value) =>
+  /(서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충북|충남|전북|전남|경북|경남|제주|특별시|광역시|특별자치시|특별자치도|시\s|구\s|군\s|동\s|읍\s|면\s|로\s*\d|길\s*\d)/.test(value || '');
+
+const stripParentheses = (value) =>
+  (value || '').replace(/\s*\([^)]+\)\s*/g, ' ').replace(/\s{2,}/g, ' ').trim();
+
+const getParenthesizedDetails = (value) =>
+  [...(value || '').matchAll(/\(([^)]+)\)/g)]
+    .map((match) => match[1].trim())
+    .filter(Boolean);
+
+const getLocationLines = (...values) => {
+  const candidates = values.map((value) => (value || '').trim()).filter(Boolean);
+  const addressSource = candidates.find(isAddressLike) || candidates[0] || '';
+  const parenthesizedDetails = candidates.flatMap(getParenthesizedDetails);
+  const detailSource =
+    parenthesizedDetails[0] ||
+    candidates.find((value) => value !== addressSource && !isAddressLike(value)) ||
+    '';
+  const detailAddress = stripParentheses(detailSource);
+  const mainAddress = stripParentheses(addressSource)
+    .replace(detailAddress, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+
+  return [mainAddress, detailAddress].filter((line, index, lines) => line && lines.indexOf(line) === index);
+};
+
 const DEFAULT_GREETING =
   '서로가 마주보며 다져온 사랑을\n이제 함께 한 곳을 바라보며\n걸어갈 수 있는 큰 사랑으로 키우고자 합니다.\n\n저희 두 사람이 사랑의 이름으로\n지켜나갈 수 있게 앞날을\n축복해 주시면 감사하겠습니다.';
 
@@ -130,7 +164,7 @@ const ElegantCalendar = ({ targetDate, dDayText, groomName, brideName }) => {
         {dDayText && (
           <div className={styles.calFooter}>
             <p className={styles.calFooterText}>
-              {groomName || '신랑'} ♥ {brideName || '신부'}의 결혼식이{' '}
+              {trimFamilyName(groomName) || '신랑'} ♥ {trimFamilyName(brideName) || '신부'}의 결혼식이{' '}
               <span className={styles.calFooterDday}>{dDayText}</span> 남았습니다
             </p>
           </div>
@@ -207,6 +241,7 @@ const ClassicElegantTemplate = ({
 
   // ── 기본 상태 ──
   const [viewerImage, setViewerImage] = useState(null);
+  const [viewerIndex, setViewerIndex] = useState(-1);
   const [toast, setToast] = useState({ visible: false, message: '' });
   const [activeAccount, setActiveAccount] = useState(null);
 
@@ -221,6 +256,7 @@ const ClassicElegantTemplate = ({
     startScrollLeft: 0,
     moved: false,
   });
+  const viewerSwipeRef = useRef({ startX: 0, startY: 0 });
 
   // 후기 섹션 노출 여부
   const shouldShowReviews =
@@ -272,7 +308,7 @@ const ClassicElegantTemplate = ({
   // ── 장소 ──
   const locName = eventData.hallName || eventData.hall_name || eventData.location || '';
   const locAddr = eventData.detailedAddress || eventData.detailed_address || eventData.address || '';
-  const shouldShowLocAddr = locAddr && locAddr.trim() !== locName.trim();
+  const locationLines = getLocationLines(locName, locAddr);
 
   // ── 이미지 처리 ──
   const defaultImages = {
@@ -607,7 +643,6 @@ const ClassicElegantTemplate = ({
       startScrollLeft: el.scrollLeft,
       moved: false,
     };
-    el.setPointerCapture?.(event.pointerId);
   };
 
   const handleGalleryPointerMove = (event) => {
@@ -625,11 +660,8 @@ const ClassicElegantTemplate = ({
   };
 
   const handleGalleryPointerEnd = (event) => {
-    const el = galleryScrollRef.current;
     const drag = galleryDragRef.current;
-    if (el && drag.pointerId === event.pointerId) {
-      el.releasePointerCapture?.(event.pointerId);
-    }
+    if (drag.pointerId !== event.pointerId) return;
     galleryDragRef.current.active = false;
   };
 
@@ -638,7 +670,63 @@ const ClassicElegantTemplate = ({
       galleryDragRef.current.moved = false;
       return;
     }
+    const nextIndex = galleryItems.findIndex((item) => item.src === src);
+    setViewerIndex(nextIndex);
     setViewerImage(src);
+  };
+
+  const handleGalleryCardPointerUp = (src) => {
+    if (galleryDragRef.current.moved) return;
+    handleGalleryImagePress(src);
+  };
+
+  const handleGalleryCardClick = (event, src) => {
+    if (event.detail !== 0) return;
+    handleGalleryImagePress(src);
+  };
+
+  const openHeroViewer = (src) => {
+    setViewerIndex(-1);
+    setViewerImage(src);
+  };
+
+  const closeViewer = () => {
+    setViewerImage(null);
+    setViewerIndex(-1);
+  };
+
+  const moveViewer = (direction) => {
+    if (galleryItems.length === 0) return;
+    const currentIndex = viewerIndex >= 0 ? viewerIndex : galleryItems.findIndex((item) => item.src === viewerImage);
+    if (currentIndex < 0) return;
+    const nextIndex = (currentIndex + direction + galleryItems.length) % galleryItems.length;
+    setViewerIndex(nextIndex);
+    setViewerImage(galleryItems[nextIndex].src);
+  };
+
+  const handleViewerTouchStart = (event) => {
+    if (event.touches.length > 1) {
+      if (event.cancelable) event.preventDefault();
+      return;
+    }
+    const touch = event.touches[0];
+    viewerSwipeRef.current = { startX: touch.clientX, startY: touch.clientY };
+  };
+
+  const handleViewerTouchMove = (event) => {
+    if (event.touches.length > 1 && event.cancelable) {
+      event.preventDefault();
+    }
+  };
+
+  const handleViewerTouchEnd = (event) => {
+    if (viewerIndex < 0 || galleryItems.length <= 1) return;
+    const touch = event.changedTouches[0];
+    const deltaX = touch.clientX - viewerSwipeRef.current.startX;
+    const deltaY = touch.clientY - viewerSwipeRef.current.startY;
+    if (Math.abs(deltaX) > 48 && Math.abs(deltaX) > Math.abs(deltaY) * 1.4) {
+      moveViewer(deltaX < 0 ? 1 : -1);
+    }
   };
 
   return (
@@ -647,7 +735,7 @@ const ClassicElegantTemplate = ({
         {/* ═══ 1. 히어로 ═══ */}
         <section className={styles.hero}>
           <div className={styles.heroInner}>
-            <HeroSlideshow images={safeImages.main} onPress={setViewerImage} />
+            <HeroSlideshow images={safeImages.main} onPress={openHeroViewer} />
             <div className={styles.heroInnerFrame} />
           </div>
         </section>
@@ -727,7 +815,8 @@ const ClassicElegantTemplate = ({
                       type="button"
                       key={idx}
                       className={styles.galleryCard}
-                      onClick={() => handleGalleryImagePress(item.src)}
+                      onPointerUp={() => handleGalleryCardPointerUp(item.src)}
+                      onClick={(event) => handleGalleryCardClick(event, item.src)}
                     >
                       <img src={item.src} alt="" className={styles.galleryImage} draggable={false} />
                     </button>
@@ -747,8 +836,10 @@ const ClassicElegantTemplate = ({
               )}
             </div>
             {galleryItems.length > 4 && (
-              <p className={styles.galleryHint}>
-                옆으로 밀면 사진 {galleryItems.length - 4}장이 더 있어요
+              <p className={styles.galleryHint} aria-label="옆으로 밀면 사진이 더 있어요">
+                <span className={styles.galleryHintArrow}>‹</span>
+                <span>옆으로 밀면 사진이 더 있어요</span>
+                <span className={styles.galleryHintArrow}>›</span>
               </p>
             )}
           </section>
@@ -759,9 +850,14 @@ const ClassicElegantTemplate = ({
           <section className={styles.section}>
             <div className={styles.sectionLabel}>Location</div>
             <div className={styles.divider} />
-            <p className={styles.locationName}>{locName}</p>
-            {shouldShowLocAddr && (
-              <p className={styles.locationAddr}>({locAddr})</p>
+            {locationLines.length > 0 ? (
+              <p className={styles.locationAddr}>
+                {locationLines.map((line) => (
+                  <span key={line}>{line}</span>
+                ))}
+              </p>
+            ) : (
+              <p className={styles.locationName}>{locName}</p>
             )}
             <div className={styles.mapContainer}>
               <GoogleMapEmbed
@@ -882,13 +978,10 @@ const ClassicElegantTemplate = ({
       {viewerImage && (
         <div
           className={styles.viewerBg}
-          onClick={() => setViewerImage(null)}
-          onTouchStart={(event) => {
-            if (event.touches.length > 1 && event.cancelable) event.preventDefault();
-          }}
-          onTouchMove={(event) => {
-            if (event.touches.length > 1 && event.cancelable) event.preventDefault();
-          }}
+          onClick={closeViewer}
+          onTouchStart={handleViewerTouchStart}
+          onTouchMove={handleViewerTouchMove}
+          onTouchEnd={handleViewerTouchEnd}
           onDoubleClick={(event) => {
             if (event.cancelable) event.preventDefault();
           }}
@@ -899,11 +992,40 @@ const ClassicElegantTemplate = ({
             aria-label="사진 닫기"
             onClick={(event) => {
               event.stopPropagation();
-              setViewerImage(null);
+              closeViewer();
             }}
           >
             ✕
           </button>
+          {viewerIndex >= 0 && galleryItems.length > 1 && (
+            <>
+              <button
+                type="button"
+                className={`${styles.viewerNavButton} ${styles.viewerNavPrev}`}
+                aria-label="이전 사진 보기"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  moveViewer(-1);
+                }}
+              >
+                ‹
+              </button>
+              <button
+                type="button"
+                className={`${styles.viewerNavButton} ${styles.viewerNavNext}`}
+                aria-label="다음 사진 보기"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  moveViewer(1);
+                }}
+              >
+                ›
+              </button>
+              <div className={styles.viewerCounter}>
+                {viewerIndex + 1} / {galleryItems.length}
+              </div>
+            </>
+          )}
           <img
             src={viewerImage}
             alt=""
