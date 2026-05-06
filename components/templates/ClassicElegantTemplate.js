@@ -32,9 +32,9 @@ const DEFAULT_GREETING =
 const CAL_DAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
 // ══════════════════════════════════════════════════════
-// 히어로 사진 크로스페이드
+// 히어로 사진 크로스페이드 (클릭 시 크게 보기)
 // ══════════════════════════════════════════════════════
-const HeroSlideshow = ({ images }) => {
+const HeroSlideshow = ({ images, onPress }) => {
   const [idx, setIdx] = useState(0);
   useEffect(() => {
     if (!images || images.length <= 1) return;
@@ -44,6 +44,7 @@ const HeroSlideshow = ({ images }) => {
   if (!images || images.length === 0) {
     return <div className={styles.heroPlaceholder}>💍</div>;
   }
+  const currentSrc = getImageSrc(images[idx]);
   return (
     <>
       {images.map((img, i) => {
@@ -59,6 +60,12 @@ const HeroSlideshow = ({ images }) => {
           />
         );
       })}
+      <button
+        type="button"
+        className={styles.heroClickZone}
+        aria-label="사진 크게 보기"
+        onClick={() => currentSrc && onPress && onPress(currentSrc)}
+      />
     </>
   );
 };
@@ -199,6 +206,7 @@ const ClassicElegantTemplate = ({
   const [hasWrittenGuestbook, setHasWrittenGuestbook] = useState(false);
 
   // ── 기본 상태 ──
+  const [viewerImage, setViewerImage] = useState(null);
   const [toast, setToast] = useState({ visible: false, message: '' });
   const [activeAccount, setActiveAccount] = useState('groom');
 
@@ -586,7 +594,7 @@ const ClassicElegantTemplate = ({
         {/* ═══ 1. 히어로 ═══ */}
         <section className={styles.hero}>
           <div className={styles.heroInner}>
-            <HeroSlideshow images={safeImages.main} />
+            <HeroSlideshow images={safeImages.main} onPress={setViewerImage} />
             <div className={styles.heroInnerFrame} />
           </div>
         </section>
@@ -661,12 +669,14 @@ const ClassicElegantTemplate = ({
               >
                 <div className={styles.galleryGrid}>
                   {galleryItems.map((item, idx) => (
-                    <div
+                    <button
+                      type="button"
                       key={idx}
                       className={styles.galleryCard}
+                      onClick={() => setViewerImage(item.src)}
                     >
                       <img src={item.src} alt="" className={styles.galleryImage} draggable={false} />
-                    </div>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -810,6 +820,33 @@ const ClassicElegantTemplate = ({
       {/* ═══ 토스트 ═══ */}
       {toast.visible && (
         <div className={styles.toast}><span>{toast.message}</span></div>
+      )}
+
+      {/* ═══ 이미지 뷰어: 사진은 크게 보되, 뷰어 안 추가 확대는 막음 ═══ */}
+      {viewerImage && (
+        <div
+          className={styles.viewerBg}
+          onClick={() => setViewerImage(null)}
+          onTouchMove={(event) => {
+            if (event.touches.length > 1) event.preventDefault();
+          }}
+        >
+          <button
+            type="button"
+            className={styles.viewerClose}
+            onClick={() => setViewerImage(null)}
+          >
+            ✕
+          </button>
+          <img
+            src={viewerImage}
+            alt=""
+            className={styles.viewerImage}
+            draggable={false}
+            onClick={(event) => event.stopPropagation()}
+            onDoubleClick={(event) => event.preventDefault()}
+          />
+        </div>
       )}
 
       {/* ═══ 모달들 ═══ */}

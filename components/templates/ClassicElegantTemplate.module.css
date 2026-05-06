@@ -49,6 +49,14 @@
   border: 1px solid rgba(255,255,255,0.6);
   pointer-events: none;
 }
+.heroClickZone {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 2;
+}
 /* 이름 (히어로 아래) */
 .heroTextSection {
   background: #fff;
@@ -241,7 +249,7 @@
   background: #fff;
   padding: 6px;
   border: 1px solid #EAEAEA;
-  cursor: default;
+  cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   overflow: hidden;
   flex: 0 0 auto;
@@ -592,4 +600,49 @@
   15% { opacity: 1; transform: translate(-50%, 0); }
   85% { opacity: 1; transform: translate(-50%, 0); }
   100% { opacity: 0; transform: translate(-50%, -20px); }
+}
+
+/* ═══ 이미지 뷰어: 크게 보기만 허용, 추가 확대/제스처 방지 ═══ */
+.viewerBg {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.92);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: none;
+  overscroll-behavior: contain;
+}
+.viewerClose {
+  position: fixed;
+  top: max(20px, env(safe-area-inset-top, 20px));
+  left: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.8);
+  border: 2px solid rgba(255,255,255,0.9);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+}
+.viewerClose:hover { background: rgba(0,0,0,1); }
+.viewerImage {
+  max-width: 92vw;
+  max-height: 90vh;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+  touch-action: none;
 }
