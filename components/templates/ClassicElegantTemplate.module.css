@@ -33,6 +33,9 @@
   object-fit: cover;
   opacity: 0;
   transition: opacity 1.2s ease;
+  user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
 }
 .heroImageActive { opacity: 1; }
 .heroPlaceholder {
@@ -46,15 +49,6 @@
   border: 1px solid rgba(255,255,255,0.6);
   pointer-events: none;
 }
-.heroClickZone {
-  position: absolute;
-  inset: 0;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  z-index: 2;
-}
-
 /* 이름 (히어로 아래) */
 .heroTextSection {
   background: #fff;
@@ -223,8 +217,12 @@
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x;
   scrollbar-width: none;
   padding: 8px 0 12px;
+  scroll-behavior: smooth;
+  scroll-snap-type: x proximity;
 }
 .galleryScrollWrap::-webkit-scrollbar { display: none; }
 .galleryGrid {
@@ -235,6 +233,7 @@
   gap: 14px 14px;
   padding: 0 24px;
   width: max-content;
+  min-width: max-content;
 }
 .galleryCard {
   width: 170px;
@@ -242,9 +241,12 @@
   background: #fff;
   padding: 6px;
   border: 1px solid #EAEAEA;
-  cursor: pointer;
+  cursor: default;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   overflow: hidden;
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  touch-action: pan-x;
 }
 .galleryCard:hover {
   transform: scale(1.03);
@@ -254,6 +256,9 @@
   width: 100%; height: 100%;
   object-fit: cover;
   display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
 }
 .galleryFadeRight {
   position: absolute;
@@ -263,6 +268,28 @@
   background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.98) 100%);
   z-index: 1;
 }
+.galleryNavButton {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #EAEAEA;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.94);
+  color: #222;
+  font-family: Georgia, serif;
+  font-size: 28px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+  transform: translateY(-50%);
+}
+.galleryNavPrev { left: 8px; }
+.galleryNavNext { right: 8px; }
 .galleryHint {
   margin: 16px auto 0;
   padding: 10px 14px;
@@ -274,6 +301,12 @@
   color: #222;
   text-align: center;
   width: fit-content;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .galleryNavButton {
+    display: none;
+  }
 }
 
 /* ═══ 오시는 길 ═══ */
@@ -559,43 +592,4 @@
   15% { opacity: 1; transform: translate(-50%, 0); }
   85% { opacity: 1; transform: translate(-50%, 0); }
   100% { opacity: 0; transform: translate(-50%, -20px); }
-}
-
-/* ═══ 이미지 뷰어 (X 왼쪽 상단) ═══ */
-.viewerBg {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.92);
-  z-index: 99999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-.viewerClose {
-  position: fixed;
-  top: max(20px, env(safe-area-inset-top, 20px));
-  left: 20px;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.8);
-  border: 2px solid rgba(255,255,255,0.9);
-  color: #fff;
-  font-size: 22px;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100000;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-}
-.viewerClose:hover { background: rgba(0,0,0,1); }
-.viewerImage {
-  max-width: 92vw;
-  max-height: 90vh;
-  object-fit: contain;
 }

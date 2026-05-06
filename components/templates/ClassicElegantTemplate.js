@@ -32,9 +32,9 @@ const DEFAULT_GREETING =
 const CAL_DAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
 // ══════════════════════════════════════════════════════
-// 히어로 사진 크로스페이드 (클릭 시 확대)
+// 히어로 사진 크로스페이드
 // ══════════════════════════════════════════════════════
-const HeroSlideshow = ({ images, onPress }) => {
+const HeroSlideshow = ({ images }) => {
   const [idx, setIdx] = useState(0);
   useEffect(() => {
     if (!images || images.length <= 1) return;
@@ -44,7 +44,6 @@ const HeroSlideshow = ({ images, onPress }) => {
   if (!images || images.length === 0) {
     return <div className={styles.heroPlaceholder}>💍</div>;
   }
-  const currentSrc = getImageSrc(images[idx]);
   return (
     <>
       {images.map((img, i) => {
@@ -55,16 +54,11 @@ const HeroSlideshow = ({ images, onPress }) => {
             key={i}
             src={src}
             alt=""
+            draggable={false}
             className={`${styles.heroImage} ${i === idx ? styles.heroImageActive : ''}`}
           />
         );
       })}
-      <button
-        type="button"
-        className={styles.heroClickZone}
-        aria-label="크게 보기"
-        onClick={() => currentSrc && onPress && onPress(currentSrc)}
-      />
     </>
   );
 };
@@ -205,13 +199,13 @@ const ClassicElegantTemplate = ({
   const [hasWrittenGuestbook, setHasWrittenGuestbook] = useState(false);
 
   // ── 기본 상태 ──
-  const [viewerImage, setViewerImage] = useState(null);
   const [toast, setToast] = useState({ visible: false, message: '' });
   const [activeAccount, setActiveAccount] = useState('groom');
 
   const modalOpeningRef = useRef(false);
   const modalClosingRef = useRef(false);
   const arrivalModalCheckedRef = useRef(false);
+  const galleryScrollRef = useRef(null);
 
   // 후기 섹션 노출 여부
   const shouldShowReviews =
@@ -568,13 +562,31 @@ const ClassicElegantTemplate = ({
 
   const galleryItems = safeImages.gallery.map((img) => ({ src: getImageSrc(img) })).filter((i) => i.src);
 
+  const scrollGallery = (direction) => {
+    const el = galleryScrollRef.current;
+    if (!el) return;
+    el.scrollBy({
+      left: direction * Math.min(el.clientWidth * 0.86, 360),
+      behavior: 'smooth',
+    });
+  };
+
+  const handleGalleryWheel = (event) => {
+    const el = galleryScrollRef.current;
+    if (!el) return;
+    const canScroll = el.scrollWidth > el.clientWidth;
+    if (!canScroll || Math.abs(event.deltaX) >= Math.abs(event.deltaY)) return;
+    event.preventDefault();
+    el.scrollLeft += event.deltaY;
+  };
+
   return (
     <>
       <div className={styles.root}>
         {/* ═══ 1. 히어로 ═══ */}
         <section className={styles.hero}>
           <div className={styles.heroInner}>
-            <HeroSlideshow images={safeImages.main} onPress={setViewerImage} />
+            <HeroSlideshow images={safeImages.main} />
             <div className={styles.heroInnerFrame} />
           </div>
         </section>
@@ -632,21 +644,43 @@ const ClassicElegantTemplate = ({
             <div className={styles.sectionLabel}>Gallery</div>
             <div className={styles.divider} />
             <div className={styles.galleryOuter}>
-              <div className={styles.galleryScrollWrap}>
+              {galleryItems.length > 4 && (
+                <button
+                  type="button"
+                  className={`${styles.galleryNavButton} ${styles.galleryNavPrev}`}
+                  aria-label="이전 사진 보기"
+                  onClick={() => scrollGallery(-1)}
+                >
+                  ‹
+                </button>
+              )}
+              <div
+                ref={galleryScrollRef}
+                className={styles.galleryScrollWrap}
+                onWheel={handleGalleryWheel}
+              >
                 <div className={styles.galleryGrid}>
                   {galleryItems.map((item, idx) => (
-                    <button
-                      type="button"
+                    <div
                       key={idx}
                       className={styles.galleryCard}
-                      onClick={() => setViewerImage(item.src)}
                     >
-                      <img src={item.src} alt="" className={styles.galleryImage} />
-                    </button>
+                      <img src={item.src} alt="" className={styles.galleryImage} draggable={false} />
+                    </div>
                   ))}
                 </div>
               </div>
               {galleryItems.length > 4 && <div className={styles.galleryFadeRight} />}
+              {galleryItems.length > 4 && (
+                <button
+                  type="button"
+                  className={`${styles.galleryNavButton} ${styles.galleryNavNext}`}
+                  aria-label="다음 사진 보기"
+                  onClick={() => scrollGallery(1)}
+                >
+                  ›
+                </button>
+              )}
             </div>
             {galleryItems.length > 4 && (
               <p className={styles.galleryHint}>
@@ -662,7 +696,6 @@ const ClassicElegantTemplate = ({
             <div className={styles.sectionLabel}>Location</div>
             <div className={styles.divider} />
             <p className={styles.locationName}>{locName}</p>
-            {locAddr && <p className={styles.locationAddr}>{locAddr}</p>}
             <div className={styles.mapContainer}>
               <GoogleMapEmbed
                 address={`${locName} ${locAddr}`.trim()}
@@ -777,14 +810,6 @@ const ClassicElegantTemplate = ({
       {/* ═══ 토스트 ═══ */}
       {toast.visible && (
         <div className={styles.toast}><span>{toast.message}</span></div>
-      )}
-
-      {/* ═══ 이미지 뷰어 ═══ */}
-      {viewerImage && (
-        <div className={styles.viewerBg} onClick={() => setViewerImage(null)}>
-          <button type="button" className={styles.viewerClose} onClick={() => setViewerImage(null)}>✕</button>
-          <img src={viewerImage} alt="" className={styles.viewerImage} />
-        </div>
       )}
 
       {/* ═══ 모달들 ═══ */}

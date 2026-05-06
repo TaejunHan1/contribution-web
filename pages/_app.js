@@ -45,7 +45,7 @@ function MyApp({ Component, pageProps }) {
     <>
       <Head>
         <title>정담 - 디지털 경조사 관리</title>
-        <meta name="description" content="종이 방명록을 디지털로! QR코드로 간편하게 부조하고 실시간으로 관리하는 스마트 경조사 시스템" />
+        <meta name="description" content="종이 방명록 대신 태블릿에 이름을 쓰고 축의금과 식권을 실시간으로 관리하는 정담 결혼식 접수 시스템" />
 
         {/* 뷰포트 설정 */}
         <meta
@@ -69,7 +69,7 @@ function MyApp({ Component, pageProps }) {
         <meta property="og:title" content="정담 - 디지털 경조사 관리" />
         <meta
           property="og:description"
-          content="종이 방명록을 디지털로! QR코드로 간편하게 부조하고 실시간으로 관리하는 스마트 경조사 시스템"
+          content="종이 방명록 대신 태블릿에 이름을 쓰고 축의금과 식권을 실시간으로 관리하는 정담 결혼식 접수 시스템"
         />
 
         {/* 트위터 카드 */}
@@ -77,7 +77,7 @@ function MyApp({ Component, pageProps }) {
         <meta name="twitter:title" content="정담 - 디지털 경조사 관리" />
         <meta
           name="twitter:description"
-          content="종이 방명록을 디지털로! QR코드로 간편하게 부조하고 실시간으로 관리하는 스마트 경조사 시스템"
+          content="종이 방명록 대신 태블릿에 이름을 쓰고 축의금과 식권을 실시간으로 관리하는 정담 결혼식 접수 시스템"
         />
 
         {/* 파비콘 */}
