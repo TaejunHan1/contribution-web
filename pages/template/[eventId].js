@@ -2,22 +2,24 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
+import dynamic from 'next/dynamic';
 import { getEventDetails } from '../../lib/supabase';
-import KoreanElegantTemplate from '../../components/templates/KoreanElegantTemplate';
-import VintageTemplate from '../../components/templates/VintageTemplate';
-import ModernMinimalTemplate from '../../components/templates/ModernMinimalTemplate';
-import RomanticPinkTemplate from '../../components/templates/RomanticPinkTemplate';
-import ElegantGardenTemplate from '../../components/templates/ElegantGardenTemplate';
-import ModernDarkTemplate from '../../components/templates/ModernDarkTemplate';
-import AuroraBlackTemplate from '../../components/templates/AuroraBlackTemplate';
-import WarmOrangeTemplate from '../../components/templates/WarmOrangeTemplate';
-import CleanWhiteTemplate from '../../components/templates/CleanWhiteTemplate';
-import ClassicElegantTemplate from '../../components/templates/ClassicElegantTemplate';
-import TicketFlightTemplate from '../../components/templates/TicketFlightTemplate';
-import CinemaTemplate from '../../components/templates/CinemaTemplate';
-import FallingPetals from '../../components/FallingPetals';
-import BackgroundMusicPlayer from '../../components/BackgroundMusicPlayer';
-import WeddingIntroOverlay from '../../components/WeddingIntroOverlay';
+
+const KoreanElegantTemplate = dynamic(() => import('../../components/templates/KoreanElegantTemplate'), { ssr: false });
+const VintageTemplate = dynamic(() => import('../../components/templates/VintageTemplate'), { ssr: false });
+const ModernMinimalTemplate = dynamic(() => import('../../components/templates/ModernMinimalTemplate'), { ssr: false });
+const RomanticPinkTemplate = dynamic(() => import('../../components/templates/RomanticPinkTemplate'), { ssr: false });
+const ElegantGardenTemplate = dynamic(() => import('../../components/templates/ElegantGardenTemplate'), { ssr: false });
+const ModernDarkTemplate = dynamic(() => import('../../components/templates/ModernDarkTemplate'), { ssr: false });
+const AuroraBlackTemplate = dynamic(() => import('../../components/templates/AuroraBlackTemplate'), { ssr: false });
+const WarmOrangeTemplate = dynamic(() => import('../../components/templates/WarmOrangeTemplate'), { ssr: false });
+const CleanWhiteTemplate = dynamic(() => import('../../components/templates/CleanWhiteTemplate'), { ssr: false });
+const ClassicElegantTemplate = dynamic(() => import('../../components/templates/ClassicElegantTemplate'), { ssr: false });
+const TicketFlightTemplate = dynamic(() => import('../../components/templates/TicketFlightTemplate'), { ssr: false });
+const CinemaTemplate = dynamic(() => import('../../components/templates/CinemaTemplate'), { ssr: false });
+const FallingPetals = dynamic(() => import('../../components/FallingPetals'), { ssr: false });
+const BackgroundMusicPlayer = dynamic(() => import('../../components/BackgroundMusicPlayer'), { ssr: false });
+const WeddingIntroOverlay = dynamic(() => import('../../components/WeddingIntroOverlay'), { ssr: false });
 
 const DEFAULT_SITE_URL = 'https://contribution-web-srgt.vercel.app';
 
