@@ -322,6 +322,16 @@
   font-size: 18px;
   line-height: 1;
   color: #9A8B7A;
+  width: 28px;
+  height: 28px;
+  border: 1px solid #EAEAEA;
+  border-radius: 999px;
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
 }
 
 /* ═══ 오시는 길 ═══ */

@@ -617,10 +617,14 @@ const ClassicElegantTemplate = ({
   const scrollGallery = (direction) => {
     const el = galleryScrollRef.current;
     if (!el) return;
-    el.scrollBy({
-      left: direction * Math.min(el.clientWidth * 0.86, 360),
-      behavior: 'smooth',
-    });
+    const amount = Math.min(el.clientWidth * 0.86, 360);
+    const maxLeft = Math.max(0, el.scrollWidth - el.clientWidth);
+    const nextLeft = Math.max(0, Math.min(maxLeft, el.scrollLeft + direction * amount));
+
+    el.scrollTo({ left: nextLeft, behavior: 'smooth' });
+    window.setTimeout(() => {
+      el.scrollLeft = nextLeft;
+    }, 260);
   };
 
   const handleGalleryWheel = (event) => {
@@ -795,7 +799,11 @@ const ClassicElegantTemplate = ({
                   type="button"
                   className={`${styles.galleryNavButton} ${styles.galleryNavPrev}`}
                   aria-label="이전 사진 보기"
-                  onClick={() => scrollGallery(-1)}
+                  onPointerDown={(event) => event.stopPropagation()}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    scrollGallery(-1);
+                  }}
                 >
                   ‹
                 </button>
@@ -829,7 +837,11 @@ const ClassicElegantTemplate = ({
                   type="button"
                   className={`${styles.galleryNavButton} ${styles.galleryNavNext}`}
                   aria-label="다음 사진 보기"
-                  onClick={() => scrollGallery(1)}
+                  onPointerDown={(event) => event.stopPropagation()}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    scrollGallery(1);
+                  }}
                 >
                   ›
                 </button>
@@ -837,9 +849,23 @@ const ClassicElegantTemplate = ({
             </div>
             {galleryItems.length > 4 && (
               <p className={styles.galleryHint} aria-label="옆으로 밀면 사진이 더 있어요">
-                <span className={styles.galleryHintArrow}>‹</span>
+                <button
+                  type="button"
+                  className={styles.galleryHintArrow}
+                  aria-label="이전 사진 보기"
+                  onClick={() => scrollGallery(-1)}
+                >
+                  ‹
+                </button>
                 <span>옆으로 밀면 사진이 더 있어요</span>
-                <span className={styles.galleryHintArrow}>›</span>
+                <button
+                  type="button"
+                  className={styles.galleryHintArrow}
+                  aria-label="다음 사진 보기"
+                  onClick={() => scrollGallery(1)}
+                >
+                  ›
+                </button>
               </p>
             )}
           </section>
