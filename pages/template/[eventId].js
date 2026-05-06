@@ -233,6 +233,79 @@ export default function TemplatePage() {
   const [showIntro, setShowIntro] = useState(true);
 
   useEffect(() => {
+    const viewport = document.querySelector('meta[name="viewport"]');
+    const previousViewport = viewport?.getAttribute('content');
+    if (viewport) {
+      viewport.setAttribute(
+        'content',
+        'width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover'
+      );
+    }
+
+    let lastTouchEnd = 0;
+    const preventEvent = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    };
+    const preventMultiTouch = (event) => {
+      if (event.touches && event.touches.length > 1) {
+        preventEvent(event);
+      }
+    };
+    const preventDoubleTap = (event) => {
+      const now = Date.now();
+      if (now - lastTouchEnd <= 350) {
+        preventEvent(event);
+      }
+      lastTouchEnd = now;
+    };
+    const preventCtrlZoom = (event) => {
+      if (event.ctrlKey || event.metaKey) {
+        event.preventDefault();
+      }
+    };
+    const preventZoomKeys = (event) => {
+      if (
+        (event.ctrlKey || event.metaKey) &&
+        ['+', '-', '=', '0'].includes(event.key)
+      ) {
+        preventEvent(event);
+      }
+    };
+
+    const targets = [window, document, document.documentElement, document.body];
+    const listenerOptions = { passive: false, capture: true };
+    targets.forEach((target) => {
+      target.addEventListener('touchstart', preventMultiTouch, listenerOptions);
+      target.addEventListener('touchmove', preventMultiTouch, listenerOptions);
+      target.addEventListener('touchend', preventDoubleTap, listenerOptions);
+      target.addEventListener('gesturestart', preventEvent, listenerOptions);
+      target.addEventListener('gesturechange', preventEvent, listenerOptions);
+      target.addEventListener('gestureend', preventEvent, listenerOptions);
+      target.addEventListener('dblclick', preventEvent, listenerOptions);
+      target.addEventListener('wheel', preventCtrlZoom, listenerOptions);
+      target.addEventListener('keydown', preventZoomKeys, listenerOptions);
+    });
+
+    return () => {
+      targets.forEach((target) => {
+        target.removeEventListener('touchstart', preventMultiTouch, true);
+        target.removeEventListener('touchmove', preventMultiTouch, true);
+        target.removeEventListener('touchend', preventDoubleTap, true);
+        target.removeEventListener('gesturestart', preventEvent, true);
+        target.removeEventListener('gesturechange', preventEvent, true);
+        target.removeEventListener('gestureend', preventEvent, true);
+        target.removeEventListener('dblclick', preventEvent, true);
+        target.removeEventListener('wheel', preventCtrlZoom, true);
+        target.removeEventListener('keydown', preventZoomKeys, true);
+      });
+      if (viewport && previousViewport) {
+        viewport.setAttribute('content', previousViewport);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     if (eventId && !serverEvent) {
       loadEventData();
     }
@@ -323,6 +396,7 @@ export default function TemplatePage() {
       <>
         <Head>
           <title>{ogEvent ? `${ogEvent.groom_name} ♡ ${ogEvent.bride_name} 결혼식에 초대합니다` : '청첩장 로딩 중...'}</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover" />
           {ogEvent && (<>
             <meta property="og:title" content={`${ogEvent.groom_name} ♡ ${ogEvent.bride_name} 결혼식에 초대합니다`} />
             <meta property="og:description" content={`${ogEvent.event_date ? new Date(ogEvent.event_date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : ''} ${ogEvent.ceremony_time || ''}${ogEvent.location ? ` · ${ogEvent.location}` : ''}`} />
@@ -394,7 +468,7 @@ export default function TemplatePage() {
       <Head>
         <title>{event.event_name} - {getTemplateTitle()}</title>
         <meta name="description" content={`${event.groom_name} & ${event.bride_name}의 결혼식에 초대합니다`} />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover" />
         
         {/* 웹폰트 프리로드 */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
