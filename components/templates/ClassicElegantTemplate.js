@@ -220,32 +220,88 @@ const ClassicElegantTemplate = ({
 
     const viewport = document.querySelector('meta[name="viewport"]');
     const previousViewport = viewport?.getAttribute('content');
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousBodyTouchAction = document.body.style.touchAction;
+    const previousBodyOverscroll = document.body.style.overscrollBehavior;
+    const previousHtmlTouchAction = document.documentElement.style.touchAction;
+    const previousHtmlOverscroll = document.documentElement.style.overscrollBehavior;
+
     if (viewport) {
       viewport.setAttribute(
         'content',
-        'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'
+        'width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover'
       );
     }
 
-    const preventZoom = (event) => {
-      if (event.touches?.length > 1) {
+    let lastTouchEnd = 0;
+    const blockEvent = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    };
+    const blockMultiTouch = (event) => {
+      if (event.touches && event.touches.length > 1) {
+        blockEvent(event);
+      }
+    };
+    const blockDoubleTap = (event) => {
+      const now = Date.now();
+      if (now - lastTouchEnd <= 350) {
+        blockEvent(event);
+      }
+      lastTouchEnd = now;
+    };
+    const blockCtrlZoom = (event) => {
+      if (event.ctrlKey || event.metaKey) {
         event.preventDefault();
       }
     };
-    const preventGesture = (event) => event.preventDefault();
+    const blockZoomKeys = (event) => {
+      if (
+        (event.ctrlKey || event.metaKey) &&
+        ['+', '-', '=', '0'].includes(event.key)
+      ) {
+        blockEvent(event);
+      }
+    };
 
     document.body.style.overflow = 'hidden';
-    document.addEventListener('touchmove', preventZoom, { passive: false });
-    document.addEventListener('gesturestart', preventGesture, { passive: false });
-    document.addEventListener('gesturechange', preventGesture, { passive: false });
-    document.addEventListener('gestureend', preventGesture, { passive: false });
+    document.body.style.touchAction = 'none';
+    document.body.style.overscrollBehavior = 'none';
+    document.documentElement.style.touchAction = 'none';
+    document.documentElement.style.overscrollBehavior = 'none';
+
+    const targets = [window, document, document.documentElement, document.body];
+    const listenerOptions = { passive: false, capture: true };
+
+    targets.forEach((target) => {
+      target.addEventListener('touchstart', blockMultiTouch, listenerOptions);
+      target.addEventListener('touchmove', blockMultiTouch, listenerOptions);
+      target.addEventListener('touchend', blockDoubleTap, listenerOptions);
+      target.addEventListener('gesturestart', blockEvent, listenerOptions);
+      target.addEventListener('gesturechange', blockEvent, listenerOptions);
+      target.addEventListener('gestureend', blockEvent, listenerOptions);
+      target.addEventListener('dblclick', blockEvent, listenerOptions);
+      target.addEventListener('wheel', blockCtrlZoom, listenerOptions);
+      target.addEventListener('keydown', blockZoomKeys, listenerOptions);
+    });
 
     return () => {
-      document.body.style.overflow = '';
-      document.removeEventListener('touchmove', preventZoom);
-      document.removeEventListener('gesturestart', preventGesture);
-      document.removeEventListener('gesturechange', preventGesture);
-      document.removeEventListener('gestureend', preventGesture);
+      targets.forEach((target) => {
+        target.removeEventListener('touchstart', blockMultiTouch, true);
+        target.removeEventListener('touchmove', blockMultiTouch, true);
+        target.removeEventListener('touchend', blockDoubleTap, true);
+        target.removeEventListener('gesturestart', blockEvent, true);
+        target.removeEventListener('gesturechange', blockEvent, true);
+        target.removeEventListener('gestureend', blockEvent, true);
+        target.removeEventListener('dblclick', blockEvent, true);
+        target.removeEventListener('wheel', blockCtrlZoom, true);
+        target.removeEventListener('keydown', blockZoomKeys, true);
+      });
+      document.body.style.overflow = previousBodyOverflow;
+      document.body.style.touchAction = previousBodyTouchAction;
+      document.body.style.overscrollBehavior = previousBodyOverscroll;
+      document.documentElement.style.touchAction = previousHtmlTouchAction;
+      document.documentElement.style.overscrollBehavior = previousHtmlOverscroll;
       if (viewport && previousViewport) {
         viewport.setAttribute('content', previousViewport);
       }
@@ -302,6 +358,7 @@ const ClassicElegantTemplate = ({
   // ── 장소 ──
   const locName = eventData.hallName || eventData.hall_name || eventData.location || '';
   const locAddr = eventData.detailedAddress || eventData.detailed_address || eventData.address || '';
+  const shouldShowLocAddr = locAddr && locAddr.trim() !== locName.trim();
 
   // ── 이미지 처리 ──
   const defaultImages = {
@@ -657,12 +714,12 @@ const ClassicElegantTemplate = ({
             <div className={styles.parentsWrap}>
               <p className={styles.parentsText}>
                 {groomFather || '아버지'}{groomFather && groomMother ? ' · ' : ''}{groomMother || '어머니'}
-                <span className={styles.parentsRole}> 의 아들 </span>
+                <span className={styles.parentsRole}>의 장남 </span>
                 <span className={styles.parentsChild}>{groomName || '신랑'}</span>
               </p>
               <p className={styles.parentsText} style={{ marginTop: 8 }}>
                 {brideFather || '아버지'}{brideFather && brideMother ? ' · ' : ''}{brideMother || '어머니'}
-                <span className={styles.parentsRole}> 의 딸 </span>
+                <span className={styles.parentsRole}>의 장녀 </span>
                 <span className={styles.parentsChild}>{brideName || '신부'}</span>
               </p>
             </div>
@@ -743,6 +800,9 @@ const ClassicElegantTemplate = ({
             <div className={styles.sectionLabel}>Location</div>
             <div className={styles.divider} />
             <p className={styles.locationName}>{locName}</p>
+            {shouldShowLocAddr && (
+              <p className={styles.locationAddr}>({locAddr})</p>
+            )}
             <div className={styles.mapContainer}>
               <GoogleMapEmbed
                 address={`${locName} ${locAddr}`.trim()}
@@ -867,6 +927,13 @@ const ClassicElegantTemplate = ({
           onWheel={(event) => {
             if (event.ctrlKey) event.preventDefault();
           }}
+          onDoubleClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+          }}
+          onTouchStart={(event) => {
+            if (event.touches.length > 1) event.preventDefault();
+          }}
           onTouchMove={(event) => {
             if (event.touches.length > 1) event.preventDefault();
           }}
@@ -884,7 +951,10 @@ const ClassicElegantTemplate = ({
             className={styles.viewerImage}
             draggable={false}
             onClick={(event) => event.stopPropagation()}
-            onDoubleClick={(event) => event.preventDefault()}
+            onDoubleClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+            }}
           />
         </div>
       )}
