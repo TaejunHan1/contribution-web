@@ -234,16 +234,21 @@ const ClassicElegantTemplate = ({
     }
 
     let lastTouchEnd = 0;
+    const isViewerCloseTarget = (event) =>
+      event.target?.closest?.('[data-viewer-close="true"]');
     const blockEvent = (event) => {
+      if (isViewerCloseTarget(event)) return;
       event.preventDefault();
       event.stopPropagation();
     };
     const blockMultiTouch = (event) => {
+      if (isViewerCloseTarget(event)) return;
       if (event.touches && event.touches.length > 1) {
         blockEvent(event);
       }
     };
     const blockDoubleTap = (event) => {
+      if (isViewerCloseTarget(event)) return;
       const now = Date.now();
       if (now - lastTouchEnd <= 350) {
         blockEvent(event);
@@ -940,8 +945,23 @@ const ClassicElegantTemplate = ({
         >
           <button
             type="button"
+            data-viewer-close="true"
             className={styles.viewerClose}
-            onClick={() => setViewerImage(null)}
+            onPointerDown={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              setViewerImage(null);
+            }}
+            onTouchEnd={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              setViewerImage(null);
+            }}
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              setViewerImage(null);
+            }}
           >
             ✕
           </button>
