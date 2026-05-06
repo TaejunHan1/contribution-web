@@ -36,6 +36,18 @@ const TEMPLATE_NAME_POSITIONS = [
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
+const getTemplateIndex = (eventId) => {
+  if (!eventId) return 0;
+
+  let hash = 2166136261;
+  for (const char of eventId) {
+    hash ^= char.charCodeAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  return ((hash >>> 0) + 3) % TEMPLATE_BACKGROUNDS.length;
+};
+
 export default async function handler(req) {
   const { searchParams } = new URL(req.url);
   const eventId = searchParams.get('eventId');
@@ -75,9 +87,7 @@ export default async function handler(req) {
   const forcedTemplateIndex = Number.isInteger(ogTemplateParam)
     ? Math.min(Math.max(ogTemplateParam - 1, 0), TEMPLATE_BACKGROUNDS.length - 1)
     : null;
-  const templateIndex = forcedTemplateIndex ?? (eventId
-    ? [...eventId].reduce((sum, char) => sum + char.charCodeAt(0), 0) % TEMPLATE_BACKGROUNDS.length
-    : 0);
+  const templateIndex = forcedTemplateIndex ?? getTemplateIndex(eventId);
   const backgroundPath = TEMPLATE_BACKGROUNDS[templateIndex];
   const namePosition = TEMPLATE_NAME_POSITIONS[templateIndex] ?? TEMPLATE_NAME_POSITIONS[0];
   const backgroundUrl = `${origin}${backgroundPath}`;
