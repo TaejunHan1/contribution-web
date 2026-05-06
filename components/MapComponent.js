@@ -39,12 +39,29 @@ const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }
     ? `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${embedQuery}&zoom=16&maptype=roadmap&language=ko&region=KR`
     : `https://www.google.com/maps?q=${embedQuery}&output=embed&hl=ko`;
 
+  const openMap = (appUrl, fallbackUrl) => {
+    const startedAt = Date.now();
+    window.location.href = appUrl;
+
+    setTimeout(() => {
+      if (document.visibilityState === 'visible' && Date.now() - startedAt < 1800) {
+        window.location.href = fallbackUrl;
+      }
+    }, 1200);
+  };
+
   const openNaverApp = () => {
-    window.location.href = `nmap://search?query=${searchQuery}&appname=com.gyeongjo.app`;
+    openMap(
+      `nmap://search?query=${searchQuery}&appname=com.gyeongjo.app`,
+      `https://map.naver.com/p/search/${searchQuery}`
+    );
   };
 
   const openTmapApp = () => {
-    window.location.href = `tmap://search?name=${searchQuery}`;
+    openMap(
+      `tmap://search?name=${searchQuery}`,
+      `https://www.tmap.co.kr/search?searchKeyword=${searchQuery}`
+    );
   };
 
   const btnStyle = {
@@ -98,11 +115,11 @@ const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
 
         <div style={{ display: 'flex', gap: '8px' }}>
-          <button onClick={openNaverApp} style={btnStyle}>
+          <button type="button" onClick={openNaverApp} style={btnStyle}>
             <img src="/naver.png" alt="네이버지도" style={iconStyle} />
             <span>네이버지도</span>
           </button>
-          <button onClick={openTmapApp} style={btnStyle}>
+          <button type="button" onClick={openTmapApp} style={btnStyle}>
             <img src="/tmap.jpeg" alt="T맵" style={iconStyle} />
             <span>T맵</span>
           </button>

@@ -235,12 +235,6 @@ export default function TemplatePage() {
   useEffect(() => {
     const viewport = document.querySelector('meta[name="viewport"]');
     const previousViewport = viewport?.getAttribute('content');
-    const previousHtmlTouchAction = document.documentElement.style.touchAction;
-    const previousBodyTouchAction = document.body.style.touchAction;
-    const previousHtmlOverscroll = document.documentElement.style.overscrollBehavior;
-    const previousBodyOverscroll = document.body.style.overscrollBehavior;
-    const previousHtmlUserSelect = document.documentElement.style.userSelect;
-    const previousBodyUserSelect = document.body.style.userSelect;
 
     if (viewport) {
       viewport.setAttribute(
@@ -248,38 +242,23 @@ export default function TemplatePage() {
         'width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover'
       );
     }
-    document.documentElement.style.touchAction = 'pan-y';
-    document.body.style.touchAction = 'pan-y';
-    document.documentElement.style.overscrollBehavior = 'none';
-    document.body.style.overscrollBehavior = 'none';
-    document.documentElement.style.userSelect = 'none';
-    document.body.style.userSelect = 'none';
 
-    let lastTouchEnd = 0;
-    const isZoomControlException = (event) =>
-      event.target?.closest?.('[data-viewer-close="true"]');
-    const preventEvent = (event) => {
-      if (isZoomControlException(event)) return;
-      event.preventDefault();
-      event.stopPropagation();
+    const preventIfCancelable = (event) => {
+      if (event.cancelable) {
+        event.preventDefault();
+      }
     };
-    const preventMultiTouch = (event) => {
-      if (isZoomControlException(event)) return;
+    const preventPinchZoom = (event) => {
       if (event.touches && event.touches.length > 1) {
-        preventEvent(event);
+        preventIfCancelable(event);
       }
     };
-    const preventDoubleTap = (event) => {
-      if (isZoomControlException(event)) return;
-      const now = Date.now();
-      if (now - lastTouchEnd <= 350) {
-        preventEvent(event);
-      }
-      lastTouchEnd = now;
+    const preventGestureZoom = (event) => {
+      preventIfCancelable(event);
     };
     const preventCtrlZoom = (event) => {
       if (event.ctrlKey || event.metaKey) {
-        event.preventDefault();
+        preventIfCancelable(event);
       }
     };
     const preventZoomKeys = (event) => {
@@ -287,47 +266,32 @@ export default function TemplatePage() {
         (event.ctrlKey || event.metaKey) &&
         ['+', '-', '=', '0'].includes(event.key)
       ) {
-        preventEvent(event);
+        preventIfCancelable(event);
       }
     };
 
-    const targets = [window, document, document.documentElement, document.body];
     const listenerOptions = { passive: false, capture: true };
-    targets.forEach((target) => {
-      target.addEventListener('touchstart', preventMultiTouch, listenerOptions);
-      target.addEventListener('touchmove', preventMultiTouch, listenerOptions);
-      target.addEventListener('touchend', preventDoubleTap, listenerOptions);
-      target.addEventListener('touchcancel', preventDoubleTap, listenerOptions);
-      target.addEventListener('gesturestart', preventEvent, listenerOptions);
-      target.addEventListener('gesturechange', preventEvent, listenerOptions);
-      target.addEventListener('gestureend', preventEvent, listenerOptions);
-      target.addEventListener('dblclick', preventEvent, listenerOptions);
-      target.addEventListener('wheel', preventCtrlZoom, listenerOptions);
-      target.addEventListener('keydown', preventZoomKeys, listenerOptions);
-    });
+    window.addEventListener('touchstart', preventPinchZoom, listenerOptions);
+    window.addEventListener('touchmove', preventPinchZoom, listenerOptions);
+    window.addEventListener('gesturestart', preventGestureZoom, listenerOptions);
+    window.addEventListener('gesturechange', preventGestureZoom, listenerOptions);
+    window.addEventListener('gestureend', preventGestureZoom, listenerOptions);
+    window.addEventListener('dblclick', preventGestureZoom, listenerOptions);
+    window.addEventListener('wheel', preventCtrlZoom, listenerOptions);
+    window.addEventListener('keydown', preventZoomKeys, listenerOptions);
 
     return () => {
-      targets.forEach((target) => {
-        target.removeEventListener('touchstart', preventMultiTouch, true);
-        target.removeEventListener('touchmove', preventMultiTouch, true);
-        target.removeEventListener('touchend', preventDoubleTap, true);
-        target.removeEventListener('touchcancel', preventDoubleTap, true);
-        target.removeEventListener('gesturestart', preventEvent, true);
-        target.removeEventListener('gesturechange', preventEvent, true);
-        target.removeEventListener('gestureend', preventEvent, true);
-        target.removeEventListener('dblclick', preventEvent, true);
-        target.removeEventListener('wheel', preventCtrlZoom, true);
-        target.removeEventListener('keydown', preventZoomKeys, true);
-      });
+      window.removeEventListener('touchstart', preventPinchZoom, true);
+      window.removeEventListener('touchmove', preventPinchZoom, true);
+      window.removeEventListener('gesturestart', preventGestureZoom, true);
+      window.removeEventListener('gesturechange', preventGestureZoom, true);
+      window.removeEventListener('gestureend', preventGestureZoom, true);
+      window.removeEventListener('dblclick', preventGestureZoom, true);
+      window.removeEventListener('wheel', preventCtrlZoom, true);
+      window.removeEventListener('keydown', preventZoomKeys, true);
       if (viewport && previousViewport) {
         viewport.setAttribute('content', previousViewport);
       }
-      document.documentElement.style.touchAction = previousHtmlTouchAction;
-      document.body.style.touchAction = previousBodyTouchAction;
-      document.documentElement.style.overscrollBehavior = previousHtmlOverscroll;
-      document.body.style.overscrollBehavior = previousBodyOverscroll;
-      document.documentElement.style.userSelect = previousHtmlUserSelect;
-      document.body.style.userSelect = previousBodyUserSelect;
     };
   }, []);
 

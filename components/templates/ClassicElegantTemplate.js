@@ -34,7 +34,7 @@ const CAL_DAYS = ['일', '월', '화', '수', '목', '금', '토'];
 // ══════════════════════════════════════════════════════
 // 히어로 사진 크로스페이드
 // ══════════════════════════════════════════════════════
-const HeroSlideshow = ({ images }) => {
+const HeroSlideshow = ({ images, onPress }) => {
   const [idx, setIdx] = useState(0);
   useEffect(() => {
     if (!images || images.length <= 1) return;
@@ -44,6 +44,7 @@ const HeroSlideshow = ({ images }) => {
   if (!images || images.length === 0) {
     return <div className={styles.heroPlaceholder}>💍</div>;
   }
+  const currentSrc = getImageSrc(images[idx]);
   return (
     <>
       {images.map((img, i) => {
@@ -59,6 +60,12 @@ const HeroSlideshow = ({ images }) => {
           />
         );
       })}
+      <button
+        type="button"
+        className={styles.heroClickZone}
+        aria-label="사진 크게 보기"
+        onClick={() => currentSrc && onPress?.(currentSrc)}
+      />
     </>
   );
 };
@@ -207,104 +214,13 @@ const ClassicElegantTemplate = ({
   const modalClosingRef = useRef(false);
   const arrivalModalCheckedRef = useRef(false);
   const galleryScrollRef = useRef(null);
-
-  useEffect(() => {
-    if (!viewerImage) return undefined;
-
-    const viewport = document.querySelector('meta[name="viewport"]');
-    const previousViewport = viewport?.getAttribute('content');
-    const previousBodyOverflow = document.body.style.overflow;
-    const previousBodyTouchAction = document.body.style.touchAction;
-    const previousBodyOverscroll = document.body.style.overscrollBehavior;
-    const previousHtmlTouchAction = document.documentElement.style.touchAction;
-    const previousHtmlOverscroll = document.documentElement.style.overscrollBehavior;
-
-    if (viewport) {
-      viewport.setAttribute(
-        'content',
-        'width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover'
-      );
-    }
-
-    let lastTouchEnd = 0;
-    const isViewerCloseTarget = (event) =>
-      event.target?.closest?.('[data-viewer-close="true"]');
-    const blockEvent = (event) => {
-      if (isViewerCloseTarget(event)) return;
-      event.preventDefault();
-      event.stopPropagation();
-    };
-    const blockMultiTouch = (event) => {
-      if (isViewerCloseTarget(event)) return;
-      if (event.touches && event.touches.length > 1) {
-        blockEvent(event);
-      }
-    };
-    const blockDoubleTap = (event) => {
-      if (isViewerCloseTarget(event)) return;
-      const now = Date.now();
-      if (now - lastTouchEnd <= 350) {
-        blockEvent(event);
-      }
-      lastTouchEnd = now;
-    };
-    const blockCtrlZoom = (event) => {
-      if (event.ctrlKey || event.metaKey) {
-        event.preventDefault();
-      }
-    };
-    const blockZoomKeys = (event) => {
-      if (
-        (event.ctrlKey || event.metaKey) &&
-        ['+', '-', '=', '0'].includes(event.key)
-      ) {
-        blockEvent(event);
-      }
-    };
-
-    document.body.style.overflow = 'hidden';
-    document.body.style.touchAction = 'none';
-    document.body.style.overscrollBehavior = 'none';
-    document.documentElement.style.touchAction = 'none';
-    document.documentElement.style.overscrollBehavior = 'none';
-
-    const targets = [window, document, document.documentElement, document.body];
-    const listenerOptions = { passive: false, capture: true };
-
-    targets.forEach((target) => {
-      target.addEventListener('touchstart', blockMultiTouch, listenerOptions);
-      target.addEventListener('touchmove', blockMultiTouch, listenerOptions);
-      target.addEventListener('touchend', blockDoubleTap, listenerOptions);
-      target.addEventListener('gesturestart', blockEvent, listenerOptions);
-      target.addEventListener('gesturechange', blockEvent, listenerOptions);
-      target.addEventListener('gestureend', blockEvent, listenerOptions);
-      target.addEventListener('dblclick', blockEvent, listenerOptions);
-      target.addEventListener('wheel', blockCtrlZoom, listenerOptions);
-      target.addEventListener('keydown', blockZoomKeys, listenerOptions);
-    });
-
-    return () => {
-      targets.forEach((target) => {
-        target.removeEventListener('touchstart', blockMultiTouch, true);
-        target.removeEventListener('touchmove', blockMultiTouch, true);
-        target.removeEventListener('touchend', blockDoubleTap, true);
-        target.removeEventListener('gesturestart', blockEvent, true);
-        target.removeEventListener('gesturechange', blockEvent, true);
-        target.removeEventListener('gestureend', blockEvent, true);
-        target.removeEventListener('dblclick', blockEvent, true);
-        target.removeEventListener('wheel', blockCtrlZoom, true);
-        target.removeEventListener('keydown', blockZoomKeys, true);
-      });
-      document.body.style.overflow = previousBodyOverflow;
-      document.body.style.touchAction = previousBodyTouchAction;
-      document.body.style.overscrollBehavior = previousBodyOverscroll;
-      document.documentElement.style.touchAction = previousHtmlTouchAction;
-      document.documentElement.style.overscrollBehavior = previousHtmlOverscroll;
-      if (viewport && previousViewport) {
-        viewport.setAttribute('content', previousViewport);
-      }
-    };
-  }, [viewerImage]);
+  const galleryDragRef = useRef({
+    active: false,
+    pointerId: null,
+    startX: 0,
+    startScrollLeft: 0,
+    moved: false,
+  });
 
   // 후기 섹션 노출 여부
   const shouldShowReviews =
@@ -680,13 +596,58 @@ const ClassicElegantTemplate = ({
     el.scrollLeft += event.deltaY;
   };
 
+  const handleGalleryPointerDown = (event) => {
+    const el = galleryScrollRef.current;
+    if (!el || el.scrollWidth <= el.clientWidth) return;
+
+    galleryDragRef.current = {
+      active: true,
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startScrollLeft: el.scrollLeft,
+      moved: false,
+    };
+    el.setPointerCapture?.(event.pointerId);
+  };
+
+  const handleGalleryPointerMove = (event) => {
+    const el = galleryScrollRef.current;
+    const drag = galleryDragRef.current;
+    if (!el || !drag.active || drag.pointerId !== event.pointerId) return;
+
+    const deltaX = event.clientX - drag.startX;
+    if (Math.abs(deltaX) > 6) {
+      drag.moved = true;
+    }
+    if (drag.moved) {
+      el.scrollLeft = drag.startScrollLeft - deltaX;
+    }
+  };
+
+  const handleGalleryPointerEnd = (event) => {
+    const el = galleryScrollRef.current;
+    const drag = galleryDragRef.current;
+    if (el && drag.pointerId === event.pointerId) {
+      el.releasePointerCapture?.(event.pointerId);
+    }
+    galleryDragRef.current.active = false;
+  };
+
+  const handleGalleryImagePress = (src) => {
+    if (galleryDragRef.current.moved) {
+      galleryDragRef.current.moved = false;
+      return;
+    }
+    setViewerImage(src);
+  };
+
   return (
     <>
       <div className={styles.root}>
         {/* ═══ 1. 히어로 ═══ */}
         <section className={styles.hero}>
           <div className={styles.heroInner}>
-            <HeroSlideshow images={safeImages.main} />
+            <HeroSlideshow images={safeImages.main} onPress={setViewerImage} />
             <div className={styles.heroInnerFrame} />
           </div>
         </section>
@@ -755,15 +716,21 @@ const ClassicElegantTemplate = ({
                 ref={galleryScrollRef}
                 className={styles.galleryScrollWrap}
                 onWheel={handleGalleryWheel}
+                onPointerDown={handleGalleryPointerDown}
+                onPointerMove={handleGalleryPointerMove}
+                onPointerUp={handleGalleryPointerEnd}
+                onPointerCancel={handleGalleryPointerEnd}
               >
                 <div className={styles.galleryGrid}>
                   {galleryItems.map((item, idx) => (
-                    <div
+                    <button
+                      type="button"
                       key={idx}
                       className={styles.galleryCard}
+                      onClick={() => handleGalleryImagePress(item.src)}
                     >
                       <img src={item.src} alt="" className={styles.galleryImage} draggable={false} />
-                    </div>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -912,41 +879,25 @@ const ClassicElegantTemplate = ({
         <div className={styles.toast}><span>{toast.message}</span></div>
       )}
 
-      {/* ═══ 이미지 뷰어: 사진은 크게 보되, 뷰어 안 추가 확대는 막음 ═══ */}
       {viewerImage && (
         <div
           className={styles.viewerBg}
           onClick={() => setViewerImage(null)}
-          onWheel={(event) => {
-            if (event.ctrlKey) event.preventDefault();
-          }}
-          onDoubleClick={(event) => {
-            event.preventDefault();
-            event.stopPropagation();
-          }}
           onTouchStart={(event) => {
-            if (event.touches.length > 1) event.preventDefault();
+            if (event.touches.length > 1 && event.cancelable) event.preventDefault();
           }}
           onTouchMove={(event) => {
-            if (event.touches.length > 1) event.preventDefault();
+            if (event.touches.length > 1 && event.cancelable) event.preventDefault();
+          }}
+          onDoubleClick={(event) => {
+            if (event.cancelable) event.preventDefault();
           }}
         >
           <button
             type="button"
-            data-viewer-close="true"
             className={styles.viewerClose}
-            onPointerDown={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              setViewerImage(null);
-            }}
-            onTouchEnd={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              setViewerImage(null);
-            }}
+            aria-label="사진 닫기"
             onClick={(event) => {
-              event.preventDefault();
               event.stopPropagation();
               setViewerImage(null);
             }}
@@ -959,10 +910,6 @@ const ClassicElegantTemplate = ({
             className={styles.viewerImage}
             draggable={false}
             onClick={(event) => event.stopPropagation()}
-            onDoubleClick={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-            }}
           />
         </div>
       )}
