@@ -267,6 +267,7 @@ const GardenTemplate = ({ eventData }) => (
 
 export default function TemplatePage({
   serverEvent = null,
+  serverOgEvent = null,
   serverTemplate = null,
   serverEventId = null,
 }) {
@@ -434,7 +435,7 @@ export default function TemplatePage({
   };
 
   if (loading || !fontsLoaded) {
-    const ogEvent = serverEvent;
+    const ogEvent = serverOgEvent || serverEvent;
     const ogEventId = serverEventId;
     const ogTemplate = serverTemplate || template;
     const loadingOgImageUrl = ogEventId
@@ -583,6 +584,7 @@ export async function getServerSideProps(context) {
     return {
       props: {
         serverEvent: null,
+        serverOgEvent: null,
         serverTemplate,
         serverEventId: null,
       },
@@ -597,6 +599,7 @@ export async function getServerSideProps(context) {
       return {
         props: {
           serverEvent: null,
+          serverOgEvent: null,
           serverTemplate,
           serverEventId: eventId,
         },
@@ -624,23 +627,27 @@ export async function getServerSideProps(context) {
       return {
         props: {
           serverEvent: null,
+          serverOgEvent: null,
           serverTemplate,
           serverEventId: eventId,
         },
       };
     }
 
-    const serverEvent = {
-      ...event,
-      additional_info: parseJsonField(event.additional_info, {}),
-      image_urls: parseJsonArrayItems(event.image_urls),
-      family_relations: parseJsonField(event.family_relations, event.family_relations || []),
-      preset_amounts: parseJsonField(event.preset_amounts, event.preset_amounts || []),
+    const serverOgEvent = {
+      id: event.id,
+      groom_name: event.groom_name || null,
+      bride_name: event.bride_name || null,
+      event_date: event.event_date || null,
+      ceremony_time: event.ceremony_time || null,
+      location: event.location || null,
+      template_style: event.template_style || null,
     };
 
     return {
       props: {
-        serverEvent,
+        serverEvent: null,
+        serverOgEvent,
         serverTemplate: serverTemplate || event.template_style || null,
         serverEventId: eventId,
       },
@@ -650,6 +657,7 @@ export async function getServerSideProps(context) {
     return {
       props: {
         serverEvent: null,
+        serverOgEvent: null,
         serverTemplate,
         serverEventId: eventId,
       },
