@@ -283,6 +283,9 @@ export default async function handler(req) {
     {
       width: 1200,
       height: 630,
+      headers: {
+        'Cache-Control': 'public, max-age=300, s-maxage=300',
+      },
       fonts: fontData
         ? [
             {

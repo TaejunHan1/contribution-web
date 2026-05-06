@@ -22,6 +22,7 @@ const BackgroundMusicPlayer = dynamic(() => import('../../components/BackgroundM
 const WeddingIntroOverlay = dynamic(() => import('../../components/WeddingIntroOverlay'), { ssr: false });
 
 const DEFAULT_SITE_URL = 'https://jeongdamm.com';
+const OG_IMAGE_VERSION = '3';
 
 const parseJsonField = (value, fallback) => {
   if (!value) return fallback;
@@ -62,9 +63,16 @@ const buildInvitationDescription = (event) => {
 };
 
 const buildPublicUrl = (path = '') => {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || DEFAULT_SITE_URL;
+  const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  const siteUrl = configuredSiteUrl && !configuredSiteUrl.includes('contribution-web-srgt.vercel.app')
+    ? configuredSiteUrl
+    : DEFAULT_SITE_URL;
   return `${siteUrl.replace(/\/$/, '')}${path}`;
 };
+
+const buildOgImageUrl = (eventId, template) => buildPublicUrl(
+  `/api/og?eventId=${encodeURIComponent(eventId)}&template=${encodeURIComponent(template)}&ogv=${OG_IMAGE_VERSION}`
+);
 
 // 템플릿 컴포넌트들 (나중에 구현)
 const ModernTemplate = ({ eventData }) => (
@@ -279,7 +287,7 @@ export default function TemplatePage({
     ? buildPublicUrl(`/template/${currentEventId}?template=${template}`)
     : buildPublicUrl();
   const ogImageUrl = currentEventId
-    ? buildPublicUrl(`/api/og?eventId=${currentEventId}&template=${template}`)
+    ? buildOgImageUrl(currentEventId, template)
     : buildPublicUrl('/api/og');
 
   const [event, setEvent] = useState(serverEvent);
@@ -439,7 +447,7 @@ export default function TemplatePage({
     const ogEventId = serverEventId;
     const ogTemplate = serverTemplate || template;
     const loadingOgImageUrl = ogEventId
-      ? buildPublicUrl(`/api/og?eventId=${ogEventId}&template=${ogTemplate}`)
+      ? buildOgImageUrl(ogEventId, ogTemplate)
       : ogImageUrl;
     const loadingTitle = buildInvitationTitle(ogEvent);
     const loadingDescription = buildInvitationDescription(ogEvent);
