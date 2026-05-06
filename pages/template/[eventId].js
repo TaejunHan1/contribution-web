@@ -235,24 +235,42 @@ export default function TemplatePage() {
   useEffect(() => {
     const viewport = document.querySelector('meta[name="viewport"]');
     const previousViewport = viewport?.getAttribute('content');
+    const previousHtmlTouchAction = document.documentElement.style.touchAction;
+    const previousBodyTouchAction = document.body.style.touchAction;
+    const previousHtmlOverscroll = document.documentElement.style.overscrollBehavior;
+    const previousBodyOverscroll = document.body.style.overscrollBehavior;
+    const previousHtmlUserSelect = document.documentElement.style.userSelect;
+    const previousBodyUserSelect = document.body.style.userSelect;
+
     if (viewport) {
       viewport.setAttribute(
         'content',
         'width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover'
       );
     }
+    document.documentElement.style.touchAction = 'pan-y';
+    document.body.style.touchAction = 'pan-y';
+    document.documentElement.style.overscrollBehavior = 'none';
+    document.body.style.overscrollBehavior = 'none';
+    document.documentElement.style.userSelect = 'none';
+    document.body.style.userSelect = 'none';
 
     let lastTouchEnd = 0;
+    const isZoomControlException = (event) =>
+      event.target?.closest?.('[data-viewer-close="true"]');
     const preventEvent = (event) => {
+      if (isZoomControlException(event)) return;
       event.preventDefault();
       event.stopPropagation();
     };
     const preventMultiTouch = (event) => {
+      if (isZoomControlException(event)) return;
       if (event.touches && event.touches.length > 1) {
         preventEvent(event);
       }
     };
     const preventDoubleTap = (event) => {
+      if (isZoomControlException(event)) return;
       const now = Date.now();
       if (now - lastTouchEnd <= 350) {
         preventEvent(event);
@@ -279,6 +297,7 @@ export default function TemplatePage() {
       target.addEventListener('touchstart', preventMultiTouch, listenerOptions);
       target.addEventListener('touchmove', preventMultiTouch, listenerOptions);
       target.addEventListener('touchend', preventDoubleTap, listenerOptions);
+      target.addEventListener('touchcancel', preventDoubleTap, listenerOptions);
       target.addEventListener('gesturestart', preventEvent, listenerOptions);
       target.addEventListener('gesturechange', preventEvent, listenerOptions);
       target.addEventListener('gestureend', preventEvent, listenerOptions);
@@ -292,6 +311,7 @@ export default function TemplatePage() {
         target.removeEventListener('touchstart', preventMultiTouch, true);
         target.removeEventListener('touchmove', preventMultiTouch, true);
         target.removeEventListener('touchend', preventDoubleTap, true);
+        target.removeEventListener('touchcancel', preventDoubleTap, true);
         target.removeEventListener('gesturestart', preventEvent, true);
         target.removeEventListener('gesturechange', preventEvent, true);
         target.removeEventListener('gestureend', preventEvent, true);
@@ -302,6 +322,12 @@ export default function TemplatePage() {
       if (viewport && previousViewport) {
         viewport.setAttribute('content', previousViewport);
       }
+      document.documentElement.style.touchAction = previousHtmlTouchAction;
+      document.body.style.touchAction = previousBodyTouchAction;
+      document.documentElement.style.overscrollBehavior = previousHtmlOverscroll;
+      document.body.style.overscrollBehavior = previousBodyOverscroll;
+      document.documentElement.style.userSelect = previousHtmlUserSelect;
+      document.body.style.userSelect = previousBodyUserSelect;
     };
   }, []);
 
@@ -396,7 +422,11 @@ export default function TemplatePage() {
       <>
         <Head>
           <title>{ogEvent ? `${ogEvent.groom_name} ♡ ${ogEvent.bride_name} 결혼식에 초대합니다` : '청첩장 로딩 중...'}</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover" />
+          <meta
+            key="viewport"
+            name="viewport"
+            content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover"
+          />
           {ogEvent && (<>
             <meta property="og:title" content={`${ogEvent.groom_name} ♡ ${ogEvent.bride_name} 결혼식에 초대합니다`} />
             <meta property="og:description" content={`${ogEvent.event_date ? new Date(ogEvent.event_date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : ''} ${ogEvent.ceremony_time || ''}${ogEvent.location ? ` · ${ogEvent.location}` : ''}`} />
@@ -468,7 +498,11 @@ export default function TemplatePage() {
       <Head>
         <title>{event.event_name} - {getTemplateTitle()}</title>
         <meta name="description" content={`${event.groom_name} & ${event.bride_name}의 결혼식에 초대합니다`} />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover" />
+        <meta
+          key="viewport"
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover"
+        />
         
         {/* 웹폰트 프리로드 */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
