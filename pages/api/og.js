@@ -20,6 +20,19 @@ const THEMES = {
 };
 
 const DEFAULT_THEME = THEMES['classic-elegant'];
+const TEMPLATE_BACKGROUNDS = [
+  '/og-templates/wedding-01.png',
+  '/og-templates/wedding-02.png',
+  '/og-templates/wedding-03.png',
+  '/og-templates/wedding-04.png',
+];
+
+const TEMPLATE_NAME_POSITIONS = [
+  { left: 755, top: 401 }, // wedding-01
+  { left: 740, top: 401 }, // wedding-02
+  { left: 740, top: 382 }, // wedding-03
+  { left: 740, top: 376 }, // wedding-04
+];
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -27,6 +40,8 @@ export default async function handler(req) {
   const { searchParams } = new URL(req.url);
   const eventId = searchParams.get('eventId');
   const template = searchParams.get('template') || 'classic-elegant';
+  const ogTemplateParam = Number(searchParams.get('ogTemplate'));
+  const origin = new URL(req.url).origin;
 
   // 이벤트 데이터 Supabase REST로 직접 조회
   let eventData = null;
@@ -51,33 +66,27 @@ export default async function handler(req) {
     // 데이터 없이 기본값으로 렌더링
   }
 
-  // 한국어 폰트 로딩
-  let fontData;
-  try {
-    const css = await fetch(
-      'https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700',
-      {
-        headers: {
-          'User-Agent':
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        },
-      }
-    ).then((r) => r.text());
-
-    const woff2Url = css.match(/url\(([^)]+\.woff2)\)/)?.[1];
-    if (woff2Url) {
-      fontData = await fetch(woff2Url).then((r) => r.arrayBuffer());
-    }
-  } catch (_) {
-    // 폰트 없이 렌더링
-  }
-
   const theme = THEMES[template] ?? DEFAULT_THEME;
 
   const groomName = eventData?.groom_name || '신랑';
   const brideName = eventData?.bride_name || '신부';
   const location = eventData?.location || '';
   const ceremonyTime = eventData?.ceremony_time || '';
+  const forcedTemplateIndex = Number.isInteger(ogTemplateParam)
+    ? Math.min(Math.max(ogTemplateParam - 1, 0), TEMPLATE_BACKGROUNDS.length - 1)
+    : null;
+  const templateIndex = forcedTemplateIndex ?? (eventId
+    ? [...eventId].reduce((sum, char) => sum + char.charCodeAt(0), 0) % TEMPLATE_BACKGROUNDS.length
+    : 0);
+  const backgroundPath = TEMPLATE_BACKGROUNDS[templateIndex];
+  const namePosition = TEMPLATE_NAME_POSITIONS[templateIndex] ?? TEMPLATE_NAME_POSITIONS[0];
+  const backgroundUrl = `${origin}${backgroundPath}`;
+  const hasTemplateBackground = await fetch(backgroundUrl, { method: 'HEAD' })
+    .then((res) => res.ok)
+    .catch(() => false);
+  const fontData = await fetch(`${origin}/fonts/NotoSansKR-Regular.otf`)
+    .then((res) => (res.ok ? res.arrayBuffer() : null))
+    .catch(() => null);
 
   let dateStr = '';
   if (eventData?.event_date) {
@@ -85,8 +94,52 @@ export default async function handler(req) {
     dateStr = `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 ${WEEKDAYS[d.getDay()]}요일`;
   }
 
-  return new ImageResponse(
-    (
+  const image = hasTemplateBackground ? (
+    <div
+      style={{
+        width: '1200px',
+        height: '630px',
+        display: 'flex',
+        position: 'relative',
+        fontFamily: 'NotoSansKR',
+        overflow: 'hidden',
+      }}
+    >
+      <img
+        src={backgroundUrl}
+        alt=""
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '1200px',
+          height: '630px',
+          objectFit: 'cover',
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          left: `${namePosition.left}px`,
+          top: `${namePosition.top}px`,
+          width: '390px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '14px',
+          color: '#6b5a48',
+          fontSize: '31px',
+          fontWeight: 400,
+          letterSpacing: '-0.2px',
+          textAlign: 'center',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        <span>{groomName}</span>
+        <span style={{ color: '#c79a4b', fontSize: '28px' }}>♥</span>
+        <span>{brideName}</span>
+      </div>
+    </div>
+  ) : (
       <div
         style={{
           width: '1200px',
@@ -96,7 +149,7 @@ export default async function handler(req) {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          fontFamily: fontData ? 'NotoSansKR' : 'sans-serif',
+          fontFamily: 'NotoSansKR',
           position: 'relative',
         }}
       >
@@ -157,11 +210,11 @@ export default async function handler(req) {
               marginBottom: '36px',
             }}
           >
-            <span style={{ color: theme.text, fontSize: '72px', fontWeight: '700' }}>
+            <span style={{ color: theme.text, fontSize: '72px', fontWeight: '400' }}>
               {groomName}
             </span>
             <span style={{ color: theme.accent, fontSize: '52px' }}>♡</span>
-            <span style={{ color: theme.text, fontSize: '72px', fontWeight: '700' }}>
+            <span style={{ color: theme.text, fontSize: '72px', fontWeight: '400' }}>
               {brideName}
             </span>
           </div>
@@ -192,7 +245,7 @@ export default async function handler(req) {
 
           {/* 장소 */}
           {location ? (
-            <div style={{ color: theme.accent, fontSize: '22px', fontWeight: '700' }}>
+            <div style={{ color: theme.accent, fontSize: '22px', fontWeight: '400' }}>
               {location}
             </div>
           ) : null}
@@ -212,12 +265,22 @@ export default async function handler(req) {
           정담 · 디지털 경조사
         </div>
       </div>
-    ),
+  );
+
+  return new ImageResponse(
+    image,
     {
       width: 1200,
       height: 630,
       fonts: fontData
-        ? [{ name: 'NotoSansKR', data: fontData, style: 'normal', weight: 400 }]
+        ? [
+            {
+              name: 'NotoSansKR',
+              data: fontData,
+              style: 'normal',
+              weight: 400,
+            },
+          ]
         : [],
     }
   );
