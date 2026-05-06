@@ -215,6 +215,43 @@ const ClassicElegantTemplate = ({
   const arrivalModalCheckedRef = useRef(false);
   const galleryScrollRef = useRef(null);
 
+  useEffect(() => {
+    if (!viewerImage) return undefined;
+
+    const viewport = document.querySelector('meta[name="viewport"]');
+    const previousViewport = viewport?.getAttribute('content');
+    if (viewport) {
+      viewport.setAttribute(
+        'content',
+        'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'
+      );
+    }
+
+    const preventZoom = (event) => {
+      if (event.touches?.length > 1) {
+        event.preventDefault();
+      }
+    };
+    const preventGesture = (event) => event.preventDefault();
+
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('touchmove', preventZoom, { passive: false });
+    document.addEventListener('gesturestart', preventGesture, { passive: false });
+    document.addEventListener('gesturechange', preventGesture, { passive: false });
+    document.addEventListener('gestureend', preventGesture, { passive: false });
+
+    return () => {
+      document.body.style.overflow = '';
+      document.removeEventListener('touchmove', preventZoom);
+      document.removeEventListener('gesturestart', preventGesture);
+      document.removeEventListener('gesturechange', preventGesture);
+      document.removeEventListener('gestureend', preventGesture);
+      if (viewport && previousViewport) {
+        viewport.setAttribute('content', previousViewport);
+      }
+    };
+  }, [viewerImage]);
+
   // 후기 섹션 노출 여부
   const shouldShowReviews =
     allowMessages !== undefined
@@ -827,6 +864,9 @@ const ClassicElegantTemplate = ({
         <div
           className={styles.viewerBg}
           onClick={() => setViewerImage(null)}
+          onWheel={(event) => {
+            if (event.ctrlKey) event.preventDefault();
+          }}
           onTouchMove={(event) => {
             if (event.touches.length > 1) event.preventDefault();
           }}
