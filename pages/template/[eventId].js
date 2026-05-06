@@ -21,7 +21,7 @@ const FallingPetals = dynamic(() => import('../../components/FallingPetals'), { 
 const BackgroundMusicPlayer = dynamic(() => import('../../components/BackgroundMusicPlayer'), { ssr: false });
 const WeddingIntroOverlay = dynamic(() => import('../../components/WeddingIntroOverlay'), { ssr: false });
 
-const DEFAULT_SITE_URL = 'https://contribution-web-srgt.vercel.app';
+const DEFAULT_SITE_URL = 'https://jeongdamm.com';
 
 const parseJsonField = (value, fallback) => {
   if (!value) return fallback;
