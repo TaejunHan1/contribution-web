@@ -65,6 +65,7 @@ const DEFAULT_GREETING =
 
 const CAL_DAYS = ['일', '월', '화', '수', '목', '금', '토'];
 const PARKING_IMAGE_EVENT_ID = '640a5d7e-059d-46f5-bef2-7bae63ce93e1';
+const SKIP_INITIAL_WELCOME_EVENT_ID = PARKING_IMAGE_EVENT_ID;
 
 // ══════════════════════════════════════════════════════
 // 히어로 사진 크로스페이드
@@ -624,6 +625,7 @@ const ClassicElegantTemplate = ({
   };
 
   useEffect(() => {
+    if (eventData?.id === SKIP_INITIAL_WELCOME_EVENT_ID) return undefined;
     const t = setTimeout(() => checkAndShowWelcomeChoice(), 1200);
     return () => clearTimeout(t);
   }, []); // eslint-disable-line

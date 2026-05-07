@@ -2,10 +2,15 @@
 import React, { useState } from 'react';
 import styles from './WelcomeChoiceModal.module.css';
 
+const HIDDEN_WELCOME_EVENT_IDS = new Set([
+  '640a5d7e-059d-46f5-bef2-7bae63ce93e1',
+]);
+
 const WelcomeChoiceModal = ({ isOpen, onClose, onSelectGuestbook, onSelectContribution, eventData }) => {
   const [selectedOption, setSelectedOption] = useState('guestbook');
 
   if (!isOpen) return null;
+  if (HIDDEN_WELCOME_EVENT_IDS.has(eventData?.id || eventData?.event_id)) return null;
 
   const brideName = eventData?.bride_name || '하윤';
   const groomName = eventData?.groom_name || '민호';
