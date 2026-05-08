@@ -1,7 +1,6 @@
 // pages/api/send-verification.js - SMS 인증번호 발송 API
 import crypto from 'crypto';
 
-const TEST_PHONE = '+821058359358';
 const VERIFICATION_TTL_MS = 5 * 60 * 1000;
 
 const normalizeKoreanPhoneNumber = (phone) => {
@@ -213,19 +212,6 @@ export default async function handler(req, res) {
 
   try {
     const supabase = await createSupabaseClient();
-
-    if (String(phone).replace(/[^\d+]/g, '') === TEST_PHONE) {
-      await saveVerificationCode({
-        supabase,
-        phone,
-        verificationCode: '999999',
-      });
-
-      return res.status(200).json({
-        success: true,
-        message: '테스트 번호: 인증번호 999999를 입력하세요.',
-      });
-    }
 
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
     const message = `[정담] 인증번호는 ${verificationCode}입니다. 5분 내에 입력해주세요.`;
