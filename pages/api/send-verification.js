@@ -150,72 +150,6 @@ const sendSolapiSms = async ({ phone, message }) => {
   };
 };
 
-const sendTwilioSms = async ({ phone, message }) => {
-  const accountSid = process.env.TWILIO_ACCOUNT_SID;
-  const authToken = process.env.TWILIO_AUTH_TOKEN;
-  const messagingServiceSid = process.env.TWILIO_MESSAGE_SERVICE_SID;
-
-  if (!accountSid || !authToken || !messagingServiceSid) {
-    return {
-      success: false,
-      skipped: true,
-      provider: 'twilio',
-      error: 'Twilio 환경변수가 설정되지 않았습니다.',
-    };
-  }
-
-  const auth = Buffer.from(`${accountSid}:${authToken}`).toString('base64');
-  const formBody = [
-    `To=${encodeURIComponent(phone)}`,
-    `MessagingServiceSid=${encodeURIComponent(messagingServiceSid)}`,
-    `Body=${encodeURIComponent(message)}`,
-  ].join('&');
-
-  let response;
-
-  try {
-    response = await fetchWithTimeout(
-      `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Basic ${auth}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: formBody,
-      }
-    );
-  } catch (error) {
-    return {
-      success: false,
-      provider: 'twilio',
-      error: error?.name === 'AbortError'
-        ? 'Twilio SMS 요청 시간이 초과되었습니다.'
-        : 'Twilio SMS 발송 중 네트워크 오류가 발생했습니다.',
-    };
-  }
-
-  const result = await response.json().catch(() => ({}));
-
-  if (!response.ok) {
-    return {
-      success: false,
-      provider: 'twilio',
-      error: result.message || 'Twilio SMS 발송에 실패했습니다.',
-      result,
-    };
-  }
-
-  return {
-    success: true,
-    provider: 'twilio',
-    sid: result.sid,
-    result,
-  };
-};
-
-const isKoreanMobilePhone = (phone) => /^01\d{8,9}$/.test(normalizeKoreanPhoneNumber(phone));
-
 const createSupabaseClient = async () => {
   const { createClient } = await import('@supabase/supabase-js');
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -302,12 +236,7 @@ export default async function handler(req, res) {
       verificationCode,
     });
 
-    const solapiResult = await sendSolapiSms({ phone, message });
-    const smsResult = solapiResult.success
-      ? solapiResult
-      : isKoreanMobilePhone(phone)
-        ? solapiResult
-        : await sendTwilioSms({ phone, message });
+    const smsResult = await sendSolapiSms({ phone, message });
 
     if (!smsResult.success) {
       await deletePendingVerificationCode({ supabase, phone });
@@ -315,12 +244,10 @@ export default async function handler(req, res) {
         phone,
         normalizedPhone: normalizeKoreanPhoneNumber(phone),
         solapi: {
-          skipped: solapiResult.skipped,
-          error: solapiResult.error,
-          result: solapiResult.result,
+          skipped: smsResult.skipped,
+          error: smsResult.error,
+          result: smsResult.result,
         },
-        finalProvider: smsResult.provider,
-        finalError: smsResult.error,
       });
 
       return res.status(500).json({
