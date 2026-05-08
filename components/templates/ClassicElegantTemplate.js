@@ -116,6 +116,7 @@ const DEFAULT_GREETING =
 const CAL_DAYS = ['일', '월', '화', '수', '목', '금', '토'];
 const PARKING_IMAGE_EVENT_ID = '640a5d7e-059d-46f5-bef2-7bae63ce93e1';
 const SKIP_INITIAL_WELCOME_EVENT_ID = PARKING_IMAGE_EVENT_ID;
+const SKIP_POST_GUESTBOOK_CONTRIBUTION_EVENT_ID = PARKING_IMAGE_EVENT_ID;
 
 // ══════════════════════════════════════════════════════
 // 히어로 사진 크로스페이드
@@ -611,6 +612,7 @@ const ClassicElegantTemplate = ({
     return true;
   };
   const handleTriggerArrival = () => {
+    if (eventData?.id === SKIP_POST_GUESTBOOK_CONTRIBUTION_EVENT_ID) return;
     const existing = myContribution?.amount || myContribution?.contributionAmount;
     if (existing) return;
     setTimeout(() => setShowContributionModal(true), 300);
@@ -1167,7 +1169,11 @@ const ClassicElegantTemplate = ({
         onClose={handleGuestbookModalClose}
         onSubmit={handleGuestbookSubmit}
         eventData={eventData}
-        onTriggerArrival={handleTriggerArrival}
+        onTriggerArrival={
+          eventData?.id === SKIP_POST_GUESTBOOK_CONTRIBUTION_EVENT_ID
+            ? undefined
+            : handleTriggerArrival
+        }
         onBack={() => { setShowGuestbookModal(false); setShowWelcomeChoice(true); }}
       />
       <EditGuestbookModal
