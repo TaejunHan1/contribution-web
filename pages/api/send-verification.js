@@ -1,4 +1,262 @@
 // pages/api/send-verification.js - SMS 인증번호 발송 API
+import crypto from 'crypto';
+
+const TEST_PHONE = '+821058359358';
+const VERIFICATION_TTL_MS = 5 * 60 * 1000;
+
+const normalizeKoreanPhoneNumber = (phone) => {
+  const value = String(phone || '').replace(/[^\d+]/g, '');
+
+  if (value.startsWith('+82')) {
+    return `0${value.slice(3)}`.replace(/[^\d]/g, '');
+  }
+
+  if (value.startsWith('82')) {
+    return `0${value.slice(2)}`.replace(/[^\d]/g, '');
+  }
+
+  return value.replace(/[^\d]/g, '');
+};
+
+const createSolapiAuthHeader = (apiKey, apiSecret) => {
+  const date = new Date().toISOString();
+  const salt = crypto.randomBytes(16).toString('hex');
+  const signature = crypto
+    .createHmac('sha256', apiSecret)
+    .update(date + salt)
+    .digest('hex');
+
+  return `HMAC-SHA256 apiKey=${apiKey}, date=${date}, salt=${salt}, signature=${signature}`;
+};
+
+const getSolapiApiKey = () => (
+  process.env.SOLAPI_API_KEY ||
+  process.env.EXPO_PUBLIC_SOLAPI_API_KEY ||
+  ''
+);
+
+const getSolapiApiSecret = () => (
+  process.env.SOLAPI_API_SECRET ||
+  process.env.EXPO_PUBLIC_SOLAPI_API_SECRET ||
+  ''
+);
+
+const getSolapiSenderNumber = () => (
+  process.env.SOLAPI_SENDER_NUMBER ||
+  process.env.SOLAPI_SENDER_PHONE_NUMBER ||
+  process.env.EXPO_PUBLIC_SOLAPI_SENDER_PHONE_NUMBER ||
+  ''
+).replace(/[^\d]/g, '');
+
+const fetchWithTimeout = async (url, options, timeoutMs = 15000) => {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
+};
+
+const sendSolapiSms = async ({ phone, message }) => {
+  const apiKey = getSolapiApiKey();
+  const apiSecret = getSolapiApiSecret();
+  const fromNumber = getSolapiSenderNumber();
+  const toNumber = normalizeKoreanPhoneNumber(phone);
+
+  if (!apiKey || !apiSecret || !fromNumber) {
+    return {
+      success: false,
+      skipped: true,
+      provider: 'solapi',
+      error: 'SOLAPI 환경변수가 설정되지 않았습니다.',
+    };
+  }
+
+  if (!/^01\d{8,9}$/.test(fromNumber)) {
+    return {
+      success: false,
+      provider: 'solapi',
+      error: '발신번호 형식이 올바르지 않습니다.',
+    };
+  }
+
+  if (!/^01\d{8,9}$/.test(toNumber)) {
+    return {
+      success: false,
+      provider: 'solapi',
+      error: '수신 휴대폰 번호 형식이 올바르지 않습니다.',
+    };
+  }
+
+  let response;
+
+  try {
+    response = await fetchWithTimeout('https://api.solapi.com/messages/v4/send', {
+      method: 'POST',
+      headers: {
+        Authorization: createSolapiAuthHeader(apiKey, apiSecret),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: {
+          to: toNumber,
+          from: fromNumber,
+          text: message,
+        },
+      }),
+    });
+  } catch (error) {
+    return {
+      success: false,
+      provider: 'solapi',
+      error: error?.name === 'AbortError'
+        ? 'SOLAPI 문자 발송 요청 시간이 초과되었습니다.'
+        : 'SOLAPI 문자 발송 중 네트워크 오류가 발생했습니다.',
+    };
+  }
+
+  const responseText = await response.text();
+  let result = {};
+
+  try {
+    result = responseText ? JSON.parse(responseText) : {};
+  } catch {
+    result = { message: responseText };
+  }
+
+  if (!response.ok) {
+    return {
+      success: false,
+      provider: 'solapi',
+      error:
+        result.errorMessage ||
+        result.message ||
+        result.error ||
+        'SOLAPI 문자 발송에 실패했습니다.',
+      result,
+    };
+  }
+
+  return {
+    success: true,
+    provider: 'solapi',
+    sid: result.messageId || result.groupId || result?.message?.messageId || null,
+    result,
+  };
+};
+
+const sendTwilioSms = async ({ phone, message }) => {
+  const accountSid = process.env.TWILIO_ACCOUNT_SID;
+  const authToken = process.env.TWILIO_AUTH_TOKEN;
+  const messagingServiceSid = process.env.TWILIO_MESSAGE_SERVICE_SID;
+
+  if (!accountSid || !authToken || !messagingServiceSid) {
+    return {
+      success: false,
+      skipped: true,
+      provider: 'twilio',
+      error: 'Twilio 환경변수가 설정되지 않았습니다.',
+    };
+  }
+
+  const auth = Buffer.from(`${accountSid}:${authToken}`).toString('base64');
+  const formBody = [
+    `To=${encodeURIComponent(phone)}`,
+    `MessagingServiceSid=${encodeURIComponent(messagingServiceSid)}`,
+    `Body=${encodeURIComponent(message)}`,
+  ].join('&');
+
+  let response;
+
+  try {
+    response = await fetchWithTimeout(
+      `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Basic ${auth}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formBody,
+      }
+    );
+  } catch (error) {
+    return {
+      success: false,
+      provider: 'twilio',
+      error: error?.name === 'AbortError'
+        ? 'Twilio SMS 요청 시간이 초과되었습니다.'
+        : 'Twilio SMS 발송 중 네트워크 오류가 발생했습니다.',
+    };
+  }
+
+  const result = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    return {
+      success: false,
+      provider: 'twilio',
+      error: result.message || 'Twilio SMS 발송에 실패했습니다.',
+      result,
+    };
+  }
+
+  return {
+    success: true,
+    provider: 'twilio',
+    sid: result.sid,
+    result,
+  };
+};
+
+const createSupabaseClient = async () => {
+  const { createClient } = await import('@supabase/supabase-js');
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !supabaseServiceKey) {
+    throw new Error('Supabase 환경변수가 설정되지 않았습니다.');
+  }
+
+  return createClient(supabaseUrl, supabaseServiceKey);
+};
+
+const saveVerificationCode = async ({ supabase, phone, verificationCode }) => {
+  await supabase
+    .from('sms_verifications')
+    .delete()
+    .eq('phone', phone)
+    .eq('is_verified', false);
+
+  const expiresAt = new Date(Date.now() + VERIFICATION_TTL_MS).toISOString();
+  const { error } = await supabase
+    .from('sms_verifications')
+    .insert([{
+      phone,
+      verification_code: verificationCode,
+      expires_at: expiresAt,
+      is_verified: false,
+      attempts_count: 0,
+    }]);
+
+  if (error) {
+    throw error;
+  }
+};
+
+const deletePendingVerificationCode = async ({ supabase, phone }) => {
+  await supabase
+    .from('sms_verifications')
+    .delete()
+    .eq('phone', phone)
+    .eq('is_verified', false);
+};
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -10,128 +268,75 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: '핸드폰번호가 누락되었습니다.' });
   }
 
-  // 테스트 번호 바이패스 - SMS 발송 없이 바로 성공 (인증번호: 999999)
-  const TEST_PHONE = '+821058359358';
-  if (phone === TEST_PHONE) {
-    const { createClient } = await import('@supabase/supabase-js');
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY
-    );
-    await supabase.from('sms_verifications').delete().eq('phone', phone).eq('is_verified', false);
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
-    await supabase.from('sms_verifications').insert([{
-      phone, verification_code: '999999', expires_at: expiresAt, is_verified: false, attempts_count: 0
-    }]);
-    return res.status(200).json({ success: true, message: '테스트 번호: 인증번호 999999를 입력하세요.' });
+  if (!/^\+?82\d{9,10}$|^01\d{8,9}$/.test(String(phone).replace(/[^\d+]/g, ''))) {
+    return res.status(400).json({
+      success: false,
+      error: '올바른 휴대폰 번호를 입력해주세요.',
+    });
   }
 
   try {
-    // Twilio 계정 정보 (환경변수)
-    const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
-    const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
-    const TWILIO_MESSAGE_SERVICE_SID = process.env.TWILIO_MESSAGE_SERVICE_SID;
+    const supabase = await createSupabaseClient();
 
-    if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_MESSAGE_SERVICE_SID) {
-      console.error('Twilio 환경변수가 설정되지 않았습니다');
-      return res.status(500).json({ 
-        success: false, 
-        error: 'SMS 설정 오류' 
+    if (String(phone).replace(/[^\d+]/g, '') === TEST_PHONE) {
+      await saveVerificationCode({
+        supabase,
+        phone,
+        verificationCode: '999999',
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: '테스트 번호: 인증번호 999999를 입력하세요.',
       });
     }
 
-    // 인증번호 생성
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const message = `[정담] 인증번호는 ${verificationCode}입니다. 5분 내에 입력해주세요.`;
 
-    // Twilio 인증 헤더
-    const auth = Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString('base64');
-
-    // SMS 메시지
-    const message = `[경조사 청첩장] 인증번호는 ${verificationCode}입니다. 5분 내에 입력해주세요.`;
-
-    // Twilio API 요청
-    const formBody = [
-      `To=${encodeURIComponent(phone)}`,
-      `MessagingServiceSid=${encodeURIComponent(TWILIO_MESSAGE_SERVICE_SID)}`,
-      `Body=${encodeURIComponent(message)}`
-    ].join('&');
-
-    const twilioResponse = await fetch(
-      `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Basic ${auth}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: formBody,
-      }
-    );
-
-    const twilioResult = await twilioResponse.json();
-
-    if (!twilioResponse.ok) {
-      console.error('Twilio SMS 발송 실패:', twilioResult);
-      return res.status(500).json({ 
-        success: false, 
-        error: 'SMS 발송에 실패했습니다.' 
-      });
-    }
-
-    // Supabase에 인증번호 저장
-    const { createClient } = await import('@supabase/supabase-js');
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY; // 서버 측에서는 Service Role Key 사용
-    
-    if (!supabaseUrl || !supabaseServiceKey) {
-      console.error('Supabase 환경변수가 설정되지 않았습니다');
-      return res.status(500).json({ 
-        success: false, 
-        error: 'Supabase 설정 오류' 
-      });
-    }
-    
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    // 기존 인증번호 삭제
-    await supabase
-      .from('sms_verifications')
-      .delete()
-      .eq('phone', phone)
-      .eq('is_verified', false);
-
-    // 새 인증번호 저장
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
-    const { error: insertError } = await supabase
-      .from('sms_verifications')
-      .insert([{
-        phone: phone,
-        verification_code: verificationCode,
-        expires_at: expiresAt,
-        is_verified: false,
-        attempts_count: 0
-      }]);
-
-    if (insertError) {
-      console.error('인증번호 DB 저장 오류:', insertError);
-      return res.status(500).json({ 
-        success: false, 
-        error: '인증번호 저장 중 오류가 발생했습니다.' 
-      });
-    }
-
-    console.log('SMS 인증번호 발송 성공:', { phone, sid: twilioResult.sid });
-
-    return res.status(200).json({ 
-      success: true,
-      message: '인증번호가 발송되었습니다.'
+    await saveVerificationCode({
+      supabase,
+      phone,
+      verificationCode,
     });
 
+    const solapiResult = await sendSolapiSms({ phone, message });
+    const smsResult = solapiResult.success
+      ? solapiResult
+      : await sendTwilioSms({ phone, message });
+
+    if (!smsResult.success) {
+      await deletePendingVerificationCode({ supabase, phone });
+      console.error('SMS 발송 실패:', {
+        solapi: {
+          skipped: solapiResult.skipped,
+          error: solapiResult.error,
+        },
+        finalProvider: smsResult.provider,
+        finalError: smsResult.error,
+      });
+
+      return res.status(500).json({
+        success: false,
+        error: 'SMS 발송에 실패했습니다. 잠시 후 다시 시도해주세요.',
+      });
+    }
+
+    console.log('SMS 인증번호 발송 성공:', {
+      provider: smsResult.provider,
+      phone,
+      sid: smsResult.sid,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: '인증번호가 발송되었습니다.',
+    });
   } catch (error) {
     console.error('SMS 발송 API 오류:', error);
-    return res.status(500).json({ 
-      success: false, 
-      error: '서버 오류가 발생했습니다.' 
+    return res.status(500).json({
+      success: false,
+      error: '서버 오류가 발생했습니다.',
     });
   }
 }
