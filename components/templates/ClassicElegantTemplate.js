@@ -63,19 +63,6 @@ const formatCeremonyTime = (time) => {
   return `${period} ${displayHour}시${minuteText}`;
 };
 
-const formatWeddingDate = (dateValue) => {
-  const date = new Date(dateValue);
-  if (Number.isNaN(date.getTime())) return '';
-
-  return new Intl.DateTimeFormat('ko-KR', {
-    timeZone: 'Asia/Seoul',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    weekday: 'long',
-  }).format(date);
-};
-
 const trimFamilyName = (name) => {
   const clean = (name || '').trim();
   if (clean.length <= 2) return clean;
@@ -174,12 +161,12 @@ const ElegantCalendar = ({ targetDate, ceremonyTime, dDayText, groomName, brideN
       <div className={styles.calMonthYear}>
         {year} / {String(month + 1).padStart(2, '0')}
       </div>
-      <div className={styles.weddingDateInfo}>
-        <p className={styles.weddingDateText}>{formatWeddingDate(targetDate)}</p>
-        {ceremonyTime ? (
-          <p className={styles.weddingTimeText}>{formatCeremonyTime(ceremonyTime)}</p>
-        ) : null}
-      </div>
+      {ceremonyTime ? (
+        <div className={styles.weddingTimeInfo}>
+          <span className={styles.weddingTimeLabel}>TIME</span>
+          <span className={styles.weddingTimeText}>{formatCeremonyTime(ceremonyTime)}</span>
+        </div>
+      ) : null}
       <div className={styles.calendarWrap}>
         <div className={styles.calDayHeaderRow}>
           {CAL_DAYS.map((d, i) => (

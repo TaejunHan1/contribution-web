@@ -214,6 +214,8 @@ const sendTwilioSms = async ({ phone, message }) => {
   };
 };
 
+const isKoreanMobilePhone = (phone) => /^01\d{8,9}$/.test(normalizeKoreanPhoneNumber(phone));
+
 const createSupabaseClient = async () => {
   const { createClient } = await import('@supabase/supabase-js');
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -303,14 +305,19 @@ export default async function handler(req, res) {
     const solapiResult = await sendSolapiSms({ phone, message });
     const smsResult = solapiResult.success
       ? solapiResult
-      : await sendTwilioSms({ phone, message });
+      : isKoreanMobilePhone(phone)
+        ? solapiResult
+        : await sendTwilioSms({ phone, message });
 
     if (!smsResult.success) {
       await deletePendingVerificationCode({ supabase, phone });
       console.error('SMS 발송 실패:', {
+        phone,
+        normalizedPhone: normalizeKoreanPhoneNumber(phone),
         solapi: {
           skipped: solapiResult.skipped,
           error: solapiResult.error,
+          result: solapiResult.result,
         },
         finalProvider: smsResult.provider,
         finalError: smsResult.error,
@@ -325,6 +332,7 @@ export default async function handler(req, res) {
     console.log('SMS 인증번호 발송 성공:', {
       provider: smsResult.provider,
       phone,
+      normalizedPhone: normalizeKoreanPhoneNumber(phone),
       sid: smsResult.sid,
     });
 
