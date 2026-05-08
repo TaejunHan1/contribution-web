@@ -26,6 +26,56 @@ const formatPhone = (phone) => {
   return phone || '';
 };
 
+const formatGuestbookDateTime = (dateValue) => {
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) return '';
+
+  return new Intl.DateTimeFormat('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  })
+    .format(date)
+    .replace(/\.\s?/g, '. ')
+    .replace(/\s+/g, ' ')
+    .trim();
+};
+
+const formatCeremonyTime = (time) => {
+  const value = String(time || '').trim();
+  if (!value) return '';
+
+  const match = value.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+  if (!match) return value;
+
+  const hour = Number(match[1]);
+  const minute = Number(match[2]);
+  if (Number.isNaN(hour) || Number.isNaN(minute)) return value;
+
+  const period = hour < 12 ? '오전' : '오후';
+  const displayHour = hour % 12 || 12;
+  const minuteText = minute > 0 ? ` ${minute}분` : '';
+
+  return `${period} ${displayHour}시${minuteText}`;
+};
+
+const formatWeddingDate = (dateValue) => {
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) return '';
+
+  return new Intl.DateTimeFormat('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long',
+  }).format(date);
+};
+
 const trimFamilyName = (name) => {
   const clean = (name || '').trim();
   if (clean.length <= 2) return clean;
@@ -109,7 +159,7 @@ const HeroSlideshow = ({ images, onPress }) => {
 // ══════════════════════════════════════════════════════
 // 달력 (결혼일 하트 표시, 2026 / 05 포맷)
 // ══════════════════════════════════════════════════════
-const ElegantCalendar = ({ targetDate, dDayText, groomName, brideName }) => {
+const ElegantCalendar = ({ targetDate, ceremonyTime, dDayText, groomName, brideName }) => {
   const wd = new Date(targetDate);
   if (isNaN(wd.getTime())) return null;
   const year = wd.getFullYear();
@@ -122,6 +172,12 @@ const ElegantCalendar = ({ targetDate, dDayText, groomName, brideName }) => {
     <div className={styles.calendarBlock}>
       <div className={styles.calMonthYear}>
         {year} / {String(month + 1).padStart(2, '0')}
+      </div>
+      <div className={styles.weddingDateInfo}>
+        <p className={styles.weddingDateText}>{formatWeddingDate(targetDate)}</p>
+        {ceremonyTime ? (
+          <p className={styles.weddingTimeText}>{formatCeremonyTime(ceremonyTime)}</p>
+        ) : null}
       </div>
       <div className={styles.calendarWrap}>
         <div className={styles.calDayHeaderRow}>
@@ -502,11 +558,11 @@ const ClassicElegantTemplate = ({
         sub = supabase
           .channel('classic-elegant-guestbook-changes')
           .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'guest_book', filter: `event_id=eq.${eventData.id}` }, (p) => {
-            const m = { id: p.new.id, from: p.new.guest_name || '익명', phone: p.new.guest_phone, date: new Date(p.new.created_at).toLocaleDateString('ko-KR'), content: p.new.message || '' };
+            const m = { id: p.new.id, from: p.new.guest_name || '익명', phone: p.new.guest_phone, date: formatGuestbookDateTime(p.new.created_at), content: p.new.message || '' };
             setGuestMessages((prev) => [m, ...prev]);
           })
           .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'guest_book', filter: `event_id=eq.${eventData.id}` }, (p) => {
-            const m = { id: p.new.id, from: p.new.guest_name || '익명', phone: p.new.guest_phone, date: new Date(p.new.created_at).toLocaleDateString('ko-KR'), content: p.new.message || '' };
+            const m = { id: p.new.id, from: p.new.guest_name || '익명', phone: p.new.guest_phone, date: formatGuestbookDateTime(p.new.created_at), content: p.new.message || '' };
             setGuestMessages((prev) => prev.map((x) => (x.id === p.new.id ? m : x)));
           })
           .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'guest_book', filter: `event_id=eq.${eventData.id}` }, (p) => {
@@ -574,7 +630,7 @@ const ClassicElegantTemplate = ({
   const handleGuestbookSubmit = async (g) => {
     const newMsg = {
       id: `temp-${Date.now()}`, from: g.name || '익명', phone: g.phone,
-      date: new Date().toLocaleDateString('ko-KR'), content: g.message || '',
+      date: formatGuestbookDateTime(new Date()), content: g.message || '',
     };
     setGuestMessages((prev) => [newMsg, ...prev]);
     setHasWrittenGuestbook(true);
@@ -806,6 +862,7 @@ const ClassicElegantTemplate = ({
             <div className={styles.divider} />
             <ElegantCalendar
               targetDate={weddingDate}
+              ceremonyTime={timeStr}
               dDayText={dDayText}
               groomName={groomName}
               brideName={brideName}

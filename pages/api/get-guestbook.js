@@ -46,6 +46,25 @@ export default async function handler(req, res) {
       });
     }
 
+    const formatKoreanDateTime = (dateValue) => {
+      const date = new Date(dateValue);
+      if (Number.isNaN(date.getTime())) return '';
+
+      return new Intl.DateTimeFormat('ko-KR', {
+        timeZone: 'Asia/Seoul',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      })
+        .format(date)
+        .replace(/\.\s?/g, '. ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    };
+
     // 방명록 데이터 포맷팅 (메시지가 있는 항목만)
     const formattedMessages = (guestBookData || [])
       .filter(entry => entry.message && entry.guest_name)
@@ -53,13 +72,7 @@ export default async function handler(req, res) {
         id: entry.id,
         from: entry.guest_name || '익명',
         phone: entry.guest_phone,
-        date: new Date(entry.created_at).toLocaleDateString('ko-KR', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit'
-        }).replace(/\./g, '.').replace(/\s/g, ' '),
+        date: formatKoreanDateTime(entry.created_at),
         content: entry.message || ''
       }));
 
