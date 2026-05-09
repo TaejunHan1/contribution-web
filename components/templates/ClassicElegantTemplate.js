@@ -101,9 +101,11 @@ const DEFAULT_GREETING =
   '서로가 마주보며 다져온 사랑을\n이제 함께 한 곳을 바라보며\n걸어갈 수 있는 큰 사랑으로 키우고자 합니다.\n\n저희 두 사람이 사랑의 이름으로\n지켜나갈 수 있게 앞날을\n축복해 주시면 감사하겠습니다.';
 
 const CAL_DAYS = ['일', '월', '화', '수', '목', '금', '토'];
-const PARKING_IMAGE_EVENT_ID = '640a5d7e-059d-46f5-bef2-7bae63ce93e1';
-const SKIP_INITIAL_WELCOME_EVENT_ID = PARKING_IMAGE_EVENT_ID;
-const SKIP_POST_GUESTBOOK_CONTRIBUTION_EVENT_ID = PARKING_IMAGE_EVENT_ID;
+const CUSTOM_INVITATION_EVENT_IDS = new Set([
+  '640a5d7e-059d-46f5-bef2-7bae63ce93e1',
+  '65e2dd46-65c7-447d-9113-d57e712eac02',
+]);
+const isCustomInvitationEvent = (eventId) => CUSTOM_INVITATION_EVENT_IDS.has(eventId);
 
 // ══════════════════════════════════════════════════════
 // 히어로 사진 크로스페이드
@@ -361,7 +363,7 @@ const ClassicElegantTemplate = ({
   const locName = eventData.hallName || eventData.hall_name || eventData.location || '';
   const locAddr = eventData.detailedAddress || eventData.detailed_address || eventData.address || '';
   const locationLines = getLocationLines(locName, locAddr);
-  const shouldShowParkingImage = eventData.id === PARKING_IMAGE_EVENT_ID;
+  const shouldShowParkingImage = isCustomInvitationEvent(eventData.id);
 
   // ── 이미지 처리 ──
   const defaultImages = {
@@ -591,6 +593,7 @@ const ClassicElegantTemplate = ({
 
   // ── 모달 핸들러 ──
   const checkAndShowWelcomeChoice = () => {
+    if (isCustomInvitationEvent(eventData?.id)) return false;
     if (arrivalModalCheckedRef.current || showWelcomeChoice) return false;
     const arrivalKey = `arrival_checked_${eventData?.id}`;
     if (typeof window !== 'undefined' && localStorage.getItem(arrivalKey)) return false;
@@ -599,7 +602,7 @@ const ClassicElegantTemplate = ({
     return true;
   };
   const handleTriggerArrival = () => {
-    if (eventData?.id === SKIP_POST_GUESTBOOK_CONTRIBUTION_EVENT_ID) return;
+    if (isCustomInvitationEvent(eventData?.id)) return;
     const existing = myContribution?.amount || myContribution?.contributionAmount;
     if (existing) return;
     setTimeout(() => setShowContributionModal(true), 300);
@@ -670,10 +673,15 @@ const ClassicElegantTemplate = ({
   };
 
   useEffect(() => {
-    if (eventData?.id === SKIP_INITIAL_WELCOME_EVENT_ID) return undefined;
+    if (!eventData?.id) return undefined;
+    if (isCustomInvitationEvent(eventData.id)) {
+      setShowWelcomeChoice(false);
+      arrivalModalCheckedRef.current = true;
+      return undefined;
+    }
     const t = setTimeout(() => checkAndShowWelcomeChoice(), 1200);
     return () => clearTimeout(t);
-  }, []); // eslint-disable-line
+  }, [eventData?.id]); // eslint-disable-line
 
   const greetingMessage = (() => {
     const m = eventData.customMessage || eventData.custom_message;
@@ -1157,7 +1165,7 @@ const ClassicElegantTemplate = ({
         onSubmit={handleGuestbookSubmit}
         eventData={eventData}
         onTriggerArrival={
-          eventData?.id === SKIP_POST_GUESTBOOK_CONTRIBUTION_EVENT_ID
+          isCustomInvitationEvent(eventData?.id)
             ? undefined
             : handleTriggerArrival
         }

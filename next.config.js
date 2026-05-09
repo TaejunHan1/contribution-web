@@ -122,8 +122,39 @@ const nextConfig = {
         ],
       },
       {
+        // 짧은 청첩장 URL은 SSR 데이터가 매번 달라질 수 있으므로 404/HTML 장기 캐시 금지
+        source: '/w/:path*',
+        headers: [
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+          },
+        ],
+      },
+      {
         // 나머지 페이지에 적용되는 보안 헤더 (iframe 차단)
-        source: '/((?!template).*)',
+        // template/w 페이지는 SSR 데이터 의존도가 높아 위 전용 no-store 규칙을 사용한다.
+        source: '/((?!template|w).*)',
         headers: [
           {
             key: 'X-DNS-Prefetch-Control',
