@@ -147,7 +147,7 @@ const HeroSlideshow = ({ images, onPress }) => {
 };
 
 // ══════════════════════════════════════════════════════
-// 달력 (결혼일 하트 표시, 2026 / 05 포맷)
+// 달력 (결혼일 하트 표시, 2026 / 05 / 09 포맷)
 // ══════════════════════════════════════════════════════
 const ElegantCalendar = ({ targetDate, ceremonyTime, dDayText, groomName, brideName }) => {
   const wd = new Date(targetDate);
@@ -161,7 +161,7 @@ const ElegantCalendar = ({ targetDate, ceremonyTime, dDayText, groomName, brideN
   return (
     <div className={styles.calendarBlock}>
       <div className={styles.calMonthYear}>
-        {year} / {String(month + 1).padStart(2, '0')}
+        {year} / {String(month + 1).padStart(2, '0')} / {String(day).padStart(2, '0')}
       </div>
       {ceremonyTime ? (
         <div className={styles.weddingTimeInfo}>
@@ -269,6 +269,48 @@ const MindAccordion = ({ side, people, activeKey, onToggle, onCopy }) => {
     </div>
   );
 };
+
+const CustomTransportationGuide = () => (
+  <div className={styles.transportGuide}>
+    <div className={styles.transportItem}>
+      <div className={styles.transportLabel}>지하철</div>
+      <div className={styles.transportContent}>
+        <strong>9호선 가양역</strong>
+        <span>9번 출구 도보 1분 · 금부빌딩 8층</span>
+      </div>
+    </div>
+
+    <div className={styles.transportItem}>
+      <div className={styles.transportLabel}>버스</div>
+      <div className={styles.transportContent}>
+        <div className={styles.busLineList}>
+          <span><b className={styles.busBlue}>간선</b>652, 672, 660</span>
+          <span><b className={styles.busGreen}>지선</b>6632</span>
+          <span><b className={styles.busRed}>광역</b>7700</span>
+          <span><b className={styles.busGray}>공항</b>6008</span>
+        </div>
+      </div>
+    </div>
+
+    <div className={styles.transportItem}>
+      <div className={styles.transportLabel}>자가용</div>
+      <div className={styles.transportContent}>
+        <div className={styles.parkingLots}>
+          <div>
+            <strong>본관 주차장</strong>
+            <span>2시간 무료</span>
+            <small>“루이비스 컨벤션 강서점” 또는 “양천로 476 금부빌딩” 검색</small>
+          </div>
+          <div>
+            <strong>제2주차장</strong>
+            <span>3시간 무료</span>
+            <small>“가양 아벨테크노 지식산업센터” 검색</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
 // ══════════════════════════════════════════════════════
 // 메인 컴포넌트
@@ -982,14 +1024,7 @@ const ClassicElegantTemplate = ({
               </div>
             )}
             {shouldShowParkingImage && (
-              <div className={styles.parkingImageWrap}>
-                <img
-                  src="/test1.png"
-                  alt="주차 안내 이미지"
-                  className={styles.parkingImage}
-                  draggable={false}
-                />
-              </div>
+              <CustomTransportationGuide />
             )}
           </section>
         )}

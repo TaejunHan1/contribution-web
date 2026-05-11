@@ -416,6 +416,95 @@
   user-select: none;
   -webkit-user-drag: none;
 }
+.transportGuide {
+  margin-top: 18px;
+  background: transparent;
+}
+.transportItem {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+  padding: 22px 0;
+  position: relative;
+}
+.transportItem + .transportItem {
+  border-top: 1px solid #D7B98C;
+}
+.transportLabel {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid #D3AF80;
+  border-right: 1px solid #D3AF80;
+  font-family: 'Nanum Myeongjo', serif;
+  font-size: 18px;
+  color: #A3723A;
+  white-space: nowrap;
+}
+.transportContent {
+  min-width: 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: #4D4034;
+}
+.transportContent strong {
+  display: block;
+  font-family: 'Nanum Myeongjo', serif;
+  font-size: 21px;
+  font-weight: 700;
+  color: #1E1B18;
+  line-height: 1.35;
+}
+.transportContent span {
+  display: block;
+  color: #5F564F;
+}
+.busLineList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  align-items: center;
+}
+.busLineList span {
+  display: inline-flex;
+  gap: 4px;
+  align-items: baseline;
+  white-space: nowrap;
+}
+.busLineList b {
+  font-weight: 700;
+}
+.busBlue { color: #1F6EC8; }
+.busGreen { color: #218A50; }
+.busRed { color: #D4463E; }
+.busGray { color: #6D6258; }
+.parkingLots {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+}
+.parkingLots > div {
+  display: grid;
+  grid-template-columns: 92px 72px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+.parkingLots strong {
+  font-size: 18px;
+}
+.parkingLots span {
+  color: #A3723A;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.parkingLots small {
+  display: block;
+  color: #4E4943;
+  font-size: 13px;
+  line-height: 1.55;
+}
 
 /* ═══ 계좌 + 연락처 ═══ */
 .accountDesc {
@@ -735,4 +824,40 @@
   user-select: none;
   -webkit-user-drag: none;
   -webkit-touch-callout: none;
+}
+
+@media (max-width: 520px) {
+  .transportItem {
+    grid-template-columns: 58px minmax(0, 1fr);
+    gap: 11px 14px;
+    padding: 18px 0;
+  }
+  .transportLabel {
+    justify-content: flex-start;
+    min-height: 0;
+    border-left: 0;
+    border-right: 0;
+    font-size: 17px;
+  }
+  .transportContent {
+    grid-column: 2;
+    font-size: 13px;
+  }
+  .transportContent strong {
+    font-size: 19px;
+  }
+  .busLineList {
+    gap: 5px 11px;
+  }
+  .parkingLots {
+    gap: 16px;
+  }
+  .parkingLots > div {
+    grid-template-columns: 1fr auto;
+    gap: 3px 10px;
+    align-items: baseline;
+  }
+  .parkingLots small {
+    grid-column: 1 / -1;
+  }
 }
