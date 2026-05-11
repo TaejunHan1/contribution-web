@@ -358,19 +358,25 @@
 }
 
 /* ═══ 오시는 길 ═══ */
+.locationSummary {
+  margin: 0 0 18px;
+  padding: 22px 18px 20px;
+  text-align: center;
+  background: #FFFFFF;
+  border: 1px solid #EAEAEA;
+}
 .locationName {
-  font-size: 18px;
+  font-size: 21px;
   font-weight: 500;
   color: #222;
-  text-align: center;
-  margin: 0 0 4px;
+  margin: 0;
+  line-height: 1.35;
 }
 .locationAddr {
   font-size: 14px;
   font-weight: 300;
   color: #777;
-  text-align: center;
-  margin: 0 0 20px;
+  margin: 10px 0 0;
   line-height: 1.7;
 }
 .locationAddr span {
@@ -379,8 +385,9 @@
 .mapContainer {
   width: 100%;
   border: 1px solid #EAEAEA;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
   overflow: hidden;
+  background: #FAFAFA;
 }
 .parkingCard {
   display: flex;
@@ -417,61 +424,90 @@
   -webkit-user-drag: none;
 }
 .transportGuide {
-  margin-top: 18px;
-  background: transparent;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  margin-top: 20px;
 }
-.transportItem {
+.transportCard {
   display: grid;
   grid-template-columns: 72px minmax(0, 1fr);
-  align-items: center;
-  gap: 18px;
-  padding: 22px 0;
-  position: relative;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 18px;
+  background: #FFFFFF;
+  border: 1px solid #EAEAEA;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.035);
 }
-.transportItem + .transportItem {
-  border-top: 1px solid #D7B98C;
-}
-.transportLabel {
-  min-height: 42px;
+.transportIconFrame {
+  width: 72px;
+  height: 72px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-left: 1px solid #D3AF80;
-  border-right: 1px solid #D3AF80;
-  font-family: 'Nanum Myeongjo', serif;
-  font-size: 18px;
-  color: #A3723A;
-  white-space: nowrap;
+  background: #FAFAFA;
+  border: 1px solid #EAEAEA;
 }
-.transportContent {
+.transportIcon {
+  width: 54px;
+  height: 54px;
+  display: block;
+}
+.transportBody {
   min-width: 0;
-  font-size: 14px;
-  line-height: 1.65;
-  color: #4D4034;
 }
-.transportContent strong {
-  display: block;
-  font-family: 'Nanum Myeongjo', serif;
-  font-size: 21px;
-  font-weight: 700;
+.transportHeader {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  margin-bottom: 8px;
+}
+.transportHeader h3 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 500;
   color: #1E1B18;
-  line-height: 1.35;
+  line-height: 1.25;
 }
-.transportContent span {
-  display: block;
-  color: #5F564F;
+.transportKicker {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #9A8B7A;
+  text-transform: uppercase;
+}
+.transportMain {
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.6;
+  color: #333;
+}
+.transportText {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 1.65;
+  color: #777;
 }
 .busLineList {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 14px;
+  gap: 8px;
   align-items: center;
+  margin-top: 10px;
 }
 .busLineList span {
   display: inline-flex;
-  gap: 4px;
-  align-items: baseline;
-  white-space: nowrap;
+  gap: 6px;
+  align-items: center;
+  min-height: 30px;
+  padding: 5px 9px;
+  background: #FAFAFA;
+  border: 1px solid #EAEAEA;
+  font-size: 12px;
+  line-height: 1.2;
+  color: #444;
 }
 .busLineList b {
   font-weight: 700;
@@ -483,27 +519,41 @@
 .parkingLots {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 14px;
+  gap: 9px;
+  margin-top: 12px;
 }
 .parkingLots > div {
   display: grid;
-  grid-template-columns: 92px 72px minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 12px;
-  align-items: center;
+  align-items: start;
+  padding: 12px;
+  background: #FAFAFA;
+  border: 1px solid #EAEAEA;
 }
 .parkingLots strong {
-  font-size: 18px;
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.35;
 }
 .parkingLots span {
-  color: #A3723A;
-  font-size: 13px;
+  align-self: start;
+  padding: 5px 8px;
+  background: #FFFFFF;
+  border: 1px solid #E0E0E0;
+  color: #8A7A68;
+  font-size: 12px;
+  font-weight: 600;
   white-space: nowrap;
 }
 .parkingLots small {
   display: block;
-  color: #4E4943;
+  color: #777;
   font-size: 13px;
-  line-height: 1.55;
+  line-height: 1.5;
 }
 
 /* ═══ 계좌 + 연락처 ═══ */
@@ -827,37 +877,64 @@
 }
 
 @media (max-width: 520px) {
-  .transportItem {
+  .locationSummary {
+    padding: 20px 16px 18px;
+    margin-bottom: 16px;
+  }
+  .locationName {
+    font-size: 20px;
+  }
+  .transportGuide {
+    gap: 12px;
+    margin-top: 18px;
+  }
+  .transportCard {
     grid-template-columns: 58px minmax(0, 1fr);
-    gap: 11px 14px;
-    padding: 18px 0;
+    gap: 13px;
+    padding: 15px;
   }
-  .transportLabel {
-    justify-content: flex-start;
-    min-height: 0;
-    border-left: 0;
-    border-right: 0;
-    font-size: 17px;
+  .transportIconFrame {
+    width: 58px;
+    height: 58px;
   }
-  .transportContent {
-    grid-column: 2;
+  .transportIcon {
+    width: 44px;
+    height: 44px;
+  }
+  .transportHeader {
+    gap: 7px;
+    margin-bottom: 6px;
+  }
+  .transportHeader h3 {
+    font-size: 18px;
+  }
+  .transportKicker {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+  }
+  .transportMain {
     font-size: 13px;
   }
-  .transportContent strong {
-    font-size: 19px;
+  .transportText {
+    font-size: 12px;
   }
   .busLineList {
-    gap: 5px 11px;
+    gap: 6px;
+  }
+  .busLineList span {
+    min-height: 28px;
+    padding: 5px 8px;
+    font-size: 11px;
   }
   .parkingLots {
-    gap: 16px;
+    gap: 8px;
   }
   .parkingLots > div {
     grid-template-columns: 1fr auto;
-    gap: 3px 10px;
-    align-items: baseline;
+    gap: 8px;
+    padding: 10px;
   }
   .parkingLots small {
-    grid-column: 1 / -1;
+    font-size: 12px;
   }
 }

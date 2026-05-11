@@ -270,45 +270,71 @@ const MindAccordion = ({ side, people, activeKey, onToggle, onCopy }) => {
   );
 };
 
-const CustomTransportationGuide = () => (
-  <div className={styles.transportGuide}>
-    <div className={styles.transportItem}>
-      <div className={styles.transportLabel}>지하철</div>
-      <div className={styles.transportContent}>
-        <strong>9호선 가양역</strong>
-        <span>9번 출구 도보 1분 · 금부빌딩 8층</span>
-      </div>
-    </div>
+const TRANSPORT_ICON_BASE = '/icons';
 
-    <div className={styles.transportItem}>
-      <div className={styles.transportLabel}>버스</div>
-      <div className={styles.transportContent}>
+const CustomTransportationGuide = () => (
+  <div className={styles.transportGuide} aria-label="교통 안내">
+    <article className={styles.transportCard}>
+      <div className={styles.transportIconFrame}>
+        <img src={`${TRANSPORT_ICON_BASE}/transport-subway.svg`} alt="" className={styles.transportIcon} />
+      </div>
+      <div className={styles.transportBody}>
+        <div className={styles.transportHeader}>
+          <span className={styles.transportKicker}>Subway</span>
+          <h3>지하철</h3>
+        </div>
+        <p className={styles.transportMain}>9호선 가양역 9번 출구</p>
+        <p className={styles.transportText}>출구에서 도보 약 1분, 금부빌딩 8층으로 올라오시면 됩니다.</p>
+      </div>
+    </article>
+
+    <article className={styles.transportCard}>
+      <div className={styles.transportIconFrame}>
+        <img src={`${TRANSPORT_ICON_BASE}/transport-bus.svg`} alt="" className={styles.transportIcon} />
+      </div>
+      <div className={styles.transportBody}>
+        <div className={styles.transportHeader}>
+          <span className={styles.transportKicker}>Bus</span>
+          <h3>버스</h3>
+        </div>
+        <p className={styles.transportMain}>가양역·루이비스컨벤션 인근 정류장 하차</p>
         <div className={styles.busLineList}>
-          <span><b className={styles.busBlue}>간선</b>652, 672, 660</span>
+          <span><b className={styles.busBlue}>간선</b>652 · 672 · 660</span>
           <span><b className={styles.busGreen}>지선</b>6632</span>
           <span><b className={styles.busRed}>광역</b>7700</span>
           <span><b className={styles.busGray}>공항</b>6008</span>
         </div>
       </div>
-    </div>
+    </article>
 
-    <div className={styles.transportItem}>
-      <div className={styles.transportLabel}>자가용</div>
-      <div className={styles.transportContent}>
+    <article className={styles.transportCard}>
+      <div className={styles.transportIconFrame}>
+        <img src={`${TRANSPORT_ICON_BASE}/transport-car.svg`} alt="" className={styles.transportIcon} />
+      </div>
+      <div className={styles.transportBody}>
+        <div className={styles.transportHeader}>
+          <span className={styles.transportKicker}>Parking</span>
+          <h3>자가용</h3>
+        </div>
+        <p className={styles.transportMain}>내비게이션에서 아래 장소명을 검색해주세요.</p>
         <div className={styles.parkingLots}>
           <div>
-            <strong>본관 주차장</strong>
+            <div>
+              <strong>본관 주차장</strong>
+              <small>루이비스 컨벤션 강서점 또는 양천로 476 금부빌딩</small>
+            </div>
             <span>2시간 무료</span>
-            <small>“루이비스 컨벤션 강서점” 또는 “양천로 476 금부빌딩” 검색</small>
           </div>
           <div>
-            <strong>제2주차장</strong>
+            <div>
+              <strong>제2주차장</strong>
+              <small>가양 아벨테크노 지식산업센터</small>
+            </div>
             <span>3시간 무료</span>
-            <small>“가양 아벨테크노 지식산업센터” 검색</small>
           </div>
         </div>
       </div>
-    </div>
+    </article>
   </div>
 );
 
@@ -406,6 +432,10 @@ const ClassicElegantTemplate = ({
   const locAddr = eventData.detailedAddress || eventData.detailed_address || eventData.address || '';
   const locationLines = getLocationLines(locName, locAddr);
   const shouldShowParkingImage = isCustomInvitationEvent(eventData.id);
+  const displayLocationName = shouldShowParkingImage ? '루이비스 컨벤션 강서 8층' : locName;
+  const displayLocationLines = shouldShowParkingImage
+    ? ['서울 강서구 양천로 476']
+    : locationLines;
 
   // ── 이미지 처리 ──
   const defaultImages = {
@@ -997,15 +1027,16 @@ const ClassicElegantTemplate = ({
           <section className={styles.section}>
             <div className={styles.sectionLabel}>Location</div>
             <div className={styles.divider} />
-            {locationLines.length > 0 ? (
-              <p className={styles.locationAddr}>
-                {locationLines.map((line) => (
-                  <span key={line}>{line}</span>
-                ))}
-              </p>
-            ) : (
-              <p className={styles.locationName}>{locName}</p>
-            )}
+            <div className={styles.locationSummary}>
+              <p className={styles.locationName}>{displayLocationName}</p>
+              {displayLocationLines.length > 0 && (
+                <p className={styles.locationAddr}>
+                  {displayLocationLines.map((line) => (
+                    <span key={line}>{line}</span>
+                  ))}
+                </p>
+              )}
+            </div>
             <div className={styles.mapContainer}>
               <GoogleMapEmbed
                 address={`${locName} ${locAddr}`.trim()}
