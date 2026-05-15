@@ -648,7 +648,11 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
                       </label>
                       <textarea
                         className={styles.sheetTextarea}
-                        placeholder={mode === 'edit' ? '방명록을 수정해주세요' : '축하 메시지를 남겨주세요'}
+                        placeholder={mode === 'edit'
+                          ? '방명록을 수정해주세요'
+                          : eventData?.event_type === 'funeral'
+                            ? '조문 메시지를 남겨주세요'
+                            : '축하 메시지를 남겨주세요'}
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                         rows={5}

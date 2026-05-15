@@ -1,35 +1,76 @@
 import Head from 'next/head';
 
-const heroImage = '/landing/generated/hero-scene-v2.png';
-const overviewImage = '/landing/generated/service-overview-scene-v4.png';
-const invitationImage = '/landing/generated/invitation-studio-scene-v3.png';
-const receptionImage = '/landing/generated/reception-operation-scene-v3.png';
-const dashboardImage = '/landing/generated/owner-dashboard-scene-v3.png';
-const paperImage = '/landing/generated/problem-scene-v2.png';
+const heroImage = '/landing/generated-main/jeongdam-main-hero.png';
+const workflowImage = '/landing/generated-main/jeongdam-main-workflow.png';
+const weddingLinkImage = '/landing/generated-main/jeongdam-mobile-wedding-link.png';
+const funeralLinkImage = '/landing/generated-main/jeongdam-mobile-funeral-link.png';
 
-const featureItems = [
-  ['모바일 청첩장', '사진, 음악, 지도, 방명록을 담은 초대 링크를 만들 수 있습니다.'],
-  ['종이 청첩장', 'A6 인쇄용 청첩장을 편집하고 PDF로 내보낼 수 있습니다.'],
-  ['태블릿 방명록', '하객이 종이 대신 태블릿에 이름을 쓰면 접수 기록이 생성됩니다.'],
-  ['축의금 입력', '접수자가 금액, 관계, 신랑측·신부측, 미확정 여부를 바로 저장합니다.'],
-  ['식권 정산', '식권이 몇 장 나갔는지 행사 중에도 흐름을 확인합니다.'],
-  ['행사 후 검색', '누가 얼마를 했는지, 어떤 기록이 미확정인지 빠르게 찾습니다.'],
+const paperSamples = [
+  ['Minimal 01', '/studio/templates/minimal/minimal1/preview.png'],
+  ['Minimal 02', '/studio/templates/minimal/minimal2/preview.png'],
+  ['Minimal 03', '/studio/templates/minimal/minimal3/preview.png'],
+  ['Minimal 04', '/studio/templates/minimal/minimal4/preview.png'],
+  ['Minimal 05', '/studio/templates/minimal/minimal5/preview.png'],
+  ['Minimal 06', '/studio/templates/minimal/minimal6/preview.png'],
 ];
 
-const flowItems = [
-  ['01', '하객은 이름을 씁니다', '종이 방명록처럼 익숙한 방식이라 어르신도 어렵지 않습니다.'],
-  ['02', '접수자는 금액과 식권을 입력합니다', '봉투, 식권, 관계 정보를 같은 화면에서 정리합니다.'],
-  ['03', '주최자는 실시간으로 확인합니다', '행사 중 합계와 미확정 내역을 바로 보고, 행사 후에도 검색합니다.'],
+const servicePillars = [
+  ['초대와 안내', '모바일 청첩장과 부고장을 링크로 전달하고, 종이청첩장 preview까지 함께 준비합니다.'],
+  ['현장 접수', '앱과 태블릿에서 방명록, 축의금·부의금, 식권 수량을 현장 흐름에 맞춰 기록합니다.'],
+  ['행사 후 관리', '장부, 메시지, 미확정 내역, 상부상조 알림을 행사 후에도 다시 확인합니다.'],
+];
+
+const serviceDetails = [
+  ['모바일 청첩장', '사진, 일정, 갤러리, 지도, 마음 전하기'],
+  ['모바일 부고장', '고인 정보, 장례 일정, 빈소 안내, 조문 메시지'],
+  ['종이청첩장 제작', '미니멀 preview, 인쇄용 레이아웃, PDF 제작 흐름'],
+  ['앱·태블릿 접수', '방명록, 축의금·부의금, 식권 기록'],
+  ['행사 장부', '참석자, 금액, 관계, 미확정 내역 검색'],
+  ['상부상조 관리', '내 행사에 와준 사람의 새 경조사 확인'],
+];
+
+const featureStories = [
+  {
+    label: '01 MOBILE LINK',
+    title: '모바일 청첩장과 부고장은 하객이 가장 먼저 보는 안내 화면입니다.',
+    body: '사진, 일정, 지도, 갤러리, 마음 전하기를 모바일 화면에서 자연스럽게 확인하도록 구성하고, 부고장은 고인 정보와 장례 일정이 차분하게 전달되도록 나눕니다.',
+    items: ['청첩장 링크', '부고장 링크', '갤러리·지도·메시지'],
+  },
+  {
+    label: '02 PAPER',
+    title: '종이청첩장 제작',
+    body: '미니멀 preview를 보며 인쇄용 청첩장 디자인을 고르고, 예식 정보와 문구를 종이 레이아웃에 맞춰 정리합니다.',
+    items: ['preview 샘플', '인쇄용 레이아웃', 'PDF 제작 흐름'],
+  },
+  {
+    label: '03 RECEPTION',
+    title: '앱·태블릿 접수',
+    body: '현장에서는 앱과 태블릿으로 방명록, 축의금·부의금, 식권 수량을 빠르게 기록합니다.',
+    items: ['태블릿 방명록', '금액 기록', '식권 정산'],
+  },
+  {
+    label: '04 LEDGER',
+    title: '행사 후 장부 관리',
+    body: '참석자, 금액, 관계, 미확정 내역을 다시 검색하고 내 행사에 와준 사람의 다음 경조사도 챙깁니다.',
+    items: ['참석자 검색', '미확정 내역', '상부상조 관리'],
+  },
+];
+
+const steps = [
+  ['01', '만들기', '앱에서 청첩장 또는 부고장을 만들고, 행사 정보를 정리합니다.'],
+  ['02', '링크로 보여주기', '웹은 모바일 청첩장과 부고장 링크를 하객에게 보기 좋게 전달합니다.'],
+  ['03', '태블릿으로 접수하기', '현장에서는 앱과 태블릿으로 이름, 금액, 식권을 차례대로 기록합니다.'],
+  ['04', '관리하기', '행사 후 기록과 챙길 경조사를 다시 확인합니다.'],
 ];
 
 export default function HomePage() {
   return (
     <>
       <Head>
-        <title>정담 - 결혼식 접수와 축의금 관리를 태블릿으로</title>
+        <title>정담 - 경조사 준비와 접수 관리</title>
         <meta
           name="description"
-          content="정담은 모바일 청첩장, 종이 청첩장 제작, 태블릿 방명록, 축의금과 식권 실시간 정산을 제공하는 결혼식 접수 관리 서비스입니다."
+          content="정담은 모바일 청첩장과 부고장 링크, 앱·태블릿 접수, 축의금·부의금 기록, 식권 정산, 상부상조 관리를 연결하는 경조사 관리 서비스입니다."
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
@@ -38,234 +79,207 @@ export default function HomePage() {
         <header className="nav">
           <a className="brand" href="#top" aria-label="정담 홈">
             <img src="/landing/jeongdamlogo.png" alt="" />
-            <span>
-              <strong>정담</strong>
-              <small>청첩장부터 접수와 정산까지</small>
-            </span>
+            <span>정담</span>
           </a>
           <nav className="navLinks" aria-label="메인 메뉴">
-            <a href="#problem">문제</a>
-            <a href="#flow">접수 흐름</a>
+            <a href="#service">서비스</a>
             <a href="#features">기능</a>
-            <a href="#contact">도입</a>
+            <a href="#flow">흐름</a>
+            <a href="#contact">문의</a>
           </nav>
-          <a className="navCta" href="#contact">도입 상담</a>
+          <a className="navCta" href="#contact">도입 문의</a>
         </header>
 
-        <section className="hero" id="top">
+        <section
+          className="hero"
+          id="top"
+          style={{
+            backgroundImage: `linear-gradient(90deg, rgba(17, 24, 20, 0.9), rgba(17, 24, 20, 0.58), rgba(17, 24, 20, 0.06)), url(${heroImage})`,
+          }}
+        >
           <div className="heroCopy">
-            <p className="eyebrow">대한민국 결혼식 접수대 그대로</p>
+            <p className="eyebrow light">JEONGDAM</p>
             <h1>
-              종이 방명록처럼 쓰고,
+              경조사의 시작부터
               <br />
-              축의금과 식권은
+              마지막 기록까지
               <br />
-              바로 정리합니다.
+              정갈하게 이어집니다.
             </h1>
-            <p className="lead">
-              정담은 결혼식장에서 하객이 태블릿에 이름을 쓰고, 접수자가 축의금과
-              식권을 입력하면 주최자가 실시간으로 기록을 확인하는 서비스입니다.
+            <p>
+              정담은 웹에서 모바일 청첩장과 부고장을 보여주고, 앱과 태블릿에서 현장 접수,
+              축의금·부의금 장부, 식권 정산, 상부상조 관리를 이어가는 서비스입니다.
             </p>
             <div className="heroActions">
-              <a className="primaryBtn" href="#contact">도입 상담하기</a>
-              <a className="secondaryBtn" href="#flow">접수 흐름 보기</a>
-            </div>
-            <div className="proofRow">
-              <div>
-                <strong>방명록</strong>
-                <span>태블릿 이름 작성</span>
-              </div>
-              <div>
-                <strong>축의금</strong>
-                <span>금액·관계 기록</span>
-              </div>
-              <div>
-                <strong>식권</strong>
-                <span>수량 실시간 정리</span>
-              </div>
-            </div>
-          </div>
-          <div className="heroVisual">
-            <img src={heroImage} alt="결혼식 접수대에 놓인 태블릿 방명록" />
-            <div className="statusPanel">
-              <span>오늘 접수 현황</span>
-              <strong>기록이 실시간으로 정리 중</strong>
-              <div className="statusBars" aria-hidden="true">
-                <i />
-                <i />
-                <i />
-              </div>
+              <a className="primaryBtn" href="#service">서비스 보기</a>
+              <a className="secondaryBtn" href="#contact">상담 문의</a>
             </div>
           </div>
         </section>
 
-        <section className="problemBand" id="problem">
-          <div className="sectionIntro">
-            <p className="eyebrow">왜 바꿔야 할까요</p>
-            <h2>
-              종이 방명록은 익숙하지만,
-              <br />
-              정산은 늘 번거롭습니다.
-            </h2>
-          </div>
-          <div className="problemGrid">
-            <article>
-              <span>01</span>
-              <h3>손글씨를 다시 읽어야 합니다</h3>
-              <p>행사 후 봉투와 방명록을 다시 대조해야 합니다.</p>
-            </article>
-            <article>
-              <span>02</span>
-              <h3>축의금 합계가 늦게 보입니다</h3>
-              <p>현장 기록이 흩어져 최종 금액 확인이 늦어집니다.</p>
-            </article>
-            <article>
-              <span>03</span>
-              <h3>식권 수량도 따로 세야 합니다</h3>
-              <p>나간 식권 수량을 메모와 기억에 의존하게 됩니다.</p>
-            </article>
-          </div>
-        </section>
-
-        <section className="splitSection">
-          <div className="splitImage">
-            <img src={overviewImage} alt="정담 서비스 전체 흐름을 보여주는 태블릿과 청첩장" />
-          </div>
-          <div className="splitCopy">
-            <p className="eyebrow">정담이 하는 일</p>
-            <h2>예식 준비와 당일 접수를 하나의 흐름으로 묶습니다.</h2>
+        <section className="introBand" id="service">
+          <div className="introCopy">
+            <p className="eyebrow">SERVICE</p>
+            <h2>모바일 링크와 현장 접수를 각각 제 역할에 맞게.</h2>
             <p>
-              모바일 청첩장과 종이 청첩장을 준비하고, 예식 당일에는 태블릿 방명록으로
-              접수합니다. 축의금, 식권, 하객 기록은 관리자 화면에서 바로 정리됩니다.
-            </p>
-            <div className="miniList">
-              <span>청첩장 제작</span>
-              <span>태블릿 접수</span>
-              <span>실시간 정산</span>
-              <span>행사 후 기록</span>
-            </div>
-          </div>
-        </section>
-
-        <section className="flowSection" id="flow">
-          <div className="sectionIntro centered">
-            <p className="eyebrow">접수 흐름</p>
-            <h2>하객에게는 익숙하게, 주최자에게는 정확하게.</h2>
-            <p>
-              QR을 스캔하게 하지 않습니다. 실제 결혼식장의 종이 방명록 흐름을 태블릿으로
-              옮겨 접수대 운영 방식을 바꾸지 않고 기록만 자동화합니다.
+              정담은 하객에게 전달되는 모바일 청첩장과 부고장, 종이청첩장 제작,
+              현장에서 쓰는 앱·태블릿 접수, 행사 후 장부 관리까지 필요한 흐름을 나눠서
+              단정하게 연결합니다.
             </p>
           </div>
-          <div className="flowGrid">
-            {flowItems.map(([num, title, body]) => (
-              <article key={num}>
-                <span>{num}</span>
-                <h3>{title}</h3>
-                <p>{body}</p>
-              </article>
-            ))}
+          <div className="serviceLayout">
+            <div className="serviceRail">
+              {servicePillars.map(([title, body], index) => (
+                <article key={title}>
+                  <span>{String(index + 1).padStart(2, '0')}</span>
+                  <div>
+                    <h3>{title}</h3>
+                    <p>{body}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+            <div className="serviceDetailPanel">
+              <p>정담 구성</p>
+              <div>
+                {serviceDetails.map(([title, body]) => (
+                  <section key={title}>
+                    <h4>{title}</h4>
+                    <span>{body}</span>
+                  </section>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
-        <section className="productRows">
-          <article className="productRow">
-            <div>
-              <p className="eyebrow">청첩장 제작</p>
-              <h2>모바일과 종이 청첩장을 함께 준비합니다.</h2>
-              <p>
-                초대 링크, 사진, 음악, 지도 구성부터 인쇄용 종이 청첩장 PDF까지 한 곳에서
-                준비할 수 있습니다.
-              </p>
+        <section className="showcase">
+          <div className="linkPreviewGrid">
+            <article>
+              <img src={weddingLinkImage} alt="정담 모바일 청첩장 링크 이미지" />
+              <div>
+                <span>Wedding Link</span>
+                <strong>모바일 청첩장</strong>
+              </div>
+            </article>
+            <article>
+              <img src={funeralLinkImage} alt="정담 모바일 부고장 링크 이미지" />
+              <div>
+                <span>Memorial Link</span>
+                <strong>모바일 부고장</strong>
+              </div>
+            </article>
+          </div>
+          <div className="showcaseCopy">
+            <p className="eyebrow">MOBILE WEB</p>
+            <h2>모바일 청첩장과 부고장을 가장 먼저 만나는 화면.</h2>
+            <p>
+              청첩장 링크는 사진과 일정, 갤러리, 지도, 마음 전하기를 보여주고,
+              부고장 링크는 고인 정보와 장례 일정, 빈소 안내를 차분하게 전달합니다.
+              웹은 초대와 안내에 집중하고, 현장 접수는 앱과 태블릿에서 이어집니다.
+            </p>
+          </div>
+        </section>
+
+        <section className="paperSection">
+          <div className="sectionHead">
+            <p className="eyebrow">PAPER PREVIEW</p>
+            <h2>종이청첩장 미리보기 샘플을 바로 확인합니다.</h2>
+            <p>
+              앱 안에 있는 미니멀 종이청첩장 preview들을 메인에서도 보여주어,
+              모바일 청첩장과 인쇄용 청첩장을 함께 제작할 수 있다는 점을 분명하게 전달합니다.
+            </p>
+          </div>
+          <div className="paperSlider" aria-label="종이청첩장 미리보기 자동 슬라이드">
+            <div className="paperTrack">
+              {[...paperSamples, ...paperSamples].map(([title, image], index) => (
+                <article key={`${title}-${index}`} aria-hidden={index >= paperSamples.length}>
+                  <img src={image} alt={index < paperSamples.length ? `${title} preview` : ''} />
+                  <div>
+                    <h3>{title}</h3>
+                    <p>인쇄용 종이청첩장 디자인 샘플</p>
+                  </div>
+                </article>
+              ))}
             </div>
-            <img src={invitationImage} alt="모바일과 종이 청첩장을 제작하는 화면" />
-          </article>
-          <article className="productRow reverse">
-            <div>
-              <p className="eyebrow">예식 당일</p>
-              <h2>접수대에서는 태블릿만 두면 됩니다.</h2>
-              <p>
-                하객은 이름을 쓰고, 접수자는 축의금과 식권 수량을 저장합니다. 신랑측과
-                신부측 구분, 미확정 기록까지 현장에서 바로 남깁니다.
-              </p>
-            </div>
-            <img src={receptionImage} alt="예식장 접수대의 태블릿 방명록과 식권" />
-          </article>
-          <article className="productRow">
-            <div>
-              <p className="eyebrow">관리자 화면</p>
-              <h2>주최자는 지금 상황과 행사 후 기록을 바로 봅니다.</h2>
-              <p>
-                참석자 목록, 축의금 합계, 식권 수량, 미확정 내역을 한 화면에서 확인하고
-                나중에 이름으로 다시 검색할 수 있습니다.
-              </p>
-            </div>
-            <img src={dashboardImage} alt="축의금과 식권 기록을 보여주는 관리자 대시보드" />
-          </article>
+          </div>
         </section>
 
         <section className="features" id="features">
-          <div className="sectionIntro">
-            <p className="eyebrow">기능 구성</p>
-            <h2>결혼식 접수에 필요한 기능만 촘촘하게 담았습니다.</h2>
+          <div className="featureIntro">
+            <div className="sectionHead">
+              <p className="eyebrow">FEATURES</p>
+              <h2>정담이 실제 경조사 운영에서 맡는 일.</h2>
+              <p>
+                초대장을 예쁘게 보여주는 일과 현장에서 기록을 받는 일은 서로 다릅니다.
+                정담은 모바일 링크, 종이 제작, 태블릿 접수, 행사 후 장부를 각각의 화면에
+                맞춰 분리해서 다룹니다.
+              </p>
+            </div>
+            <aside className="featureNote">
+              <span>운영 기준</span>
+              <strong>웹은 안내, 접수는 앱과 태블릿</strong>
+              <p>
+                하객이 여는 웹 링크는 청첩장과 부고장 안내에 집중하고,
+                이름과 금액을 남기는 접수 흐름은 현장용 앱에서 처리합니다.
+              </p>
+            </aside>
           </div>
-          <div className="featureGrid">
-            {featureItems.map(([title, body]) => (
-              <article key={title}>
-                <h3>{title}</h3>
-                <p>{body}</p>
+          <div className="featureStoryGrid">
+            {featureStories.map((feature, index) => (
+              <article className={index === 0 ? 'featureCard featureCardWide' : 'featureCard'} key={feature.title}>
+                <span className="featureNumber">{feature.label}</span>
+                <h3>{feature.title}</h3>
+                <p>{feature.body}</p>
+                <div className="featureTags">
+                  {feature.items.map((item) => (
+                    <span key={item}>{item}</span>
+                  ))}
+                </div>
               </article>
             ))}
           </div>
         </section>
 
-        <section className="compare">
-          <div className="compareImage">
-            <img src={paperImage} alt="종이 방명록과 계산기, 봉투가 놓인 접수대" />
+        <section className="flow" id="flow">
+          <div className="flowImage">
+            <img src={workflowImage} alt="정담 경조사 운영 흐름 이미지" />
           </div>
-          <div className="compareTable">
-            <p className="eyebrow">종이 방명록과 비교</p>
-            <h2>기존 접수대의 익숙함은 남기고, 정리 방식만 바꿉니다.</h2>
-            <div className="compareRows">
-              <div>
-                <span>종이 방명록</span>
-                <strong>행사 후 손으로 대조</strong>
-              </div>
-              <div>
-                <span>정담</span>
-                <strong>입력 즉시 기록 생성</strong>
-              </div>
-              <div>
-                <span>종이 식권 메모</span>
-                <strong>나중에 수량 재계산</strong>
-              </div>
-              <div>
-                <span>정담 식권</span>
-                <strong>현장에서 수량 저장</strong>
-              </div>
+          <div className="flowContent">
+            <p className="eyebrow">FLOW</p>
+            <h2>링크로 안내하고, 태블릿으로 접수하고, 앱에서 관리합니다.</h2>
+            <div className="stepList">
+              {steps.map(([num, title, body]) => (
+                <article key={num}>
+                  <span>{num}</span>
+                  <div>
+                    <h3>{title}</h3>
+                    <p>{body}</p>
+                  </div>
+                </article>
+              ))}
             </div>
           </div>
         </section>
 
-        <section className="contact" id="contact">
-          <div>
-            <p className="eyebrow">도입 문의</p>
-            <h2>정담으로 결혼식 접수 문화를 바꿔보세요.</h2>
-            <p>
-              종이 방명록의 익숙함은 유지하고, 축의금과 식권 기록은 실시간으로 관리하는
-              접수 시스템을 준비합니다.
-            </p>
-          </div>
-          <a className="primaryBtn" href="mailto:contact@jeongdam.app">도입 상담하기</a>
+        <section className="closing" id="contact">
+          <p className="eyebrow">CONTACT</p>
+          <h2>경조사 준비와 접수 운영을 더 단정하게 바꿔보세요.</h2>
+          <p>
+            모바일 청첩장과 부고장 링크, 앱·태블릿 접수, 장부 기록까지 실제 운영 흐름에
+            맞춰 정담을 도입할 수 있습니다.
+          </p>
+          <a className="primaryBtn dark" href="mailto:contact@jeongdam.app">도입 문의하기</a>
         </section>
       </main>
 
       <style jsx>{`
-        :global(html) {
-          scroll-behavior: smooth;
-        }
-
         :global(*) {
           box-sizing: border-box;
+        }
+
+        :global(html) {
+          scroll-behavior: smooth;
         }
 
         :global(html),
@@ -277,12 +291,11 @@ export default function HomePage() {
         }
 
         .page {
-          width: 100%;
-          max-width: 100vw;
           min-height: 100vh;
-          background: #f7f2e9;
-          color: #24231f;
+          color: #18201b;
+          background: #fbfaf7;
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+          letter-spacing: 0;
           overflow-x: hidden;
         }
 
@@ -290,13 +303,16 @@ export default function HomePage() {
           max-width: 100%;
         }
 
-        .heroCopy,
-        .splitCopy,
-        .compareTable,
-        .contact > div,
-        .sectionIntro,
-        .productRow > div {
-          min-width: 0;
+        h1,
+        h2,
+        h3,
+        p,
+        a,
+        span {
+          margin-top: 0;
+          word-break: keep-all;
+          overflow-wrap: break-word;
+          letter-spacing: 0;
         }
 
         .nav {
@@ -307,117 +323,101 @@ export default function HomePage() {
           grid-template-columns: 1fr auto 1fr;
           align-items: center;
           gap: 24px;
-          max-width: 1180px;
-          margin: 0 auto;
-          padding: 18px 24px;
-          background: rgba(247, 242, 233, 0.86);
+          padding: 15px 42px;
+          background: rgba(251, 250, 247, 0.9);
+          border-bottom: 1px solid rgba(24, 32, 27, 0.08);
           backdrop-filter: blur(18px);
         }
 
         .brand {
           display: inline-flex;
           align-items: center;
-          gap: 12px;
+          gap: 10px;
           color: inherit;
+          font-size: 19px;
+          font-weight: 850;
           text-decoration: none;
         }
 
         .brand img {
-          width: 38px;
-          height: 38px;
+          width: 36px;
+          height: 36px;
           object-fit: contain;
-          background: #fff;
-          border-radius: 6px;
-        }
-
-        .brand strong {
-          display: block;
-          font-size: 20px;
-          line-height: 1;
-        }
-
-        .brand small {
-          display: block;
-          margin-top: 5px;
-          font-size: 12px;
-          color: #716b60;
-          white-space: nowrap;
         }
 
         .navLinks {
           display: flex;
           align-items: center;
-          gap: 6px;
-          padding: 6px;
-          border: 1px solid rgba(36, 35, 31, 0.09);
-          border-radius: 999px;
-          background: rgba(255, 255, 255, 0.68);
+          gap: 24px;
         }
 
         .navLinks a {
-          padding: 10px 18px;
-          color: #5f5a51;
+          color: #58645d;
           font-size: 14px;
-          font-weight: 650;
+          font-weight: 750;
           text-decoration: none;
-          border-radius: 999px;
         }
 
         .navLinks a:hover {
-          color: #20392d;
-          background: #fff;
+          color: #173d2c;
         }
 
         .navCta {
           justify-self: end;
-          padding: 13px 22px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 40px;
+          padding: 0 18px;
           color: #fff;
-          background: #1d3a2d;
+          background: #183c2c;
           border-radius: 999px;
-          font-weight: 750;
+          font-size: 14px;
+          font-weight: 850;
           text-decoration: none;
-          box-shadow: 0 12px 30px rgba(29, 58, 45, 0.18);
         }
 
         .hero {
-          display: grid;
-          grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+          display: flex;
           align-items: center;
-          gap: 56px;
-          max-width: 1180px;
+          min-height: calc(100svh - 86px);
+          padding: 80px 42px 104px;
+          color: #fff;
+          background-color: #17211b;
+          background-position: center;
+          background-size: cover;
+        }
+
+        .heroCopy {
+          width: min(100%, 1120px);
           margin: 0 auto;
-          padding: 76px 24px 92px;
         }
 
         .eyebrow {
-          margin: 0 0 18px;
-          color: #6f8a68;
-          font-size: 14px;
-          font-weight: 800;
-          letter-spacing: 0.08em;
+          margin-bottom: 14px;
+          color: #6d876d;
+          font-size: 13px;
+          font-weight: 900;
         }
 
-        h1,
-        h2,
-        h3,
-        p {
-          word-break: keep-all;
-          overflow-wrap: break-word;
+        .eyebrow.light {
+          color: #d9bd8a;
         }
 
         h1 {
-          margin: 0;
-          font-size: clamp(44px, 5vw, 66px);
+          max-width: 760px;
+          margin-bottom: 26px;
+          font-size: 68px;
           line-height: 1.08;
-          letter-spacing: 0;
+          font-weight: 850;
         }
 
-        .lead {
-          max-width: 560px;
-          margin: 28px 0 0;
-          color: #625d54;
+        .heroCopy p:not(.eyebrow) {
+          max-width: 650px;
+          margin-bottom: 0;
+          color: rgba(255, 255, 255, 0.82);
           font-size: 19px;
-          line-height: 1.72;
+          line-height: 1.78;
           font-weight: 520;
         }
 
@@ -434,534 +434,724 @@ export default function HomePage() {
           align-items: center;
           justify-content: center;
           min-height: 52px;
-          padding: 0 24px;
+          padding: 0 25px;
           border-radius: 999px;
           font-size: 15px;
-          font-weight: 800;
+          font-weight: 850;
           text-decoration: none;
         }
 
         .primaryBtn {
+          color: #1b241f;
+          background: #fff7e6;
+          border: 1px solid rgba(255, 255, 255, 0.52);
+        }
+
+        .primaryBtn.dark {
           color: #fff;
-          background: #1d3a2d;
-          box-shadow: 0 18px 40px rgba(29, 58, 45, 0.22);
+          background: #183c2c;
+          border-color: #183c2c;
         }
 
         .secondaryBtn {
-          color: #1d3a2d;
-          background: #ffffff;
-          border: 1px solid rgba(29, 58, 45, 0.12);
+          color: #fff;
+          background: rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.28);
         }
 
-        .proofRow {
+        .introBand {
+          padding: 104px 42px 86px;
+          background: #fbfaf7;
+        }
+
+        .introCopy,
+        .sectionHead {
+          width: min(100%, 1120px);
+          margin: 0 auto 38px;
+        }
+
+        .introCopy h2,
+        .showcaseCopy h2,
+        .sectionHead h2,
+        .flowContent h2,
+        .closing h2 {
+          margin-bottom: 20px;
+          color: #1d2922;
+          font-size: 48px;
+          line-height: 1.18;
+          font-weight: 850;
+        }
+
+        .introCopy p:not(.eyebrow),
+        .showcaseCopy p,
+        .closing p {
+          max-width: 760px;
+          color: #5c665f;
+          font-size: 18px;
+          line-height: 1.78;
+        }
+
+        .serviceLayout {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 12px;
-          margin-top: 46px;
+          grid-template-columns: 0.9fr 1.1fr;
+          gap: 22px;
+          width: min(100%, 1120px);
+          margin: 0 auto;
         }
 
-        .proofRow div {
-          padding: 18px 16px;
-          background: rgba(255, 255, 255, 0.72);
-          border: 1px solid rgba(36, 35, 31, 0.08);
+        .serviceRail {
+          display: grid;
+          gap: 14px;
+        }
+
+        .serviceRail article {
+          display: grid;
+          grid-template-columns: 54px 1fr;
+          gap: 18px;
+          align-items: start;
+          padding: 24px;
+          background: #fff;
+          border: 1px solid rgba(25, 61, 45, 0.1);
           border-radius: 8px;
+          box-shadow: 0 16px 44px rgba(25, 36, 30, 0.06);
         }
 
-        .proofRow strong,
-        .proofRow span {
+        .serviceRail article > span {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 42px;
+          height: 42px;
+          color: #fff;
+          background: #183c2c;
+          border-radius: 50%;
+          font-size: 13px;
+          font-weight: 900;
+        }
+
+        .serviceRail h3,
+        .stepList h3 {
+          margin-bottom: 12px;
+          color: #1d3328;
+          font-size: 23px;
+          line-height: 1.25;
+        }
+
+        .serviceRail p,
+        .stepList p {
+          margin-bottom: 0;
+          color: #657066;
+          font-size: 16px;
+          line-height: 1.68;
+        }
+
+        .serviceDetailPanel {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          min-height: 100%;
+          padding: 32px;
+          color: #fff;
+          background: #17251d;
+          border-radius: 8px;
+          box-shadow: 0 24px 70px rgba(25, 36, 30, 0.14);
+        }
+
+        .serviceDetailPanel > p {
+          margin-bottom: 26px;
+          color: #dfc896;
+          font-size: 13px;
+          font-weight: 900;
+        }
+
+        .serviceDetailPanel > div {
+          display: grid;
+          gap: 12px;
+        }
+
+        .serviceDetailPanel section {
+          padding: 18px 0;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+        }
+
+        .serviceDetailPanel section:last-child {
+          border-bottom: 0;
+        }
+
+        .serviceDetailPanel h4 {
+          margin: 0 0 7px;
+          color: #fff;
+          font-size: 19px;
+          line-height: 1.25;
+        }
+
+        .serviceDetailPanel span {
+          display: block;
+          color: rgba(255, 255, 255, 0.68);
+          font-size: 15px;
+          line-height: 1.55;
+        }
+
+        .showcase {
+          display: grid;
+          grid-template-columns: 1.15fr 0.85fr;
+          align-items: center;
+          gap: 48px;
+          padding: 96px 42px;
+          background: linear-gradient(180deg, #f4f1ea 0%, #eef4ef 100%);
+        }
+
+        .linkPreviewGrid,
+        .showcaseCopy {
+          min-width: 0;
+        }
+
+        .linkPreviewGrid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          align-items: stretch;
+          gap: 16px;
+        }
+
+        .linkPreviewGrid article {
+          position: relative;
+          overflow: hidden;
+          min-height: 520px;
+          border: 1px solid rgba(25, 61, 45, 0.12);
+          border-radius: 8px;
+          background: #fff;
+          box-shadow: 0 22px 60px rgba(25, 36, 30, 0.12);
+        }
+
+        .linkPreviewGrid article img {
+          display: block;
+          width: 100%;
+          height: 100%;
+          min-height: 520px;
+          object-fit: cover;
+        }
+
+        .linkPreviewGrid article div {
+          position: absolute;
+          left: 18px;
+          right: 18px;
+          bottom: 18px;
+          padding: 16px 18px;
+          color: #1d2b23;
+          background: rgba(255, 255, 255, 0.84);
+          border: 1px solid rgba(255, 255, 255, 0.72);
+          border-radius: 8px;
+          backdrop-filter: blur(14px);
+        }
+
+        .linkPreviewGrid span,
+        .linkPreviewGrid strong {
           display: block;
         }
 
-        .proofRow strong {
-          font-size: 18px;
+        .linkPreviewGrid span {
+          color: #6b7c70;
+          font-size: 12px;
+          font-weight: 900;
         }
 
-        .proofRow span {
-          margin-top: 7px;
-          color: #6f675c;
-          font-size: 13px;
-          font-weight: 650;
+        .linkPreviewGrid strong {
+          margin-top: 5px;
+          font-size: 22px;
+          line-height: 1.2;
         }
 
-        .heroVisual {
-          position: relative;
-          min-height: 560px;
-          border-radius: 28px;
-          overflow: hidden;
-          box-shadow: 0 38px 90px rgba(49, 39, 25, 0.16);
-          background: #eee5d7;
-        }
-
-        .heroVisual img,
-        .splitImage img,
-        .productRow img,
-        .compareImage img {
+        .flowImage img {
           display: block;
           width: 100%;
           height: 100%;
           object-fit: cover;
         }
 
-        .statusPanel {
-          position: absolute;
-          left: 28px;
-          right: 28px;
-          bottom: 28px;
-          padding: 22px;
-          color: #243228;
-          background: rgba(255, 255, 255, 0.82);
-          border: 1px solid rgba(255, 255, 255, 0.72);
-          border-radius: 8px;
-          backdrop-filter: blur(18px);
+        .showcaseCopy {
+          max-width: 500px;
         }
 
-        .statusPanel span {
-          display: block;
-          color: #6e7f65;
-          font-size: 13px;
-          font-weight: 800;
+        .paperSection {
+          padding: 104px 42px;
+          background: #fbfaf7;
         }
 
-        .statusPanel strong {
-          display: block;
-          margin-top: 8px;
-          font-size: 22px;
-        }
-
-        .statusBars {
-          display: grid;
-          gap: 8px;
-          margin-top: 18px;
-        }
-
-        .statusBars i {
-          display: block;
-          height: 8px;
-          border-radius: 999px;
-          background: #78906c;
-        }
-
-        .statusBars i:nth-child(2) {
-          width: 78%;
-          background: #d4b48d;
-        }
-
-        .statusBars i:nth-child(3) {
-          width: 56%;
-          background: #a98d73;
-        }
-
-        .problemBand,
-        .flowSection,
-        .features {
-          padding: 100px 24px;
-        }
-
-        .problemBand {
-          background: #243228;
-          color: #fff;
-        }
-
-        .sectionIntro {
-          max-width: 1180px;
-          margin: 0 auto 42px;
-        }
-
-        .sectionIntro.centered {
+        .sectionHead p:not(.eyebrow) {
           max-width: 760px;
-          text-align: center;
-        }
-
-        .sectionIntro h2,
-        .splitCopy h2,
-        .productRow h2,
-        .compareTable h2,
-        .contact h2 {
-          margin: 0;
-          font-size: clamp(34px, 4vw, 54px);
-          line-height: 1.12;
-          letter-spacing: 0;
-        }
-
-        .sectionIntro p:not(.eyebrow),
-        .splitCopy p,
-        .productRow p,
-        .compareTable p,
-        .contact p {
-          color: #665f55;
+          margin-bottom: 0;
+          color: #5c665f;
           font-size: 18px;
-          line-height: 1.75;
+          line-height: 1.78;
         }
 
-        .problemBand .sectionIntro p:not(.eyebrow) {
-          color: rgba(255, 255, 255, 0.7);
-        }
-
-        .problemGrid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 18px;
-          max-width: 1180px;
+        .paperSlider {
+          width: min(100%, 1120px);
           margin: 0 auto;
-        }
-
-        .problemGrid article {
-          min-height: 250px;
-          padding: 28px;
-          background: rgba(255, 255, 255, 0.08);
-          border: 1px solid rgba(255, 255, 255, 0.12);
+          overflow: hidden;
           border-radius: 8px;
+          mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%);
         }
 
-        .problemGrid span,
-        .flowGrid span {
-          color: #d1b187;
-          font-weight: 900;
+        .paperTrack {
+          display: flex;
+          width: max-content;
+          gap: 16px;
+          animation: paperSlide 38s linear infinite;
         }
 
-        .problemGrid h3,
-        .flowGrid h3,
-        .featureGrid h3 {
-          margin: 28px 0 12px;
-          font-size: 24px;
+        .paperTrack article {
+          flex: 0 0 260px;
+          overflow: hidden;
+          background: #fff;
+          border: 1px solid rgba(24, 32, 27, 0.1);
+          border-radius: 8px;
+          box-shadow: 0 18px 52px rgba(25, 36, 30, 0.08);
+        }
+
+        .paperTrack img {
+          display: block;
+          width: 100%;
+          aspect-ratio: 0.72;
+          height: auto;
+          object-fit: cover;
+          object-position: center top;
+          background: #f4f0e9;
+        }
+
+        .paperTrack div {
+          padding: 18px 20px 20px;
+        }
+
+        .paperTrack h3 {
+          margin-bottom: 10px;
+          color: #1d3328;
+          font-size: 22px;
           line-height: 1.25;
         }
 
-        .problemGrid p {
-          margin: 0;
-          color: rgba(255, 255, 255, 0.72);
-          font-size: 16px;
-          line-height: 1.7;
+        .paperTrack p {
+          margin-bottom: 0;
+          color: #657066;
+          font-size: 15px;
+          line-height: 1.65;
         }
 
-        .splitSection,
-        .compare {
-          display: grid;
-          grid-template-columns: 1.05fr 0.95fr;
-          gap: 64px;
-          align-items: center;
-          max-width: 1180px;
-          margin: 0 auto;
-          padding: 110px 24px;
-        }
-
-        .splitImage,
-        .compareImage {
-          aspect-ratio: 1.2 / 1;
-          overflow: hidden;
-          border-radius: 24px;
-          box-shadow: 0 28px 70px rgba(49, 39, 25, 0.13);
-        }
-
-        .miniList {
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 10px;
-          margin-top: 28px;
-        }
-
-        .miniList span {
-          padding: 14px 16px;
-          background: #fff;
-          border: 1px solid rgba(36, 35, 31, 0.08);
-          border-radius: 8px;
-          font-weight: 800;
-        }
-
-        .flowSection {
-          background: #fffaf2;
-        }
-
-        .flowGrid,
-        .featureGrid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 18px;
-          max-width: 1180px;
-          margin: 0 auto;
-        }
-
-        .flowGrid article,
-        .featureGrid article {
-          padding: 30px;
-          background: #fff;
-          border: 1px solid rgba(36, 35, 31, 0.08);
-          border-radius: 8px;
-          box-shadow: 0 18px 50px rgba(49, 39, 25, 0.06);
-        }
-
-        .flowGrid p,
-        .featureGrid p {
-          color: #6b645a;
-          font-size: 16px;
-          line-height: 1.7;
-        }
-
-        .productRows {
-          max-width: 1180px;
-          margin: 0 auto;
-          padding: 100px 24px;
-        }
-
-        .productRow {
-          display: grid;
-          grid-template-columns: 0.82fr 1.18fr;
-          gap: 56px;
-          align-items: center;
-          padding: 46px 0;
-          border-top: 1px solid rgba(36, 35, 31, 0.12);
-        }
-
-        .productRow.reverse {
-          grid-template-columns: 1.18fr 0.82fr;
-        }
-
-        .productRow.reverse div {
-          order: 2;
-        }
-
-        .productRow.reverse img {
-          order: 1;
-        }
-
-        .productRow img {
-          aspect-ratio: 1.55 / 1;
-          border-radius: 20px;
-          box-shadow: 0 24px 60px rgba(49, 39, 25, 0.12);
+        @keyframes paperSlide {
+          from {
+            transform: translateX(0);
+          }
+          to {
+            transform: translateX(calc(-50% - 8px));
+          }
         }
 
         .features {
-          background: #eef1e8;
+          padding: 104px 42px;
+          background: #f4f1ea;
         }
 
-        .featureGrid {
-          grid-template-columns: repeat(2, 1fr);
-        }
-
-        .featureGrid article {
-          box-shadow: none;
-        }
-
-        .featureGrid h3 {
-          margin-top: 0;
-        }
-
-        .compare {
-          grid-template-columns: 0.95fr 1.05fr;
-        }
-
-        .compareRows {
+        .featureIntro {
           display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 12px;
-          margin-top: 32px;
+          grid-template-columns: minmax(0, 1fr) 360px;
+          align-items: end;
+          gap: 28px;
+          width: min(100%, 1120px);
+          margin: 0 auto 34px;
         }
 
-        .compareRows div {
-          padding: 20px;
-          background: #fff;
-          border: 1px solid rgba(36, 35, 31, 0.08);
+        .featureIntro .sectionHead {
+          width: auto;
+          margin: 0;
+        }
+
+        .featureNote {
+          padding: 25px 26px 27px;
+          color: #fff;
+          background: #183c2c;
           border-radius: 8px;
+          box-shadow: 0 22px 60px rgba(25, 36, 30, 0.12);
         }
 
-        .compareRows span,
-        .compareRows strong {
+        .featureNote span,
+        .featureNumber {
           display: block;
+          margin-bottom: 14px;
+          color: #b99a66;
+          font-size: 12px;
+          font-weight: 950;
+          letter-spacing: 0;
         }
 
-        .compareRows span {
-          color: #7b7164;
+        .featureNote strong {
+          display: block;
+          margin-bottom: 13px;
+          font-size: 22px;
+          line-height: 1.25;
+        }
+
+        .featureNote p {
+          margin-bottom: 0;
+          color: rgba(255, 255, 255, 0.72);
+          font-size: 15px;
+          line-height: 1.68;
+        }
+
+        .featureStoryGrid {
+          display: grid;
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+          gap: 16px;
+          width: min(100%, 1120px);
+          margin: 0 auto;
+        }
+
+        .featureCard {
+          display: flex;
+          min-height: 300px;
+          flex-direction: column;
+          padding: 28px;
+          background: #fff;
+          border: 1px solid rgba(24, 32, 27, 0.1);
+          border-radius: 8px;
+          box-shadow: 0 18px 52px rgba(25, 36, 30, 0.07);
+        }
+
+        .featureCardWide {
+          grid-column: span 2;
+          background:
+            linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(255, 251, 243, 0.92)),
+            #fff;
+        }
+
+        .featureCard:nth-child(2) {
+          background: #eef4ef;
+        }
+
+        .featureCard:nth-child(3) {
+          background: #fffaf0;
+        }
+
+        .featureCard:nth-child(4) {
+          background: #f8f8f4;
+        }
+
+        .featureCard h3 {
+          margin-bottom: 14px;
+          color: #1d3328;
+          font-size: 25px;
+          line-height: 1.25;
+        }
+
+        .featureCard p {
+          margin-bottom: 0;
+          color: #657066;
+          font-size: 16px;
+          line-height: 1.7;
+        }
+
+        .featureTags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-top: auto;
+          padding-top: 26px;
+        }
+
+        .featureTags span {
+          display: inline-flex;
+          align-items: center;
+          min-height: 34px;
+          padding: 0 12px;
+          color: #405148;
+          background: rgba(255, 255, 255, 0.72);
+          border: 1px solid rgba(24, 32, 27, 0.08);
+          border-radius: 999px;
           font-size: 13px;
           font-weight: 800;
         }
 
-        .compareRows strong {
-          margin-top: 9px;
-          font-size: 18px;
+        .flow {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          align-items: stretch;
+          gap: 0;
+          background: #17251d;
+          color: #fff;
         }
 
-        .contact {
+        .flowImage {
+          min-height: 640px;
+          overflow: hidden;
+        }
+
+        .flowContent {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          padding: 88px 54px;
+        }
+
+        .flowContent h2 {
+          color: #fff;
+        }
+
+        .stepList {
+          display: grid;
+          gap: 16px;
+          margin-top: 18px;
+        }
+
+        .stepList article {
+          display: grid;
+          grid-template-columns: 52px 1fr;
+          gap: 18px;
+          padding-bottom: 18px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+        }
+
+        .stepList article:last-child {
+          border-bottom: 0;
+        }
+
+        .stepList span {
           display: flex;
           align-items: center;
-          justify-content: space-between;
-          gap: 40px;
-          max-width: 1180px;
-          margin: 0 auto;
-          padding: 84px 24px 110px;
-          border-top: 1px solid rgba(36, 35, 31, 0.12);
+          justify-content: center;
+          width: 42px;
+          height: 42px;
+          color: #17251d;
+          background: #dfc896;
+          border-radius: 50%;
+          font-size: 13px;
+          font-weight: 900;
         }
 
-        .contact > div {
+        .stepList h3 {
+          color: #fff;
+        }
+
+        .stepList p {
+          color: rgba(255, 255, 255, 0.72);
+        }
+
+        .closing {
+          padding: 118px 42px;
+          text-align: center;
+          background: #fbfaf7;
+        }
+
+        .closing h2,
+        .closing p {
           max-width: 760px;
+          margin-left: auto;
+          margin-right: auto;
         }
 
-        @media (max-width: 900px) {
+        .closing .primaryBtn {
+          margin-top: 18px;
+        }
+
+        @media (max-width: 1024px) {
           .nav {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 16px;
-            max-width: 100vw;
+            grid-template-columns: 1fr auto;
+            padding: 14px 24px;
           }
 
           .navLinks {
             display: none;
           }
 
-          .brand small {
-            display: none;
-          }
-
-          .navCta {
-            padding: 11px 16px;
-            font-size: 13px;
-          }
-
-          .hero,
-          .splitSection,
-          .compare,
-          .productRow,
-          .productRow.reverse {
-            grid-template-columns: 1fr;
-          }
-
           .hero {
-            gap: 34px;
-            padding: 44px 18px 64px;
+            min-height: calc(100svh - 80px);
+            padding: 70px 24px 92px;
+            background-position: center right 34%;
           }
 
           h1 {
-            font-size: 35px;
-            line-height: 1.13;
+            font-size: 52px;
           }
 
-          .lead {
-            font-size: 17px;
-            max-width: 100%;
+          .introCopy h2,
+          .showcaseCopy h2,
+          .sectionHead h2,
+          .flowContent h2,
+          .closing h2 {
+            font-size: 39px;
           }
 
-          .proofRow,
-          .problemGrid,
-          .flowGrid,
-          .featureGrid,
-          .compareRows {
+          .introBand,
+          .paperSection,
+          .features,
+          .closing {
+            padding-left: 24px;
+            padding-right: 24px;
+          }
+
+          .serviceLayout {
             grid-template-columns: 1fr;
           }
 
-          .heroVisual {
-            min-height: 480px;
-            border-radius: 22px;
+          .showcase,
+          .flow {
+            grid-template-columns: 1fr;
           }
 
-          .problemBand,
-          .flowSection,
-          .features,
-          .productRows,
-          .splitSection,
-          .compare {
-            padding: 72px 18px;
+          .showcase {
+            padding: 82px 24px;
           }
 
-          .productRow,
-          .productRow.reverse {
-            gap: 28px;
+          .linkPreviewGrid {
+            grid-template-columns: 1fr 1fr;
           }
 
-          .productRow.reverse div,
-          .productRow.reverse img {
-            order: initial;
+          .showcaseCopy {
+            max-width: none;
           }
 
-          .contact {
+          .flowImage {
+            min-height: 420px;
+          }
+
+          .flowContent {
+            padding: 72px 24px;
+          }
+
+          .paperTrack article {
+            flex-basis: 238px;
+          }
+
+          .featureIntro {
+            grid-template-columns: 1fr;
+            align-items: start;
+          }
+
+          .featureStoryGrid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+
+          .featureCardWide {
+            grid-column: span 2;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .nav {
+            padding: 12px 16px;
+          }
+
+          .brand img {
+            width: 32px;
+            height: 32px;
+          }
+
+          .navCta {
+            min-height: 38px;
+            padding: 0 14px;
+            font-size: 13px;
+          }
+
+          .hero {
+            min-height: calc(100svh - 72px);
+            padding: 58px 18px 86px;
+          }
+
+          h1 {
+            font-size: 40px;
+          }
+
+          .heroCopy p:not(.eyebrow),
+          .introCopy p:not(.eyebrow),
+          .showcaseCopy p,
+          .closing p {
+            font-size: 16px;
+            line-height: 1.72;
+          }
+
+          .heroActions {
             flex-direction: column;
-            align-items: flex-start;
-            padding: 72px 18px 90px;
+            width: min(100%, 260px);
           }
 
           .primaryBtn,
           .secondaryBtn {
             width: 100%;
-            max-width: 100%;
-          }
-        }
-
-        @media (max-width: 520px) {
-          .navCta {
-            display: none;
           }
 
-          h2,
-          .sectionIntro h2,
-          .splitCopy h2,
-          .productRow h2,
-          .compareTable h2,
-          .contact h2 {
-            font-size: 32px;
-            line-height: 1.18;
-          }
-
-          h1,
-          h2,
-          h3,
-          p {
-            word-break: break-all;
-            overflow-wrap: anywhere;
-          }
-
-          .hero,
-          .problemBand,
-          .flowSection,
+          .introBand,
+          .paperSection,
           .features,
-          .productRows,
-          .splitSection,
-          .compare,
-          .contact {
-            width: 100%;
-            max-width: 100vw;
+          .closing {
+            padding: 68px 18px;
           }
 
-          .heroCopy,
-          .heroActions,
-          .proofRow,
-          .proofRow div,
-          .heroVisual,
-          .sectionIntro,
-          .problemGrid,
-          .problemGrid article,
-          .flowGrid,
-          .flowGrid article,
-          .featureGrid,
-          .featureGrid article,
-          .splitCopy,
-          .productRow > div,
-          .compareTable,
-          .contact > div {
-            width: 100%;
-            max-width: calc(100vw - 36px);
+          .introCopy h2,
+          .showcaseCopy h2,
+          .sectionHead h2,
+          .flowContent h2,
+          .closing h2 {
+            font-size: 31px;
           }
 
-          .lead,
-          .problemGrid p,
-          .flowGrid p,
-          .featureGrid p,
-          .productRow p,
-          .splitCopy p,
-          .compareTable p {
-            font-size: 15px;
-            line-height: 1.72;
+          .serviceRail article,
+          .featureCard {
+            min-height: auto;
+            padding: 24px;
           }
 
-          .heroVisual {
-            min-height: 390px;
+          .serviceRail article {
+            grid-template-columns: 44px 1fr;
+            gap: 14px;
           }
 
-          .statusPanel {
-            left: 16px;
-            right: 16px;
-            bottom: 16px;
+          .serviceDetailPanel {
+            padding: 24px;
           }
 
-          .miniList {
+          .showcase {
+            padding: 68px 18px;
+          }
+
+          .linkPreviewGrid {
             grid-template-columns: 1fr;
+          }
+
+          .linkPreviewGrid article,
+          .linkPreviewGrid article img {
+            min-height: 330px;
+          }
+
+          .featureStoryGrid {
+            grid-template-columns: 1fr;
+          }
+
+          .featureCardWide {
+            grid-column: auto;
+          }
+
+          .paperTrack article {
+            flex-basis: 218px;
+          }
+
+          .paperTrack img {
+            aspect-ratio: 0.72;
+          }
+
+          .flowImage {
+            min-height: 310px;
+          }
+
+          .flowContent {
+            padding: 62px 18px;
+          }
+
+          .stepList article {
+            grid-template-columns: 42px 1fr;
+            gap: 14px;
+          }
+
+          .stepList span {
+            width: 36px;
+            height: 36px;
           }
         }
       `}</style>

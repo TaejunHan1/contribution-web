@@ -19,6 +19,7 @@ const TicketFlightTemplate = dynamic(() => import('../../components/templates/Ti
 const CinemaTemplate = dynamic(() => import('../../components/templates/CinemaTemplate'), { ssr: false });
 const RunicRiftTemplate = dynamic(() => import('../../components/templates/RunicRiftTemplate'), { ssr: false });
 const PhotoBookTemplate = dynamic(() => import('../../components/templates/PhotoBookTemplate'), { ssr: false });
+const FuneralNoticeTemplate = dynamic(() => import('../../components/templates/FuneralNoticeTemplate'), { ssr: false });
 const FallingPetals = dynamic(() => import('../../components/FallingPetals'), { ssr: false });
 const BackgroundMusicPlayer = dynamic(() => import('../../components/BackgroundMusicPlayer'), { ssr: false });
 const WeddingIntroOverlay = dynamic(() => import('../../components/WeddingIntroOverlay'), { ssr: false });
@@ -49,11 +50,25 @@ const parseJsonArrayItems = (value, fallback = []) => {
 
 const buildInvitationTitle = (event) => {
   if (!event) return '모바일 청첩장';
+  if (event.event_type === 'funeral') {
+    return `故 ${event.main_person_name || event.deceasedName || '고인'} 부고`;
+  }
   return `${event.groom_name || '신랑'} ♡ ${event.bride_name || '신부'} 결혼식에 초대합니다`;
 };
 
 const buildInvitationDescription = (event) => {
   if (!event) return '소중한 분들을 결혼식에 초대합니다';
+  if (event.event_type === 'funeral') {
+    const date = event.burial_date || event.event_date || event.death_date;
+    const dateText = date
+      ? new Date(date).toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+      : '';
+    return [dateText, event.burial_time, event.funeral_home || event.location].filter(Boolean).join(' · ');
+  }
 
   const date = event.event_date
     ? new Date(event.event_date).toLocaleDateString('ko-KR', {
@@ -413,6 +428,17 @@ export default function TemplatePage({
     
     // 이미지 데이터 구성
     const categorizedImages = event.additional_info?.categorized_images || {};
+
+    if (event.event_type === 'funeral') {
+      return (
+        <FuneralNoticeTemplate
+          eventData={event}
+          categorizedImages={categorizedImages}
+          allowMessages={event.allow_messages}
+          messageSettings={event.additional_info?.message_settings || {}}
+        />
+      );
+    }
     
     switch (template) {
       case 'modern':
@@ -478,7 +504,13 @@ export default function TemplatePage({
             <meta key="og:image:secure_url" property="og:image:secure_url" content={loadingOgImageUrl} />
             <meta key="og:image:width" property="og:image:width" content="1200" />
             <meta key="og:image:height" property="og:image:height" content="630" />
-            <meta key="og:image:alt" property="og:image:alt" content={`${ogEvent.groom_name} ♡ ${ogEvent.bride_name} 청첩장`} />
+            <meta
+              key="og:image:alt"
+              property="og:image:alt"
+              content={ogEvent.event_type === 'funeral'
+                ? `故 ${ogEvent.main_person_name || '고인'} 부고`
+                : `${ogEvent.groom_name} ♡ ${ogEvent.bride_name} 청첩장`}
+            />
             <meta key="twitter:card" name="twitter:card" content="summary_large_image" />
             <meta key="twitter:title" name="twitter:title" content={loadingTitle} />
             <meta key="twitter:description" name="twitter:description" content={loadingDescription} />
@@ -498,7 +530,9 @@ export default function TemplatePage({
             {/* 로딩 텍스트 */}
             <div>
               <h2 className="text-lg font-medium text-gray-700 mb-2">
-                {!fontsLoaded ? '청첩장을 준비하는 중...' : '청첩장을 불러오는 중...'}
+                {!fontsLoaded
+                  ? `${ogEvent?.event_type === 'funeral' ? '부고장을' : '청첩장을'} 준비하는 중...`
+                  : `${ogEvent?.event_type === 'funeral' ? '부고장을' : '청첩장을'} 불러오는 중...`}
               </h2>
               <p className="text-sm text-gray-500">잠시만 기다려주세요</p>
             </div>
@@ -517,10 +551,10 @@ export default function TemplatePage({
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-800 mb-4">
-              청첩장을 찾을 수 없습니다
+              {serverOgEvent?.event_type === 'funeral' ? '부고장을' : '청첩장을'} 찾을 수 없습니다
             </h1>
             <p className="text-gray-600 mb-8">
-              {error || '유효하지 않은 링크이거나 만료된 청첩장입니다.'}
+              {error || `유효하지 않은 링크이거나 만료된 ${serverOgEvent?.event_type === 'funeral' ? '부고장' : '청첩장'}입니다.`}
             </p>
           </div>
         </div>
@@ -564,7 +598,13 @@ export default function TemplatePage({
         <meta key="og:image:secure_url" property="og:image:secure_url" content={ogImageUrl} />
         <meta key="og:image:width" property="og:image:width" content="1200" />
         <meta key="og:image:height" property="og:image:height" content="630" />
-        <meta key="og:image:alt" property="og:image:alt" content={`${event.groom_name} ♡ ${event.bride_name} 청첩장`} />
+        <meta
+          key="og:image:alt"
+          property="og:image:alt"
+          content={event.event_type === 'funeral'
+            ? `故 ${event.main_person_name || '고인'} 부고`
+            : `${event.groom_name} ♡ ${event.bride_name} 청첩장`}
+        />
         <meta key="twitter:card" name="twitter:card" content="summary_large_image" />
         <meta key="twitter:title" name="twitter:title" content={pageTitle} />
         <meta key="twitter:description" name="twitter:description" content={pageDescription} />
@@ -577,9 +617,13 @@ export default function TemplatePage({
       </Head>
 
       {getTemplateComponent()}
-      <FallingPetals type={event.additional_info?.background_petal?.id} color={event.additional_info?.background_petal?.color} />
-      <BackgroundMusicPlayer trackId={event.additional_info?.background_music?.id} />
-      {showIntro && !BUILT_IN_INTRO_TEMPLATES.has(template) && event.additional_info?.intro_effect?.id && event.additional_info.intro_effect.id !== 'none' && (
+      {event.event_type !== 'funeral' && (
+        <>
+          <FallingPetals type={event.additional_info?.background_petal?.id} color={event.additional_info?.background_petal?.color} />
+          <BackgroundMusicPlayer trackId={event.additional_info?.background_music?.id} />
+        </>
+      )}
+      {event.event_type !== 'funeral' && showIntro && !BUILT_IN_INTRO_TEMPLATES.has(template) && event.additional_info?.intro_effect?.id && event.additional_info.intro_effect.id !== 'none' && (
         <WeddingIntroOverlay
           introId={event.additional_info.intro_effect.id}
           tapToOpen={event.additional_info.intro_effect.tapToOpen || false}
@@ -652,10 +696,16 @@ export async function getServerSideProps(context) {
 
     const serverOgEvent = {
       id: event.id,
+      event_type: event.event_type || null,
+      main_person_name: event.main_person_name || null,
       groom_name: event.groom_name || null,
       bride_name: event.bride_name || null,
       event_date: event.event_date || null,
       ceremony_time: event.ceremony_time || null,
+      death_date: event.death_date || null,
+      burial_date: event.burial_date || null,
+      burial_time: event.burial_time || null,
+      funeral_home: event.funeral_home || null,
       location: event.location || null,
       template_style: event.template_style || null,
     };

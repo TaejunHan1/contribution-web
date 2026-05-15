@@ -91,10 +91,16 @@ export async function getServerSideProps(context) {
 
     const serverOgEvent = {
       id: event.id,
+      event_type: event.event_type || null,
+      main_person_name: event.main_person_name || null,
       groom_name: event.groom_name || null,
       bride_name: event.bride_name || null,
       event_date: event.event_date || null,
       ceremony_time: event.ceremony_time || null,
+      death_date: event.death_date || null,
+      burial_date: event.burial_date || null,
+      burial_time: event.burial_time || null,
+      funeral_home: event.funeral_home || null,
       location: event.location || null,
       template_style: event.template_style || null,
     };
