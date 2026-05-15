@@ -96,6 +96,16 @@ const nextConfig = {
   async headers() {
     return [
       {
+        // 예전 PWA 서비스 워커가 404/구버전 청크를 캐싱하지 않도록 즉시 갱신
+        source: '/sw.js',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+          },
+        ],
+      },
+      {
         // template 페이지는 iframe 임베딩 허용
         source: '/template/:path*',
         headers: [
@@ -305,119 +315,18 @@ const nextConfig = {
   }),
 };
 
-// PWA 설정 (next-pwa 플러그인 사용 시)
-const withPWA = require('next-pwa')({
-  dest: 'public',
-  register: true,
-  skipWaiting: true,
-  runtimeCaching: [
-    {
-      urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-      handler: 'CacheFirst',
-      options: {
-        cacheName: 'google-fonts',
-        expiration: {
-          maxEntries: 4,
-          maxAgeSeconds: 365 * 24 * 60 * 60, // 1년
-        },
-      },
-    },
-    {
-      urlPattern: /^https:\/\/cdn\.jsdelivr\.net\/.*/i,
-      handler: 'StaleWhileRevalidate',
-      options: {
-        cacheName: 'jsdelivr-cdn',
-        expiration: {
-          maxEntries: 32,
-          maxAgeSeconds: 24 * 60 * 60, // 1일
-        },
-      },
-    },
-    {
-      urlPattern: /\.(?:eot|otf|ttc|ttf|woff|woff2|font.css)$/i,
-      handler: 'StaleWhileRevalidate',
-      options: {
-        cacheName: 'static-font-assets',
-        expiration: {
-          maxEntries: 4,
-          maxAgeSeconds: 7 * 24 * 60 * 60, // 7일
-        },
-      },
-    },
-    {
-      urlPattern: /\.(?:jpg|jpeg|gif|png|svg|ico|webp)$/i,
-      handler: 'StaleWhileRevalidate',
-      options: {
-        cacheName: 'static-image-assets',
-        expiration: {
-          maxEntries: 64,
-          maxAgeSeconds: 7 * 24 * 60 * 60, // 7일
-        },
-      },
-    },
-    {
-      urlPattern: /\/_next\/image\?url=.+$/i,
-      handler: 'StaleWhileRevalidate',
-      options: {
-        cacheName: 'next-image',
-        expiration: {
-          maxEntries: 64,
-          maxAgeSeconds: 7 * 24 * 60 * 60, // 7일
-        },
-      },
-    },
-    {
-      urlPattern: /\.(?:js)$/i,
-      handler: 'StaleWhileRevalidate',
-      options: {
-        cacheName: 'static-js-assets',
-        expiration: {
-          maxEntries: 32,
-          maxAgeSeconds: 24 * 60 * 60, // 1일
-        },
-      },
-    },
-    {
-      urlPattern: /\.(?:css|less)$/i,
-      handler: 'StaleWhileRevalidate',
-      options: {
-        cacheName: 'static-style-assets',
-        expiration: {
-          maxEntries: 32,
-          maxAgeSeconds: 24 * 60 * 60, // 1일
-        },
-      },
-    },
-    {
-      urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
-      handler: 'NetworkFirst',
-      options: {
-        cacheName: 'supabase-api',
-        networkTimeoutSeconds: 10,
-        expiration: {
-          maxEntries: 16,
-          maxAgeSeconds: 5 * 60, // 5분
-        },
-        cacheableResponse: {
-          statuses: [0, 200],
-        },
-      },
-    },
-  ],
-  buildExcludes: [/middleware-manifest\.json$/],
-  disable: process.env.NODE_ENV === 'development',
-});
-
 // PWA 플러그인 조건부 적용
 let finalConfig = nextConfig;
 
-// PWA는 프로덕션에서만 활성화
-if (process.env.NODE_ENV === 'production') {
+// 청첩장 페이지는 생성 직후 접근하는 경우가 많아 PWA 캐시가 404/구버전 청크를 물면 안 된다.
+// 명시적으로 ENABLE_PWA=true를 준 운영 빌드에서만 service worker를 생성한다.
+if (process.env.NODE_ENV === 'production' && process.env.ENABLE_PWA === 'true') {
   try {
     const withPWA = require('next-pwa')({
       dest: 'public',
-      register: true,
+      register: false,
       skipWaiting: true,
+      dynamicStartUrl: false,
       runtimeCaching: [
         {
           urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -463,56 +372,12 @@ if (process.env.NODE_ENV === 'production') {
             },
           },
         },
-        {
-          urlPattern: /\/_next\/image\?url=.+$/i,
-          handler: 'StaleWhileRevalidate',
-          options: {
-            cacheName: 'next-image',
-            expiration: {
-              maxEntries: 64,
-              maxAgeSeconds: 7 * 24 * 60 * 60, // 7일
-            },
-          },
-        },
-        {
-          urlPattern: /\.(?:js)$/i,
-          handler: 'StaleWhileRevalidate',
-          options: {
-            cacheName: 'static-js-assets',
-            expiration: {
-              maxEntries: 32,
-              maxAgeSeconds: 24 * 60 * 60, // 1일
-            },
-          },
-        },
-        {
-          urlPattern: /\.(?:css|less)$/i,
-          handler: 'StaleWhileRevalidate',
-          options: {
-            cacheName: 'static-style-assets',
-            expiration: {
-              maxEntries: 32,
-              maxAgeSeconds: 24 * 60 * 60, // 1일
-            },
-          },
-        },
-        {
-          urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
-          handler: 'NetworkFirst',
-          options: {
-            cacheName: 'supabase-api',
-            networkTimeoutSeconds: 10,
-            expiration: {
-              maxEntries: 16,
-              maxAgeSeconds: 5 * 60, // 5분
-            },
-            cacheableResponse: {
-              statuses: [0, 200],
-            },
-          },
-        },
       ],
-      buildExcludes: [/middleware-manifest\.json$/],
+      buildExcludes: [
+        /middleware-manifest\.json$/,
+        /pages\/w\/.+\.js$/,
+        /pages\/template\/.+\.js$/,
+      ],
       disable: process.env.NODE_ENV === 'development',
     });
 

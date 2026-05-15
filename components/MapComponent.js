@@ -57,6 +57,13 @@ const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }
     );
   };
 
+  const openKakaoApp = () => {
+    openMap(
+      `kakaomap://search?q=${searchQuery}`,
+      `https://map.kakao.com/?q=${searchQuery}`
+    );
+  };
+
   const openTmapApp = () => {
     openMap(
       `tmap://search?name=${searchQuery}`,
@@ -80,8 +87,20 @@ const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
     cursor: 'pointer',
     boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+    minWidth: 0,
   };
   const iconStyle = { width: '22px', height: '22px', objectFit: 'contain', borderRadius: '4px' };
+  const kakaoIconStyle = {
+    ...iconStyle,
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: '#FEE500',
+    color: '#191919',
+    fontSize: '11px',
+    fontWeight: '800',
+    lineHeight: '22px',
+  };
 
   return (
     <div style={{ width }}>
@@ -114,10 +133,14 @@ const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }
       {/* 지도 앱 연결 버튼들 */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
 
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           <button type="button" onClick={openNaverApp} style={btnStyle}>
             <img src="/naver.png" alt="네이버지도" style={iconStyle} />
             <span>네이버지도</span>
+          </button>
+          <button type="button" onClick={openKakaoApp} style={btnStyle}>
+            <span aria-hidden="true" style={kakaoIconStyle}>K</span>
+            <span>카카오맵</span>
           </button>
           <button type="button" onClick={openTmapApp} style={btnStyle}>
             <img src="/tmap.jpeg" alt="T맵" style={iconStyle} />

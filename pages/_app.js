@@ -9,7 +9,45 @@ const Toaster = dynamic(
   { ssr: false }
 );
 
+const shouldClearServiceWorkerCaches = () => {
+  if (typeof window === 'undefined') return false;
+
+  const { hostname, pathname } = window.location;
+  return (
+    hostname === 'localhost'
+    || hostname === '127.0.0.1'
+    || pathname.startsWith('/w/')
+    || pathname.startsWith('/template/')
+  );
+};
+
 function MyApp({ Component, pageProps }) {
+  useEffect(() => {
+    if (!shouldClearServiceWorkerCaches()) return;
+
+    const clearStalePwaCache = async () => {
+      try {
+        if ('serviceWorker' in navigator) {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(registrations.map(registration => registration.unregister()));
+        }
+
+        if ('caches' in window) {
+          const keys = await caches.keys();
+          await Promise.all(
+            keys
+              .filter(key => key.includes('workbox') || key.includes('precache') || key.includes('runtime'))
+              .map(key => caches.delete(key))
+          );
+        }
+      } catch (error) {
+        console.warn('Failed to clear stale PWA cache:', error);
+      }
+    };
+
+    clearStalePwaCache();
+  }, []);
+
   useEffect(() => {
     // 모바일 브라우저 뷰포트 높이 최적화
     const setVH = () => {

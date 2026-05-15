@@ -17,12 +17,15 @@ const CleanWhiteTemplate = dynamic(() => import('../../components/templates/Clea
 const ClassicElegantTemplate = dynamic(() => import('../../components/templates/ClassicElegantTemplate'), { ssr: false });
 const TicketFlightTemplate = dynamic(() => import('../../components/templates/TicketFlightTemplate'), { ssr: false });
 const CinemaTemplate = dynamic(() => import('../../components/templates/CinemaTemplate'), { ssr: false });
+const RunicRiftTemplate = dynamic(() => import('../../components/templates/RunicRiftTemplate'), { ssr: false });
+const PhotoBookTemplate = dynamic(() => import('../../components/templates/PhotoBookTemplate'), { ssr: false });
 const FallingPetals = dynamic(() => import('../../components/FallingPetals'), { ssr: false });
 const BackgroundMusicPlayer = dynamic(() => import('../../components/BackgroundMusicPlayer'), { ssr: false });
 const WeddingIntroOverlay = dynamic(() => import('../../components/WeddingIntroOverlay'), { ssr: false });
 
 const DEFAULT_SITE_URL = 'https://jeongdamm.com';
 const OG_IMAGE_VERSION = '3';
+const BUILT_IN_INTRO_TEMPLATES = new Set(['vintage-app', 'ticket-flight', 'cinema-romance', 'runic-rift', 'photo-book']);
 
 const parseJsonField = (value, fallback) => {
   if (!value) return fallback;
@@ -438,6 +441,10 @@ export default function TemplatePage({
         return <TicketFlightTemplate eventData={event} categorizedImages={categorizedImages} />;
       case 'cinema-romance':
         return <CinemaTemplate eventData={event} categorizedImages={categorizedImages} />;
+      case 'runic-rift':
+        return <RunicRiftTemplate eventData={event} categorizedImages={categorizedImages} />;
+      case 'photo-book':
+        return <PhotoBookTemplate eventData={event} categorizedImages={categorizedImages} />;
       default:
         return <ModernTemplate eventData={event} />;
     }
@@ -572,7 +579,7 @@ export default function TemplatePage({
       {getTemplateComponent()}
       <FallingPetals type={event.additional_info?.background_petal?.id} color={event.additional_info?.background_petal?.color} />
       <BackgroundMusicPlayer trackId={event.additional_info?.background_music?.id} />
-      {showIntro && event.additional_info?.intro_effect?.id && event.additional_info.intro_effect.id !== 'none' && (
+      {showIntro && !BUILT_IN_INTRO_TEMPLATES.has(template) && event.additional_info?.intro_effect?.id && event.additional_info.intro_effect.id !== 'none' && (
         <WeddingIntroOverlay
           introId={event.additional_info.intro_effect.id}
           tapToOpen={event.additional_info.intro_effect.tapToOpen || false}
