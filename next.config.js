@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // 개발 서버와 프로덕션 빌드가 같은 .next 폴더를 쓰면,
+  // 빌드 검증 중 실행 중인 dev 서버의 청크/캐시가 지워질 수 있다.
+  distDir: process.env.NODE_ENV === 'development' ? '.next-dev' : '.next',
+
   // 실험적 기능들
   experimental: {
     // 서버 컴포넌트 최적화

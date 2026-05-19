@@ -284,7 +284,7 @@ const CustomTransportationGuide = () => (
           <h3>지하철</h3>
         </div>
         <p className={styles.transportMain}>9호선 가양역 9번 출구</p>
-        <p className={styles.transportText}>출구에서 도보 약 1분, 금부빌딩 8층으로 올라오시면 됩니다.</p>
+        {/* <p className={styles.transportText}>출구에서 도보 약 1분, 금부빌딩 8층으로 올라오시면 됩니다.</p> */}
       </div>
     </article>
 
