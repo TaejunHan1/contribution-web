@@ -1,7 +1,9 @@
 import Head from 'next/head';
 import Link from 'next/link';
 
-const supportEmail = 'support@jeongdamm.com';
+const supportEmail = 'gksxowns12@gmail.com';
+const kakaoChannelUrl = 'https://pf.kakao.com/_WsUuX';
+const kakaoChannelLabel = '카카오톡 채널';
 const serviceName = '정담';
 
 const supportItems = [
@@ -65,9 +67,17 @@ export default function SupportPage() {
           </header>
 
           <section className="contactPanel" aria-label="고객지원 연락처">
-            <div>
-              <span>고객지원 이메일</span>
-              <a href={`mailto:${supportEmail}`}>{supportEmail}</a>
+            <div className="contactGrid">
+              <div>
+                <span>고객지원 이메일</span>
+                <a href={`mailto:${supportEmail}`}>{supportEmail}</a>
+              </div>
+              <div>
+                <span>카카오톡 문의</span>
+                <a href={kakaoChannelUrl} target="_blank" rel="noreferrer">
+                  {kakaoChannelLabel}
+                </a>
+              </div>
             </div>
             <p>
               문의 시 가입 휴대전화번호, 사용 중인 기기, 문제가 발생한 화면과 상황을 함께
@@ -199,6 +209,12 @@ export default function SupportPage() {
           border: 1px solid #d8e8ff;
         }
 
+        .contactGrid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 18px;
+        }
+
         .contactPanel span {
           display: block;
           margin-bottom: 8px;
@@ -296,6 +312,10 @@ export default function SupportPage() {
           }
 
           .cardGrid {
+            grid-template-columns: 1fr;
+          }
+
+          .contactGrid {
             grid-template-columns: 1fr;
           }
 

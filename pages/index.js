@@ -269,7 +269,7 @@ export default function HomePage() {
             모바일 청첩장과 부고장 링크, 앱·태블릿 접수, 장부 기록까지 실제 운영 흐름에
             맞춰 정담을 도입할 수 있습니다.
           </p>
-          <a className="primaryBtn dark" href="mailto:support@jeongdamm.com">도입 문의하기</a>
+          <a className="primaryBtn dark" href="mailto:gksxowns12@gmail.com">도입 문의하기</a>
         </section>
       </main>
 

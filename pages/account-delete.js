@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 const serviceName = '정담';
 const developerName = '정담';
-const contact = '정담 고객지원 이메일 (support@jeongdamm.com)';
+const contact = '정담 고객지원 이메일 (gksxowns12@gmail.com) 또는 카카오톡 채널 (pf.kakao.com/_WsUuX)';
 const effectiveDate = '2026년 5월 8일';
 
 const requestSteps = [

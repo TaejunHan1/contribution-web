@@ -372,7 +372,8 @@ docker run -p 3000:3000 -e NEXT_PUBLIC_SUPABASE_URL=your_url jeongdam-web
 
 ## 📞 지원 및 문의
 
-- 📧 **이메일**: support@jeongdam.com
+- 📧 **이메일**: gksxowns12@gmail.com
+- 💬 **카카오톡 채널**: https://pf.kakao.com/_WsUuX
 - 🐛 **버그 리포트**: [GitHub Issues](https://github.com/jeongdam/contribution-web/issues)
 - 💬 **기능 요청**: [GitHub Discussions](https://github.com/jeongdam/contribution-web/discussions)
 - 📖 **문서**: [Wiki](https://github.com/jeongdam/contribution-web/wiki)

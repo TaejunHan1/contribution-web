@@ -202,7 +202,7 @@ export default function ErrorPage() {
                 <button
                   onClick={() => {
                     window.open(
-                      'mailto:support@jeongdam.com?subject=오류 문의',
+                      'mailto:gksxowns12@gmail.com?subject=오류 문의',
                       '_blank'
                     );
                   }}
