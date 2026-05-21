@@ -5,17 +5,17 @@
   "private": true,
   "author": {
     "name": "정담 팀",
-    "email": "support@jeongdam.com",
-    "url": "https://jeongdam.com"
+    "email": "support@jeongdamm.com",
+    "url": "https://jeongdamm.com"
   },
-  "homepage": "https://contribute.jeongdam.com",
+  "homepage": "https://jeongdamm.com",
   "repository": {
     "type": "git",
     "url": "https://github.com/jeongdam/contribution-web.git"
   },
   "bugs": {
     "url": "https://github.com/jeongdam/contribution-web/issues",
-    "email": "support@jeongdam.com"
+    "email": "support@jeongdamm.com"
   },
   "keywords": [
     "contribution",
