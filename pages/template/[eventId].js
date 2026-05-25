@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import { getEventDetails } from '../../lib/supabase';
+import { normalizeCategorizedImages } from '../../lib/imageUtils';
 
 const KoreanElegantTemplate = dynamic(() => import('../../components/templates/KoreanElegantTemplate'), { ssr: false });
 const VintageTemplate = dynamic(() => import('../../components/templates/VintageTemplate'), { ssr: false });
@@ -23,9 +24,11 @@ const FuneralNoticeTemplate = dynamic(() => import('../../components/templates/F
 const FallingPetals = dynamic(() => import('../../components/FallingPetals'), { ssr: false });
 const BackgroundMusicPlayer = dynamic(() => import('../../components/BackgroundMusicPlayer'), { ssr: false });
 const WeddingIntroOverlay = dynamic(() => import('../../components/WeddingIntroOverlay'), { ssr: false });
+const PhotoFramePortal = dynamic(() => import('../../components/templates/PhotoFramePortal'), { ssr: false });
 
 const DEFAULT_SITE_URL = 'https://jeongdamm.com';
 const OG_IMAGE_VERSION = '3';
+const INVITATION_CACHE_CONTROL = 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0';
 const BUILT_IN_INTRO_TEMPLATES = new Set(['vintage-app', 'ticket-flight', 'cinema-romance', 'runic-rift', 'photo-book']);
 
 const parseJsonField = (value, fallback) => {
@@ -427,52 +430,69 @@ export default function TemplatePage({
     if (!event) return null;
     
     // 이미지 데이터 구성
-    const categorizedImages = event.additional_info?.categorized_images || {};
+    const categorizedImages = normalizeCategorizedImages(event.additional_info?.categorized_images || {});
+    const templateEvent = {
+      ...event,
+      additional_info: {
+        ...(event.additional_info || {}),
+        categorized_images: categorizedImages,
+      },
+    };
 
     if (event.event_type === 'funeral') {
       return (
         <FuneralNoticeTemplate
-          eventData={event}
+          eventData={templateEvent}
           categorizedImages={categorizedImages}
-          allowMessages={event.allow_messages}
-          messageSettings={event.additional_info?.message_settings || {}}
+          allowMessages={templateEvent.allow_messages}
+          messageSettings={templateEvent.additional_info?.message_settings || {}}
         />
       );
     }
-    
+
+    const renderWithPhotoFrame = (component, { usePortal = true } = {}) => (
+      <>
+        {component}
+        {usePortal && <PhotoFramePortal eventData={templateEvent} />}
+      </>
+    );
+
     switch (template) {
       case 'modern':
       case 'modern-minimal':
-        return <ModernMinimalTemplate eventData={event} categorizedImages={categorizedImages} />;
+        return renderWithPhotoFrame(<ModernMinimalTemplate eventData={templateEvent} categorizedImages={categorizedImages} />);
       case 'romantic':
       case 'romantic-pink':
-        return <RomanticPinkTemplate eventData={event} categorizedImages={categorizedImages} />;
+        return renderWithPhotoFrame(<RomanticPinkTemplate eventData={templateEvent} categorizedImages={categorizedImages} />);
       case 'korean':
-        return <KoreanElegantTemplate eventData={event} categorizedImages={categorizedImages} />;
+        return renderWithPhotoFrame(<KoreanElegantTemplate eventData={templateEvent} categorizedImages={categorizedImages} />);
       case 'garden':
-        return <ElegantGardenTemplate eventData={event} categorizedImages={categorizedImages} />;
+        return renderWithPhotoFrame(<ElegantGardenTemplate eventData={templateEvent} categorizedImages={categorizedImages} />);
       case 'vintage':
-        return <VintageTemplate eventData={event} categorizedImages={categorizedImages} />;
+        return renderWithPhotoFrame(<VintageTemplate eventData={templateEvent} categorizedImages={categorizedImages} />);
       case 'modern-dark':
-        return <ModernDarkTemplate eventData={event} categorizedImages={categorizedImages} />;
+        return renderWithPhotoFrame(<ModernDarkTemplate eventData={templateEvent} categorizedImages={categorizedImages} />);
       case 'elegant-garden':
-        return <AuroraBlackTemplate eventData={event} categorizedImages={categorizedImages} />;
+        return renderWithPhotoFrame(<AuroraBlackTemplate eventData={templateEvent} categorizedImages={categorizedImages} />);
       case 'vintage-app':
-        return <WarmOrangeTemplate eventData={event} categorizedImages={categorizedImages} />;
+        return renderWithPhotoFrame(<WarmOrangeTemplate eventData={templateEvent} categorizedImages={categorizedImages} />);
       case 'korean-elegant':
-        return <CleanWhiteTemplate eventData={event} categorizedImages={categorizedImages} />;
+        return renderWithPhotoFrame(<CleanWhiteTemplate eventData={templateEvent} categorizedImages={categorizedImages} />);
       case 'classic-elegant':
-        return <ClassicElegantTemplate eventData={event} categorizedImages={categorizedImages} />;
+        return renderWithPhotoFrame(
+          <ClassicElegantTemplate eventData={templateEvent} categorizedImages={categorizedImages} />,
+          { usePortal: false }
+        );
       case 'ticket-flight':
-        return <TicketFlightTemplate eventData={event} categorizedImages={categorizedImages} />;
+        return renderWithPhotoFrame(<TicketFlightTemplate eventData={templateEvent} categorizedImages={categorizedImages} />);
       case 'cinema-romance':
-        return <CinemaTemplate eventData={event} categorizedImages={categorizedImages} />;
+        return renderWithPhotoFrame(<CinemaTemplate eventData={templateEvent} categorizedImages={categorizedImages} />);
       case 'runic-rift':
-        return <RunicRiftTemplate eventData={event} categorizedImages={categorizedImages} />;
+        return renderWithPhotoFrame(<RunicRiftTemplate eventData={templateEvent} categorizedImages={categorizedImages} />);
       case 'photo-book':
-        return <PhotoBookTemplate eventData={event} categorizedImages={categorizedImages} />;
+        return renderWithPhotoFrame(<PhotoBookTemplate eventData={templateEvent} categorizedImages={categorizedImages} />);
       default:
-        return <ModernTemplate eventData={event} />;
+        return renderWithPhotoFrame(<ModernTemplate eventData={templateEvent} />);
     }
   };
 
@@ -639,6 +659,13 @@ export default function TemplatePage({
 export async function getServerSideProps(context) {
   const eventId = context.params?.eventId || null;
   const serverTemplate = context.query?.template || null;
+  const { res: response } = context;
+
+  if (response) {
+    response.setHeader('Cache-Control', INVITATION_CACHE_CONTROL);
+    response.setHeader('Pragma', 'no-cache');
+    response.setHeader('Expires', '0');
+  }
 
   if (!eventId) {
     return {
@@ -672,6 +699,8 @@ export async function getServerSideProps(context) {
         headers: {
           apikey: supabaseKey,
           Authorization: `Bearer ${supabaseKey}`,
+          'Cache-Control': 'no-cache',
+          Pragma: 'no-cache',
         },
       }
     );

@@ -10,13 +10,43 @@ import CompletionModal from '../CompletionModal';
 import WelcomeChoiceModal from '../WelcomeChoiceModal';
 import styles from './ClassicElegantTemplate.module.css';
 
+const ASSET = '/studio/elements';
+const PHOTO_FRAME_SOURCES = {
+  background2: `${ASSET}/background2.png`,
+  background3: `${ASSET}/background3.png`,
+  background4: `${ASSET}/background4.png`,
+  background5: `${ASSET}/background5.png`,
+  background6: `${ASSET}/background6.png`,
+  background7: `${ASSET}/background7.png`,
+  background8: `${ASSET}/background8.png`,
+  background9: `${ASSET}/background9.png`,
+  background10: `${ASSET}/background10.png`,
+  background11: `${ASSET}/background11.png`,
+  background12: `${ASSET}/background12.png`,
+  background13: `${ASSET}/background13.png`,
+  backround4: `${ASSET}/backround4.png`,
+};
+
 // ══════════════════════════════════════════════════════
 // 유틸
 // ══════════════════════════════════════════════════════
 const getImageSrc = (image) => {
   if (!image) return null;
   if (typeof image === 'string') return image;
-  return image.publicUrl || image.uri || image.url || image.src || null;
+  return image.publicUrl || image.primaryUrl || image.uri || image.url || image.src || null;
+};
+
+const getPhotoFrame = (ai) => {
+  const frame = ai?.photo_frame || ai?.photoFrame;
+  const id = frame?.id || frame?.key;
+  if (!id || !PHOTO_FRAME_SOURCES[id]) return null;
+
+  return {
+    src: PHOTO_FRAME_SOURCES[id],
+    scale: Number(frame.scale) || 0.78,
+    offsetX: Number(frame.offsetX) || 0,
+    offsetY: Number(frame.offsetY) || 0,
+  };
 };
 
 const formatPhone = (phone) => {
@@ -110,7 +140,28 @@ const isCustomInvitationEvent = (eventId) => CUSTOM_INVITATION_EVENT_IDS.has(eve
 // ══════════════════════════════════════════════════════
 // 히어로 사진 크로스페이드
 // ══════════════════════════════════════════════════════
-const HeroSlideshow = ({ images, onPress }) => {
+function PhotoFrameOverlay({ frame }) {
+  if (!frame?.src) return null;
+  const scale = frame.scale || 0.78;
+
+  return (
+    <div className={styles.photoFrameLayer} aria-hidden="true">
+      <img
+        className={styles.photoFrameImage}
+        src={frame.src}
+        alt=""
+        draggable={false}
+        style={{
+          width: `${scale * 100}%`,
+          height: `${scale * 100}%`,
+          transform: `translate(${frame.offsetX}px, ${frame.offsetY}px)`,
+        }}
+      />
+    </div>
+  );
+}
+
+const HeroSlideshow = ({ images, onPress, photoFrame }) => {
   const [idx, setIdx] = useState(0);
   useEffect(() => {
     if (!images || images.length <= 1) return;
@@ -136,6 +187,7 @@ const HeroSlideshow = ({ images, onPress }) => {
           />
         );
       })}
+      <PhotoFrameOverlay frame={photoFrame} />
       <button
         type="button"
         className={styles.heroClickZone}
@@ -397,6 +449,7 @@ const ClassicElegantTemplate = ({
     }
     return eventData.additional_info || {};
   })();
+  const selectedPhotoFrame = getPhotoFrame(ai);
 
   // ── 부모님 ──
   const groomFather = eventData.groomFatherName || eventData.groom_father_name || '';
@@ -889,7 +942,7 @@ const ClassicElegantTemplate = ({
         {/* ═══ 1. 히어로 ═══ */}
         <section className={styles.hero}>
           <div className={styles.heroInner}>
-            <HeroSlideshow images={safeImages.main} onPress={openHeroViewer} />
+            <HeroSlideshow images={safeImages.main} onPress={openHeroViewer} photoFrame={selectedPhotoFrame} />
             <div className={styles.heroInnerFrame} />
           </div>
         </section>

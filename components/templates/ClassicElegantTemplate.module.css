@@ -38,6 +38,23 @@
   -webkit-touch-callout: none;
 }
 .heroImageActive { opacity: 1; }
+.photoFrameLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.photoFrameImage {
+  max-width: none;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+  pointer-events: none;
+}
 .heroPlaceholder {
   width: 100%; aspect-ratio: 3/4;
   display: flex; align-items: center; justify-content: center;
@@ -47,6 +64,7 @@
   position: absolute;
   top: 12px; left: 12px; right: 12px; bottom: 12px;
   border: 1px solid rgba(255,255,255,0.6);
+  z-index: 999;
   pointer-events: none;
 }
 .heroClickZone {
@@ -55,7 +73,7 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  z-index: 2;
+  z-index: 1001;
 }
 /* 이름 (히어로 아래) */
 .heroTextSection {
