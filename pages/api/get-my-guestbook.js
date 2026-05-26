@@ -1,4 +1,6 @@
 // pages/api/get-my-guestbook.js - 본인이 작성한 방명록 조회 API
+import { getPhoneLookupValues } from '../../lib/phoneUtils';
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -25,15 +27,18 @@ export default async function handler(req, res) {
     }
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const phoneLookupValues = getPhoneLookupValues(phone);
 
     // 본인이 작성한 방명록 조회
     const { data: guestBookEntry, error: selectError } = await supabase
       .from('guest_book')
       .select('*')
       .eq('event_id', eventId)
-      .eq('guest_phone', phone)
+      .in('guest_phone', phoneLookupValues)
       .eq('is_verified', true)
-      .single();
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
     if (selectError) {
       console.error('방명록 조회 오류:', selectError);

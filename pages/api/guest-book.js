@@ -1,5 +1,6 @@
 // pages/api/guest-book.js - RLS 우회를 위한 서버 API
 import { createClient } from '@supabase/supabase-js';
+import { normalizeKoreanPhone } from '../../lib/phoneUtils';
 
 // 환경변수 체크
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -154,12 +155,13 @@ export default async function handler(req, res) {
     // IP 주소 추출
     const forwarded = req.headers['x-forwarded-for'];
     const ip = forwarded ? forwarded.split(',')[0] : req.connection.remoteAddress;
+    const normalizedPhone = normalizeKoreanPhone(guest_phone);
 
     // 방명록 데이터 준비
     const insertData = {
       event_id,
       guest_name: guest_name.trim(),
-      guest_phone: guest_phone?.trim() || null,
+      guest_phone: normalizedPhone,
       relation_category,
       relation_detail: relation_detail || null,
       amount: numAmount,
@@ -168,9 +170,11 @@ export default async function handler(req, res) {
       attending: attending !== false, // 기본값 true
       companion_count: companion_count || 0,
       is_public: is_public !== false, // 기본값 true
+      input_method: 'web_contribution',
       additional_info: {
         ...additional_info,
-        created_via: 'web',
+        created_via: 'web_contribution',
+        source_type: 'web_contribution',
         ip_address: ip,
         user_agent: req.headers['user-agent']
       },

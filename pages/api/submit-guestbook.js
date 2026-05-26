@@ -1,4 +1,6 @@
 // pages/api/submit-guestbook.js - 방명록 제출 API
+import { normalizeKoreanPhone } from '../../lib/phoneUtils';
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -48,20 +50,24 @@ export default async function handler(req, res) {
     const userAgent = req.headers['user-agent'] || null;
     const forwardedFor = req.headers['x-forwarded-for'];
     const ipAddress = forwardedFor ? forwardedFor.split(',')[0].trim() : req.socket?.remoteAddress || null;
+    const normalizedPhone = normalizeKoreanPhone(phone);
 
     // 방명록 데이터 저장
     const guestBookData = {
       event_id: eventId || null,
       guest_name: guestName,
-      guest_phone: phone,
+      guest_phone: normalizedPhone,
+      amount: null,
       message: message,
       is_verified: true,
       is_public: true,
+      input_method: 'web_guestbook',
       ip_address: ipAddress,
       user_agent: userAgent,
       additional_info: {
         timestamp: new Date().toISOString(),
-        created_via: 'web'
+        created_via: 'web_guestbook',
+        source_type: 'web_guestbook'
       }
     };
 

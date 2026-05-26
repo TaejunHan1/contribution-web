@@ -1,4 +1,6 @@
 // pages/api/check-guestbook-duplicate.js - 방명록 중복 작성 확인 API
+import { getPhoneLookupValues } from '../../lib/phoneUtils';
+
 export default async function handler(req, res) {
   // 브라우저 캐시 방지
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
@@ -30,13 +32,14 @@ export default async function handler(req, res) {
     }
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const phoneLookupValues = getPhoneLookupValues(phone);
 
     // 해당 이벤트에서 해당 전화번호로 작성된 방명록 확인
     const { data: existingEntries, error: selectError } = await supabase
       .from('guest_book')
       .select('id, guest_name, message, amount, created_at')
       .eq('event_id', eventId)
-      .eq('guest_phone', phone)
+      .in('guest_phone', phoneLookupValues)
       .eq('is_verified', true);
 
     if (selectError) {

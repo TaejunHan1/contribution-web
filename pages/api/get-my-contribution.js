@@ -1,4 +1,6 @@
 // pages/api/get-my-contribution.js - 내 축의금 조회 API
+import { getPhoneLookupValues } from '../../lib/phoneUtils';
+
 export default async function handler(req, res) {
   // 브라우저 캐시 방지
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
@@ -33,6 +35,7 @@ export default async function handler(req, res) {
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const phoneLookupValues = getPhoneLookupValues(phone);
 
     // guest_book 테이블에서 해당 이벤트와 휴대폰번호로 축의금 데이터 조회
     // 동일 번호로 여러 건 등록 가능하므로 최신 1건만 조회
@@ -40,7 +43,8 @@ export default async function handler(req, res) {
       .from('guest_book')
       .select('*')
       .eq('event_id', eventId)
-      .eq('guest_phone', phone)
+      .in('guest_phone', phoneLookupValues)
+      .gt('amount', 0)
       .order('created_at', { ascending: false })
       .limit(1);
 

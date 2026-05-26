@@ -1,5 +1,7 @@
 // pages/api/delete-guestbook.js - 방명록 메시지 삭제 API
 // 실제 삭제가 아닌 message 필드만 비움 (축의금, 이름 등은 유지)
+import { getPhoneLookupValues } from '../../lib/phoneUtils';
+
 export default async function handler(req, res) {
   if (req.method !== 'DELETE') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -26,6 +28,7 @@ export default async function handler(req, res) {
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const phoneLookupValues = getPhoneLookupValues(phone);
 
     // 본인 확인 후 메시지만 비움 (실제 삭제 X, 축의금/이름 등 유지)
     const { data: updatedData, error: updateError } = await supabase
@@ -35,7 +38,7 @@ export default async function handler(req, res) {
         updated_at: new Date().toISOString()
       })
       .eq('id', id)
-      .eq('guest_phone', phone) // 본인 전화번호만 수정 가능
+      .in('guest_phone', phoneLookupValues) // 본인 전화번호만 수정 가능
       .select();
 
     if (updateError) {

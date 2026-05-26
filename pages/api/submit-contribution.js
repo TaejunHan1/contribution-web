@@ -1,6 +1,7 @@
 // pages/api/submit-contribution.js - 축의금 저장 API
 import { sendContributionNotification } from '../../lib/notificationService';
 import { sendContributionAlimtalk } from '../../lib/kakaoAlimtalk';
+import { getPhoneLookupValues, normalizeKoreanPhone } from '../../lib/phoneUtils';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -84,14 +85,18 @@ export default async function handler(req, res) {
     }
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const normalizedPhone = normalizeKoreanPhone(phone);
+    const phoneLookupValues = getPhoneLookupValues(phone);
 
     // 먼저 guest_book에서 해당 event_id와 phone으로 기존 레코드를 찾기
     const { data: existingRecord, error: findError } = await supabase
       .from('guest_book')
       .select('*')
       .eq('event_id', eventId)
-      .eq('guest_phone', phone)
-      .single();
+      .in('guest_phone', phoneLookupValues)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
     if (findError && findError.code !== 'PGRST116') { // PGRST116은 no rows found 에러
       console.error('기존 레코드 조회 오류:', findError);
@@ -107,6 +112,10 @@ export default async function handler(req, res) {
     let contributionData;
 
     if (existingRecord) {
+      const existingAdditionalInfo = typeof existingRecord.additional_info === 'object' && existingRecord.additional_info
+        ? existingRecord.additional_info
+        : {};
+
       // 기존 레코드가 있으면 업데이트
       console.log('기존 레코드 업데이트 시도:', {
         id: existingRecord.id,
@@ -120,9 +129,16 @@ export default async function handler(req, res) {
         .from('guest_book')
         .update({
           guest_name: guestName,
+          guest_phone: normalizedPhone,
           amount: contributionAmount,
           relation_category: side, // 'groom' 또는 'bride'를 relation_category에 저장
           relation_detail: relationship,
+          input_method: 'web_contribution',
+          additional_info: {
+            ...existingAdditionalInfo,
+            created_via: 'web_contribution',
+            source_type: 'web_contribution'
+          },
           is_verified: true,
           updated_at: new Date().toISOString()
         })
@@ -154,7 +170,7 @@ export default async function handler(req, res) {
         .from('guest_book')
         .insert({
           event_id: eventId,
-          guest_phone: phone,
+          guest_phone: normalizedPhone,
           guest_name: guestName,
           amount: contributionAmount,
           relation_category: side, // 'groom' 또는 'bride'를 relation_category에 저장
@@ -168,6 +184,11 @@ export default async function handler(req, res) {
           attending: true,
           companion_count: 0, // 기본값 추가
           meal_required: true, // 기본값 추가
+          input_method: 'web_contribution',
+          additional_info: {
+            created_via: 'web_contribution',
+            source_type: 'web_contribution'
+          },
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         })

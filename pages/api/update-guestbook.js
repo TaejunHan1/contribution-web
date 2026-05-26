@@ -1,4 +1,6 @@
 // pages/api/update-guestbook.js - 방명록 수정 API
+import { getPhoneLookupValues } from '../../lib/phoneUtils';
+
 export default async function handler(req, res) {
   if (req.method !== 'PUT') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -25,6 +27,7 @@ export default async function handler(req, res) {
     }
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const phoneLookupValues = getPhoneLookupValues(phone);
 
     // 본인 확인 후 업데이트
     const { data: updatedData, error: updateError } = await supabase
@@ -35,7 +38,7 @@ export default async function handler(req, res) {
         updated_at: new Date().toISOString()
       })
       .eq('id', id)
-      .eq('guest_phone', phone) // 본인 전화번호만 수정 가능
+      .in('guest_phone', phoneLookupValues) // 본인 전화번호만 수정 가능
       .select();
 
     if (updateError) {
