@@ -1686,6 +1686,14 @@ export default function CheongmoParticipantPage() {
                   )}
 
                   <div className={styles.communityActionBar}>
+                    <button
+                      className={styles.createOwnGatheringButton}
+                      type="button"
+                      onClick={() => router.push('/cheongmo')}
+                    >
+                      <span>나도 모임을 만들고 싶어요</span>
+                      <strong>바로 만들기</strong>
+                    </button>
                     {isVotingClosed ? (
                       <>
                         <button
