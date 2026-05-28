@@ -230,7 +230,61 @@ const getCandidateLabel = ({ count, index, expectedCount, respondedCount }) => {
   return `${count}명`;
 };
 
-export default function CheongmoParticipantPage() {
+const CHEONGMO_OG_IMAGE_PATH = '/cheongmo/invitation2-og.png';
+const DEFAULT_SITE_URL = 'https://jeongdamm.com';
+
+const getSiteUrl = () =>
+  (process.env.NEXT_PUBLIC_SITE_URL || DEFAULT_SITE_URL).replace(/\/$/, '');
+
+const CheongmoMetaHead = ({ title, description, url }) => {
+  const siteUrl = getSiteUrl();
+  const imageUrl = `${siteUrl}${CHEONGMO_OG_IMAGE_PATH}`;
+  const pageTitle = title || '정담 청첩장 모임 초대가 도착했어요';
+  const pageDescription =
+    description ||
+    '가능한 날짜와 모임 장소를 정담 청첩장 모임에서 함께 확인해주세요.';
+  const pageUrl = url || `${siteUrl}/cheongmo`;
+
+  return (
+    <Head>
+      <title>{pageTitle}</title>
+      <meta key="description" name="description" content={pageDescription} />
+      <meta key="og:title" property="og:title" content={pageTitle} />
+      <meta
+        key="og:description"
+        property="og:description"
+        content={pageDescription}
+      />
+      <meta key="og:type" property="og:type" content="website" />
+      <meta key="og:site_name" property="og:site_name" content="정담" />
+      <meta key="og:locale" property="og:locale" content="ko_KR" />
+      <meta key="og:url" property="og:url" content={pageUrl} />
+      <meta key="og:image" property="og:image" content={imageUrl} />
+      <meta
+        key="og:image:secure_url"
+        property="og:image:secure_url"
+        content={imageUrl}
+      />
+      <meta key="og:image:width" property="og:image:width" content="1200" />
+      <meta key="og:image:height" property="og:image:height" content="630" />
+      <meta
+        key="og:image:alt"
+        property="og:image:alt"
+        content="정담 청첩장 모임 초대 이미지"
+      />
+      <meta key="twitter:card" name="twitter:card" content="summary_large_image" />
+      <meta key="twitter:title" name="twitter:title" content={pageTitle} />
+      <meta
+        key="twitter:description"
+        name="twitter:description"
+        content={pageDescription}
+      />
+      <meta key="twitter:image" name="twitter:image" content={imageUrl} />
+    </Head>
+  );
+};
+
+export default function CheongmoParticipantPage({ initialMetaUrl = '' }) {
   const router = useRouter();
   const { slug } = router.query;
   const [gathering, setGathering] = useState(null);
@@ -255,6 +309,10 @@ export default function CheongmoParticipantPage() {
   const entryNameInputRef = useRef(null);
   const roomRevealTimerRef = useRef(null);
   const saveSuccessTimerRef = useRef(null);
+  const slugValue = typeof slug === 'string' ? slug : '';
+  const metaUrl =
+    initialMetaUrl ||
+    (slugValue ? `${getSiteUrl()}/cheongmo/${encodeURIComponent(slugValue)}` : '');
 
   useEffect(() => {
     participantRef.current = participant;
@@ -1014,32 +1072,36 @@ export default function CheongmoParticipantPage() {
 
   if (loading) {
     return (
-      <div className={styles.loadingBox}>
-        <div>청첩장 모임을 불러오고 있어요.</div>
-      </div>
+      <>
+        <CheongmoMetaHead url={metaUrl} />
+        <div className={styles.loadingBox}>
+          <div>청첩장 모임을 불러오고 있어요.</div>
+        </div>
+      </>
     );
   }
 
   if (!gathering) {
     return (
-      <div className={styles.errorBox}>
-        <div>
-          <h1>청모를 찾을 수 없습니다.</h1>
-          <p>공유받은 링크가 맞는지 다시 확인해주세요.</p>
+      <>
+        <CheongmoMetaHead url={metaUrl} />
+        <div className={styles.errorBox}>
+          <div>
+            <h1>청모를 찾을 수 없습니다.</h1>
+            <p>공유받은 링크가 맞는지 다시 확인해주세요.</p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
     <>
-      <Head>
-        <title>{gathering.title} - 정담 청모</title>
-        <meta
-          name="description"
-          content="청첩장 모임에 입장하고 이름으로 가입하세요."
-        />
-      </Head>
+      <CheongmoMetaHead
+        title={`${gathering.title} - 정담 청첩장 모임`}
+        description="청첩장 모임에 입장하고 가능한 날짜와 장소 의견을 남겨주세요."
+        url={metaUrl}
+      />
 
       <main className={styles.page}>
         <div className={styles.shell}>
@@ -1983,4 +2045,17 @@ export default function CheongmoParticipantPage() {
       </main>
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  const siteUrl = getSiteUrl();
+  const slug = String(context.params?.slug || '');
+
+  return {
+    props: {
+      initialMetaUrl: slug
+        ? `${siteUrl}/cheongmo/${encodeURIComponent(slug)}`
+        : `${siteUrl}/cheongmo`,
+    },
+  };
 }
