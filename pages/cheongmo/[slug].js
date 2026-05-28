@@ -284,7 +284,7 @@ const CheongmoMetaHead = ({ title, description, url }) => {
   );
 };
 
-export default function CheongmoParticipantPage({ initialMetaUrl = '' }) {
+export default function CheongmoParticipantPage() {
   const router = useRouter();
   const { slug } = router.query;
   const [gathering, setGathering] = useState(null);
@@ -310,9 +310,9 @@ export default function CheongmoParticipantPage({ initialMetaUrl = '' }) {
   const roomRevealTimerRef = useRef(null);
   const saveSuccessTimerRef = useRef(null);
   const slugValue = typeof slug === 'string' ? slug : '';
-  const metaUrl =
-    initialMetaUrl ||
-    (slugValue ? `${getSiteUrl()}/cheongmo/${encodeURIComponent(slugValue)}` : '');
+  const metaUrl = slugValue
+    ? `${getSiteUrl()}/cheongmo/${encodeURIComponent(slugValue)}`
+    : `${getSiteUrl()}/cheongmo`;
 
   useEffect(() => {
     participantRef.current = participant;
@@ -2045,17 +2045,4 @@ export default function CheongmoParticipantPage({ initialMetaUrl = '' }) {
       </main>
     </>
   );
-}
-
-export async function getServerSideProps(context) {
-  const siteUrl = getSiteUrl();
-  const slug = String(context.params?.slug || '');
-
-  return {
-    props: {
-      initialMetaUrl: slug
-        ? `${siteUrl}/cheongmo/${encodeURIComponent(slug)}`
-        : `${siteUrl}/cheongmo`,
-    },
-  };
 }
