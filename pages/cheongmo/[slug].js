@@ -61,7 +61,7 @@ const getCheongmoApiUrl = slug =>
 const getDateOptions = months => {
   if (!Array.isArray(months)) return [];
 
-  return months.flatMap(monthValue => {
+  return months.slice().sort().flatMap(monthValue => {
     const [year, month] = String(monthValue).split('-').map(Number);
     if (!year || !month) return [];
 
@@ -85,6 +85,8 @@ const getMonthCalendars = months => {
   if (!Array.isArray(months)) return [];
 
   return months
+    .slice()
+    .sort()
     .map(monthValue => {
       const [year, month] = String(monthValue).split('-').map(Number);
       if (!year || !month) return null;

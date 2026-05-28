@@ -107,7 +107,7 @@ export default async function handler(req, res) {
   }
 
   const months = Array.isArray(selectedMonths)
-    ? selectedMonths.slice(0, 3)
+    ? selectedMonths.slice(0, 3).sort()
     : [];
   if (months.length === 0) {
     return res
