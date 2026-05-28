@@ -1,7 +1,11 @@
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 import styles from './cheongmo.module.css';
+
+const appStoreUrl =
+  'https://apps.apple.com/us/app/%EC%A0%95%EB%8B%B4/id6771705756';
 
 const hostFlowItems = [
   {
@@ -103,6 +107,40 @@ export default function CheongmoHomePage() {
               priority
             />
           </section>
+
+          <div className={styles.cheongmoDownloadActions}>
+            <a
+              className={styles.cheongmoAppStoreAction}
+              href={appStoreUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span className={styles.cheongmoStoreIcon} aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="img">
+                  <path d="M16.55 12.25c-.02-2.38 1.95-3.52 2.04-3.58-1.12-1.64-2.85-1.87-3.46-1.89-1.47-.15-2.88.86-3.62.86-.75 0-1.9-.84-3.13-.82-1.6.02-3.08.93-3.9 2.36-1.67 2.9-.43 7.18 1.19 9.53.8 1.14 1.74 2.42 2.98 2.37 1.2-.05 1.65-.77 3.1-.77 1.44 0 1.85.77 3.11.75 1.29-.02 2.1-1.16 2.87-2.31.92-1.33 1.29-2.62 1.31-2.69-.03-.01-2.46-.95-2.49-3.81ZM14.17 5.22c.65-.78 1.08-1.86.96-2.95-.93.04-2.09.62-2.76 1.4-.6.69-1.13 1.8-.99 2.86 1.05.08 2.13-.53 2.79-1.31Z" />
+                </svg>
+              </span>
+              <span>
+                <small>Download on the</small>
+                <strong>App Store</strong>
+              </span>
+            </a>
+            <button
+              className={styles.cheongmoPlayStoreAction}
+              type="button"
+              onClick={() => toast('현재 베타테스터만 진행중입니다.')}
+            >
+              <span className={styles.cheongmoStoreIcon} aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="img">
+                  <path d="M4.5 3.65c-.32.26-.5.68-.5 1.22v14.26c0 .54.18.96.5 1.22l8.08-8.35L4.5 3.65Zm9.15 7.25 2.42-2.5L6.53 3.05l7.12 7.85Zm0 2.2-7.12 7.85 9.54-5.35-2.42-2.5Zm1.08-1.1 2.95 3.05 2.23-1.25c1.46-.82 1.46-2.78 0-3.6l-2.23-1.25L14.73 12Z" />
+                </svg>
+              </span>
+              <span>
+                <small>GET IT ON</small>
+                <strong>Google Play</strong>
+              </span>
+            </button>
+          </div>
 
           <section className={styles.cheongmoLiveCard}>
             <div className={styles.cheongmoLiveHeader}>

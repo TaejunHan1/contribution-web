@@ -1,9 +1,13 @@
 import Head from 'next/head';
+import toast from 'react-hot-toast';
 
 const heroImage = '/landing/generated-main/jeongdam-main-hero.png';
 const workflowImage = '/landing/generated-main/jeongdam-main-workflow.png';
 const weddingLinkImage = '/landing/generated-main/jeongdam-mobile-wedding-link.png';
 const funeralLinkImage = '/landing/generated-main/jeongdam-mobile-funeral-link.png';
+const appStoreUrl =
+  'https://apps.apple.com/us/app/%EC%A0%95%EB%8B%B4/id6771705756';
+const kakaoChannelUrl = 'https://pf.kakao.com/_WsUuX';
 
 const paperSamples = [
   ['Minimal 01', '/studio/templates/minimal/minimal1/preview.png'],
@@ -78,8 +82,7 @@ export default function HomePage() {
       <main className="page">
         <header className="nav">
           <a className="brand" href="#top" aria-label="정담 홈">
-            <img src="/landing/jeongdamlogo.png" alt="" />
-            <span>정담</span>
+            <img src="/cheongmo/cheongmo-home-logo-pill.png" alt="정담" />
           </a>
           <nav className="navLinks" aria-label="메인 메뉴">
             <a href="#service">서비스</a>
@@ -87,7 +90,14 @@ export default function HomePage() {
             <a href="#flow">흐름</a>
             <a href="#contact">문의</a>
           </nav>
-          <a className="navCta" href="#contact">도입 문의</a>
+          <a
+            className="navCta"
+            href={kakaoChannelUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            상담 문의
+          </a>
         </header>
 
         <section
@@ -111,8 +121,37 @@ export default function HomePage() {
               축의금·부의금 장부, 식권 정산, 상부상조 관리를 이어가는 서비스입니다.
             </p>
             <div className="heroActions">
-              <a className="primaryBtn" href="#service">서비스 보기</a>
-              <a className="secondaryBtn" href="#contact">상담 문의</a>
+              <a
+                className="storeBtn appStoreBtn"
+                href={appStoreUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span className="storeIcon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" role="img">
+                    <path d="M16.55 12.25c-.02-2.38 1.95-3.52 2.04-3.58-1.12-1.64-2.85-1.87-3.46-1.89-1.47-.15-2.88.86-3.62.86-.75 0-1.9-.84-3.13-.82-1.6.02-3.08.93-3.9 2.36-1.67 2.9-.43 7.18 1.19 9.53.8 1.14 1.74 2.42 2.98 2.37 1.2-.05 1.65-.77 3.1-.77 1.44 0 1.85.77 3.11.75 1.29-.02 2.1-1.16 2.87-2.31.92-1.33 1.29-2.62 1.31-2.69-.03-.01-2.46-.95-2.49-3.81ZM14.17 5.22c.65-.78 1.08-1.86.96-2.95-.93.04-2.09.62-2.76 1.4-.6.69-1.13 1.8-.99 2.86 1.05.08 2.13-.53 2.79-1.31Z" />
+                  </svg>
+                </span>
+                <span>
+                  <small>Download on the</small>
+                  <strong>App Store</strong>
+                </span>
+              </a>
+              <button
+                className="storeBtn playStoreBtn"
+                type="button"
+                onClick={() => toast('현재 베타테스터만 진행중입니다.')}
+              >
+                <span className="storeIcon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" role="img">
+                    <path d="M4.5 3.65c-.32.26-.5.68-.5 1.22v14.26c0 .54.18.96.5 1.22l8.08-8.35L4.5 3.65Zm9.15 7.25 2.42-2.5L6.53 3.05l7.12 7.85Zm0 2.2-7.12 7.85 9.54-5.35-2.42-2.5Zm1.08-1.1 2.95 3.05 2.23-1.25c1.46-.82 1.46-2.78 0-3.6l-2.23-1.25L14.73 12Z" />
+                  </svg>
+                </span>
+                <span>
+                  <small>GET IT ON</small>
+                  <strong>Google Play</strong>
+                </span>
+              </button>
             </div>
           </div>
         </section>
@@ -269,7 +308,14 @@ export default function HomePage() {
             모바일 청첩장과 부고장 링크, 앱·태블릿 접수, 장부 기록까지 실제 운영 흐름에
             맞춰 정담을 도입할 수 있습니다.
           </p>
-          <a className="primaryBtn dark" href="mailto:gksxowns12@gmail.com">도입 문의하기</a>
+          <a
+            className="primaryBtn dark"
+            href={kakaoChannelUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            상담 문의하기
+          </a>
         </section>
       </main>
 
@@ -332,16 +378,14 @@ export default function HomePage() {
         .brand {
           display: inline-flex;
           align-items: center;
-          gap: 10px;
+          transform: translateX(-10px);
           color: inherit;
-          font-size: 19px;
-          font-weight: 850;
           text-decoration: none;
         }
 
         .brand img {
-          width: 36px;
-          height: 36px;
+          width: 210px;
+          height: auto;
           object-fit: contain;
         }
 
@@ -441,6 +485,54 @@ export default function HomePage() {
           text-decoration: none;
         }
 
+        .storeBtn {
+          display: inline-flex;
+          min-height: 58px;
+          min-width: 188px;
+          align-items: center;
+          justify-content: flex-start;
+          gap: 11px;
+          padding: 0 16px;
+          border-radius: 17px;
+          color: #fff;
+          font-size: 15px;
+          font-weight: 950;
+          line-height: 1;
+          text-align: left;
+          text-decoration: none;
+        }
+
+        .storeIcon {
+          display: grid;
+          width: 28px;
+          height: 28px;
+          flex: 0 0 auto;
+          place-items: center;
+        }
+
+        .storeIcon svg {
+          display: block;
+          width: 100%;
+          height: 100%;
+          fill: currentColor;
+        }
+
+        .storeBtn span:not(.storeIcon) {
+          display: grid;
+          gap: 1px;
+        }
+
+        .storeBtn small {
+          font-size: 10px;
+          font-weight: 800;
+          opacity: 0.72;
+        }
+
+        .storeBtn strong {
+          font-size: 18px;
+          font-weight: 950;
+        }
+
         .primaryBtn {
           color: #1b241f;
           background: #fff7e6;
@@ -457,6 +549,21 @@ export default function HomePage() {
           color: #fff;
           background: rgba(255, 255, 255, 0.1);
           border: 1px solid rgba(255, 255, 255, 0.28);
+        }
+
+        .appStoreBtn {
+          color: #fff;
+          background: #05070a;
+          border: 1px solid rgba(255, 255, 255, 0.16);
+          box-shadow: 0 16px 34px rgba(0, 0, 0, 0.24);
+        }
+
+        .playStoreBtn {
+          color: #191f28;
+          background: rgba(255, 255, 255, 0.92);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          box-shadow: 0 16px 34px rgba(0, 0, 0, 0.16);
+          cursor: pointer;
         }
 
         .introBand {
@@ -1039,9 +1146,12 @@ export default function HomePage() {
             padding: 12px 16px;
           }
 
+          .brand {
+            transform: translateX(-6px);
+          }
+
           .brand img {
-            width: 32px;
-            height: 32px;
+            width: 168px;
           }
 
           .navCta {
@@ -1073,8 +1183,30 @@ export default function HomePage() {
           }
 
           .primaryBtn,
-          .secondaryBtn {
+          .secondaryBtn,
+          .storeBtn {
             width: 100%;
+          }
+
+          .storeBtn {
+            min-height: 52px;
+            min-width: 0;
+            gap: 9px;
+            padding: 0 13px;
+            border-radius: 14px;
+          }
+
+          .storeIcon {
+            width: 24px;
+            height: 24px;
+          }
+
+          .storeBtn small {
+            font-size: 9px;
+          }
+
+          .storeBtn strong {
+            font-size: 15px;
           }
 
           .introBand,
