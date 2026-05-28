@@ -29,6 +29,7 @@ export default async function handler(req, res) {
         slug,
         title,
         host_name,
+        host_phone,
         partner_name,
         message,
         access_type,
@@ -54,6 +55,19 @@ export default async function handler(req, res) {
         .status(404)
         .json({ success: false, error: '청모 정보를 찾을 수 없습니다.' });
     }
+    const hostPhone = String(gathering.host_phone || '').replace(/\D/g, '');
+    const allowedPhones = Array.isArray(gathering.allowed_phones)
+      ? gathering.allowed_phones
+      : [];
+    const hostAlreadyAllowed = allowedPhones.some(item => {
+      const phone =
+        typeof item === 'object' && item !== null ? item.phone : item;
+      return String(phone || '').replace(/\D/g, '') === hostPhone;
+    });
+    const expectedGuestCount =
+      gathering.access_type === 'phone_list'
+        ? allowedPhones.length + (hostPhone && !hostAlreadyAllowed ? 1 : 0)
+        : 0;
 
     const { data: participants, error: participantsError } = await supabase
       .from('cheongmo_responses')
@@ -69,6 +83,8 @@ export default async function handler(req, res) {
       success: true,
       data: {
         ...gathering,
+        host_phone: undefined,
+        expected_guest_count: expectedGuestCount,
         participants: (participants || []).map(item => ({
           id: item.id,
           guestName: item.guest_name,

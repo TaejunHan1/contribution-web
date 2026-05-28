@@ -3,6 +3,7 @@ import {
   getClientIp,
   verifyEntryToken,
 } from '../../lib/cheongmoUtils';
+import { normalizeKoreanPhone } from '../../lib/phoneUtils';
 
 const sanitizeText = (value, maxLength = 300) =>
   String(value || '')
@@ -43,7 +44,9 @@ export default async function handler(req, res) {
     const supabase = await createSupabaseClient();
     const { data: gathering, error: gatheringError } = await supabase
       .from('cheongmo_events')
-      .select('id, slug, access_type, allowed_phones, vote_deadline_at')
+      .select(
+        'id, slug, access_type, allowed_phones, host_phone, vote_deadline_at'
+      )
       .eq('slug', slug)
       .eq('status', 'active')
       .maybeSingle();
@@ -113,9 +116,17 @@ export default async function handler(req, res) {
     }
 
     if (gathering.access_type === 'phone_list') {
-      const expectedCount = Array.isArray(gathering.allowed_phones)
-        ? gathering.allowed_phones.length
-        : 0;
+      const allowedPhones = Array.isArray(gathering.allowed_phones)
+        ? gathering.allowed_phones
+        : [];
+      const hostPhone = normalizeKoreanPhone(gathering.host_phone);
+      const hostAlreadyAllowed = allowedPhones.some(item => {
+        const phone =
+          typeof item === 'object' && item !== null ? item.phone : item;
+        return normalizeKoreanPhone(phone) === hostPhone;
+      });
+      const expectedCount =
+        allowedPhones.length + (hostPhone && !hostAlreadyAllowed ? 1 : 0);
       if (expectedCount > 0) {
         const { data: responses, error: responsesError } = await supabase
           .from('cheongmo_responses')

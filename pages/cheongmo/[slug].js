@@ -187,6 +187,9 @@ const formatDeadlineLabel = value => {
 
 const getExpectedGuestCount = gathering => {
   if (!gathering) return 0;
+  if (Number.isFinite(Number(gathering.expected_guest_count))) {
+    return Number(gathering.expected_guest_count);
+  }
   if (
     gathering.access_type === 'phone_list' &&
     Array.isArray(gathering.allowed_phones)

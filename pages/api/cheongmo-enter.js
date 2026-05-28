@@ -24,7 +24,9 @@ export default async function handler(req, res) {
     const supabase = await createSupabaseClient();
     const { data: gathering, error } = await supabase
       .from('cheongmo_events')
-      .select('id, slug, access_type, password_hash, allowed_phones')
+      .select(
+        'id, slug, access_type, password_hash, allowed_phones, host_name, host_phone'
+      )
       .eq('slug', slug)
       .eq('status', 'active')
       .maybeSingle();
@@ -47,10 +49,14 @@ export default async function handler(req, res) {
       }
     } else {
       phone = normalizeKoreanPhone(value);
-      const allowedEntry = findAllowedPhoneEntry(
-        gathering.allowed_phones,
-        phone
-      );
+      const hostPhone = normalizeKoreanPhone(gathering.host_phone);
+      const isHostPhone = hostPhone && phone === hostPhone;
+      const allowedEntry = isHostPhone
+        ? {
+            name: gathering.host_name || '주최자',
+            phone,
+          }
+        : findAllowedPhoneEntry(gathering.allowed_phones, phone);
       if (!allowedEntry) {
         return res.status(403).json({
           success: false,
