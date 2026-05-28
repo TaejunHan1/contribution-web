@@ -1,0 +1,18 @@
+<svg width="240" height="170" viewBox="0 0 240 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M54 103L92 84L132 101L185 78L194 124L145 145L103 129L62 148L54 103Z" fill="#F3F7FF"/>
+  <path d="M92 84V129M132 101V145" stroke="#D8E3F5" stroke-width="5" stroke-linecap="round"/>
+  <path d="M54 103L92 84L132 101L185 78L194 124L145 145L103 129L62 148L54 103Z" stroke="#DCE6F5" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M149 30C131.88 30 118 43.52 118 60.2C118 83.32 145.25 108.22 147.52 110.26C148.36 111 149.64 111 150.48 110.26C152.75 108.22 180 83.32 180 60.2C180 43.52 166.12 30 149 30Z" fill="url(#pinBlue)"/>
+  <circle cx="149" cy="59" r="12.6" fill="white"/>
+  <path d="M151 111L172 119" stroke="#BFD2EE" stroke-width="5" stroke-linecap="round"/>
+  <rect x="32" y="52" width="8" height="8" rx="2" transform="rotate(45 32 52)" fill="#2F80ED"/>
+  <rect x="207" y="54" width="8" height="8" rx="2" transform="rotate(45 207 54)" fill="#F7B731"/>
+  <rect x="46" y="122" width="8" height="8" rx="2" transform="rotate(45 46 122)" fill="#55C7A6"/>
+  <rect x="207" y="110" width="7" height="7" rx="2" transform="rotate(45 207 110)" fill="#3182F6"/>
+  <defs>
+    <linearGradient id="pinBlue" x1="128" y1="24" x2="171" y2="112" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4C99FF"/>
+      <stop offset="1" stop-color="#236BEB"/>
+    </linearGradient>
+  </defs>
+</svg>
