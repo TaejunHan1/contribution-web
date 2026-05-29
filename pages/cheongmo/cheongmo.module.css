@@ -45,7 +45,6 @@
 @keyframes roomEnterFade {
   from {
     opacity: 0;
-    transform: translateY(34px) scale(0.985);
   }
 
   60% {
@@ -54,7 +53,6 @@
 
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
   }
 }
 
@@ -2261,11 +2259,12 @@
   display: grid;
   grid-column: 2;
   min-width: 0;
-  gap: 10px;
+  gap: 8px;
 }
 
 .hostLocationContent strong {
-  font-size: 27px;
+  font-size: 19px;
+  line-height: 1.28;
 }
 
 .hostLocationInsightStrip .roomInsightItem:nth-child(3) .topRegionChips {
@@ -2277,21 +2276,24 @@
 }
 
 .hostMapLinks {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  width: 100%;
   margin-top: 4px;
 }
 
 .hostMapButton {
   display: inline-flex;
-  min-height: 40px;
+  width: 100%;
+  min-height: 38px;
+  min-width: 0;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 0 13px 0 10px;
+  gap: 6px;
+  padding: 0 8px;
   border: 1px solid #e5ebf3;
-  border-radius: 13px;
+  border-radius: 12px;
   background: #ffffff;
   color: #191f28;
   text-decoration: none;
@@ -2300,8 +2302,8 @@
 
 .hostMapButton span {
   display: inline-flex;
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
@@ -2313,9 +2315,13 @@
 }
 
 .hostMapButton b {
-  font-size: 13px;
+  min-width: 0;
+  font-size: 12px;
   font-weight: 950;
   line-height: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .hostMapButtonnaver span {
@@ -2405,13 +2411,11 @@
 }
 
 .roomInsightItem strong {
-  overflow: hidden;
   color: var(--text);
   font-size: 25px;
   font-weight: 950;
   line-height: 1.15;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .roomInsightItem p {
@@ -2427,15 +2431,24 @@
 
 .miniParticipants {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   min-height: 28px;
   align-items: center;
   gap: 6px;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.miniParticipants::-webkit-scrollbar {
+  display: none;
 }
 
 .miniParticipants span,
 .miniParticipants small {
   display: inline-flex;
+  flex: 0 0 auto;
   min-height: 28px;
   max-width: 100%;
   align-items: center;
@@ -2447,6 +2460,8 @@
   font-size: 12px;
   font-weight: 950;
   line-height: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -2472,6 +2487,7 @@
 .topRegionChips small {
   display: inline-flex;
   min-height: 28px;
+  max-width: 100%;
   align-items: center;
   justify-content: center;
   padding: 0 10px;
@@ -2480,12 +2496,20 @@
   color: var(--primary);
   font-size: 12px;
   font-weight: 950;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .topRegionChips small {
   background: #eef2f7;
   color: var(--muted);
+}
+
+.topRegionChips .topRegionChipLabel {
+  background: #ffffff;
+  color: #4e5968;
+  box-shadow: inset 0 0 0 1px #dbe5f2;
 }
 
 .insightProgress {
@@ -3080,6 +3104,68 @@
   text-align: center;
 }
 
+.dateVoterBoard {
+  display: grid;
+  gap: 14px;
+  margin-top: 4px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: #f8fbff;
+}
+
+.dateVoterList {
+  display: grid;
+  gap: 9px;
+}
+
+.dateVoterItem {
+  display: grid;
+  grid-template-columns: minmax(74px, 0.24fr) minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  padding: 12px;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 8px 20px rgba(25, 31, 40, 0.04);
+}
+
+.dateVoterItem strong {
+  min-width: 0;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 950;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.dateVoterItem div {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.dateVoterItem span,
+.dateVoterItem em {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.dateVoterItem em {
+  background: #eef2f7;
+  color: var(--muted);
+}
+
 .areaBoard {
   display: grid;
   gap: 12px;
@@ -3273,9 +3359,10 @@
 .selectedRegionChips em {
   display: inline-flex;
   min-height: 34px;
+  max-width: 100%;
   align-items: center;
   gap: 6px;
-  padding: 0 11px;
+  padding: 8px 11px;
   border: 0;
   border-radius: 999px;
   background: var(--primary);
@@ -3283,6 +3370,9 @@
   font-size: 14px;
   font-style: normal;
   font-weight: 950;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  text-align: left;
   box-shadow: 0 7px 15px rgba(49, 130, 246, 0.16);
 }
 
@@ -3295,6 +3385,7 @@
 
 .selectedRegionChips span {
   display: grid;
+  flex: 0 0 auto;
   width: 17px;
   height: 17px;
   place-items: center;
@@ -3437,9 +3528,11 @@
 }
 
 .regionCandidateName strong {
+  min-width: 0;
   color: var(--text);
   font-size: 20px;
   line-height: 1.2;
+  overflow-wrap: anywhere;
 }
 
 .regionCandidateName em {
@@ -3456,6 +3549,12 @@
   white-space: nowrap;
 }
 
+.regionCandidateName .regionTopBadge {
+  background: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(49, 130, 246, 0.2);
+}
+
 .regionCandidateMeta strong {
   color: var(--primary);
   font-size: 19px;
@@ -3463,12 +3562,11 @@
 }
 
 .regionCandidateMeta small {
-  overflow: hidden;
   color: var(--muted);
   font-size: 14px;
   font-weight: 800;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .regionProgressTrack {
@@ -3558,17 +3656,570 @@
   color: var(--primary);
 }
 
+.roomAppHero {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 14px;
+  min-height: 360px;
+  padding: 18px 18px 20px;
+  border: 1px solid rgba(206, 219, 238, 0.78);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 82% 22%, rgba(49, 130, 246, 0.18), transparent 32%),
+    linear-gradient(145deg, #f7fbff 0%, #edf5ff 58%, #f9fbff 100%);
+  box-shadow: 0 28px 70px rgba(49, 130, 246, 0.12);
+}
+
+.roomAppHero::after {
+  position: absolute;
+  right: -80px;
+  bottom: -120px;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.72);
+  content: '';
+}
+
+.roomHeroBrandRow {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  width: min(100%, 238px);
+  margin-bottom: 4px;
+}
+
+.roomHeroBrandRow .roomIntroLogoButton {
+  width: 178px;
+  height: 64px;
+  justify-content: flex-start;
+}
+
+.roomHeroBrandRow .roomIntroLogoButton img {
+  width: 178px;
+}
+
+.roomShareButton {
+  position: relative;
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(214, 225, 239, 0.95);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.84);
+  cursor: pointer;
+  box-shadow: 0 14px 28px rgba(25, 31, 40, 0.08);
+}
+
+.roomShareButton img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: brightness(0) saturate(100%) invert(45%) sepia(92%) saturate(2190%)
+    hue-rotate(199deg) brightness(100%) contrast(94%);
+}
+
+.roomAppHeroContent {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(160px, 0.6fr);
+  gap: 6px;
+  align-items: end;
+}
+
+.roomAppHeroText {
+  display: grid;
+  align-content: end;
+  min-width: 0;
+  gap: 9px;
+  padding: 18px 0 2px;
+}
+
+.roomAppHeroText h1 {
+  max-width: 260px;
+  margin: 0;
+  color: #151b29;
+  font-size: 42px;
+  font-weight: 950;
+  line-height: 1.06;
+  letter-spacing: 0;
+  word-break: keep-all;
+}
+
+.roomAppHeroText p {
+  max-width: 260px;
+  margin: 0;
+  color: #687386;
+  font-size: 15px;
+  font-weight: 850;
+  line-height: 1.45;
+  word-break: keep-all;
+}
+
+.roomAppHero .roomHeroObject {
+  width: min(330px, 44vw);
+  min-width: 230px;
+  max-width: none;
+  justify-self: end;
+  align-self: end;
+  margin: 0 -22px -10px 0;
+  filter: drop-shadow(0 20px 28px rgba(49, 130, 246, 0.18));
+}
+
+.roomAppHero .roomDownloadActions {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 430px);
+  margin: 2px 0 0;
+}
+
+.roomAppHero .roomDownloadActions a,
+.roomAppHero .roomDownloadActions button {
+  min-height: 46px;
+  border-radius: 15px;
+  box-shadow: 0 14px 26px rgba(25, 31, 40, 0.08);
+}
+
+.roomAppHero .cheongmoAppStoreAction {
+  border: 1px solid rgba(214, 225, 239, 0.92);
+  background: #ffffff;
+  color: #191f28;
+}
+
+.roomBriefingCard {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  gap: 4px;
+  margin-top: -36px;
+  padding: 18px;
+  border: 1px solid rgba(214, 225, 239, 0.92);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 22px 60px rgba(25, 31, 40, 0.1);
+  backdrop-filter: blur(18px);
+}
+
+.roomBriefingHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 2px 10px;
+}
+
+.roomBriefingHeader span {
+  color: #151b29;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.roomBriefingHeader strong {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  padding: 0 11px;
+  border-radius: 999px;
+  background: #eef6ff;
+  color: #3182f6;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.roomBriefingRow {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 13px;
+  align-items: start;
+  padding: 14px 0;
+  border-top: 1px solid #edf2f8;
+}
+
+.roomBriefingRow:first-of-type {
+  border-top: 0;
+}
+
+.roomParticipantBriefingRow,
+.roomHostBriefingRow {
+  min-width: 0;
+}
+
+.roomBriefingRow > div {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+}
+
+.roomBriefingRow em,
+.hostLocationContent em {
+  color: #7b8596;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.roomBriefingRow strong,
+.hostLocationContent strong {
+  color: #151b29;
+  font-size: 19px;
+  font-weight: 950;
+  line-height: 1.24;
+  overflow-wrap: anywhere;
+}
+
+.roomBriefingRow p,
+.hostLocationContent p {
+  margin: 0;
+  color: #687386;
+  font-size: 13px;
+  font-weight: 820;
+  line-height: 1.38;
+}
+
+.briefingProgressLine {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.roomSegmentTabs {
+  position: sticky;
+  z-index: 12;
+  top: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  gap: 4px;
+  padding: 5px;
+  border: 1px solid rgba(214, 225, 239, 0.82);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 16px 36px rgba(25, 31, 40, 0.08);
+  backdrop-filter: blur(16px);
+}
+
+.roomSegmentTabs a {
+  display: inline-grid;
+  grid-template-columns: 20px auto;
+  gap: 7px;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  color: #687386;
+  font-size: 14px;
+  font-weight: 950;
+  text-decoration: none;
+}
+
+.roomSegmentTabs img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  opacity: 0.68;
+}
+
+.roomTabCalendarIcon {
+  position: relative;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid currentColor;
+  border-radius: 5px;
+  color: #8b95a1;
+}
+
+.roomTabCalendarIcon::before {
+  position: absolute;
+  top: 5px;
+  right: 2px;
+  left: 2px;
+  border-top: 2px solid currentColor;
+  content: '';
+}
+
+.roomTabCalendarIcon::after {
+  position: absolute;
+  top: 10px;
+  left: 4px;
+  width: 3px;
+  height: 3px;
+  border-radius: 1px;
+  background: currentColor;
+  box-shadow:
+    5px 0 0 currentColor,
+    10px 0 0 currentColor,
+    0 5px 0 currentColor;
+  content: '';
+}
+
+.roomSegmentTabs a:first-child {
+  background: #3182f6;
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(49, 130, 246, 0.22);
+}
+
+.roomSegmentTabs a:first-child .roomTabCalendarIcon {
+  color: #ffffff;
+}
+
+.roomSegmentTabs a:first-child img {
+  filter: brightness(0) invert(1);
+  opacity: 1;
+}
+
+.dateAppSection {
+  scroll-margin-top: 74px;
+  overflow: hidden;
+  border-color: rgba(214, 225, 239, 0.92);
+  border-radius: 28px;
+  box-shadow: 0 22px 56px rgba(25, 31, 40, 0.075);
+}
+
+.dateAppSection .communitySectionHeader {
+  padding: 2px 2px 4px;
+}
+
+.dateAppSection .voteCalendar {
+  padding: 14px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+}
+
+.dateAppSection .dateResultBoard {
+  padding: 18px 14px;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1px #edf2f8;
+}
+
+.dateAppSection .dateResultItem {
+  position: relative;
+  grid-template-columns: 34px minmax(0, 1fr);
+  padding: 8px 0 10px;
+}
+
+.dateAppSection .dateResultItem + .dateResultItem::before {
+  position: absolute;
+  top: -7px;
+  bottom: calc(100% - 18px);
+  left: 16px;
+  width: 2px;
+  background: #dbe8ff;
+  content: '';
+}
+
+.dateAppSection .dateVoterBoard {
+  scroll-margin-top: 74px;
+  border: 0;
+  background: #f8fbff;
+  box-shadow: inset 0 0 0 1px #edf2f8;
+}
+
+.dateVoterItem::before {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 50%;
+  background: #e8f2ff;
+  color: #3182f6;
+  font-size: 13px;
+  font-weight: 950;
+  content: attr(data-initial);
+}
+
+.dateAppSection .dateVoterItem {
+  grid-template-columns: 34px minmax(68px, 0.24fr) minmax(0, 1fr);
+  align-items: center;
+  border: 1px solid #edf2f8;
+  box-shadow: none;
+}
+
+.dateAppSection .dateVoterItem strong {
+  font-size: 14px;
+}
+
+.regionOpinionSection {
+  scroll-margin-top: 74px;
+  border: 0;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 88% 5%, rgba(49, 130, 246, 0.08), transparent 34%),
+    #ffffff;
+  box-shadow: 0 24px 58px rgba(25, 31, 40, 0.08);
+}
+
+.regionTitle {
+  grid-template-columns: 46px minmax(0, 1fr);
+}
+
+.regionTitleIcon {
+  width: 46px;
+  height: 46px;
+}
+
+.selectedRegionPanel {
+  position: relative;
+  overflow: hidden;
+  grid-template-columns: minmax(0, 1fr);
+  min-height: auto;
+  border: 0;
+  border-radius: 26px;
+  background: #f8fbff;
+  box-shadow: inset 0 0 0 1px #e4edf8;
+}
+
+.selectedRegionPanel::after {
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  width: 94px;
+  height: 72px;
+  background: url('/cheongmo/region-map-pin.png') center / contain no-repeat;
+  content: '';
+  opacity: 0.82;
+}
+
+.selectedRegionPanel > div {
+  position: relative;
+  z-index: 1;
+  padding-right: 80px;
+}
+
+.selectedRegionPanel .regionMapImage {
+  display: none;
+}
+
+.selectedRegionChips {
+  align-items: flex-start;
+}
+
+.selectedRegionChips button,
+.selectedRegionChips em {
+  border-radius: 16px;
+  background: #3182f6;
+  box-shadow: 0 10px 20px rgba(49, 130, 246, 0.16);
+}
+
+.selectedRegionChips button:first-child {
+  max-width: 100%;
+  min-height: 48px;
+  padding-block: 10px;
+}
+
+.regionAddPanel {
+  border: 0;
+  border-radius: 24px;
+  background: #f8fbff;
+  box-shadow: inset 0 0 0 1px #e4edf8;
+}
+
+.regionCandidateHeader {
+  margin-top: 10px;
+}
+
+.regionCandidateCard {
+  grid-template-columns: 30px minmax(0, 1fr);
+  align-items: start;
+  min-height: auto;
+  padding: 18px;
+  border-color: #e0e9f6;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 14px 30px rgba(25, 31, 40, 0.055);
+}
+
+.selectedRegionCandidate {
+  border-color: rgba(49, 130, 246, 0.36);
+  background: linear-gradient(180deg, #f4f9ff 0%, #ffffff 100%);
+}
+
+.regionCandidateCard b {
+  grid-column: 2;
+  justify-self: start;
+  min-height: 34px;
+  margin-top: 2px;
+  padding: 0 13px;
+  border-radius: 999px;
+  font-size: 13px;
+}
+
+.regionCandidateName {
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.regionCandidateName strong {
+  flex: 1 1 100%;
+  font-size: 21px;
+  line-height: 1.28;
+}
+
+.regionCandidateMeta {
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.regionCandidateMeta small {
+  flex: 1 1 100%;
+  font-size: 13px;
+}
+
+.regionProgressTrack {
+  width: 100%;
+}
+
+.regionNotice {
+  border: 0;
+  border-radius: 24px;
+  background: #f8fbff;
+  box-shadow: inset 0 0 0 1px #e4edf8;
+}
+
 .communityActionBar {
   position: fixed;
   z-index: 15;
   right: 50%;
   bottom: 0;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
   width: min(528px, calc(100% - 32px));
-  gap: 10px;
-  padding: 14px 0 max(12px, env(safe-area-inset-bottom));
+  padding: 16px 0 max(14px, env(safe-area-inset-bottom));
   transform: translateX(50%);
   background: linear-gradient(180deg, rgba(247, 249, 252, 0), #f7f9fc 30%);
+}
+
+.actionShieldIcon {
+  display: grid;
+  width: 56px;
+  height: 56px;
+  place-items: center;
+  border: 1px solid rgba(222, 231, 243, 0.92);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 16px 32px rgba(25, 31, 40, 0.08);
+}
+
+.actionShieldIcon img {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+}
+
+.communityActionControls {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
 }
 
 .createOwnGatheringButton {
@@ -3645,6 +4296,62 @@
   min-height: 54px;
   border-radius: 16px;
   font-size: 16px;
+}
+
+@media (min-width: 720px) {
+  .shell {
+    width: min(920px, 100%);
+  }
+
+  .roomAppHero {
+    min-height: 390px;
+    padding: 24px 26px 24px;
+  }
+
+  .roomAppHeroContent {
+    grid-template-columns: minmax(0, 0.9fr) minmax(300px, 0.7fr);
+    min-height: 218px;
+  }
+
+  .roomAppHero .roomHeroObject {
+    width: min(390px, 44vw);
+    margin-right: -34px;
+    margin-bottom: -14px;
+  }
+
+  .roomBriefingCard {
+    margin-top: -34px;
+  }
+
+  .dateAppSection {
+    grid-template-columns: minmax(0, 0.96fr) minmax(310px, 0.84fr);
+    align-items: start;
+    gap: 18px;
+  }
+
+  .dateAppSection .communitySectionHeader,
+  .dateAppSection .mySelectionStrip,
+  .dateAppSection .dateVoterBoard {
+    grid-column: 1 / -1;
+  }
+
+  .dateAppSection .voteCalendarRail {
+    grid-column: 1;
+    margin-bottom: 0;
+  }
+
+  .dateAppSection .dateResultBoard {
+    grid-column: 2;
+    margin-top: 0;
+  }
+
+  .regionCandidateList {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .communityActionBar {
+    width: min(880px, calc(100% - 48px));
+  }
 }
 
 .fieldGroup {
@@ -6617,14 +7324,21 @@
   }
 
   .roomStatusPills {
-    gap: 7px;
-    margin-top: 15px;
+    gap: 6px;
+    margin-top: 10px;
   }
 
   .roomStatusPills span {
-    min-height: 34px;
-    padding: 0 11px 0 8px;
-    font-size: 12px;
+    min-height: 29px;
+    grid-template-columns: 16px auto;
+    gap: 5px;
+    padding: 0 9px 0 7px;
+    font-size: 11px;
+  }
+
+  .roomStatusPills img {
+    width: 16px;
+    height: 16px;
   }
 
   .roomHeroObject {
@@ -6649,16 +7363,225 @@
   }
 
   .roomDownloadActions .cheongmoStoreIcon {
-    width: 22px;
-    height: 22px;
+    width: 19px;
+    height: 19px;
   }
 
   .roomDownloadActions small {
-    font-size: 8px;
+    font-size: 7px;
   }
 
   .roomDownloadActions strong {
-    font-size: 14px;
+    font-size: 12px;
+  }
+
+  .roomAppHero {
+    min-height: 286px;
+    gap: 9px;
+    padding: 12px 12px 14px;
+    border-radius: 24px;
+  }
+
+  .roomHeroBrandRow {
+    width: min(100%, 182px);
+    gap: 8px;
+    margin-bottom: 0;
+  }
+
+  .roomHeroBrandRow .roomIntroLogoButton {
+    width: 136px;
+    height: 48px;
+  }
+
+  .roomHeroBrandRow .roomIntroLogoButton img {
+    width: 136px;
+  }
+
+  .roomShareButton {
+    width: 34px;
+    height: 34px;
+    border-radius: 13px;
+  }
+
+  .roomShareButton img {
+    width: 17px;
+    height: 17px;
+  }
+
+  .roomAppHeroContent {
+    grid-template-columns: minmax(0, 0.96fr) minmax(118px, 0.5fr);
+    min-height: 188px;
+    align-items: end;
+  }
+
+  .roomAppHeroText {
+    gap: 7px;
+    padding-top: 0;
+  }
+
+  .roomAppHeroText h1 {
+    max-width: 170px;
+    font-size: 29px;
+    line-height: 1.1;
+  }
+
+  .roomAppHeroText p {
+    max-width: 174px;
+    font-size: 12px;
+    line-height: 1.42;
+  }
+
+  .roomAppHero .roomHeroObject {
+    width: min(210px, 54vw);
+    min-width: 148px;
+    margin-right: -38px;
+    margin-bottom: -8px;
+  }
+
+  .roomAppHero .roomDownloadActions {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .roomAppHero .roomDownloadActions a,
+  .roomAppHero .roomDownloadActions button {
+    min-height: 36px;
+    padding: 0 8px;
+  }
+
+  .roomBriefingCard {
+    gap: 0;
+    margin-top: -14px;
+    padding: 12px;
+    border-radius: 22px;
+  }
+
+  .roomBriefingHeader span {
+    font-size: 16px;
+  }
+
+  .roomBriefingRow {
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 9px;
+    padding: 9px 0;
+  }
+
+  .roomBriefingRow strong,
+  .hostLocationContent strong {
+    font-size: 16px;
+  }
+
+  .roomBriefingRow p,
+  .hostLocationContent p {
+    font-size: 12px;
+  }
+
+  .roomBriefingRow > div {
+    grid-template-columns: minmax(0, 1fr) minmax(112px, 0.74fr);
+    gap: 2px 8px;
+    align-items: center;
+  }
+
+  .roomParticipantBriefingRow > div,
+  .roomHostBriefingRow .hostLocationContent {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .roomBriefingRow em,
+  .roomBriefingRow strong {
+    grid-column: 1;
+  }
+
+  .roomBriefingRow p {
+    grid-column: 1;
+  }
+
+  .roomBriefingRow .miniParticipants,
+  .roomBriefingRow .briefingProgressLine,
+  .roomBriefingRow .topRegionChips {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    align-self: center;
+    justify-self: end;
+  }
+
+  .roomBriefingRow .briefingProgressLine {
+    width: min(132px, 100%);
+  }
+
+  .roomBriefingRow .briefingProgressLine p {
+    grid-column: auto;
+    text-align: right;
+  }
+
+  .roomBriefingRow .miniParticipants {
+    justify-content: flex-start;
+  }
+
+  .roomParticipantBriefingRow .miniParticipants {
+    grid-column: 1;
+    grid-row: auto;
+    gap: 4px;
+    justify-self: stretch;
+    width: 100%;
+  }
+
+  .roomParticipantBriefingRow .miniParticipants span,
+  .roomParticipantBriefingRow .miniParticipants small {
+    min-height: 22px;
+    padding: 0 6px;
+    font-size: 10px;
+  }
+
+  .roomBriefingRow .insightIcon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .roomBriefingRow .insightIcon img {
+    width: 19px;
+    height: 19px;
+  }
+
+  .roomBriefingHeader strong {
+    min-height: 26px;
+    padding: 0 9px;
+    font-size: 11px;
+  }
+
+  .miniParticipants span,
+  .miniParticipants small,
+  .topRegionChips span,
+  .topRegionChips small {
+    min-height: 24px;
+    padding: 0 8px;
+    font-size: 10px;
+  }
+
+  .briefingProgressLine {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .roomSegmentTabs {
+    top: 8px;
+    border-radius: 17px;
+  }
+
+  .roomSegmentTabs a {
+    min-height: 40px;
+    font-size: 13px;
+  }
+
+  .roomInsightStrip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .roomInsightStrip .roomInsightItem:nth-child(3) {
+    grid-column: 1 / -1;
+    min-height: 112px;
+    border-top: 1px solid var(--line);
+    border-left: 0;
   }
 
   .roomInsightItem {
@@ -6683,27 +7606,55 @@
   }
 
   .hostLocationContent {
-    gap: 8px;
+    gap: 7px;
   }
 
   .hostLocationContent strong {
-    font-size: 22px;
+    font-size: 16px;
+    line-height: 1.3;
+  }
+
+  .roomHostBriefingRow .topRegionChips,
+  .roomHostBriefingRow .hostMapLinks,
+  .roomHostBriefingRow .hostLocationContent p {
+    grid-column: 1;
+    grid-row: auto;
+    justify-self: stretch;
+  }
+
+  .roomBriefingRow.roomHostBriefingRow .topRegionChips,
+  .roomBriefingRow.roomHostBriefingRow .hostMapLinks,
+  .roomBriefingRow.roomHostBriefingRow .hostLocationContent p {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    justify-self: stretch;
+  }
+
+  .roomBriefingRow.roomHostBriefingRow .topRegionChips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .roomBriefingRow.roomHostBriefingRow .topRegionChips span {
+    flex: 0 0 auto;
+    max-width: 190px;
   }
 
   .hostMapButton {
-    min-height: 36px;
-    gap: 7px;
-    padding: 0 11px 0 9px;
+    min-height: 34px;
+    gap: 5px;
+    padding: 0 6px;
+    border-radius: 11px;
   }
 
   .hostMapButton span {
-    width: 22px;
-    height: 22px;
-    font-size: 13px;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
   }
 
   .hostMapButton b {
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .insightHeader {
@@ -6725,7 +7676,8 @@
   }
 
   .roomInsightItem strong {
-    font-size: 20px;
+    font-size: 19px;
+    line-height: 1.18;
   }
 
   .roomInsightItem p {
@@ -6735,8 +7687,39 @@
   .miniParticipants span,
   .miniParticipants small {
     min-height: 26px;
+    max-width: 96px;
     padding: 0 9px;
     font-size: 11px;
+  }
+
+  .topRegionChips span,
+  .topRegionChips small {
+    max-width: min(100%, 180px);
+    min-height: 26px;
+    padding: 0 9px;
+    font-size: 11px;
+  }
+
+  .dateAppSection {
+    border-radius: 26px;
+  }
+
+  .dateAppSection .voteCalendar {
+    padding: 12px;
+    border-radius: 22px;
+  }
+
+  .dateAppSection .dateResultBoard {
+    padding: 16px 12px;
+  }
+
+  .dateAppSection .dateVoterItem {
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 9px 10px;
+  }
+
+  .dateAppSection .dateVoterItem div {
+    grid-column: 2;
   }
 
   .choiceGrid,
@@ -6756,7 +7739,7 @@
   }
 
   .selectedRegionPanel {
-    grid-template-columns: minmax(0, 1fr) 140px;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .regionCandidateCard {
@@ -6787,21 +7770,72 @@
 
   .regionMapImage {
     justify-self: end;
-    width: 140px;
-    max-width: 140px;
-    margin-top: 0;
+    width: 112px;
+    max-width: 112px;
+    margin-top: -14px;
+    opacity: 0.9;
   }
 
   .regionCandidateCard {
     position: relative;
+    grid-template-columns: 24px minmax(0, 1fr);
     gap: 11px;
     padding: 15px;
   }
 
   .regionCandidateCard b {
+    grid-column: 2;
     justify-self: stretch;
     min-height: 36px;
     font-size: 13px;
+  }
+
+  .regionCandidateName,
+  .regionCandidateMeta {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .regionCandidateName strong {
+    width: 100%;
+    font-size: 18px;
+  }
+
+  .regionCandidateName em {
+    min-height: 23px;
+    padding: 0 9px;
+    font-size: 12px;
+  }
+
+  .regionCandidateMeta strong {
+    font-size: 16px;
+  }
+
+  .regionCandidateMeta small {
+    flex-basis: 100%;
+    font-size: 12px;
+  }
+
+  .regionOpinionSection {
+    border-radius: 28px;
+    margin-bottom: 132px;
+  }
+
+  .regionCandidateCard {
+    border-radius: 22px;
+    padding: 16px;
+  }
+
+  .regionCandidateCard b {
+    justify-self: start;
+    min-height: 34px;
+    padding: 0 13px;
+    border-radius: 999px;
+  }
+
+  .selectedRegionPanel > div {
+    padding-right: 76px;
   }
 
   .dateResultBoard {
@@ -6827,16 +7861,21 @@
   }
 
   .dateResultLine {
-    grid-template-columns: minmax(96px, auto) minmax(0, 1fr) auto auto;
-    gap: 7px;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 6px 8px;
   }
 
   .dateResultLine strong {
+    min-width: 0;
     font-size: 16px;
+    white-space: normal;
   }
 
   .dateResultLine p {
+    grid-column: 1 / -1;
+    order: 2;
     font-size: 13px;
+    white-space: normal;
   }
 
   .dateResultLine span {
@@ -6848,6 +7887,17 @@
     min-height: 26px;
     padding: 0 10px;
     font-size: 13px;
+  }
+
+  .dateVoterBoard {
+    padding: 14px;
+    border-radius: 18px;
+  }
+
+  .dateVoterItem {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 11px;
   }
 
   .overviewCard,

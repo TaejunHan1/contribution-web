@@ -1073,6 +1073,26 @@ export default function CheongmoParticipantPage() {
     }
   };
 
+  const shareGathering = async () => {
+    const shareUrl = metaUrl || `${getSiteUrl()}/cheongmo/${gathering.slug}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: gathering.title,
+          text: '청첩장 모임에 참여해주세요.',
+          url: shareUrl,
+        });
+        return;
+      }
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success('청모 링크를 복사했어요.');
+    } catch (error) {
+      if (error?.name !== 'AbortError') {
+        toast.error('공유 링크를 준비하지 못했어요.');
+      }
+    }
+  };
+
   if (loading) {
     return (
       <>
@@ -1110,247 +1130,275 @@ export default function CheongmoParticipantPage() {
         <div className={styles.shell}>
           {participant ? (
               <section className={`${styles.communityRoom} ${styles.roomEnterFade}`}>
-              <section className={styles.roomIntro}>
-                <div className={styles.roomIntroCopy}>
-                  <div className={styles.roomIntroBrandRow}>
-                    <button
-                      className={styles.roomIntroLogoButton}
-                      type="button"
-                      aria-label="정담 메인으로 이동"
-                      onClick={() => router.push('/')}
-                    >
-                      <Image
-                        src="/cheongmo/cheongmo-home-logo-pill.png"
-                        alt="정담"
-                        width={2073}
-                        height={758}
-                        priority
-                      />
-                    </button>
-                  </div>
-                  <h1>{gathering.title}</h1>
-                  <p>
-                    {participant.guestName}님, 함께 일정을 맞추고 있어요
-                  </p>
-                  <div className={styles.roomStatusPills}>
-                    <span>
-                      <Image
-                        src="/cheongmo/room-insight-people.png"
-                        alt=""
-                        width={20}
-                        height={20}
-                      />
-                      {roomParticipantCount}명이 참여했어요
-                    </span>
-                    <span>
-                      <Image
-                        src="/cheongmo/room-status-sync.png"
-                        alt=""
-                        width={20}
-                        height={20}
-                      />
-                      일정 조율중
-                    </span>
-                    {voteDeadlineLabel && (
+              <section className={styles.roomAppHero}>
+                <div className={styles.roomAppHeroContent}>
+                  <div className={styles.roomAppHeroText}>
+                    <div className={styles.roomHeroBrandRow}>
+                      <button
+                        className={styles.roomIntroLogoButton}
+                        type="button"
+                        aria-label="정담 메인으로 이동"
+                        onClick={() => router.push('/')}
+                      >
+                        <Image
+                          src="/cheongmo/cheongmo-home-logo-pill.png"
+                          alt="정담"
+                          width={2073}
+                          height={758}
+                          priority
+                        />
+                      </button>
+                      <button
+                        className={styles.roomShareButton}
+                        type="button"
+                        aria-label="청모 링크 공유하기"
+                        onClick={shareGathering}
+                      >
+                        <Image
+                          src="/cheongmo/cheongmo-share-icon.svg"
+                          alt=""
+                          width={28}
+                          height={28}
+                        />
+                      </button>
+                    </div>
+                    <h1>{gathering.title}</h1>
+                    <p>{participant.guestName}님, 함께 일정을 맞추고 있어요</p>
+                    <div className={styles.roomStatusPills}>
                       <span>
                         <Image
-                          src="/cheongmo/date-calendar-icon.svg"
+                          src="/cheongmo/room-insight-people.png"
                           alt=""
                           width={20}
                           height={20}
                         />
-                        {voteDeadlineLabel}까지 투표
+                        {roomParticipantCount}명이 참여했어요
                       </span>
-                    )}
+                      <span>
+                        <Image
+                          src="/cheongmo/room-status-sync.png"
+                          alt=""
+                          width={20}
+                          height={20}
+                        />
+                        일정 조율중
+                      </span>
+                      {voteDeadlineLabel && (
+                        <span>
+                          <Image
+                            src="/cheongmo/date-calendar-icon.svg"
+                            alt=""
+                            width={20}
+                            height={20}
+                          />
+                          {voteDeadlineLabel}까지 투표
+                        </span>
+                      )}
+                    </div>
                   </div>
+                  <Image
+                    className={styles.roomHeroObject}
+                    src="/cheongmo/cheongmo-room-hero-object.png"
+                    alt=""
+                    width={1536}
+                    height={1024}
+                    priority
+                  />
                 </div>
-                <Image
-                  className={styles.roomHeroObject}
-                  src="/cheongmo/cheongmo-home-hero-visual.png"
-                  alt=""
-                  width={500}
-                  height={400}
-                  priority
-                />
+
+                <div className={styles.roomDownloadActions}>
+                  <a
+                    className={styles.cheongmoAppStoreAction}
+                    href={appStoreUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span className={styles.cheongmoStoreIcon} aria-hidden="true">
+                      <svg viewBox="0 0 24 24" role="img">
+                        <path d="M16.55 12.25c-.02-2.38 1.95-3.52 2.04-3.58-1.12-1.64-2.85-1.87-3.46-1.89-1.47-.15-2.88.86-3.62.86-.75 0-1.9-.84-3.13-.82-1.6.02-3.08.93-3.9 2.36-1.67 2.9-.43 7.18 1.19 9.53.8 1.14 1.74 2.42 2.98 2.37 1.2-.05 1.65-.77 3.1-.77 1.44 0 1.85.77 3.11.75 1.29-.02 2.1-1.16 2.87-2.31.92-1.33 1.29-2.62 1.31-2.69-.03-.01-2.46-.95-2.49-3.81ZM14.17 5.22c.65-.78 1.08-1.86.96-2.95-.93.04-2.09.62-2.76 1.4-.6.69-1.13 1.8-.99 2.86 1.05.08 2.13-.53 2.79-1.31Z" />
+                      </svg>
+                    </span>
+                    <span>
+                      <small>Download</small>
+                      <strong>App Store</strong>
+                    </span>
+                  </a>
+                  <button
+                    className={styles.cheongmoPlayStoreAction}
+                    type="button"
+                    onClick={() => toast('현재 베타테스터만 진행중입니다.')}
+                  >
+                    <span className={styles.cheongmoStoreIcon} aria-hidden="true">
+                      <svg viewBox="0 0 24 24" role="img">
+                        <path d="M4.5 3.65c-.32.26-.5.68-.5 1.22v14.26c0 .54.18.96.5 1.22l8.08-8.35L4.5 3.65Zm9.15 7.25 2.42-2.5L6.53 3.05l7.12 7.85Zm0 2.2-7.12 7.85 9.54-5.35-2.42-2.5Zm1.08-1.1 2.95 3.05 2.23-1.25c1.46-.82 1.46-2.78 0-3.6l-2.23-1.25L14.73 12Z" />
+                      </svg>
+                    </span>
+                    <span>
+                      <small>Beta</small>
+                      <strong>Google Play</strong>
+                    </span>
+                  </button>
+                </div>
               </section>
 
-              <div className={styles.roomDownloadActions}>
-                <a
-                  className={styles.cheongmoAppStoreAction}
-                  href={appStoreUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <span className={styles.cheongmoStoreIcon} aria-hidden="true">
-                    <svg viewBox="0 0 24 24" role="img">
-                      <path d="M16.55 12.25c-.02-2.38 1.95-3.52 2.04-3.58-1.12-1.64-2.85-1.87-3.46-1.89-1.47-.15-2.88.86-3.62.86-.75 0-1.9-.84-3.13-.82-1.6.02-3.08.93-3.9 2.36-1.67 2.9-.43 7.18 1.19 9.53.8 1.14 1.74 2.42 2.98 2.37 1.2-.05 1.65-.77 3.1-.77 1.44 0 1.85.77 3.11.75 1.29-.02 2.1-1.16 2.87-2.31.92-1.33 1.29-2.62 1.31-2.69-.03-.01-2.46-.95-2.49-3.81ZM14.17 5.22c.65-.78 1.08-1.86.96-2.95-.93.04-2.09.62-2.76 1.4-.6.69-1.13 1.8-.99 2.86 1.05.08 2.13-.53 2.79-1.31Z" />
-                    </svg>
-                  </span>
-                  <span>
-                    <small>Download on the</small>
-                    <strong>App Store</strong>
-                  </span>
-                </a>
-                <button
-                  className={styles.cheongmoPlayStoreAction}
-                  type="button"
-                  onClick={() => toast('현재 베타테스터만 진행중입니다.')}
-                >
-                  <span className={styles.cheongmoStoreIcon} aria-hidden="true">
-                    <svg viewBox="0 0 24 24" role="img">
-                      <path d="M4.5 3.65c-.32.26-.5.68-.5 1.22v14.26c0 .54.18.96.5 1.22l8.08-8.35L4.5 3.65Zm9.15 7.25 2.42-2.5L6.53 3.05l7.12 7.85Zm0 2.2-7.12 7.85 9.54-5.35-2.42-2.5Zm1.08-1.1 2.95 3.05 2.23-1.25c1.46-.82 1.46-2.78 0-3.6l-2.23-1.25L14.73 12Z" />
-                    </svg>
-                  </span>
-                  <span>
-                    <small>GET IT ON</small>
-                    <strong>Google Play</strong>
-                  </span>
-                </button>
-              </div>
-
               <section
-                className={`${styles.roomInsightStrip} ${
+                className={`${styles.roomBriefingCard} ${
                   gathering.location_mode === 'host_decides'
-                    ? styles.hostLocationInsightStrip
+                    ? styles.hostLocationBriefingCard
                     : ''
                 }`}
               >
-                <article className={styles.roomInsightItem}>
-                  <div className={styles.insightHeader}>
-                    <span className={styles.insightIcon}>
-                      <Image
-                        src="/cheongmo/room-insight-people.png"
-                        alt=""
-                        width={24}
-                        height={24}
-                      />
-                    </span>
+                <div className={styles.roomBriefingHeader}>
+                  <span>조율 브리핑</span>
+                  <strong>
+                    {isVotingClosed
+                      ? '투표 종료'
+                      : isEditingResponse
+                      ? '수정 중'
+                      : '저장 완료'}
+                  </strong>
+                </div>
+
+                <article
+                  className={`${styles.roomBriefingRow} ${styles.roomParticipantBriefingRow}`}
+                >
+                  <span className={styles.insightIcon}>
+                    <Image
+                      src="/cheongmo/room-insight-people.png"
+                      alt=""
+                      width={24}
+                      height={24}
+                    />
+                  </span>
+                  <div>
                     <em>참여</em>
-                  </div>
-                  <strong>
-                    {roomParticipantCount}
-                    {expectedGuestCount ? ` / ${expectedGuestCount}` : ''}
-                  </strong>
-                  <div className={styles.miniParticipants}>
-                    {participantNames.slice(0, 2).map(name => (
-                      <span key={name}>{name}</span>
-                    ))}
-                    {participantNames.length > 2 && (
-                      <small>+{participantNames.length - 2}</small>
-                    )}
+                    <strong>
+                      {roomParticipantCount}
+                      {expectedGuestCount ? ` / ${expectedGuestCount}` : ''}
+                    </strong>
+                    <div className={styles.miniParticipants}>
+                      {participantNames.map(name => (
+                        <span key={name}>{name}</span>
+                      ))}
+                    </div>
                   </div>
                 </article>
 
-                <article className={styles.roomInsightItem}>
-                  <div className={styles.insightHeader}>
-                    <span className={styles.insightIcon}>
-                      <Image
-                        src="/cheongmo/room-insight-chart.png"
-                        alt=""
-                        width={24}
-                        height={24}
-                      />
-                    </span>
-                    <em>가장 유력</em>
+                <article className={styles.roomBriefingRow}>
+                  <span className={styles.insightIcon}>
+                    <Image
+                      src="/cheongmo/room-insight-chart.png"
+                      alt=""
+                      width={24}
+                      height={24}
+                    />
+                  </span>
+                  <div>
+                    <em>가장 유력한 날짜</em>
+                    <strong>
+                      {roomTopDate ? formatDateLabel(roomTopDate.date) : '집계 전'}
+                    </strong>
+                    <div className={styles.briefingProgressLine}>
+                      <div className={styles.insightProgress}>
+                        <i style={{ width: `${roomTopDateProgress}%` }} />
+                      </div>
+                      <p>
+                        {roomTopDate
+                          ? `${roomTopDate.count}명 선택`
+                          : '저장된 일정 없음'}
+                      </p>
+                    </div>
                   </div>
-                  <strong>
-                    {roomTopDate ? formatDateLabel(roomTopDate.date) : '집계 전'}
-                  </strong>
-                  <div className={styles.insightProgress}>
-                    <i style={{ width: `${roomTopDateProgress}%` }} />
-                  </div>
-                  <p>
-                    {roomTopDate
-                      ? `${roomTopDate.count}명`
-                      : '저장된 일정 없음'}
-                  </p>
                 </article>
 
-                <article className={styles.roomInsightItem}>
-                  <div className={styles.insightHeader}>
-                    <span className={styles.insightIcon}>
-                      <Image
-                        src="/cheongmo/room-insight-pin.png"
-                        alt=""
-                        width={24}
-                        height={24}
-                      />
-                    </span>
-                    <em>
-                      {gathering.location_mode === 'ask_guests'
-                        ? '지역 의견'
-                        : '모임 장소'}
-                    </em>
-                  </div>
+                <article
+                  className={`${styles.roomBriefingRow} ${styles.roomHostBriefingRow}`}
+                >
+                  <span className={styles.insightIcon}>
+                    <Image
+                      src="/cheongmo/room-insight-pin.png"
+                      alt=""
+                      width={24}
+                      height={24}
+                    />
+                  </span>
                   {gathering.location_mode === 'ask_guests' ? (
-                    <>
+                    <div>
+                      <em>가장 유력한 지역</em>
                       <strong>{roomTopRegion?.name || '모으는 중'}</strong>
-                      {regionCandidates.filter(
-                        region => region.name !== roomTopRegion?.name
-                      ).length > 0 && (
-                        <div className={styles.topRegionChips}>
-                          {regionCandidates
-                            .filter(region => region.name !== roomTopRegion?.name)
-                            .slice(0, 2)
-                            .map(region => (
-                              <span key={region.name}>{region.name}</span>
-                            ))}
-                          {regionCandidates.filter(
-                            region => region.name !== roomTopRegion?.name
-                          ).length > 2 && (
-                            <small>
-                              +
-                              {regionCandidates.filter(
-                                region => region.name !== roomTopRegion?.name
-                              ).length - 2}
-                            </small>
-                          )}
-                        </div>
-                      )}
                       <p>
                         {roomTopRegion
-                          ? `${roomTopRegion.count}명 선택`
+                          ? `${roomTopRegion.count}명이 가장 많이 선택했어요`
                           : '지역을 제안해주세요'}
                       </p>
-                    </>
+                    </div>
                   ) : (
-                    <>
-                      <div className={styles.hostLocationContent}>
-                        <strong>{hostLocationTitle}</strong>
-                        {hostLocationDetails.length > 0 && (
-                          <div className={styles.topRegionChips}>
-                            {hostLocationDetails.slice(0, 2).map(item => (
-                              <span key={item}>{item}</span>
-                            ))}
-                          </div>
-                        )}
-                        {hostMapLinks.length > 0 && (
-                          <div className={styles.hostMapLinks}>
-                            {hostMapLinks.map(link => (
-                              <a
-                                className={`${styles.hostMapButton} ${
-                                  styles[`hostMapButton${link.brand}`]
-                                }`}
-                                href={link.href}
-                                key={link.label}
-                                target="_blank"
-                                rel="noreferrer"
-                              >
-                                <span aria-hidden="true">{link.icon}</span>
-                                <b>{link.label}</b>
-                              </a>
-                            ))}
-                          </div>
-                        )}
-                        <p>주최자가 정한 모임 장소예요</p>
-                      </div>
-                    </>
+                    <div className={styles.hostLocationContent}>
+                      <em>모임 장소</em>
+                      <strong>{hostLocationTitle}</strong>
+                      {hostLocationDetails.length > 0 && (
+                        <div className={styles.topRegionChips}>
+                          {hostLocationDetails.slice(0, 2).map(item => (
+                            <span key={item}>{item}</span>
+                          ))}
+                        </div>
+                      )}
+                      {hostMapLinks.length > 0 && (
+                        <div className={styles.hostMapLinks}>
+                          {hostMapLinks.map(link => (
+                            <a
+                              className={`${styles.hostMapButton} ${
+                                styles[`hostMapButton${link.brand}`]
+                              }`}
+                              href={link.href}
+                              key={link.label}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              <span aria-hidden="true">{link.icon}</span>
+                              <b>{link.label}</b>
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                      <p>주최자가 정한 모임 장소예요</p>
+                    </div>
                   )}
                 </article>
               </section>
 
+              <nav className={styles.roomSegmentTabs} aria-label="청모 섹션">
+                <a href="#cheongmo-dates">
+                  <span className={styles.roomTabCalendarIcon} aria-hidden="true" />
+                  날짜
+                </a>
+                {gathering.location_mode === 'ask_guests' && (
+                  <a href="#cheongmo-regions">
+                    <Image
+                      src="/cheongmo/room-insight-pin.png"
+                      alt=""
+                      width={20}
+                      height={20}
+                    />
+                    지역
+                  </a>
+                )}
+                <a href="#cheongmo-participants">
+                  <Image
+                    src="/cheongmo/room-insight-people.png"
+                    alt=""
+                    width={20}
+                    height={20}
+                  />
+                  참여자
+                </a>
+              </nav>
+
               <section className={styles.communityMain}>
-                  <div className={styles.communitySection}>
+                  <div
+                    className={`${styles.communitySection} ${styles.dateAppSection}`}
+                    id="cheongmo-dates"
+                  >
                     <div className={styles.communitySectionHeader}>
                       <div>
                         <Image
@@ -1559,10 +1607,62 @@ export default function CheongmoParticipantPage() {
                         </p>
                       )}
                     </div>
+                    <div className={styles.dateVoterBoard} id="cheongmo-participants">
+                      <div className={styles.resultHeader}>
+                        <Image
+                          alt=""
+                          aria-hidden="true"
+                          className={styles.dateLeaderIcon}
+                          src="/cheongmo/room-insight-people.png"
+                          width={32}
+                          height={32}
+                        />
+                        <strong>참여자별 선택 날짜</strong>
+                      </div>
+                      {savedParticipants.length > 0 ? (
+                        <div className={styles.dateVoterList}>
+                          {savedParticipants.map(person => {
+                            const dates = filterDatesByMonths(
+                              person.availableDates,
+                              visibleMonth
+                                ? [visibleMonth.value]
+                                : gathering?.selected_months
+                            );
+                            return (
+                              <article
+                                className={styles.dateVoterItem}
+                                data-initial={(person.guestName || '?').slice(0, 1)}
+                                key={person.id || person.guestName}
+                              >
+                                <strong>{person.guestName}</strong>
+                                <div>
+                                  {dates.length > 0 ? (
+                                    dates
+                                      .slice()
+                                      .sort()
+                                      .map(date => (
+                                        <span key={date}>
+                                          {formatDateLabel(date)}
+                                        </span>
+                                      ))
+                                  ) : (
+                                    <em>이번 달 선택 없음</em>
+                                  )}
+                                </div>
+                              </article>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <p className={styles.emptyResult}>
+                          아직 날짜를 선택한 사람이 없습니다.
+                        </p>
+                      )}
+                    </div>
                   </div>
 
                   {gathering.location_mode === 'ask_guests' && (
-                    <div className={styles.regionOpinionSection}>
+                    <div className={styles.regionOpinionSection} id="cheongmo-regions">
                       <div className={styles.regionTitle}>
                         <Image
                           alt=""
@@ -1652,6 +1752,8 @@ export default function CheongmoParticipantPage() {
                               expectedCount: expectedGuestCount,
                               respondedCount,
                             });
+                            const regionStatus =
+                              index === 0 ? '가장 유력' : status;
                             const progress = Math.max(
                               8,
                               Math.round(
@@ -1680,7 +1782,13 @@ export default function CheongmoParticipantPage() {
                                 <div className={styles.regionCandidateBody}>
                                   <div className={styles.regionCandidateName}>
                                     <strong>{region.name}</strong>
-                                    <em>{status}</em>
+                                    <em
+                                      className={
+                                        index === 0 ? styles.regionTopBadge : ''
+                                      }
+                                    >
+                                      {regionStatus}
+                                    </em>
                                   </div>
                                   <div className={styles.regionCandidateMeta}>
                                     <strong>{region.count}명</strong>
@@ -1723,49 +1831,43 @@ export default function CheongmoParticipantPage() {
                   )}
 
                   <div className={styles.communityActionBar}>
-                    <button
-                      className={styles.createOwnGatheringButton}
-                      type="button"
-                      onClick={() => router.push('/cheongmo')}
-                    >
-                      <span>나도 모임을 만들고 싶어요</span>
-                      <strong>바로 만들기</strong>
-                    </button>
-                    {isVotingClosed ? (
-                      <>
-                        <button
-                          className={`${styles.button} ${styles.wideButton}`}
-                          type="button"
-                          disabled
-                        >
-                          투표 종료
-                        </button>
-                        <p>{votingClosedMessage}</p>
-                      </>
-                    ) : isEditingResponse ? (
-                      <>
-                        <button
-                          className={`${styles.button} ${styles.wideButton}`}
-                          type="button"
-                          disabled={submitting}
-                          onClick={saveCommunityResponse}
-                        >
-                          {submitting ? '저장 중' : '내 의견 저장'}
-                        </button>
-                        <p>저장 후 수정할 수 있어요</p>
-                      </>
-                    ) : (
-                      <>
-                        <button
-                          className={`${styles.button} ${styles.wideButton}`}
-                          type="button"
-                          onClick={() => setIsEditingResponse(true)}
-                        >
-                          내 의견 수정하기
-                        </button>
-                        <p>수정 후 다시 저장해주세요</p>
-                      </>
-                    )}
+                    <div className={styles.communityActionControls}>
+                      {isVotingClosed ? (
+                        <>
+                          <button
+                            className={`${styles.button} ${styles.wideButton}`}
+                            type="button"
+                            disabled
+                          >
+                            투표 종료
+                          </button>
+                          <p>{votingClosedMessage}</p>
+                        </>
+                      ) : isEditingResponse ? (
+                        <>
+                          <button
+                            className={`${styles.button} ${styles.wideButton}`}
+                            type="button"
+                            disabled={submitting}
+                            onClick={saveCommunityResponse}
+                          >
+                            {submitting ? '저장 중' : '내 의견 저장'}
+                          </button>
+                          <p>저장 후 모두에게 바로 반영돼요</p>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            className={`${styles.button} ${styles.wideButton}`}
+                            type="button"
+                            onClick={() => setIsEditingResponse(true)}
+                          >
+                            내 의견 수정하기
+                          </button>
+                          <p>수정 후 다시 저장해주세요</p>
+                        </>
+                      )}
+                    </div>
                   </div>
               </section>
             </section>
