@@ -40,6 +40,7 @@ export default async function handler(req, res) {
 
     let phone = null;
     let participant = null;
+    let isHostPhone = false;
     if (gathering.access_type === 'password') {
       if (!verifyPassword(value, gathering.password_hash)) {
         return res.status(403).json({
@@ -50,7 +51,7 @@ export default async function handler(req, res) {
     } else {
       phone = normalizeKoreanPhone(value);
       const hostPhone = normalizeKoreanPhone(gathering.host_phone);
-      const isHostPhone = hostPhone && phone === hostPhone;
+      isHostPhone = Boolean(hostPhone && phone === hostPhone);
       const allowedEntry = isHostPhone
         ? {
             name: gathering.host_name || '주최자',
