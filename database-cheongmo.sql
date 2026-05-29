@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS cheongmo_events (
   allowed_phones JSONB NOT NULL DEFAULT '[]'::jsonb,
   phone_collection TEXT NOT NULL DEFAULT 'none' CHECK (phone_collection IN ('optional', 'none')),
   selected_months JSONB NOT NULL DEFAULT '[]'::jsonb,
+  host_unavailable_dates JSONB NOT NULL DEFAULT '[]'::jsonb,
   location_mode TEXT NOT NULL DEFAULT 'host_decides' CHECK (location_mode IN ('host_decides', 'ask_guests')),
   location_label TEXT,
   venue_name TEXT,
@@ -62,6 +63,7 @@ ALTER TABLE cheongmo_events ADD COLUMN IF NOT EXISTS password_hash TEXT;
 ALTER TABLE cheongmo_events ADD COLUMN IF NOT EXISTS allowed_phones JSONB NOT NULL DEFAULT '[]'::jsonb;
 ALTER TABLE cheongmo_events ADD COLUMN IF NOT EXISTS phone_collection TEXT NOT NULL DEFAULT 'none';
 ALTER TABLE cheongmo_events ADD COLUMN IF NOT EXISTS selected_months JSONB NOT NULL DEFAULT '[]'::jsonb;
+ALTER TABLE cheongmo_events ADD COLUMN IF NOT EXISTS host_unavailable_dates JSONB NOT NULL DEFAULT '[]'::jsonb;
 ALTER TABLE cheongmo_events ADD COLUMN IF NOT EXISTS location_mode TEXT NOT NULL DEFAULT 'host_decides';
 ALTER TABLE cheongmo_events ADD COLUMN IF NOT EXISTS location_label TEXT;
 ALTER TABLE cheongmo_events ADD COLUMN IF NOT EXISTS venue_name TEXT;

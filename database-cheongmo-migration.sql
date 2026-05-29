@@ -16,6 +16,9 @@ ALTER TABLE cheongmo_responses
 ALTER TABLE cheongmo_events
   ADD COLUMN IF NOT EXISTS vote_deadline_at TIMESTAMPTZ;
 
+ALTER TABLE cheongmo_events
+  ADD COLUMN IF NOT EXISTS host_unavailable_dates JSONB NOT NULL DEFAULT '[]'::jsonb;
+
 DROP POLICY IF EXISTS "Anyone can view active cheongmo events" ON cheongmo_events;
 CREATE POLICY "Anyone can view active cheongmo events" ON cheongmo_events
   FOR SELECT USING (status = 'active');

@@ -45,7 +45,7 @@ export default async function handler(req, res) {
     const { data: gathering, error: gatheringError } = await supabase
       .from('cheongmo_events')
       .select(
-        'id, slug, access_type, allowed_phones, host_phone, vote_deadline_at'
+        'id, slug, access_type, allowed_phones, host_phone, host_unavailable_dates, vote_deadline_at'
       )
       .eq('slug', slug)
       .eq('status', 'active')
@@ -88,12 +88,17 @@ export default async function handler(req, res) {
         ).slice(0, 12)
       : [];
 
+    const hostUnavailableDates = Array.isArray(gathering.host_unavailable_dates)
+      ? gathering.host_unavailable_dates
+      : [];
     const payload = {
       cheongmo_event_id: gathering.id,
       guest_name: sanitizeText(guestName, 80),
       guest_phone: tokenPayload.phone || null,
       memo: null,
-      available_dates: cleanDates,
+      available_dates: cleanDates.filter(
+        date => !hostUnavailableDates.includes(date)
+      ),
       suggested_regions: cleanRegions,
       entry_method: gathering.access_type,
       is_verified: true,
@@ -134,7 +139,9 @@ export default async function handler(req, res) {
           .eq('cheongmo_event_id', gathering.id);
 
         if (responsesError) throw responsesError;
-        const respondedCount = (responses || []).filter(hasResponseContent).length;
+        const respondedCount = (responses || []).filter(
+          hasResponseContent
+        ).length;
         if (respondedCount >= expectedCount) {
           return res.status(403).json({
             success: false,

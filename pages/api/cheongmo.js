@@ -35,6 +35,7 @@ export default async function handler(req, res) {
         access_type,
         allowed_phones,
         selected_months,
+        host_unavailable_dates,
         location_mode,
         location_label,
         venue_name,
@@ -85,6 +86,7 @@ export default async function handler(req, res) {
         ...gathering,
         host_phone: undefined,
         expected_guest_count: expectedGuestCount,
+        host_unavailable_dates: gathering.host_unavailable_dates || [],
         participants: (participants || []).map(item => ({
           id: item.id,
           guestName: item.guest_name,

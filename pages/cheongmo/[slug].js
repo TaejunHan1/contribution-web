@@ -20,6 +20,7 @@ const fallbackGathering = {
   access_type: 'password',
   allowed_phones: [],
   selected_months: ['2026-06', '2026-07'],
+  host_unavailable_dates: [],
   location_mode: 'host_decides',
   location_label: '성수 또는 강남',
   venue_name: '',
@@ -64,24 +65,27 @@ const getCheongmoApiUrl = slug =>
 const getDateOptions = months => {
   if (!Array.isArray(months)) return [];
 
-  return months.slice().sort().flatMap(monthValue => {
-    const [year, month] = String(monthValue).split('-').map(Number);
-    if (!year || !month) return [];
+  return months
+    .slice()
+    .sort()
+    .flatMap(monthValue => {
+      const [year, month] = String(monthValue).split('-').map(Number);
+      if (!year || !month) return [];
 
-    const lastDate = new Date(year, month, 0).getDate();
-    return Array.from({ length: lastDate }, (_, index) => {
-      const day = index + 1;
-      const date = new Date(year, month - 1, day);
-      const value = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      return {
-        value,
-        monthLabel: `${month}월`,
-        day,
-        weekday: ['일', '월', '화', '수', '목', '금', '토'][date.getDay()],
-        weekend: date.getDay() === 0 || date.getDay() === 6,
-      };
+      const lastDate = new Date(year, month, 0).getDate();
+      return Array.from({ length: lastDate }, (_, index) => {
+        const day = index + 1;
+        const date = new Date(year, month - 1, day);
+        const value = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        return {
+          value,
+          monthLabel: `${month}월`,
+          day,
+          weekday: ['일', '월', '화', '수', '목', '금', '토'][date.getDay()],
+          weekend: date.getDay() === 0 || date.getDay() === 6,
+        };
+      });
     });
-  });
 };
 
 const getMonthCalendars = months => {
@@ -132,6 +136,11 @@ const filterDatesByMonths = (dates, months) =>
     ? dates.filter(date => isDateInMonths(date, months))
     : [];
 
+const removeDates = (dates, excludedDates) => {
+  const excluded = new Set(Array.isArray(excludedDates) ? excludedDates : []);
+  return Array.isArray(dates) ? dates.filter(date => !excluded.has(date)) : [];
+};
+
 const normalizeParticipantForMonths = (person, months) =>
   person
     ? {
@@ -168,7 +177,9 @@ const getRegionSummary = participants => {
 };
 
 const formatDateLabel = value => {
-  const [year, month, day] = String(value || '').split('-').map(Number);
+  const [year, month, day] = String(value || '')
+    .split('-')
+    .map(Number);
   if (!year || !month || !day) return value;
   const weekday = ['일', '월', '화', '수', '목', '금', '토'][
     new Date(year, month - 1, day).getDay()
@@ -275,7 +286,11 @@ const CheongmoMetaHead = ({ title, description, url }) => {
         property="og:image:alt"
         content="정담 청첩장 모임 초대 이미지"
       />
-      <meta key="twitter:card" name="twitter:card" content="summary_large_image" />
+      <meta
+        key="twitter:card"
+        name="twitter:card"
+        content="summary_large_image"
+      />
       <meta key="twitter:title" name="twitter:title" content={pageTitle} />
       <meta
         key="twitter:description"
@@ -303,6 +318,9 @@ export default function CheongmoParticipantPage() {
   const [deletingParticipantId, setDeletingParticipantId] = useState('');
   const [isHostSession, setIsHostSession] = useState(false);
   const [isEditingResponse, setIsEditingResponse] = useState(false);
+  const [isEditingHostDates, setIsEditingHostDates] = useState(false);
+  const [hostUnavailableDates, setHostUnavailableDates] = useState([]);
+  const [savingHostDates, setSavingHostDates] = useState(false);
   const [activeMonthIndex, setActiveMonthIndex] = useState(0);
   const [expandedTossPanel, setExpandedTossPanel] = useState('');
   const [entrySuccessSheetOpen, setEntrySuccessSheetOpen] = useState(false);
@@ -417,46 +435,49 @@ export default function CheongmoParticipantPage() {
     }, 1800);
   }, []);
 
-  const syncGatheringFromServer = useCallback(
-    data => {
-      if (!data) return;
+  const syncGatheringFromServer = useCallback(data => {
+    if (!data) return;
 
-      setGathering(data);
-
-      const currentParticipant = participantRef.current;
-      if (!currentParticipant?.id || isEditingResponseRef.current) return;
-
-      const serverParticipant = (data.participants || []).find(
-        item => item.id === currentParticipant.id
-      );
-      if (!serverParticipant) return;
-
-      const nextParticipant = normalizeParticipantForMonths(
-        serverParticipant,
+    setGathering(data);
+    setHostUnavailableDates(
+      filterDatesByMonths(
+        data.host_unavailable_dates || [],
         data.selected_months
+      )
+    );
+
+    const currentParticipant = participantRef.current;
+    if (!currentParticipant?.id || isEditingResponseRef.current) return;
+
+    const serverParticipant = (data.participants || []).find(
+      item => item.id === currentParticipant.id
+    );
+    if (!serverParticipant) return;
+
+    const nextParticipant = normalizeParticipantForMonths(
+      serverParticipant,
+      data.selected_months
+    );
+
+    setParticipant(nextParticipant);
+    setGuestName(nextParticipant.guestName || '');
+    setAvailableDates(nextParticipant.availableDates);
+    setRegionSuggestions(nextParticipant.suggestedRegions);
+
+    if (data.slug) {
+      const saved = JSON.parse(
+        window.localStorage.getItem(getStorageKey(data.slug)) || '{}'
       );
-
-      setParticipant(nextParticipant);
-      setGuestName(nextParticipant.guestName || '');
-      setAvailableDates(nextParticipant.availableDates);
-      setRegionSuggestions(nextParticipant.suggestedRegions);
-
-      if (data.slug) {
-        const saved = JSON.parse(
-          window.localStorage.getItem(getStorageKey(data.slug)) || '{}'
-        );
-        window.localStorage.setItem(
-          getStorageKey(data.slug),
-          JSON.stringify({
-            ...saved,
-            entryToken: saved.entryToken || entryTokenRef.current,
-            participant: nextParticipant,
-          })
-        );
-      }
-    },
-    []
-  );
+      window.localStorage.setItem(
+        getStorageKey(data.slug),
+        JSON.stringify({
+          ...saved,
+          entryToken: saved.entryToken || entryTokenRef.current,
+          participant: nextParticipant,
+        })
+      );
+    }
+  }, []);
 
   const fetchLatestGathering = useCallback(async () => {
     if (!slug) return null;
@@ -496,6 +517,7 @@ export default function CheongmoParticipantPage() {
         if (!response.ok || !result.success) {
           if (slug === 'sample') {
             setGathering(fallbackGathering);
+            setHostUnavailableDates(fallbackGathering.host_unavailable_dates);
             const saved = window.localStorage.getItem(getStorageKey(slug));
             if (saved) {
               const parsed = JSON.parse(saved);
@@ -659,7 +681,8 @@ export default function CheongmoParticipantPage() {
       });
     });
     return Array.from(candidates.values()).sort(
-      (a, b) => b.count - a.count || a.order - b.order || a.name.localeCompare(b.name)
+      (a, b) =>
+        b.count - a.count || a.order - b.order || a.name.localeCompare(b.name)
     );
   }, [participant, regionSummary, regionSuggestions]);
   const maxRegionVoteCount = useMemo(
@@ -678,7 +701,8 @@ export default function CheongmoParticipantPage() {
     [gathering]
   );
   const isPasswordDeadlineClosed =
-    gathering?.access_type === 'password' && isPastDeadline(gathering.vote_deadline_at);
+    gathering?.access_type === 'password' &&
+    isPastDeadline(gathering.vote_deadline_at);
   const isPhoneListVotingClosed =
     gathering?.access_type === 'phone_list' &&
     expectedGuestCount > 0 &&
@@ -691,6 +715,10 @@ export default function CheongmoParticipantPage() {
   const votingClosedMessage = isPasswordDeadlineClosed
     ? '투표 마감일이 지나 의견 수정이 종료됐어요.'
     : '초대된 인원이 모두 투표해 의견 수정이 종료됐어요.';
+  const hostUnavailableDateSet = useMemo(
+    () => new Set(hostUnavailableDates),
+    [hostUnavailableDates]
+  );
   const dateLeaders = useMemo(
     () =>
       getDateLeaders(
@@ -701,9 +729,13 @@ export default function CheongmoParticipantPage() {
       ),
     [dateSummary, expectedGuestCount, respondedCount]
   );
+  const eligibleDateLeaders = useMemo(
+    () => dateLeaders.filter(item => !hostUnavailableDateSet.has(item.date)),
+    [dateLeaders, hostUnavailableDateSet]
+  );
   const maxDateVoteCount = useMemo(
-    () => Math.max(1, ...dateLeaders.map(item => item.count)),
-    [dateLeaders]
+    () => Math.max(1, ...eligibleDateLeaders.map(item => item.count)),
+    [eligibleDateLeaders]
   );
   const savedParticipants = useMemo(
     () =>
@@ -758,10 +790,7 @@ export default function CheongmoParticipantPage() {
     [expectedParticipants, responseParticipants]
   );
   const participantNames = useMemo(
-    () =>
-      responseParticipants
-        .map(person => person.guestName)
-        .filter(Boolean),
+    () => responseParticipants.map(person => person.guestName).filter(Boolean),
     [responseParticipants]
   );
   const visibleAvailableDates = useMemo(
@@ -772,9 +801,17 @@ export default function CheongmoParticipantPage() {
       ),
     [availableDates, gathering, visibleMonth]
   );
+  const visibleHostUnavailableDates = useMemo(
+    () =>
+      filterDatesByMonths(
+        hostUnavailableDates,
+        visibleMonth ? [visibleMonth.value] : gathering?.selected_months
+      ),
+    [gathering, hostUnavailableDates, visibleMonth]
+  );
   const topDateCandidates = useMemo(
     () =>
-      dateLeaders.slice(0, 4).map((item, index) => ({
+      eligibleDateLeaders.slice(0, 4).map((item, index) => ({
         ...item,
         status: getCandidateLabel({
           count: item.count,
@@ -783,11 +820,12 @@ export default function CheongmoParticipantPage() {
           respondedCount,
         }),
       })),
-    [dateLeaders, expectedGuestCount, respondedCount]
+    [eligibleDateLeaders, expectedGuestCount, respondedCount]
   );
   const roomParticipantCount = responseParticipants.length;
   const roomSavedParticipantCount = savedParticipants.length;
-  const roomExpectedCount = expectedGuestCount || Math.max(roomParticipantCount, 1);
+  const roomExpectedCount =
+    expectedGuestCount || Math.max(roomParticipantCount, 1);
   const roomTopDate = topDateCandidates[0] || null;
   const roomTopRegion = regionCandidates[0] || null;
   const hostLocationTitle =
@@ -949,7 +987,7 @@ export default function CheongmoParticipantPage() {
       const nextParticipant = {
         id: 'sample',
         guestName: guestName.trim(),
-        availableDates,
+        availableDates: removeDates(availableDates, hostUnavailableDates),
         suggestedRegions: regionSuggestions,
       };
       setIsEditingResponse(false);
@@ -978,7 +1016,7 @@ export default function CheongmoParticipantPage() {
           entryToken,
           participantId: saved.participant?.id || null,
           guestName: guestName.trim(),
-          availableDates,
+          availableDates: removeDates(availableDates, hostUnavailableDates),
           suggestedRegions: regionSuggestions,
         }),
       });
@@ -1042,9 +1080,85 @@ export default function CheongmoParticipantPage() {
       toast.error(votingClosedMessage);
       return;
     }
+    if (hostUnavailableDateSet.has(date)) {
+      toast.error('주최자가 어려운 날짜로 표시한 날이에요.');
+      return;
+    }
     setAvailableDates(prev =>
       prev.includes(date) ? prev.filter(item => item !== date) : [...prev, date]
     );
+  };
+
+  const toggleHostUnavailableDate = date => {
+    if (!isHostSession || !isEditingHostDates) return;
+    setHostUnavailableDates(prev =>
+      prev.includes(date) ? prev.filter(item => item !== date) : [...prev, date]
+    );
+    setAvailableDates(prev => prev.filter(item => item !== date));
+  };
+
+  const saveHostUnavailableDates = async () => {
+    if (!isHostSession) return;
+    const nextHostUnavailableDates = filterDatesByMonths(
+      hostUnavailableDates,
+      gathering.selected_months
+    );
+
+    if (gathering.slug === 'sample') {
+      setHostUnavailableDates(nextHostUnavailableDates);
+      setGathering(prev =>
+        prev
+          ? {
+              ...prev,
+              host_unavailable_dates: nextHostUnavailableDates,
+            }
+          : prev
+      );
+      setAvailableDates(prev => removeDates(prev, nextHostUnavailableDates));
+      setIsEditingHostDates(false);
+      openSaveSuccessSheet();
+      return;
+    }
+
+    try {
+      setSavingHostDates(true);
+      const response = await fetch('/api/cheongmo-host-availability', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          slug: gathering.slug,
+          entryToken,
+          unavailableDates: nextHostUnavailableDates,
+        }),
+      });
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || '불가능 날짜 저장에 실패했습니다.');
+      }
+
+      const savedDates = filterDatesByMonths(
+        result.data.hostUnavailableDates,
+        gathering.selected_months
+      );
+      setHostUnavailableDates(savedDates);
+      setAvailableDates(prev => removeDates(prev, savedDates));
+      setGathering(prev =>
+        prev
+          ? {
+              ...prev,
+              host_unavailable_dates: savedDates,
+            }
+          : prev
+      );
+      setIsEditingHostDates(false);
+      openSaveSuccessSheet();
+      await fetchLatestGathering();
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setSavingHostDates(false);
+    }
   };
 
   const addRegionSuggestion = () => {
@@ -1078,7 +1192,7 @@ export default function CheongmoParticipantPage() {
       const nextParticipant = {
         ...participant,
         availableDates: filterDatesByMonths(
-          availableDates,
+          removeDates(availableDates, hostUnavailableDates),
           gathering.selected_months
         ),
         suggestedRegions: regionSuggestions,
@@ -1109,7 +1223,7 @@ export default function CheongmoParticipantPage() {
           entryToken,
           participantId: participant.id,
           guestName: participant.guestName,
-          availableDates,
+          availableDates: removeDates(availableDates, hostUnavailableDates),
           suggestedRegions: regionSuggestions,
         }),
       });
@@ -1279,11 +1393,17 @@ export default function CheongmoParticipantPage() {
         url={metaUrl}
       />
 
-      <main className={`${styles.page} ${participant ? styles.tossPageHost : ''}`}>
-        <div className={`${styles.shell} ${participant ? styles.tossShell : ''}`}>
+      <main
+        className={`${styles.page} ${participant ? styles.tossPageHost : ''}`}
+      >
+        <div
+          className={`${styles.shell} ${participant ? styles.tossShell : ''}`}
+        >
           {participant ? (
             <>
-              <section className={`${styles.tossRoomPage} ${styles.roomEnterFade}`}>
+              <section
+                className={`${styles.tossRoomPage} ${styles.roomEnterFade}`}
+              >
                 <header className={styles.tossTopbar}>
                   <Image
                     src="/cheongmo/cheongmo-home-logo-pill.png"
@@ -1307,8 +1427,8 @@ export default function CheongmoParticipantPage() {
                       {isVotingClosed
                         ? '투표 종료'
                         : isEditingResponse
-                        ? '의견 수정 중'
-                        : '저장 완료'}
+                          ? '의견 수정 중'
+                          : '저장 완료'}
                     </span>
                     <h1>
                       {participant.guestName}님,
@@ -1318,8 +1438,8 @@ export default function CheongmoParticipantPage() {
                         : '일정이 모이고 있어요'}
                     </h1>
                     <p>
-                      {roomParticipantCount}명이 참여했어요. 가장 많이 고른 날짜와
-                      지역을 한눈에 보고 바로 수정할 수 있어요.
+                      {roomParticipantCount}명이 참여했어요. 가장 많이 고른
+                      날짜와 지역을 한눈에 보고 바로 수정할 수 있어요.
                     </p>
                   </div>
                   <div
@@ -1329,7 +1449,10 @@ export default function CheongmoParticipantPage() {
                   />
                 </section>
 
-                <section className={styles.tossStorePanel} aria-label="앱 다운로드">
+                <section
+                  className={styles.tossStorePanel}
+                  aria-label="앱 다운로드"
+                >
                   <a
                     href={appStoreUrl}
                     target="_blank"
@@ -1353,7 +1476,10 @@ export default function CheongmoParticipantPage() {
                   </button>
                 </section>
 
-                <section className={styles.tossSummaryList} aria-label="조율 요약">
+                <section
+                  className={styles.tossSummaryList}
+                  aria-label="조율 요약"
+                >
                   <article className={styles.tossSummaryRow}>
                     <span className={styles.tossDateIcon}>
                       {roomTopDate
@@ -1363,7 +1489,9 @@ export default function CheongmoParticipantPage() {
                     <div>
                       <em>가장 유력한 날짜</em>
                       <strong>
-                        {roomTopDate ? formatDateLabel(roomTopDate.date) : '집계 전'}
+                        {roomTopDate
+                          ? formatDateLabel(roomTopDate.date)
+                          : '집계 전'}
                       </strong>
                       <p>
                         {roomTopDate
@@ -1387,7 +1515,9 @@ export default function CheongmoParticipantPage() {
                     {gathering.location_mode === 'ask_guests' ? (
                       <div>
                         <em>가장 유력한 지역</em>
-                        <strong>{roomTopRegion?.name || '지역 의견 받는 중'}</strong>
+                        <strong>
+                          {roomTopRegion?.name || '지역 의견 받는 중'}
+                        </strong>
                         <p>
                           {roomTopRegion
                             ? `${roomTopRegion.count}명이 선택했어요`
@@ -1398,7 +1528,9 @@ export default function CheongmoParticipantPage() {
                       <div>
                         <em>모임 장소</em>
                         <strong>{hostLocationTitle}</strong>
-                        <p>{hostLocationDetails[0] || '주최자가 정한 장소예요'}</p>
+                        <p>
+                          {hostLocationDetails[0] || '주최자가 정한 장소예요'}
+                        </p>
                       </div>
                     )}
                     <i
@@ -1419,52 +1551,52 @@ export default function CheongmoParticipantPage() {
                     }`}
                     aria-hidden={expandedTossPanel !== 'region'}
                   >
-                      {gathering.location_mode === 'ask_guests' ? (
-                        regionCandidates.length > 0 ? (
-                          regionCandidates.slice(0, 5).map((region, index) => (
-                            <div key={region.name} className={styles.tossMiniRow}>
-                              <i>{index + 1}</i>
-                              <div>
-                                <strong>{region.name}</strong>
-                                <span>
-                                  {region.names.length > 0
-                                    ? region.names.join(', ')
-                                    : '아직 선택한 사람이 없어요'}
-                                </span>
-                              </div>
-                              <b>{region.count}명</b>
+                    {gathering.location_mode === 'ask_guests' ? (
+                      regionCandidates.length > 0 ? (
+                        regionCandidates.slice(0, 5).map((region, index) => (
+                          <div key={region.name} className={styles.tossMiniRow}>
+                            <i>{index + 1}</i>
+                            <div>
+                              <strong>{region.name}</strong>
+                              <span>
+                                {region.names.length > 0
+                                  ? region.names.join(', ')
+                                  : '아직 선택한 사람이 없어요'}
+                              </span>
                             </div>
-                          ))
-                        ) : (
-                          <p>아직 지역 후보가 없습니다.</p>
-                        )
+                            <b>{region.count}명</b>
+                          </div>
+                        ))
                       ) : (
-                        <>
-                          {hostLocationDetails.map(item => (
-                            <div key={item} className={styles.tossMiniRow}>
-                              <i>장소</i>
-                              <div>
-                                <strong>{item}</strong>
-                                <span>주최자가 정한 모임 정보예요</span>
-                              </div>
+                        <p>아직 지역 후보가 없습니다.</p>
+                      )
+                    ) : (
+                      <>
+                        {hostLocationDetails.map(item => (
+                          <div key={item} className={styles.tossMiniRow}>
+                            <i>장소</i>
+                            <div>
+                              <strong>{item}</strong>
+                              <span>주최자가 정한 모임 정보예요</span>
                             </div>
-                          ))}
-                          {hostMapLinks.length > 0 && (
-                            <div className={styles.tossMapLinks}>
-                              {hostMapLinks.map(link => (
-                                <a
-                                  href={link.href}
-                                  key={link.label}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                >
-                                  {link.label}
-                                </a>
-                              ))}
-                            </div>
-                          )}
-                        </>
-                      )}
+                          </div>
+                        ))}
+                        {hostMapLinks.length > 0 && (
+                          <div className={styles.tossMapLinks}>
+                            {hostMapLinks.map(link => (
+                              <a
+                                href={link.href}
+                                key={link.label}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                {link.label}
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    )}
                   </div>
 
                   <button
@@ -1508,34 +1640,36 @@ export default function CheongmoParticipantPage() {
                     }`}
                     aria-hidden={expandedTossPanel !== 'people'}
                   >
-                      {allParticipants.length > 0 ? (
-                        allParticipants.map(person => {
-                          const saved = hasResponseContent(person);
-                          return (
-                            <div
-                              key={person.id || person.guestName}
-                              className={styles.tossMiniRow}
-                            >
-                              <i>{(person.guestName || '?').slice(0, 1)}</i>
-                              <div>
-                                <strong>{person.guestName}</strong>
-                                <span>{saved ? '의견 저장 완료' : '의견 저장 전'}</span>
-                              </div>
-                              <b
-                                className={
-                                  saved
-                                    ? styles.tossStatusSaved
-                                    : styles.tossStatusPending
-                                }
-                              >
-                                {saved ? '완료' : '대기'}
-                              </b>
+                    {allParticipants.length > 0 ? (
+                      allParticipants.map(person => {
+                        const saved = hasResponseContent(person);
+                        return (
+                          <div
+                            key={person.id || person.guestName}
+                            className={styles.tossMiniRow}
+                          >
+                            <i>{(person.guestName || '?').slice(0, 1)}</i>
+                            <div>
+                              <strong>{person.guestName}</strong>
+                              <span>
+                                {saved ? '의견 저장 완료' : '의견 저장 전'}
+                              </span>
                             </div>
-                          );
-                        })
-                      ) : (
-                        <p>아직 입장한 참여자가 없습니다.</p>
-                      )}
+                            <b
+                              className={
+                                saved
+                                  ? styles.tossStatusSaved
+                                  : styles.tossStatusPending
+                              }
+                            >
+                              {saved ? '완료' : '대기'}
+                            </b>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <p>아직 입장한 참여자가 없습니다.</p>
+                    )}
                   </div>
                 </section>
 
@@ -1543,17 +1677,55 @@ export default function CheongmoParticipantPage() {
                   <div className={styles.tossSectionTitle}>
                     <h2>날짜</h2>
                     <span>
-                      {isEditingResponse
-                        ? `${availableDates.length}개 선택`
-                        : '투표 현황'}
+                      {isEditingHostDates
+                        ? `${hostUnavailableDates.length}개 제외`
+                        : isEditingResponse
+                          ? `${availableDates.length}개 선택`
+                          : '투표 현황'}
                     </span>
                   </div>
+
+                  {isHostSession && (
+                    <div className={styles.hostDateControl}>
+                      <div>
+                        <strong>주최자 불가능 날짜</strong>
+                        <span>
+                          {hostUnavailableDates.length > 0
+                            ? `${hostUnavailableDates.length}일을 후보에서 제외 중`
+                            : '날짜를 누르면 후보에서 제외돼요'}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsEditingHostDates(prev => !prev);
+                          setIsEditingResponse(false);
+                        }}
+                      >
+                        {isEditingHostDates ? '선택 중' : '수정'}
+                      </button>
+                    </div>
+                  )}
 
                   {visibleAvailableDates.length > 0 && (
                     <div className={styles.tossMySelection}>
                       <span>내가 선택한 날짜</span>
                       <div>
                         {visibleAvailableDates
+                          .slice()
+                          .sort()
+                          .map(date => (
+                            <em key={date}>{formatDateLabel(date)}</em>
+                          ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {visibleHostUnavailableDates.length > 0 && (
+                    <div className={styles.hostUnavailableStrip}>
+                      <span>이번 달 주최자 불가능 날짜</span>
+                      <div>
+                        {visibleHostUnavailableDates
                           .slice()
                           .sort()
                           .map(date => (
@@ -1578,7 +1750,9 @@ export default function CheongmoParticipantPage() {
                         <strong>{visibleMonth.title}</strong>
                         <button
                           type="button"
-                          disabled={activeMonthIndex >= monthCalendars.length - 1}
+                          disabled={
+                            activeMonthIndex >= monthCalendars.length - 1
+                          }
                           onClick={() =>
                             setActiveMonthIndex(index =>
                               Math.min(
@@ -1600,18 +1774,30 @@ export default function CheongmoParticipantPage() {
                         {visibleMonth.days.map((day, index) => {
                           if (!day) {
                             return (
-                              <i key={`toss-blank-${visibleMonth.value}-${index}`} />
+                              <i
+                                key={`toss-blank-${visibleMonth.value}-${index}`}
+                              />
                             );
                           }
                           const names = dateSummary.get(day.value) || [];
                           const selected = availableDates.includes(day.value);
-                          const alreadyCounted = names.includes(participant.guestName);
+                          const hostBlocked = hostUnavailableDateSet.has(
+                            day.value
+                          );
+                          const alreadyCounted = names.includes(
+                            participant.guestName
+                          );
                           const displayCount =
-                            names.length + (selected && !alreadyCounted ? 1 : 0);
+                            names.length +
+                            (selected && !alreadyCounted ? 1 : 0);
                           return (
                             <button
                               className={`${styles.tossDay} ${
                                 selected ? styles.tossDaySelected : ''
+                              } ${hostBlocked ? styles.tossDayHostBlocked : ''} ${
+                                isEditingHostDates && hostBlocked
+                                  ? styles.tossDayHostEditing
+                                  : ''
                               } ${displayCount > 0 ? styles.tossDayVoted : ''} ${
                                 day.holiday ? styles.tossHoliday : ''
                               } ${day.weekday === 0 ? styles.tossSunday : ''} ${
@@ -1619,13 +1805,26 @@ export default function CheongmoParticipantPage() {
                               }`}
                               key={day.value}
                               type="button"
-                              disabled={!isEditingResponse || isVotingClosed}
-                              onClick={() => toggleAvailableDate(day.value)}
+                              disabled={
+                                isEditingHostDates
+                                  ? !isHostSession
+                                  : !isEditingResponse ||
+                                    isVotingClosed ||
+                                    hostBlocked
+                              }
+                              onClick={() =>
+                                isEditingHostDates
+                                  ? toggleHostUnavailableDate(day.value)
+                                  : toggleAvailableDate(day.value)
+                              }
                             >
                               <span>{day.day}</span>
-                              {(day.holiday || displayCount > 0) && (
-                                <small>{day.holiday || `${displayCount}명`}</small>
-                              )}
+                              {!hostBlocked &&
+                                (day.holiday || displayCount > 0) && (
+                                  <small>
+                                    {day.holiday || `${displayCount}명`}
+                                  </small>
+                                )}
                             </button>
                           );
                         })}
@@ -1634,9 +1833,12 @@ export default function CheongmoParticipantPage() {
                   )}
 
                   <div className={styles.tossLeaderList}>
-                    {dateLeaders.length > 0 ? (
-                      dateLeaders.slice(0, 5).map((item, index) => (
-                        <article key={item.date} className={styles.tossLeaderRow}>
+                    {eligibleDateLeaders.length > 0 ? (
+                      eligibleDateLeaders.slice(0, 5).map((item, index) => (
+                        <article
+                          key={item.date}
+                          className={styles.tossLeaderRow}
+                        >
                           <i>{index + 1}</i>
                           <div>
                             <strong>{formatDateLabel(item.date)}</strong>
@@ -1696,7 +1898,9 @@ export default function CheongmoParticipantPage() {
                     <div className={styles.tossLeaderList}>
                       {regionCandidates.length > 0 ? (
                         regionCandidates.map((region, index) => {
-                          const selected = regionSuggestions.includes(region.name);
+                          const selected = regionSuggestions.includes(
+                            region.name
+                          );
                           return (
                             <button
                               className={`${styles.tossRegionRow} ${
@@ -1737,7 +1941,8 @@ export default function CheongmoParticipantPage() {
                   <div className={styles.tossSectionTitle}>
                     <h2>참여자</h2>
                     <span>
-                      {allParticipants.length}명 대상 · {roomSavedParticipantCount}명 저장
+                      {allParticipants.length}명 대상 ·{' '}
+                      {roomSavedParticipantCount}명 저장
                     </span>
                   </div>
                   <div className={styles.tossParticipantList}>
@@ -1787,7 +1992,9 @@ export default function CheongmoParticipantPage() {
                               disabled={deletingParticipantId === person.id}
                               onClick={() => deleteParticipant(person)}
                             >
-                              {deletingParticipantId === person.id ? '삭제 중' : '삭제'}
+                              {deletingParticipantId === person.id
+                                ? '삭제 중'
+                                : '삭제'}
                             </button>
                           )}
                         </article>
@@ -1805,7 +2012,18 @@ export default function CheongmoParticipantPage() {
                 </Link>
 
                 <div className={styles.tossBottomAction}>
-                  {isVotingClosed ? (
+                  {isEditingHostDates ? (
+                    <>
+                      <button
+                        type="button"
+                        disabled={savingHostDates}
+                        onClick={saveHostUnavailableDates}
+                      >
+                        {savingHostDates ? '저장 중' : '불가능 날짜 저장'}
+                      </button>
+                      <p>저장하면 해당 날짜는 추천 후보에서 제외돼요.</p>
+                    </>
+                  ) : isVotingClosed ? (
                     <>
                       <button type="button" disabled>
                         투표 종료
@@ -1825,7 +2043,13 @@ export default function CheongmoParticipantPage() {
                     </>
                   ) : (
                     <>
-                      <button type="button" onClick={() => setIsEditingResponse(true)}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsEditingHostDates(false);
+                          setIsEditingResponse(true);
+                        }}
+                      >
                         내 의견 수정하기
                       </button>
                       <p>수정 후 다시 저장해주세요.</p>
@@ -1837,271 +2061,284 @@ export default function CheongmoParticipantPage() {
               <section
                 className={`${styles.communityRoom} ${styles.roomEnterFade} ${styles.legacyRoomHidden}`}
               >
-              <section className={styles.roomAppHero}>
-                <div className={styles.roomAppHeroContent}>
-                  <div className={styles.roomAppHeroText}>
-                    <div className={styles.roomHeroBrandRow}>
-                      <button
-                        className={styles.roomIntroLogoButton}
-                        type="button"
-                        aria-label="정담 메인으로 이동"
-                        onClick={() => router.push('/')}
-                      >
-                        <Image
-                          src="/cheongmo/cheongmo-home-logo-pill.png"
-                          alt="정담"
-                          width={2073}
-                          height={758}
-                          priority
-                        />
-                      </button>
-                      <button
-                        className={styles.roomShareButton}
-                        type="button"
-                        aria-label="청모 링크 공유하기"
-                        onClick={shareGathering}
-                      >
-                        <Image
-                          src="/cheongmo/cheongmo-share-icon.svg"
-                          alt=""
-                          width={28}
-                          height={28}
-                        />
-                      </button>
-                    </div>
-                    <h1>{gathering.title}</h1>
-                    <p>{participant.guestName}님, 함께 일정을 맞추고 있어요</p>
-                    <div className={styles.roomStatusPills}>
-                      <span>
-                        <Image
-                          src="/cheongmo/room-insight-people.png"
-                          alt=""
-                          width={20}
-                          height={20}
-                        />
-                        {roomParticipantCount}명이 참여했어요
-                      </span>
-                      <span>
-                        <Image
-                          src="/cheongmo/room-status-sync.png"
-                          alt=""
-                          width={20}
-                          height={20}
-                        />
-                        일정 조율중
-                      </span>
-                      {voteDeadlineLabel && (
+                <section className={styles.roomAppHero}>
+                  <div className={styles.roomAppHeroContent}>
+                    <div className={styles.roomAppHeroText}>
+                      <div className={styles.roomHeroBrandRow}>
+                        <button
+                          className={styles.roomIntroLogoButton}
+                          type="button"
+                          aria-label="정담 메인으로 이동"
+                          onClick={() => router.push('/')}
+                        >
+                          <Image
+                            src="/cheongmo/cheongmo-home-logo-pill.png"
+                            alt="정담"
+                            width={2073}
+                            height={758}
+                            priority
+                          />
+                        </button>
+                        <button
+                          className={styles.roomShareButton}
+                          type="button"
+                          aria-label="청모 링크 공유하기"
+                          onClick={shareGathering}
+                        >
+                          <Image
+                            src="/cheongmo/cheongmo-share-icon.svg"
+                            alt=""
+                            width={28}
+                            height={28}
+                          />
+                        </button>
+                      </div>
+                      <h1>{gathering.title}</h1>
+                      <p>
+                        {participant.guestName}님, 함께 일정을 맞추고 있어요
+                      </p>
+                      <div className={styles.roomStatusPills}>
                         <span>
                           <Image
-                            src="/cheongmo/date-calendar-icon.svg"
+                            src="/cheongmo/room-insight-people.png"
                             alt=""
                             width={20}
                             height={20}
                           />
-                          {voteDeadlineLabel}까지 투표
+                          {roomParticipantCount}명이 참여했어요
                         </span>
-                      )}
+                        <span>
+                          <Image
+                            src="/cheongmo/room-status-sync.png"
+                            alt=""
+                            width={20}
+                            height={20}
+                          />
+                          일정 조율중
+                        </span>
+                        {voteDeadlineLabel && (
+                          <span>
+                            <Image
+                              src="/cheongmo/date-calendar-icon.svg"
+                              alt=""
+                              width={20}
+                              height={20}
+                            />
+                            {voteDeadlineLabel}까지 투표
+                          </span>
+                        )}
+                      </div>
                     </div>
+                    <Image
+                      className={styles.roomHeroObject}
+                      src="/cheongmo/cheongmo-room-hero-object.png"
+                      alt=""
+                      width={1536}
+                      height={1024}
+                      priority
+                    />
                   </div>
-                  <Image
-                    className={styles.roomHeroObject}
-                    src="/cheongmo/cheongmo-room-hero-object.png"
-                    alt=""
-                    width={1536}
-                    height={1024}
-                    priority
-                  />
-                </div>
 
-                <div className={styles.roomDownloadActions}>
-                  <a
-                    className={styles.cheongmoAppStoreAction}
-                    href={appStoreUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <span className={styles.cheongmoStoreIcon} aria-hidden="true">
-                      <svg viewBox="0 0 24 24" role="img">
-                        <path d="M16.55 12.25c-.02-2.38 1.95-3.52 2.04-3.58-1.12-1.64-2.85-1.87-3.46-1.89-1.47-.15-2.88.86-3.62.86-.75 0-1.9-.84-3.13-.82-1.6.02-3.08.93-3.9 2.36-1.67 2.9-.43 7.18 1.19 9.53.8 1.14 1.74 2.42 2.98 2.37 1.2-.05 1.65-.77 3.1-.77 1.44 0 1.85.77 3.11.75 1.29-.02 2.1-1.16 2.87-2.31.92-1.33 1.29-2.62 1.31-2.69-.03-.01-2.46-.95-2.49-3.81ZM14.17 5.22c.65-.78 1.08-1.86.96-2.95-.93.04-2.09.62-2.76 1.4-.6.69-1.13 1.8-.99 2.86 1.05.08 2.13-.53 2.79-1.31Z" />
-                      </svg>
-                    </span>
-                    <span>
-                      <small>Download</small>
-                      <strong>App Store</strong>
-                    </span>
-                  </a>
-                  <button
-                    className={styles.cheongmoPlayStoreAction}
-                    type="button"
-                    onClick={() => toast('현재 베타테스터만 진행중입니다.')}
-                  >
-                    <span className={styles.cheongmoStoreIcon} aria-hidden="true">
-                      <svg viewBox="0 0 24 24" role="img">
-                        <path d="M4.5 3.65c-.32.26-.5.68-.5 1.22v14.26c0 .54.18.96.5 1.22l8.08-8.35L4.5 3.65Zm9.15 7.25 2.42-2.5L6.53 3.05l7.12 7.85Zm0 2.2-7.12 7.85 9.54-5.35-2.42-2.5Zm1.08-1.1 2.95 3.05 2.23-1.25c1.46-.82 1.46-2.78 0-3.6l-2.23-1.25L14.73 12Z" />
-                      </svg>
-                    </span>
-                    <span>
-                      <small>Beta</small>
-                      <strong>Google Play</strong>
-                    </span>
-                  </button>
-                </div>
-              </section>
+                  <div className={styles.roomDownloadActions}>
+                    <a
+                      className={styles.cheongmoAppStoreAction}
+                      href={appStoreUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <span
+                        className={styles.cheongmoStoreIcon}
+                        aria-hidden="true"
+                      >
+                        <svg viewBox="0 0 24 24" role="img">
+                          <path d="M16.55 12.25c-.02-2.38 1.95-3.52 2.04-3.58-1.12-1.64-2.85-1.87-3.46-1.89-1.47-.15-2.88.86-3.62.86-.75 0-1.9-.84-3.13-.82-1.6.02-3.08.93-3.9 2.36-1.67 2.9-.43 7.18 1.19 9.53.8 1.14 1.74 2.42 2.98 2.37 1.2-.05 1.65-.77 3.1-.77 1.44 0 1.85.77 3.11.75 1.29-.02 2.1-1.16 2.87-2.31.92-1.33 1.29-2.62 1.31-2.69-.03-.01-2.46-.95-2.49-3.81ZM14.17 5.22c.65-.78 1.08-1.86.96-2.95-.93.04-2.09.62-2.76 1.4-.6.69-1.13 1.8-.99 2.86 1.05.08 2.13-.53 2.79-1.31Z" />
+                        </svg>
+                      </span>
+                      <span>
+                        <small>Download</small>
+                        <strong>App Store</strong>
+                      </span>
+                    </a>
+                    <button
+                      className={styles.cheongmoPlayStoreAction}
+                      type="button"
+                      onClick={() => toast('현재 베타테스터만 진행중입니다.')}
+                    >
+                      <span
+                        className={styles.cheongmoStoreIcon}
+                        aria-hidden="true"
+                      >
+                        <svg viewBox="0 0 24 24" role="img">
+                          <path d="M4.5 3.65c-.32.26-.5.68-.5 1.22v14.26c0 .54.18.96.5 1.22l8.08-8.35L4.5 3.65Zm9.15 7.25 2.42-2.5L6.53 3.05l7.12 7.85Zm0 2.2-7.12 7.85 9.54-5.35-2.42-2.5Zm1.08-1.1 2.95 3.05 2.23-1.25c1.46-.82 1.46-2.78 0-3.6l-2.23-1.25L14.73 12Z" />
+                        </svg>
+                      </span>
+                      <span>
+                        <small>Beta</small>
+                        <strong>Google Play</strong>
+                      </span>
+                    </button>
+                  </div>
+                </section>
 
-              <section
-                className={`${styles.roomBriefingCard} ${
-                  gathering.location_mode === 'host_decides'
-                    ? styles.hostLocationBriefingCard
-                    : ''
-                }`}
-              >
-                <div className={styles.roomBriefingHeader}>
-                  <span>조율 브리핑</span>
-                  <strong>
-                    {isVotingClosed
-                      ? '투표 종료'
-                      : isEditingResponse
-                      ? '수정 중'
-                      : '저장 완료'}
-                  </strong>
-                </div>
-
-                <article
-                  className={`${styles.roomBriefingRow} ${styles.roomParticipantBriefingRow}`}
+                <section
+                  className={`${styles.roomBriefingCard} ${
+                    gathering.location_mode === 'host_decides'
+                      ? styles.hostLocationBriefingCard
+                      : ''
+                  }`}
                 >
-                  <span className={styles.insightIcon}>
+                  <div className={styles.roomBriefingHeader}>
+                    <span>조율 브리핑</span>
+                    <strong>
+                      {isVotingClosed
+                        ? '투표 종료'
+                        : isEditingResponse
+                          ? '수정 중'
+                          : '저장 완료'}
+                    </strong>
+                  </div>
+
+                  <article
+                    className={`${styles.roomBriefingRow} ${styles.roomParticipantBriefingRow}`}
+                  >
+                    <span className={styles.insightIcon}>
+                      <Image
+                        src="/cheongmo/room-insight-people.png"
+                        alt=""
+                        width={24}
+                        height={24}
+                      />
+                    </span>
+                    <div>
+                      <em>참여</em>
+                      <strong>
+                        {roomParticipantCount}
+                        {expectedGuestCount ? ` / ${expectedGuestCount}` : ''}
+                      </strong>
+                      <div className={styles.miniParticipants}>
+                        {participantNames.map(name => (
+                          <span key={name}>{name}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </article>
+
+                  <article className={styles.roomBriefingRow}>
+                    <span className={styles.insightIcon}>
+                      <Image
+                        src="/cheongmo/room-insight-chart.png"
+                        alt=""
+                        width={24}
+                        height={24}
+                      />
+                    </span>
+                    <div>
+                      <em>가장 유력한 날짜</em>
+                      <strong>
+                        {roomTopDate
+                          ? formatDateLabel(roomTopDate.date)
+                          : '집계 전'}
+                      </strong>
+                      <div className={styles.briefingProgressLine}>
+                        <div className={styles.insightProgress}>
+                          <i style={{ width: `${roomTopDateProgress}%` }} />
+                        </div>
+                        <p>
+                          {roomTopDate
+                            ? `${roomTopDate.count}명 선택`
+                            : '저장된 일정 없음'}
+                        </p>
+                      </div>
+                    </div>
+                  </article>
+
+                  <article
+                    className={`${styles.roomBriefingRow} ${styles.roomHostBriefingRow}`}
+                  >
+                    <span className={styles.insightIcon}>
+                      <Image
+                        src="/cheongmo/room-insight-pin.png"
+                        alt=""
+                        width={24}
+                        height={24}
+                      />
+                    </span>
+                    {gathering.location_mode === 'ask_guests' ? (
+                      <div>
+                        <em>가장 유력한 지역</em>
+                        <strong>{roomTopRegion?.name || '모으는 중'}</strong>
+                        <p>
+                          {roomTopRegion
+                            ? `${roomTopRegion.count}명이 가장 많이 선택했어요`
+                            : '지역을 제안해주세요'}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className={styles.hostLocationContent}>
+                        <em>모임 장소</em>
+                        <strong>{hostLocationTitle}</strong>
+                        {hostLocationDetails.length > 0 && (
+                          <div className={styles.topRegionChips}>
+                            {hostLocationDetails.slice(0, 2).map(item => (
+                              <span key={item}>{item}</span>
+                            ))}
+                          </div>
+                        )}
+                        {hostMapLinks.length > 0 && (
+                          <div className={styles.hostMapLinks}>
+                            {hostMapLinks.map(link => (
+                              <a
+                                className={`${styles.hostMapButton} ${
+                                  styles[`hostMapButton${link.brand}`]
+                                }`}
+                                href={link.href}
+                                key={link.label}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                <span aria-hidden="true">{link.icon}</span>
+                                <b>{link.label}</b>
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                        <p>주최자가 정한 모임 장소예요</p>
+                      </div>
+                    )}
+                  </article>
+                </section>
+
+                <nav className={styles.roomSegmentTabs} aria-label="청모 섹션">
+                  <a href="#cheongmo-dates">
+                    <span
+                      className={styles.roomTabCalendarIcon}
+                      aria-hidden="true"
+                    />
+                    날짜
+                  </a>
+                  {gathering.location_mode === 'ask_guests' && (
+                    <a href="#cheongmo-regions">
+                      <Image
+                        src="/cheongmo/room-insight-pin.png"
+                        alt=""
+                        width={20}
+                        height={20}
+                      />
+                      지역
+                    </a>
+                  )}
+                  <a href="#cheongmo-participants">
                     <Image
                       src="/cheongmo/room-insight-people.png"
-                      alt=""
-                      width={24}
-                      height={24}
-                    />
-                  </span>
-                  <div>
-                    <em>참여</em>
-                    <strong>
-                      {roomParticipantCount}
-                      {expectedGuestCount ? ` / ${expectedGuestCount}` : ''}
-                    </strong>
-                    <div className={styles.miniParticipants}>
-                      {participantNames.map(name => (
-                        <span key={name}>{name}</span>
-                      ))}
-                    </div>
-                  </div>
-                </article>
-
-                <article className={styles.roomBriefingRow}>
-                  <span className={styles.insightIcon}>
-                    <Image
-                      src="/cheongmo/room-insight-chart.png"
-                      alt=""
-                      width={24}
-                      height={24}
-                    />
-                  </span>
-                  <div>
-                    <em>가장 유력한 날짜</em>
-                    <strong>
-                      {roomTopDate ? formatDateLabel(roomTopDate.date) : '집계 전'}
-                    </strong>
-                    <div className={styles.briefingProgressLine}>
-                      <div className={styles.insightProgress}>
-                        <i style={{ width: `${roomTopDateProgress}%` }} />
-                      </div>
-                      <p>
-                        {roomTopDate
-                          ? `${roomTopDate.count}명 선택`
-                          : '저장된 일정 없음'}
-                      </p>
-                    </div>
-                  </div>
-                </article>
-
-                <article
-                  className={`${styles.roomBriefingRow} ${styles.roomHostBriefingRow}`}
-                >
-                  <span className={styles.insightIcon}>
-                    <Image
-                      src="/cheongmo/room-insight-pin.png"
-                      alt=""
-                      width={24}
-                      height={24}
-                    />
-                  </span>
-                  {gathering.location_mode === 'ask_guests' ? (
-                    <div>
-                      <em>가장 유력한 지역</em>
-                      <strong>{roomTopRegion?.name || '모으는 중'}</strong>
-                      <p>
-                        {roomTopRegion
-                          ? `${roomTopRegion.count}명이 가장 많이 선택했어요`
-                          : '지역을 제안해주세요'}
-                      </p>
-                    </div>
-                  ) : (
-                    <div className={styles.hostLocationContent}>
-                      <em>모임 장소</em>
-                      <strong>{hostLocationTitle}</strong>
-                      {hostLocationDetails.length > 0 && (
-                        <div className={styles.topRegionChips}>
-                          {hostLocationDetails.slice(0, 2).map(item => (
-                            <span key={item}>{item}</span>
-                          ))}
-                        </div>
-                      )}
-                      {hostMapLinks.length > 0 && (
-                        <div className={styles.hostMapLinks}>
-                          {hostMapLinks.map(link => (
-                            <a
-                              className={`${styles.hostMapButton} ${
-                                styles[`hostMapButton${link.brand}`]
-                              }`}
-                              href={link.href}
-                              key={link.label}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              <span aria-hidden="true">{link.icon}</span>
-                              <b>{link.label}</b>
-                            </a>
-                          ))}
-                        </div>
-                      )}
-                      <p>주최자가 정한 모임 장소예요</p>
-                    </div>
-                  )}
-                </article>
-              </section>
-
-              <nav className={styles.roomSegmentTabs} aria-label="청모 섹션">
-                <a href="#cheongmo-dates">
-                  <span className={styles.roomTabCalendarIcon} aria-hidden="true" />
-                  날짜
-                </a>
-                {gathering.location_mode === 'ask_guests' && (
-                  <a href="#cheongmo-regions">
-                    <Image
-                      src="/cheongmo/room-insight-pin.png"
                       alt=""
                       width={20}
                       height={20}
                     />
-                    지역
+                    참여자
                   </a>
-                )}
-                <a href="#cheongmo-participants">
-                  <Image
-                    src="/cheongmo/room-insight-people.png"
-                    alt=""
-                    width={20}
-                    height={20}
-                  />
-                  참여자
-                </a>
-              </nav>
+                </nav>
 
-              <section className={styles.communityMain}>
+                <section className={styles.communityMain}>
                   <div
                     className={`${styles.communitySection} ${styles.dateAppSection}`}
                     id="cheongmo-dates"
@@ -2120,23 +2357,23 @@ export default function CheongmoParticipantPage() {
                           {isVotingClosed
                             ? '가능한 날짜 투표가 종료됐어요'
                             : isEditingResponse
-                            ? '가능한 날짜에 투표해주세요'
-                            : '가능한 날짜 투표 현황'}
+                              ? '가능한 날짜에 투표해주세요'
+                              : '가능한 날짜 투표 현황'}
                         </h2>
                         <p className={styles.subcopy}>
                           {isVotingClosed
                             ? votingClosedMessage
                             : voteDeadlineLabel
-                            ? `${voteDeadlineLabel}까지 편한 날짜를 선택해주세요`
-                            : '편한 날짜를 고르면 모두의 선택과 함께 보여요'}
+                              ? `${voteDeadlineLabel}까지 편한 날짜를 선택해주세요`
+                              : '편한 날짜를 고르면 모두의 선택과 함께 보여요'}
                         </p>
                       </div>
                       <strong>
                         {isVotingClosed
                           ? '투표 종료'
                           : isEditingResponse
-                          ? `${availableDates.length}개 선택`
-                          : '저장 완료'}
+                            ? `${availableDates.length}개 선택`
+                            : '저장 완료'}
                       </strong>
                     </div>
                     {visibleAvailableDates.length > 0 && (
@@ -2213,19 +2450,17 @@ export default function CheongmoParticipantPage() {
                                 day.value
                               );
                               const displayCount =
-                                names.length + (selected && !alreadyCounted ? 1 : 0);
+                                names.length +
+                                (selected && !alreadyCounted ? 1 : 0);
                               const finalized =
                                 displayCount > 0 &&
-                                displayCount ===
-                                  expectedGuestCount &&
+                                displayCount === expectedGuestCount &&
                                 respondedCount >= expectedGuestCount;
                               return (
                                 <button
                                   className={`${styles.voteDay} ${
                                     selected ? styles.selectedVoteDay : ''
-                                  } ${
-                                    finalized ? styles.finalVoteDay : ''
-                                  } ${
+                                  } ${finalized ? styles.finalVoteDay : ''} ${
                                     day.weekday === 0 || day.holiday
                                       ? styles.redVoteDay
                                       : ''
@@ -2234,7 +2469,9 @@ export default function CheongmoParticipantPage() {
                                   }`}
                                   key={day.value}
                                   type="button"
-                                  disabled={!isEditingResponse || isVotingClosed}
+                                  disabled={
+                                    !isEditingResponse || isVotingClosed
+                                  }
                                   title={
                                     names.length > 0
                                       ? names.join(', ')
@@ -2268,8 +2505,8 @@ export default function CheongmoParticipantPage() {
                         />
                         <strong>득표 높은 날짜</strong>
                       </div>
-                      {dateLeaders.length > 0 ? (
-                        dateLeaders.slice(0, 3).map((item, index) => {
+                      {eligibleDateLeaders.length > 0 ? (
+                        eligibleDateLeaders.slice(0, 3).map((item, index) => {
                           const label = getCandidateLabel({
                             count: item.count,
                             index,
@@ -2277,7 +2514,9 @@ export default function CheongmoParticipantPage() {
                             respondedCount,
                           });
                           const status =
-                            label.endsWith('명') && index === 1 && item.count > 1
+                            label.endsWith('명') &&
+                            index === 1 &&
+                            item.count > 1
                               ? '경합'
                               : label.endsWith('명')
                                 ? ''
@@ -2314,7 +2553,10 @@ export default function CheongmoParticipantPage() {
                         </p>
                       )}
                     </div>
-                    <div className={styles.dateVoterBoard} id="cheongmo-participants">
+                    <div
+                      className={styles.dateVoterBoard}
+                      id="cheongmo-participants"
+                    >
                       <div className={styles.resultHeader}>
                         <Image
                           alt=""
@@ -2338,7 +2580,10 @@ export default function CheongmoParticipantPage() {
                             return (
                               <article
                                 className={styles.dateVoterItem}
-                                data-initial={(person.guestName || '?').slice(0, 1)}
+                                data-initial={(person.guestName || '?').slice(
+                                  0,
+                                  1
+                                )}
                                 key={person.id || person.guestName}
                               >
                                 <strong>{person.guestName}</strong>
@@ -2369,7 +2614,10 @@ export default function CheongmoParticipantPage() {
                   </div>
 
                   {gathering.location_mode === 'ask_guests' && (
-                    <div className={styles.regionOpinionSection} id="cheongmo-regions">
+                    <div
+                      className={styles.regionOpinionSection}
+                      id="cheongmo-regions"
+                    >
                       <div className={styles.regionTitle}>
                         <Image
                           alt=""
@@ -2394,7 +2642,9 @@ export default function CheongmoParticipantPage() {
                                 <button
                                   key={region}
                                   type="button"
-                                  disabled={!isEditingResponse || isVotingClosed}
+                                  disabled={
+                                    !isEditingResponse || isVotingClosed
+                                  }
                                   onClick={() =>
                                     setRegionSuggestions(prev =>
                                       prev.filter(item => item !== region)
@@ -2478,7 +2728,9 @@ export default function CheongmoParticipantPage() {
                                 onClick={() =>
                                   setRegionSuggestions(prev =>
                                     prev.includes(region.name)
-                                      ? prev.filter(item => item !== region.name)
+                                      ? prev.filter(
+                                          item => item !== region.name
+                                        )
                                       : [...prev, region.name]
                                   )
                                 }
@@ -2576,9 +2828,9 @@ export default function CheongmoParticipantPage() {
                       )}
                     </div>
                   </div>
+                </section>
               </section>
-            </section>
-          </>
+            </>
           ) : (
             <>
               {locked || entrySuccessSheetOpen ? (
@@ -2604,7 +2856,10 @@ export default function CheongmoParticipantPage() {
                     <Link href="/">정담 소개</Link>
                     <Link href="/cheongmo/new">모임 만들기</Link>
                   </div>
-                  <div className={styles.entryGateIllustration} aria-hidden="true">
+                  <div
+                    className={styles.entryGateIllustration}
+                    aria-hidden="true"
+                  >
                     <Image
                       src="/cheongmo/cheongmo-entry-lock-illustration.png"
                       alt=""
@@ -2621,7 +2876,10 @@ export default function CheongmoParticipantPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <span className={styles.cheongmoStoreIcon} aria-hidden="true">
+                      <span
+                        className={styles.cheongmoStoreIcon}
+                        aria-hidden="true"
+                      >
                         <svg viewBox="0 0 24 24" role="img">
                           <path d="M16.55 12.25c-.02-2.38 1.95-3.52 2.04-3.58-1.12-1.64-2.85-1.87-3.46-1.89-1.47-.15-2.88.86-3.62.86-.75 0-1.9-.84-3.13-.82-1.6.02-3.08.93-3.9 2.36-1.67 2.9-.43 7.18 1.19 9.53.8 1.14 1.74 2.42 2.98 2.37 1.2-.05 1.65-.77 3.1-.77 1.44 0 1.85.77 3.11.75 1.29-.02 2.1-1.16 2.87-2.31.92-1.33 1.29-2.62 1.31-2.69-.03-.01-2.46-.95-2.49-3.81ZM14.17 5.22c.65-.78 1.08-1.86.96-2.95-.93.04-2.09.62-2.76 1.4-.6.69-1.13 1.8-.99 2.86 1.05.08 2.13-.53 2.79-1.31Z" />
                         </svg>
@@ -2636,7 +2894,10 @@ export default function CheongmoParticipantPage() {
                       type="button"
                       onClick={() => toast('현재 베타테스터만 진행중입니다.')}
                     >
-                      <span className={styles.cheongmoStoreIcon} aria-hidden="true">
+                      <span
+                        className={styles.cheongmoStoreIcon}
+                        aria-hidden="true"
+                      >
                         <svg viewBox="0 0 24 24" role="img">
                           <path d="M4.5 3.65c-.32.26-.5.68-.5 1.22v14.26c0 .54.18.96.5 1.22l8.08-8.35L4.5 3.65Zm9.15 7.25 2.42-2.5L6.53 3.05l7.12 7.85Zm0 2.2-7.12 7.85 9.54-5.35-2.42-2.5Zm1.08-1.1 2.95 3.05 2.23-1.25c1.46-.82 1.46-2.78 0-3.6l-2.23-1.25L14.73 12Z" />
                         </svg>
@@ -2680,7 +2941,9 @@ export default function CheongmoParticipantPage() {
                         }
                         value={entryValue}
                         maxLength={
-                          gathering.access_type === 'phone_list' ? 11 : undefined
+                          gathering.access_type === 'phone_list'
+                            ? 11
+                            : undefined
                         }
                         onChange={event =>
                           setEntryValue(
@@ -2690,7 +2953,11 @@ export default function CheongmoParticipantPage() {
                           )
                         }
                         onKeyDown={event => {
-                          if (event.key !== 'Enter' || submitting || !entryReady) {
+                          if (
+                            event.key !== 'Enter' ||
+                            submitting ||
+                            !entryReady
+                          ) {
                             return;
                           }
                           event.preventDefault();
@@ -2726,7 +2993,9 @@ export default function CheongmoParticipantPage() {
                   </section>
                 </section>
               ) : (
-                <section className={`${styles.entryGate} ${styles.entryGateReady}`}>
+                <section
+                  className={`${styles.entryGate} ${styles.entryGateReady}`}
+                >
                   <div className={styles.entryGateBrand}>
                     <Image
                       className={styles.entryGateBrandLogo}
@@ -2744,13 +3013,17 @@ export default function CheongmoParticipantPage() {
                   </div>
                   <h1>이제 이름만 알려주세요</h1>
                   <p className={styles.entryGateLead}>
-                    확인이 끝났어요. 모임에서 사용할 이름만 입력하면 바로 참여해요.
+                    확인이 끝났어요. 모임에서 사용할 이름만 입력하면 바로
+                    참여해요.
                   </p>
                   <div className={styles.entryGateLinks}>
                     <Link href="/">정담 소개</Link>
                     <Link href="/cheongmo/new">모임 만들기</Link>
                   </div>
-                  <div className={styles.entryGateIllustration} aria-hidden="true">
+                  <div
+                    className={styles.entryGateIllustration}
+                    aria-hidden="true"
+                  >
                     <Image
                       src="/cheongmo/cheongmo-room-hero-object.png"
                       alt=""
@@ -2828,7 +3101,10 @@ export default function CheongmoParticipantPage() {
                     aria-modal="true"
                     aria-labelledby="entry-success-title"
                   >
-                    <span className={styles.entrySuccessHandle} aria-hidden="true" />
+                    <span
+                      className={styles.entrySuccessHandle}
+                      aria-hidden="true"
+                    />
                     <div
                       className={`${styles.entrySuccessState} ${
                         entrySuccessPhase === 'success'
@@ -2836,7 +3112,10 @@ export default function CheongmoParticipantPage() {
                           : styles.entrySuccessStateDone
                       }`}
                     >
-                      <div className={styles.entrySuccessVisual} aria-hidden="true">
+                      <div
+                        className={styles.entrySuccessVisual}
+                        aria-hidden="true"
+                      >
                         <span className={styles.entrySuccessRipple} />
                         <span className={styles.entrySuccessRipple} />
                         {Array.from({ length: 8 }).map((_, index) => (
@@ -2908,7 +3187,10 @@ export default function CheongmoParticipantPage() {
                 aria-modal="true"
                 aria-labelledby="save-success-title"
               >
-                <span className={styles.entrySuccessHandle} aria-hidden="true" />
+                <span
+                  className={styles.entrySuccessHandle}
+                  aria-hidden="true"
+                />
                 <div
                   className={`${styles.entrySuccessState} ${styles.entrySuccessStateActive}`}
                 >
