@@ -21,6 +21,1097 @@
   color: var(--text);
 }
 
+.tossPageHost {
+  min-height: 100svh;
+  background: #ffffff !important;
+}
+
+.tossShell {
+  width: 100% !important;
+  max-width: none;
+  padding: 0 !important;
+}
+
+.legacyRoomHidden {
+  display: none !important;
+}
+
+.tossRoomPage {
+  position: relative;
+  width: min(100%, 430px);
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: 0 22px 128px;
+  background: #ffffff;
+  color: #191f28;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    'Apple SD Gothic Neo',
+    'Pretendard',
+    'Noto Sans KR',
+    sans-serif;
+}
+
+.tossStatusBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 34px;
+  color: #191f28;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.tossTopbar {
+  position: sticky;
+  top: 0;
+  z-index: 8;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 54px;
+  align-items: center;
+  height: 72px;
+  margin: 0 -22px;
+  padding: 10px 18px 8px 22px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(18px);
+}
+
+.tossTopbar img {
+  width: min(154px, 48vw);
+  height: auto;
+  margin-left: -28px;
+  object-fit: contain;
+}
+
+.tossTopbar button {
+  display: grid;
+  min-width: 0;
+  height: 40px;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: #4e5968;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.tossHeroBlock {
+  display: grid;
+  gap: 20px;
+  padding: 18px 0 28px;
+}
+
+.tossHeroCopy {
+  display: grid;
+  gap: 11px;
+}
+
+.tossBlueLabel {
+  color: #3182f6;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.tossHeroCopy h1 {
+  margin: 0;
+  color: #191f28;
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1.24;
+}
+
+.tossHeroCopy p {
+  max-width: 320px;
+  margin: 0;
+  color: #6b7684;
+  font-size: 16px;
+  font-weight: 650;
+  line-height: 1.55;
+}
+
+.tossInviteArt {
+  position: relative;
+  width: 172px;
+  height: 132px;
+  margin: 4px auto 0;
+}
+
+.tossInviteLottie {
+  position: relative;
+  width: 228px;
+  height: 228px;
+  margin: -6px auto -12px;
+}
+
+.tossInviteLottie::before {
+  content: '';
+  display: none;
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 46px;
+  width: 92px;
+  height: 74px;
+  transform: translateX(-50%);
+  border-radius: 18px;
+  background:
+    linear-gradient(#d8e2ee, #d8e2ee) 50% 31% / 54px 4px no-repeat,
+    linear-gradient(#d8e2ee, #d8e2ee) 50% 55% / 72px 4px no-repeat,
+    #ffffff;
+  box-shadow: 0 14px 30px rgba(25, 31, 40, 0.12);
+  animation: tossLottiePaperFloat 3000ms cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  pointer-events: none;
+}
+
+.tossInviteLottie::after {
+  content: '';
+  display: none;
+  position: absolute;
+  z-index: 3;
+  left: calc(50% + 43px);
+  top: 40px;
+  width: 34px;
+  height: 34px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background:
+    linear-gradient(45deg, transparent 46%, #ffffff 47% 57%, transparent 58%)
+      9px 13px / 16px 12px no-repeat,
+    #ffbd2e;
+  box-shadow: 0 12px 24px rgba(255, 189, 46, 0.32);
+  animation: tossLottieBadgePop 3000ms cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  pointer-events: none;
+}
+
+.tossInviteLottie svg {
+  width: 100% !important;
+  height: 100% !important;
+  overflow: visible;
+}
+
+.tossInviteLottie[data-fallback='true']::before {
+  content: '';
+  display: block;
+  position: absolute;
+  inset: 44px 18px 36px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #3182f6, #69a7ff);
+  box-shadow: 0 20px 44px rgba(49, 130, 246, 0.24);
+}
+
+.tossInviteArt span {
+  position: absolute;
+  inset: 28px 12px 14px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #3182f6, #69a7ff);
+  box-shadow: 0 18px 42px rgba(49, 130, 246, 0.26);
+}
+
+.tossInviteArt i {
+  position: absolute;
+  left: 42px;
+  top: 10px;
+  width: 88px;
+  height: 78px;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 12px 26px rgba(25, 31, 40, 0.12);
+}
+
+.tossInviteArt i::before,
+.tossInviteArt i::after {
+  content: '';
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  height: 4px;
+  border-radius: 999px;
+  background: #dbe6f5;
+}
+
+.tossInviteArt i::before {
+  top: 26px;
+}
+
+.tossInviteArt i::after {
+  top: 43px;
+}
+
+.tossInviteArt b {
+  position: absolute;
+  right: 22px;
+  top: 18px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 50%;
+  background: #ffb800;
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(255, 184, 0, 0.28);
+}
+
+.tossInviteArt b::after {
+  content: '✓';
+  font-size: 19px;
+  font-weight: 950;
+}
+
+.tossStorePanel {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: -4px 0 26px;
+}
+
+.tossStorePanel a,
+.tossStorePanel button {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-height: 58px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 18px;
+  background: #f2f4f6;
+  color: #191f28;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  text-decoration: none;
+}
+
+.tossStorePanel a:active,
+.tossStorePanel button:active {
+  background: #e8edf3;
+}
+
+.tossStoreIcon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #3182f6;
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.tossStorePanel div {
+  display: grid;
+  min-width: 0;
+  gap: 1px;
+}
+
+.tossStorePanel small {
+  color: #8b95a1;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.tossStorePanel strong {
+  overflow: hidden;
+  color: #191f28;
+  font-size: 14px;
+  font-weight: 950;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tossSummaryList {
+  display: grid;
+  gap: 4px;
+  margin: 0 -6px 28px;
+}
+
+.tossSummaryRow,
+.tossLeaderRow,
+.tossRegionRow,
+.tossParticipantRow {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  min-height: 76px;
+  padding: 12px 8px;
+  border: 0;
+  border-radius: 18px;
+  background: #ffffff;
+  color: #191f28;
+  text-align: left;
+}
+
+.tossSummaryRow:active,
+.tossRegionRow:active {
+  background: #f2f4f6;
+}
+
+button.tossSummaryRow {
+  width: 100%;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+button.tossSummaryRow:hover {
+  background: #f8fafc;
+}
+
+.tossChevron {
+  position: relative;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 50%;
+  background: #f2f4f6;
+  transition:
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.tossChevron::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  transform: translateY(-2px) rotate(45deg);
+  border-right: 2px solid #8b95a1;
+  border-bottom: 2px solid #8b95a1;
+}
+
+.tossChevronOpen {
+  transform: rotate(180deg);
+  background: #e8f2ff;
+}
+
+.tossChevronOpen::before {
+  border-color: #3182f6;
+}
+
+.tossSummaryRow > span,
+.tossLeaderRow i,
+.tossRegionRow i,
+.tossParticipantRow i {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 16px;
+  font-style: normal;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.tossDateIcon {
+  background: #eaf4ff;
+  color: #3182f6;
+}
+
+.tossPinIcon {
+  background: #fff4d6;
+  color: #f59f00;
+}
+
+.tossPeopleIcon {
+  background: #eef2f7;
+  color: #8b95a1;
+  font-size: 12px !important;
+}
+
+.tossSummaryRow div,
+.tossLeaderRow div,
+.tossRegionRow div,
+.tossParticipantRow div {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.tossSummaryRow em {
+  color: #8b95a1;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.tossSummaryRow strong,
+.tossLeaderRow strong,
+.tossRegionRow strong,
+.tossParticipantRow strong {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  overflow: hidden;
+  color: #191f28;
+  font-size: 17px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tossSummaryRow p,
+.tossLeaderRow span,
+.tossRegionRow span,
+.tossParticipantRow span {
+  overflow: hidden;
+  margin: 0;
+  color: #6b7684;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tossSummaryRow b,
+.tossLeaderRow b,
+.tossRegionRow b {
+  color: #3182f6;
+  font-size: 14px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.tossInlinePanel {
+  display: grid;
+  gap: 2px;
+  max-height: 0;
+  margin: 0 0 0 62px;
+  padding: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition:
+    max-height 340ms cubic-bezier(0.16, 1, 0.3, 1),
+    margin 340ms cubic-bezier(0.16, 1, 0.3, 1),
+    padding 340ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 220ms ease,
+    transform 340ms cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.tossInlinePanelOpen {
+  max-height: 760px;
+  margin: -2px 0 8px 62px;
+  padding: 4px 0 8px;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.tossInlinePanel > p {
+  margin: 0;
+  padding: 12px 0;
+  color: #8b95a1;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.tossMiniRow {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 7px 0;
+  border-bottom: 1px solid #f2f4f6;
+  animation: tossListItemIn 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.tossMiniRow:nth-child(2) {
+  animation-delay: 35ms;
+}
+
+.tossMiniRow:nth-child(3) {
+  animation-delay: 70ms;
+}
+
+.tossMiniRow:nth-child(4) {
+  animation-delay: 105ms;
+}
+
+.tossMiniRow:nth-child(5) {
+  animation-delay: 140ms;
+}
+
+.tossMiniRow i {
+  display: grid;
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 50%;
+  background: #f2f4f6;
+  color: #6b7684;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.tossMiniRow div {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.tossMiniRow strong {
+  overflow: hidden;
+  color: #191f28;
+  font-size: 14px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tossMiniRow span {
+  overflow: hidden;
+  color: #8b95a1;
+  font-size: 12px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tossMiniRow b {
+  color: #3182f6;
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.tossStatusSaved,
+.tossStatusPending {
+  display: inline-grid;
+  min-width: max-content;
+  place-items: center;
+  padding: 6px 8px;
+  border-radius: 999px;
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.tossStatusSaved {
+  background: #e8f2ff;
+  color: #3182f6;
+}
+
+.tossStatusPending {
+  background: #f2f4f6;
+  color: #6b7684;
+}
+
+.tossMapLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 0 0;
+}
+
+.tossMapLinks a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #edf5ff;
+  color: #3182f6;
+  font-size: 13px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.tossSection {
+  display: grid;
+  gap: 16px;
+  padding: 30px 0 20px;
+  border-top: 10px solid #f2f4f6;
+}
+
+.tossSectionTitle {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.tossSectionTitle h2 {
+  margin: 0;
+  color: #191f28;
+  font-size: 24px;
+  font-weight: 950;
+  letter-spacing: 0;
+}
+
+.tossSectionTitle span {
+  color: #8b95a1;
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.tossMySelection,
+.tossSelectedRegions {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 18px;
+  background: #f7f9fc;
+}
+
+.tossMySelection span {
+  color: #6b7684;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.tossMySelection div,
+.tossSelectedRegions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tossMySelection em,
+.tossSelectedRegions button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: #eaf4ff;
+  color: #3182f6;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.tossSelectedRegions button {
+  gap: 7px;
+  cursor: pointer;
+  animation: tossChipIn 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.tossCalendarCard {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 24px;
+  background: #f7f9fc;
+}
+
+.tossCalendarCard header {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) 38px;
+  align-items: center;
+}
+
+.tossCalendarCard header strong {
+  color: #191f28;
+  font-size: 17px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.tossCalendarCard header button {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #4e5968;
+  cursor: pointer;
+  font-size: 24px;
+}
+
+.tossCalendarCard header button:disabled {
+  opacity: 0.35;
+}
+
+.tossWeekHeader,
+.tossCalendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.tossWeekHeader span {
+  color: #8b95a1;
+  font-size: 12px;
+  font-weight: 850;
+  text-align: center;
+}
+
+.tossCalendarGrid i {
+  min-height: 52px;
+}
+
+.tossDay {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  min-height: 52px;
+  place-items: center;
+  border: 0;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #333d4b;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.tossDay:disabled {
+  cursor: default;
+}
+
+.tossDay small {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  left: 4px;
+  overflow: hidden;
+  color: #8b95a1;
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 1.05;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tossDayVoted {
+  background: #edf5ff;
+}
+
+.tossSunday span,
+.tossHoliday span {
+  color: #f04452;
+}
+
+.tossSaturday span {
+  color: #3182f6;
+}
+
+.tossHoliday {
+  background: #fff1f2;
+}
+
+.tossHoliday small {
+  color: #f04452;
+}
+
+.tossDaySelected {
+  background: #3182f6;
+  color: #ffffff;
+}
+
+.tossDaySelected span {
+  color: #ffffff;
+}
+
+.tossDaySelected small {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.tossLeaderList {
+  display: grid;
+  gap: 4px;
+}
+
+.tossLeaderList > p {
+  margin: 0;
+  padding: 18px 0;
+  color: #8b95a1;
+  font-size: 15px;
+  font-weight: 750;
+  text-align: center;
+}
+
+.tossLeaderRow {
+  min-height: 68px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f2f4f6;
+  border-radius: 0;
+  animation: tossListItemIn 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.tossLeaderRow i {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f2f4f6;
+  color: #6b7684;
+  font-size: 14px;
+}
+
+.tossRegionInput {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 64px;
+  gap: 8px;
+}
+
+.tossRegionInput input {
+  min-width: 0;
+  height: 54px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 16px;
+  background: #f2f4f6;
+  color: #191f28;
+  font-size: 16px;
+  font-weight: 750;
+  outline: 0;
+}
+
+.tossRegionInput input:focus {
+  box-shadow: inset 0 0 0 2px #3182f6;
+}
+
+.tossRegionInput button {
+  height: 54px;
+  border: 0;
+  border-radius: 16px;
+  background: #3182f6;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.tossRegionInput button:disabled,
+.tossBottomAction button:disabled {
+  background: #cfd6df;
+  cursor: default;
+}
+
+.tossRegionRow {
+  width: 100%;
+  min-height: 70px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f2f4f6;
+  border-radius: 0;
+  cursor: pointer;
+  animation: tossListItemIn 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.tossRegionRow i {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f2f4f6;
+  color: #6b7684;
+}
+
+.tossRegionSelected i {
+  background: #3182f6;
+  color: #ffffff;
+}
+
+.tossParticipantList {
+  display: grid;
+  gap: 2px;
+}
+
+.tossParticipantRow {
+  min-height: 66px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f2f4f6;
+  border-radius: 0;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  animation: tossListItemIn 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.tossParticipantRow i {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #edf5ff;
+  color: #3182f6;
+  font-size: 14px;
+}
+
+.tossParticipantRow strong em {
+  flex: 0 0 auto;
+}
+
+.tossDeleteParticipant {
+  min-width: 54px;
+  height: 34px;
+  border: 0;
+  border-radius: 12px;
+  background: #f2f4f6;
+  color: #6b7684;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.tossDeleteParticipant:hover {
+  background: #feecec;
+  color: #e5484d;
+}
+
+.tossDeleteParticipant:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.tossBottomAction {
+  position: fixed;
+  z-index: 20;
+  right: 50%;
+  bottom: 0;
+  display: grid;
+  width: min(100%, 430px);
+  padding: 12px 22px max(14px, env(safe-area-inset-bottom));
+  transform: translateX(50%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0), #ffffff 28%);
+}
+
+.tossCreateGatheringLink {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 62px;
+  margin: 22px 0 8px;
+  padding: 0 18px 0 20px;
+  border-radius: 20px;
+  background: #f2f4f6;
+  color: #191f28;
+  text-decoration: none;
+}
+
+.tossCreateGatheringLink:active {
+  background: #e8edf3;
+}
+
+.tossCreateGatheringLink span {
+  overflow: hidden;
+  font-size: 16px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tossCreateGatheringLink strong {
+  display: inline-grid;
+  min-height: 36px;
+  padding: 0 14px;
+  place-items: center;
+  border-radius: 999px;
+  background: #3182f6;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+@keyframes tossListItemIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes tossChipIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.92);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes tossLottiePaperFloat {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(12px);
+  }
+
+  50% {
+    transform: translateX(-50%) translateY(-8px);
+  }
+}
+
+@keyframes tossLottieBadgePop {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(10px) scale(0.94);
+  }
+
+  18%,
+  55% {
+    transform: translateX(-50%) translateY(-8px) scale(1.08);
+  }
+}
+
+.tossBottomAction button {
+  min-height: 58px;
+  border: 0;
+  border-radius: 16px;
+  background: #3182f6;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.tossBottomAction p {
+  margin: 8px 0 0;
+  color: #8b95a1;
+  font-size: 13px;
+  font-weight: 750;
+  text-align: center;
+}
+
+@media (min-width: 720px) {
+  .tossPageHost {
+    background: #f2f4f6;
+  }
+
+  .tossRoomPage {
+    box-shadow: 0 28px 70px rgba(25, 31, 40, 0.12);
+  }
+}
+
+@media (max-width: 360px) {
+  .tossRoomPage {
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+
+  .tossHeroCopy h1 {
+    font-size: 27px;
+  }
+
+  .tossSummaryRow,
+  .tossLeaderRow,
+  .tossRegionRow {
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+    gap: 10px;
+  }
+}
+
 .page {
   min-height: 100vh;
   background:

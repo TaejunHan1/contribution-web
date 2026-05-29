@@ -300,8 +300,11 @@ export default function CheongmoParticipantPage() {
   const [regionSuggestions, setRegionSuggestions] = useState([]);
   const [regionInput, setRegionInput] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [deletingParticipantId, setDeletingParticipantId] = useState('');
+  const [isHostSession, setIsHostSession] = useState(false);
   const [isEditingResponse, setIsEditingResponse] = useState(false);
   const [activeMonthIndex, setActiveMonthIndex] = useState(0);
+  const [expandedTossPanel, setExpandedTossPanel] = useState('');
   const [entrySuccessSheetOpen, setEntrySuccessSheetOpen] = useState(false);
   const [entrySuccessPhase, setEntrySuccessPhase] = useState('success');
   const [saveSuccessSheetOpen, setSaveSuccessSheetOpen] = useState(false);
@@ -312,6 +315,7 @@ export default function CheongmoParticipantPage() {
   const entryNameInputRef = useRef(null);
   const roomRevealTimerRef = useRef(null);
   const saveSuccessTimerRef = useRef(null);
+  const inviteLottieRef = useRef(null);
   const slugValue = typeof slug === 'string' ? slug : '';
   const metaUrl = slugValue
     ? `${getSiteUrl()}/cheongmo/${encodeURIComponent(slugValue)}`
@@ -328,6 +332,38 @@ export default function CheongmoParticipantPage() {
   useEffect(() => {
     entryTokenRef.current = entryToken;
   }, [entryToken]);
+
+  useEffect(() => {
+    if (!participant || !inviteLottieRef.current) return undefined;
+
+    let animation = null;
+    let cancelled = false;
+
+    import('lottie-web')
+      .then(module => {
+        if (cancelled || !inviteLottieRef.current) return;
+        animation = module.default.loadAnimation({
+          container: inviteLottieRef.current,
+          renderer: 'svg',
+          loop: true,
+          autoplay: true,
+          path: '/cheongmo/invite-motion.json?v=blue-envelope-20260529',
+          rendererSettings: {
+            preserveAspectRatio: 'xMidYMid meet',
+          },
+        });
+      })
+      .catch(() => {
+        if (inviteLottieRef.current) {
+          inviteLottieRef.current.dataset.fallback = 'true';
+        }
+      });
+
+    return () => {
+      cancelled = true;
+      if (animation) animation.destroy();
+    };
+  }, [participant]);
 
   useEffect(
     () => () => {
@@ -447,7 +483,15 @@ export default function CheongmoParticipantPage() {
         const response = await fetch(getCheongmoApiUrl(slug), {
           cache: 'no-store',
         });
-        const result = await response.json();
+        let result = null;
+        try {
+          result = await response.json();
+        } catch {
+          result = {
+            success: false,
+            error: '청모 정보를 불러오지 못했습니다.',
+          };
+        }
 
         if (!response.ok || !result.success) {
           if (slug === 'sample') {
@@ -466,6 +510,7 @@ export default function CheongmoParticipantPage() {
               );
               setRegionSuggestions(parsed.participant?.suggestedRegions || []);
               setIsEditingResponse(!hasResponseContent(parsed.participant));
+              setIsHostSession(Boolean(parsed.isHost));
             }
             return;
           }
@@ -490,6 +535,7 @@ export default function CheongmoParticipantPage() {
           setAvailableDates(nextParticipant?.availableDates || []);
           setRegionSuggestions(nextParticipant?.suggestedRegions || []);
           setIsEditingResponse(!hasResponseContent(nextParticipant));
+          setIsHostSession(Boolean(parsed.isHost));
           window.localStorage.setItem(
             getStorageKey(slug),
             JSON.stringify({
@@ -666,12 +712,57 @@ export default function CheongmoParticipantPage() {
       ),
     [gathering]
   );
+  const responseParticipants = useMemo(
+    () =>
+      (gathering?.participants || []).filter(person =>
+        Boolean(person?.guestName)
+      ),
+    [gathering]
+  );
+  const expectedParticipants = useMemo(() => {
+    if (gathering?.access_type !== 'phone_list') return [];
+
+    const expectedNames = [];
+    if (gathering.host_name) expectedNames.push(gathering.host_name);
+
+    if (Array.isArray(gathering.allowed_phones)) {
+      gathering.allowed_phones.forEach((item, index) => {
+        const name =
+          typeof item === 'object' && item !== null
+            ? String(item.name || '').trim()
+            : '';
+        expectedNames.push(name || `초대자 ${index + 1}`);
+      });
+    }
+
+    const responseNames = new Set(
+      responseParticipants.map(person => person.guestName).filter(Boolean)
+    );
+    const seenNames = new Set(responseNames);
+
+    return expectedNames.reduce((items, name, index) => {
+      if (!name || seenNames.has(name)) return items;
+      seenNames.add(name);
+      items.push({
+        id: `expected-${index}-${name}`,
+        guestName: name,
+        availableDates: [],
+        suggestedRegions: [],
+        isExpectedOnly: true,
+      });
+      return items;
+    }, []);
+  }, [gathering, responseParticipants]);
+  const allParticipants = useMemo(
+    () => [...responseParticipants, ...expectedParticipants],
+    [expectedParticipants, responseParticipants]
+  );
   const participantNames = useMemo(
     () =>
-      (gathering?.participants || [])
+      responseParticipants
         .map(person => person.guestName)
         .filter(Boolean),
-    [gathering]
+    [responseParticipants]
   );
   const visibleAvailableDates = useMemo(
     () =>
@@ -694,8 +785,9 @@ export default function CheongmoParticipantPage() {
       })),
     [dateLeaders, expectedGuestCount, respondedCount]
   );
-  const roomParticipantCount = gathering?.participants?.length || 1;
-  const roomExpectedCount = expectedGuestCount || roomParticipantCount;
+  const roomParticipantCount = responseParticipants.length;
+  const roomSavedParticipantCount = savedParticipants.length;
+  const roomExpectedCount = expectedGuestCount || Math.max(roomParticipantCount, 1);
   const roomTopDate = topDateCandidates[0] || null;
   const roomTopRegion = regionCandidates[0] || null;
   const hostLocationTitle =
@@ -824,12 +916,14 @@ export default function CheongmoParticipantPage() {
       }
 
       setEntryToken(result.data.entryToken);
+      setIsHostSession(Boolean(result.data.isHost));
       window.localStorage.setItem(
         getStorageKey(gathering.slug),
         JSON.stringify({
           entryToken: result.data.entryToken,
           accessType: gathering.access_type,
           accessPhone: gathering.access_type === 'phone_list' ? value : null,
+          isHost: Boolean(result.data.isHost),
           participant: result.data.participant || null,
         })
       );
@@ -1073,6 +1167,65 @@ export default function CheongmoParticipantPage() {
     }
   };
 
+  const deleteParticipant = async targetParticipant => {
+    if (!targetParticipant?.id || !isHostSession) return;
+    if (targetParticipant.id === participant?.id) {
+      toast.error('현재 접속한 주최자 정보는 여기서 삭제하지 않아요.');
+      return;
+    }
+    const confirmed = window.confirm(
+      `${targetParticipant.guestName || '참여자'}님을 참여 목록에서 삭제할까요?`
+    );
+    if (!confirmed) return;
+
+    if (gathering.slug === 'sample') {
+      setGathering(prev =>
+        prev
+          ? {
+              ...prev,
+              participants: (prev.participants || []).filter(
+                item => item.id !== targetParticipant.id
+              ),
+            }
+          : prev
+      );
+      toast.success('참여자를 삭제했습니다.');
+      return;
+    }
+
+    try {
+      setDeletingParticipantId(targetParticipant.id);
+      const response = await fetch('/api/cheongmo-participant', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          slug: gathering.slug,
+          entryToken,
+          participantId: targetParticipant.id,
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || '참여자를 삭제하지 못했습니다.');
+      }
+      setGathering(prev =>
+        prev
+          ? {
+              ...prev,
+              participants: (prev.participants || []).filter(
+                item => item.id !== targetParticipant.id
+              ),
+            }
+          : prev
+      );
+      toast.success('참여자를 삭제했습니다.');
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setDeletingParticipantId('');
+    }
+  };
+
   const shareGathering = async () => {
     const shareUrl = metaUrl || `${getSiteUrl()}/cheongmo/${gathering.slug}`;
     try {
@@ -1126,10 +1279,564 @@ export default function CheongmoParticipantPage() {
         url={metaUrl}
       />
 
-      <main className={styles.page}>
-        <div className={styles.shell}>
+      <main className={`${styles.page} ${participant ? styles.tossPageHost : ''}`}>
+        <div className={`${styles.shell} ${participant ? styles.tossShell : ''}`}>
           {participant ? (
-              <section className={`${styles.communityRoom} ${styles.roomEnterFade}`}>
+            <>
+              <section className={`${styles.tossRoomPage} ${styles.roomEnterFade}`}>
+                <header className={styles.tossTopbar}>
+                  <Image
+                    src="/cheongmo/cheongmo-home-logo-pill.png"
+                    alt="정담"
+                    width={2073}
+                    height={758}
+                    priority
+                  />
+                  <button
+                    type="button"
+                    aria-label="청모 링크 공유하기"
+                    onClick={shareGathering}
+                  >
+                    공유
+                  </button>
+                </header>
+
+                <section className={styles.tossHeroBlock}>
+                  <div className={styles.tossHeroCopy}>
+                    <span className={styles.tossBlueLabel}>
+                      {isVotingClosed
+                        ? '투표 종료'
+                        : isEditingResponse
+                        ? '의견 수정 중'
+                        : '저장 완료'}
+                    </span>
+                    <h1>
+                      {participant.guestName}님,
+                      <br />
+                      {isEditingResponse
+                        ? '가능한 일정을 알려주세요'
+                        : '일정이 모이고 있어요'}
+                    </h1>
+                    <p>
+                      {roomParticipantCount}명이 참여했어요. 가장 많이 고른 날짜와
+                      지역을 한눈에 보고 바로 수정할 수 있어요.
+                    </p>
+                  </div>
+                  <div
+                    className={styles.tossInviteLottie}
+                    ref={inviteLottieRef}
+                    aria-hidden="true"
+                  />
+                </section>
+
+                <section className={styles.tossStorePanel} aria-label="앱 다운로드">
+                  <a
+                    href={appStoreUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span className={styles.tossStoreIcon}></span>
+                    <div>
+                      <small>Download</small>
+                      <strong>App Store</strong>
+                    </div>
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => toast('현재 베타테스터만 진행중입니다.')}
+                  >
+                    <span className={styles.tossStoreIcon}>▶</span>
+                    <div>
+                      <small>Beta</small>
+                      <strong>Google Play</strong>
+                    </div>
+                  </button>
+                </section>
+
+                <section className={styles.tossSummaryList} aria-label="조율 요약">
+                  <article className={styles.tossSummaryRow}>
+                    <span className={styles.tossDateIcon}>
+                      {roomTopDate
+                        ? new Date(`${roomTopDate.date}T00:00:00`).getDate()
+                        : '?'}
+                    </span>
+                    <div>
+                      <em>가장 유력한 날짜</em>
+                      <strong>
+                        {roomTopDate ? formatDateLabel(roomTopDate.date) : '집계 전'}
+                      </strong>
+                      <p>
+                        {roomTopDate
+                          ? `${roomTopDate.count}명 선택`
+                          : '아직 선택한 날짜가 없어요'}
+                      </p>
+                    </div>
+                    <b>{roomTopDateProgress || 0}%</b>
+                  </article>
+
+                  <button
+                    className={styles.tossSummaryRow}
+                    type="button"
+                    onClick={() =>
+                      setExpandedTossPanel(panel =>
+                        panel === 'region' ? '' : 'region'
+                      )
+                    }
+                  >
+                    <span className={styles.tossPinIcon}>⌖</span>
+                    {gathering.location_mode === 'ask_guests' ? (
+                      <div>
+                        <em>가장 유력한 지역</em>
+                        <strong>{roomTopRegion?.name || '지역 의견 받는 중'}</strong>
+                        <p>
+                          {roomTopRegion
+                            ? `${roomTopRegion.count}명이 선택했어요`
+                            : '만나기 편한 지역을 골라주세요'}
+                        </p>
+                      </div>
+                    ) : (
+                      <div>
+                        <em>모임 장소</em>
+                        <strong>{hostLocationTitle}</strong>
+                        <p>{hostLocationDetails[0] || '주최자가 정한 장소예요'}</p>
+                      </div>
+                    )}
+                    <i
+                      className={`${styles.tossChevron} ${
+                        expandedTossPanel === 'region'
+                          ? styles.tossChevronOpen
+                          : ''
+                      }`}
+                      aria-hidden="true"
+                    />
+                  </button>
+
+                  <div
+                    className={`${styles.tossInlinePanel} ${
+                      expandedTossPanel === 'region'
+                        ? styles.tossInlinePanelOpen
+                        : ''
+                    }`}
+                    aria-hidden={expandedTossPanel !== 'region'}
+                  >
+                      {gathering.location_mode === 'ask_guests' ? (
+                        regionCandidates.length > 0 ? (
+                          regionCandidates.slice(0, 5).map((region, index) => (
+                            <div key={region.name} className={styles.tossMiniRow}>
+                              <i>{index + 1}</i>
+                              <div>
+                                <strong>{region.name}</strong>
+                                <span>
+                                  {region.names.length > 0
+                                    ? region.names.join(', ')
+                                    : '아직 선택한 사람이 없어요'}
+                                </span>
+                              </div>
+                              <b>{region.count}명</b>
+                            </div>
+                          ))
+                        ) : (
+                          <p>아직 지역 후보가 없습니다.</p>
+                        )
+                      ) : (
+                        <>
+                          {hostLocationDetails.map(item => (
+                            <div key={item} className={styles.tossMiniRow}>
+                              <i>장소</i>
+                              <div>
+                                <strong>{item}</strong>
+                                <span>주최자가 정한 모임 정보예요</span>
+                              </div>
+                            </div>
+                          ))}
+                          {hostMapLinks.length > 0 && (
+                            <div className={styles.tossMapLinks}>
+                              {hostMapLinks.map(link => (
+                                <a
+                                  href={link.href}
+                                  key={link.label}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                >
+                                  {link.label}
+                                </a>
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      )}
+                  </div>
+
+                  <button
+                    className={styles.tossSummaryRow}
+                    type="button"
+                    onClick={() =>
+                      setExpandedTossPanel(panel =>
+                        panel === 'people' ? '' : 'people'
+                      )
+                    }
+                  >
+                    <span className={styles.tossPeopleIcon}>●</span>
+                    <div>
+                      <em>참여</em>
+                      <strong>
+                        {roomParticipantCount}
+                        {expectedGuestCount ? ` / ${expectedGuestCount}` : ''}
+                      </strong>
+                      <p>
+                        {participantNames.slice(0, 3).join(', ')}
+                        {participantNames.length > 3
+                          ? ` 외 ${participantNames.length - 3}명`
+                          : ''}
+                      </p>
+                    </div>
+                    <i
+                      className={`${styles.tossChevron} ${
+                        expandedTossPanel === 'people'
+                          ? styles.tossChevronOpen
+                          : ''
+                      }`}
+                      aria-hidden="true"
+                    />
+                  </button>
+
+                  <div
+                    className={`${styles.tossInlinePanel} ${
+                      expandedTossPanel === 'people'
+                        ? styles.tossInlinePanelOpen
+                        : ''
+                    }`}
+                    aria-hidden={expandedTossPanel !== 'people'}
+                  >
+                      {allParticipants.length > 0 ? (
+                        allParticipants.map(person => {
+                          const saved = hasResponseContent(person);
+                          return (
+                            <div
+                              key={person.id || person.guestName}
+                              className={styles.tossMiniRow}
+                            >
+                              <i>{(person.guestName || '?').slice(0, 1)}</i>
+                              <div>
+                                <strong>{person.guestName}</strong>
+                                <span>{saved ? '의견 저장 완료' : '의견 저장 전'}</span>
+                              </div>
+                              <b
+                                className={
+                                  saved
+                                    ? styles.tossStatusSaved
+                                    : styles.tossStatusPending
+                                }
+                              >
+                                {saved ? '완료' : '대기'}
+                              </b>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <p>아직 입장한 참여자가 없습니다.</p>
+                      )}
+                  </div>
+                </section>
+
+                <section className={styles.tossSection}>
+                  <div className={styles.tossSectionTitle}>
+                    <h2>날짜</h2>
+                    <span>
+                      {isEditingResponse
+                        ? `${availableDates.length}개 선택`
+                        : '투표 현황'}
+                    </span>
+                  </div>
+
+                  {visibleAvailableDates.length > 0 && (
+                    <div className={styles.tossMySelection}>
+                      <span>내가 선택한 날짜</span>
+                      <div>
+                        {visibleAvailableDates
+                          .slice()
+                          .sort()
+                          .map(date => (
+                            <em key={date}>{formatDateLabel(date)}</em>
+                          ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {visibleMonth && (
+                    <article className={styles.tossCalendarCard}>
+                      <header>
+                        <button
+                          type="button"
+                          disabled={activeMonthIndex === 0}
+                          onClick={() =>
+                            setActiveMonthIndex(index => Math.max(index - 1, 0))
+                          }
+                        >
+                          ‹
+                        </button>
+                        <strong>{visibleMonth.title}</strong>
+                        <button
+                          type="button"
+                          disabled={activeMonthIndex >= monthCalendars.length - 1}
+                          onClick={() =>
+                            setActiveMonthIndex(index =>
+                              Math.min(
+                                index + 1,
+                                Math.max(monthCalendars.length - 1, 0)
+                              )
+                            )
+                          }
+                        >
+                          ›
+                        </button>
+                      </header>
+                      <div className={styles.tossWeekHeader}>
+                        {['일', '월', '화', '수', '목', '금', '토'].map(day => (
+                          <span key={day}>{day}</span>
+                        ))}
+                      </div>
+                      <div className={styles.tossCalendarGrid}>
+                        {visibleMonth.days.map((day, index) => {
+                          if (!day) {
+                            return (
+                              <i key={`toss-blank-${visibleMonth.value}-${index}`} />
+                            );
+                          }
+                          const names = dateSummary.get(day.value) || [];
+                          const selected = availableDates.includes(day.value);
+                          const alreadyCounted = names.includes(participant.guestName);
+                          const displayCount =
+                            names.length + (selected && !alreadyCounted ? 1 : 0);
+                          return (
+                            <button
+                              className={`${styles.tossDay} ${
+                                selected ? styles.tossDaySelected : ''
+                              } ${displayCount > 0 ? styles.tossDayVoted : ''} ${
+                                day.holiday ? styles.tossHoliday : ''
+                              } ${day.weekday === 0 ? styles.tossSunday : ''} ${
+                                day.weekday === 6 ? styles.tossSaturday : ''
+                              }`}
+                              key={day.value}
+                              type="button"
+                              disabled={!isEditingResponse || isVotingClosed}
+                              onClick={() => toggleAvailableDate(day.value)}
+                            >
+                              <span>{day.day}</span>
+                              {(day.holiday || displayCount > 0) && (
+                                <small>{day.holiday || `${displayCount}명`}</small>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </article>
+                  )}
+
+                  <div className={styles.tossLeaderList}>
+                    {dateLeaders.length > 0 ? (
+                      dateLeaders.slice(0, 5).map((item, index) => (
+                        <article key={item.date} className={styles.tossLeaderRow}>
+                          <i>{index + 1}</i>
+                          <div>
+                            <strong>{formatDateLabel(item.date)}</strong>
+                            <span>{item.names.join(', ')}</span>
+                          </div>
+                          <b>{item.count}명</b>
+                        </article>
+                      ))
+                    ) : (
+                      <p>아직 날짜 의견이 없습니다.</p>
+                    )}
+                  </div>
+                </section>
+
+                {gathering.location_mode === 'ask_guests' && (
+                  <section className={styles.tossSection}>
+                    <div className={styles.tossSectionTitle}>
+                      <h2>지역</h2>
+                      <span>복수 선택 가능</span>
+                    </div>
+
+                    <div className={styles.tossRegionInput}>
+                      <input
+                        value={regionInput}
+                        onChange={event => setRegionInput(event.target.value)}
+                        placeholder="강서구청, 성수, 홍대입구"
+                      />
+                      <button
+                        type="button"
+                        disabled={!isEditingResponse || isVotingClosed}
+                        onClick={addRegionSuggestion}
+                      >
+                        추가
+                      </button>
+                    </div>
+
+                    {regionSuggestions.length > 0 && (
+                      <div className={styles.tossSelectedRegions}>
+                        {regionSuggestions.map(region => (
+                          <button
+                            key={region}
+                            type="button"
+                            disabled={!isEditingResponse || isVotingClosed}
+                            onClick={() =>
+                              setRegionSuggestions(prev =>
+                                prev.filter(item => item !== region)
+                              )
+                            }
+                          >
+                            {region}
+                            <span>×</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className={styles.tossLeaderList}>
+                      {regionCandidates.length > 0 ? (
+                        regionCandidates.map((region, index) => {
+                          const selected = regionSuggestions.includes(region.name);
+                          return (
+                            <button
+                              className={`${styles.tossRegionRow} ${
+                                selected ? styles.tossRegionSelected : ''
+                              }`}
+                              key={region.name}
+                              type="button"
+                              disabled={!isEditingResponse || isVotingClosed}
+                              onClick={() =>
+                                setRegionSuggestions(prev =>
+                                  prev.includes(region.name)
+                                    ? prev.filter(item => item !== region.name)
+                                    : [...prev, region.name]
+                                )
+                              }
+                            >
+                              <i>{selected ? '✓' : index + 1}</i>
+                              <div>
+                                <strong>{region.name}</strong>
+                                <span>
+                                  {region.names.length > 0
+                                    ? region.names.join(', ')
+                                    : '아직 선택한 사람이 없어요'}
+                                </span>
+                              </div>
+                              <b>{region.count}명</b>
+                            </button>
+                          );
+                        })
+                      ) : (
+                        <p>아직 지역 후보가 없습니다.</p>
+                      )}
+                    </div>
+                  </section>
+                )}
+
+                <section className={styles.tossSection}>
+                  <div className={styles.tossSectionTitle}>
+                    <h2>참여자</h2>
+                    <span>
+                      {allParticipants.length}명 대상 · {roomSavedParticipantCount}명 저장
+                    </span>
+                  </div>
+                  <div className={styles.tossParticipantList}>
+                    {allParticipants.map(person => {
+                      const dates = filterDatesByMonths(
+                        person.availableDates,
+                        visibleMonth
+                          ? [visibleMonth.value]
+                          : gathering?.selected_months
+                      );
+                      const saved = hasResponseContent(person);
+                      return (
+                        <article
+                          className={styles.tossParticipantRow}
+                          key={person.id || person.guestName}
+                        >
+                          <i>{(person.guestName || '?').slice(0, 1)}</i>
+                          <div>
+                            <strong>
+                              {person.guestName}
+                              <em
+                                className={
+                                  saved
+                                    ? styles.tossStatusSaved
+                                    : styles.tossStatusPending
+                                }
+                              >
+                                {saved ? '저장 완료' : '저장 전'}
+                              </em>
+                            </strong>
+                            <span>
+                              {saved && dates.length > 0
+                                ? dates
+                                    .slice()
+                                    .sort()
+                                    .map(date => formatDateLabel(date))
+                                    .join(', ')
+                                : saved
+                                  ? '이번 달 선택 없음'
+                                  : '아직 날짜와 지역 의견을 저장하지 않았어요'}
+                            </span>
+                          </div>
+                          {isHostSession && !person.isExpectedOnly && (
+                            <button
+                              className={styles.tossDeleteParticipant}
+                              type="button"
+                              disabled={deletingParticipantId === person.id}
+                              onClick={() => deleteParticipant(person)}
+                            >
+                              {deletingParticipantId === person.id ? '삭제 중' : '삭제'}
+                            </button>
+                          )}
+                        </article>
+                      );
+                    })}
+                  </div>
+                </section>
+
+                <Link
+                  className={styles.tossCreateGatheringLink}
+                  href="/cheongmo/new"
+                >
+                  <span>나도 모임 만들어볼래요?</span>
+                  <strong>만들기</strong>
+                </Link>
+
+                <div className={styles.tossBottomAction}>
+                  {isVotingClosed ? (
+                    <>
+                      <button type="button" disabled>
+                        투표 종료
+                      </button>
+                      <p>{votingClosedMessage}</p>
+                    </>
+                  ) : isEditingResponse ? (
+                    <>
+                      <button
+                        type="button"
+                        disabled={submitting}
+                        onClick={saveCommunityResponse}
+                      >
+                        {submitting ? '저장 중' : '내 의견 저장'}
+                      </button>
+                      <p>저장하면 모두에게 바로 반영돼요.</p>
+                    </>
+                  ) : (
+                    <>
+                      <button type="button" onClick={() => setIsEditingResponse(true)}>
+                        내 의견 수정하기
+                      </button>
+                      <p>수정 후 다시 저장해주세요.</p>
+                    </>
+                  )}
+                </div>
+              </section>
+
+              <section
+                className={`${styles.communityRoom} ${styles.roomEnterFade} ${styles.legacyRoomHidden}`}
+              >
               <section className={styles.roomAppHero}>
                 <div className={styles.roomAppHeroContent}>
                   <div className={styles.roomAppHeroText}>
@@ -1871,6 +2578,7 @@ export default function CheongmoParticipantPage() {
                   </div>
               </section>
             </section>
+          </>
           ) : (
             <>
               {locked || entrySuccessSheetOpen ? (

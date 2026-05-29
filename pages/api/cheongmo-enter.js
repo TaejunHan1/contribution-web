@@ -118,6 +118,7 @@ export default async function handler(req, res) {
           accessType: gathering.access_type,
           phone,
         }),
+        isHost: Boolean(isHostPhone),
         participant,
       },
     });
