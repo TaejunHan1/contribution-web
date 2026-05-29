@@ -323,6 +323,7 @@ export default function CheongmoParticipantPage() {
   const [savingHostDates, setSavingHostDates] = useState(false);
   const [activeMonthIndex, setActiveMonthIndex] = useState(0);
   const [expandedTossPanel, setExpandedTossPanel] = useState('');
+  const [closedBriefingOpen, setClosedBriefingOpen] = useState(false);
   const [entrySuccessSheetOpen, setEntrySuccessSheetOpen] = useState(false);
   const [entrySuccessPhase, setEntrySuccessPhase] = useState('success');
   const [saveSuccessSheetOpen, setSaveSuccessSheetOpen] = useState(false);
@@ -334,6 +335,7 @@ export default function CheongmoParticipantPage() {
   const roomRevealTimerRef = useRef(null);
   const saveSuccessTimerRef = useRef(null);
   const inviteLottieRef = useRef(null);
+  const closedLottieRef = useRef(null);
   const slugValue = typeof slug === 'string' ? slug : '';
   const metaUrl = slugValue
     ? `${getSiteUrl()}/cheongmo/${encodeURIComponent(slugValue)}`
@@ -707,14 +709,56 @@ export default function CheongmoParticipantPage() {
     gathering?.access_type === 'phone_list' &&
     expectedGuestCount > 0 &&
     respondedCount >= expectedGuestCount;
-  const isVotingClosed = isPasswordDeadlineClosed || isPhoneListVotingClosed;
+  const isForcedClosedPreview = gathering?.slug === 'y2426hra';
+  const isVotingClosed =
+    isForcedClosedPreview || isPasswordDeadlineClosed || isPhoneListVotingClosed;
   const voteDeadlineLabel =
     gathering?.access_type === 'password'
       ? formatDeadlineLabel(gathering.vote_deadline_at)
       : '';
-  const votingClosedMessage = isPasswordDeadlineClosed
+  const votingClosedMessage =
+    isForcedClosedPreview || isPasswordDeadlineClosed
     ? '투표 마감일이 지나 의견 수정이 종료됐어요.'
     : '초대된 인원이 모두 투표해 의견 수정이 종료됐어요.';
+
+  useEffect(() => {
+    if (participant && isVotingClosed) {
+      setClosedBriefingOpen(true);
+    }
+  }, [isVotingClosed, participant]);
+
+  useEffect(() => {
+    if (!closedBriefingOpen || !closedLottieRef.current) return undefined;
+
+    let animation = null;
+    let cancelled = false;
+
+    import('lottie-web')
+      .then(module => {
+        if (cancelled || !closedLottieRef.current) return;
+        animation = module.default.loadAnimation({
+          container: closedLottieRef.current,
+          renderer: 'svg',
+          loop: true,
+          autoplay: true,
+          path: '/cheongmo/vote-closed-motion.json?v=closed-20260529',
+          rendererSettings: {
+            preserveAspectRatio: 'xMidYMid meet',
+          },
+        });
+      })
+      .catch(() => {
+        if (closedLottieRef.current) {
+          closedLottieRef.current.dataset.fallback = 'true';
+        }
+      });
+
+    return () => {
+      cancelled = true;
+      if (animation) animation.destroy();
+    };
+  }, [closedBriefingOpen]);
+
   const hostUnavailableDateSet = useMemo(
     () => new Set(hostUnavailableDates),
     [hostUnavailableDates]
@@ -876,6 +920,19 @@ export default function CheongmoParticipantPage() {
         },
       ]
     : [];
+  const closedDateLabel = roomTopDate
+    ? formatDateLabel(roomTopDate.date)
+    : '날짜 확정 대기';
+  const closedPlaceTitle =
+    gathering?.location_mode === 'ask_guests'
+      ? roomTopRegion?.name || '장소 확정 대기'
+      : hostLocationTitle;
+  const closedPlaceDescription =
+    gathering?.location_mode === 'ask_guests'
+      ? roomTopRegion
+        ? `${roomTopRegion.count}명이 가장 많이 선택했어요`
+        : '아직 가장 많이 선택된 장소가 없어요'
+      : hostLocationDetails[0] || '주최자가 정한 장소예요';
   const roomTopDateProgress = roomTopDate
     ? Math.max(
         10,
@@ -2011,6 +2068,55 @@ export default function CheongmoParticipantPage() {
                   <strong>만들기</strong>
                 </Link>
 
+                {isVotingClosed && closedBriefingOpen && (
+                  <section
+                    className={styles.tossClosedOverlay}
+                    aria-label="투표 종료 결과"
+                  >
+                    <div className={styles.tossClosedDialog}>
+                      <button
+                        className={styles.tossClosedDismiss}
+                        type="button"
+                        aria-label="마감 결과 닫기"
+                        onClick={() => setClosedBriefingOpen(false)}
+                      >
+                        ×
+                      </button>
+                      <div
+                        className={styles.tossClosedLottie}
+                        ref={closedLottieRef}
+                        aria-hidden="true"
+                      />
+                      <span>투표 종료</span>
+                      <h2>모임 일정이 정리됐어요</h2>
+                      <p>{votingClosedMessage}</p>
+                      <div className={styles.tossClosedResultList}>
+                        <article>
+                          <em>날짜</em>
+                          <strong>{closedDateLabel}</strong>
+                          <small>
+                            {roomTopDate
+                              ? `${roomTopDate.count}명 선택`
+                              : '확정된 날짜가 아직 없어요'}
+                          </small>
+                        </article>
+                        <article>
+                          <em>장소</em>
+                          <strong>{closedPlaceTitle}</strong>
+                          <small>{closedPlaceDescription}</small>
+                        </article>
+                      </div>
+                      <button
+                        className={styles.tossClosedPrimary}
+                        type="button"
+                        onClick={() => setClosedBriefingOpen(false)}
+                      >
+                        결과 확인하기
+                      </button>
+                    </div>
+                  </section>
+                )}
+
                 <div className={styles.tossBottomAction}>
                   {isEditingHostDates ? (
                     <>
@@ -2025,8 +2131,11 @@ export default function CheongmoParticipantPage() {
                     </>
                   ) : isVotingClosed ? (
                     <>
-                      <button type="button" disabled>
-                        투표 종료
+                      <button
+                        type="button"
+                        onClick={() => setClosedBriefingOpen(true)}
+                      >
+                        마감 결과 보기
                       </button>
                       <p>{votingClosedMessage}</p>
                     </>

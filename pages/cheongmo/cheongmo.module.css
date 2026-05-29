@@ -1066,6 +1066,143 @@ button.tossSummaryRow:hover {
   opacity: 0.55;
 }
 
+.tossClosedOverlay {
+  position: fixed;
+  z-index: 40;
+  inset: 0;
+  display: grid;
+  padding: 26px 22px max(26px, env(safe-area-inset-bottom));
+  place-items: center;
+  background: rgba(25, 31, 40, 0.28);
+  backdrop-filter: blur(14px);
+  animation: tossClosedFadeIn 220ms ease both;
+}
+
+.tossClosedDialog {
+  position: relative;
+  display: grid;
+  width: min(100%, 386px);
+  gap: 12px;
+  padding: 24px 22px 20px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 28px 80px rgba(25, 31, 40, 0.22);
+  text-align: center;
+  animation: tossClosedDialogIn 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.tossClosedDismiss {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: #f2f4f6;
+  color: #6b7684;
+  cursor: pointer;
+  font-size: 22px;
+  font-weight: 650;
+  line-height: 1;
+}
+
+.tossClosedLottie {
+  width: 132px;
+  height: 132px;
+  margin: 2px auto -2px;
+}
+
+.tossClosedLottie svg {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.tossClosedLottie[data-fallback='true'] {
+  border-radius: 36px;
+  background: #e8f2ff;
+}
+
+.tossClosedDialog > span {
+  color: #3182f6;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.tossClosedDialog h2 {
+  margin: 0;
+  color: #191f28;
+  font-size: 25px;
+  font-weight: 950;
+  letter-spacing: 0;
+  line-height: 1.24;
+}
+
+.tossClosedDialog p {
+  margin: 0;
+  color: #6b7684;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.tossClosedResultList {
+  display: grid;
+  gap: 8px;
+  margin: 8px 0 2px;
+}
+
+.tossClosedResultList article {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr);
+  gap: 3px 12px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: #f8fafc;
+  text-align: left;
+}
+
+.tossClosedResultList em {
+  grid-row: span 2;
+  align-self: center;
+  color: #8b95a1;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 850;
+}
+
+.tossClosedResultList strong {
+  overflow: hidden;
+  color: #191f28;
+  font-size: 17px;
+  font-weight: 950;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tossClosedResultList small {
+  overflow: hidden;
+  color: #6b7684;
+  font-size: 12px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tossClosedPrimary {
+  min-height: 54px;
+  margin-top: 4px;
+  border: 0;
+  border-radius: 16px;
+  background: #3182f6;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 900;
+}
+
 .tossBottomAction {
   position: fixed;
   z-index: 20;
@@ -1133,6 +1270,28 @@ button.tossSummaryRow:hover {
   from {
     opacity: 0;
     transform: translateY(6px) scale(0.92);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes tossClosedFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes tossClosedDialogIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
   }
 
   to {
