@@ -20,6 +20,7 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
   });
   const [isLoading, setIsLoading] = useState(false);
   const [verificationSent, setVerificationSent] = useState(false);
+  const [verificationId, setVerificationId] = useState(null);
   const [timer, setTimer] = useState(0);
   const [error, setError] = useState('');
   
@@ -54,6 +55,7 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
       setExistingGuestbook(null);
       setFormData({ phone: '', verificationCode: '', guestName: '', message: '', contributionAmount: '', relationship: '', agreed: false });
       setVerificationSent(false);
+      setVerificationId(null);
       setTimer(0);
       setError('');
       setIsLoading(false);
@@ -270,6 +272,7 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
         const phoneNumbers = formData.phone.replace(/[^\d]/g, '');
         const verifiedPhone = `+82${phoneNumbers.slice(1)}`;
         localStorage.setItem('verifiedPhone', verifiedPhone);
+        setVerificationId(result.verificationId || null);
         // 수정 모드인 경우 기존 데이터로 폼 채우기
         if (mode === 'edit' && existingGuestbook) {
           // 기존 방명록 전체 데이터 가져오기
@@ -407,6 +410,7 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
           },
           body: JSON.stringify({
             phone: verifiedPhone,
+            verificationId,
             guestName: formData.guestName.trim(),
             message: formData.message.trim(),
             eventId: eventData?.id || null

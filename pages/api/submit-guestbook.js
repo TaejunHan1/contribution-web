@@ -1,12 +1,12 @@
 // pages/api/submit-guestbook.js - 방명록 제출 API
-import { normalizeKoreanPhone } from '../../lib/phoneUtils';
+import { getPhoneLookupValues, normalizeKoreanPhone } from '../../lib/phoneUtils';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { phone, guestName, message, eventId } = req.body;
+  const { phone, guestName, message, eventId, verificationId } = req.body;
 
   if (!phone || !guestName || !message) {
     return res.status(400).json({ error: '필수 정보가 누락되었습니다.' });
@@ -28,18 +28,32 @@ export default async function handler(req, res) {
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // 먼저 SMS 인증이 완료되었는지 확인
-    const { data: verificationData, error: verificationError } = await supabase
+    const phoneLookupValues = getPhoneLookupValues(phone);
+
+    let verificationQuery = supabase
       .from('sms_verifications')
       .select('*')
-      .eq('phone', phone)
-      .eq('is_verified', true)
+      .eq('is_verified', true);
+
+    if (verificationId) {
+      verificationQuery = verificationQuery.eq('id', verificationId);
+    } else {
+      verificationQuery = verificationQuery.in('phone', phoneLookupValues);
+    }
+
+    // 먼저 SMS 인증이 완료되었는지 확인
+    const { data: verificationData, error: verificationError } = await verificationQuery
       .order('created_at', { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
     if (verificationError || !verificationData) {
-      console.log('SMS 인증 확인 실패:', { phone, error: verificationError });
+      console.log('SMS 인증 확인 실패:', {
+        phone,
+        verificationId,
+        phoneLookupValues,
+        error: verificationError,
+      });
       return res.status(400).json({ 
         success: false, 
         error: '핸드폰 인증이 완료되지 않았습니다.' 

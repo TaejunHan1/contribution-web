@@ -87,6 +87,8 @@ export default async function handler(req, res) {
       success: true,
       message: '인증이 완료되었습니다.',
       verified: true,
+      verificationId: verificationData.id,
+      verifiedPhone: normalizedPhone,
     });
   } catch (error) {
     console.error('인증번호 검증 API 오류:', error);
