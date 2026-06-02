@@ -1,4 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" fill="#3182F6"/>
-  <text x="16" y="24" font-size="20" text-anchor="middle" font-family="Arial, sans-serif">💎</text>
+  <rect width="32" height="32" rx="7" fill="#ffffff"/>
+  <path
+    d="M8 6.5h8.8v11.8c0 4.7-3.2 7.4-8.3 7.4H6.8v-4h1.5c2.8 0 4.1-1.4 4.1-4.1V10.5H8z"
+    fill="#111111"
+  />
+  <path
+    d="M16.2 6.5h4.6c5.2 0 8.4 3.6 8.4 9.5s-3.2 9.5-8.4 9.5h-4.6v-4h4.3c2.9 0 4.6-2.1 4.6-5.5s-1.7-5.5-4.6-5.5h-4.3z"
+    fill="#111111"
+  />
+  <path
+    d="M18.2 13.2h2.1c1.5 0 2.3 1 2.3 2.8s-.8 2.8-2.3 2.8h-2.1z"
+    fill="#ffffff"
+  />
 </svg>

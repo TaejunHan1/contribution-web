@@ -665,15 +665,12 @@ const TicketFlightTemplate = ({
                 </p>
               )}
               <div className={styles.mapContainer}>
-                <iframe
-                  src={`https://www.google.com/maps?q=${encodeURIComponent(`${locName} ${locAddr}`.trim())}&output=embed&hl=ko`}
+                <GoogleMapEmbed
+                  address={`${locName} ${locAddr}`.trim()}
+                  venueName={locName}
                   width="100%"
-                  height="200"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title="위치 지도"
+                  height="200px"
+                  showDirections={false}
                 />
               </div>
               {/* 내비 버튼 */}

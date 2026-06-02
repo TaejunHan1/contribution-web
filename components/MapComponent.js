@@ -1,33 +1,71 @@
 // components/GoogleMapEmbed.js - 구글 지도 임베드 컴포넌트
-const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }) => {
-  // 전달받은 주소 또는 기본 주소 사용
-  const fullAddress = address || '서울시 중구 소공로 119';
-  
-  // 도로명주소만 추출 (시/도 이후 부분, 중복 제거)
-  const extractRoadAddress = (addr) => {
-    const regionPattern = /(서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충북|충남|전북|전남|경북|경남|제주)/g;
-    const matches = [...addr.matchAll(regionPattern)];
-    if (matches.length === 0) {
-      return addr.replace(/\s+\d+층\b.*/g, '').replace(/\s+\d+호\b.*/g, '').trim();
+const GoogleMapEmbed = ({
+  address,
+  venueName,
+  width = "100%",
+  height = "300px",
+  showDirections = true,
+}) => {
+  const normalizeMapText = (value) => {
+    const words = String(value || '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .split(' ')
+      .filter(Boolean);
+
+    if (words.length <= 1) return words.join(' ');
+
+    const output = [];
+    for (let i = 0; i < words.length; i += 1) {
+      let repeated = false;
+      const maxSize = Math.min(10, output.length, words.length - i);
+
+      for (let size = maxSize; size >= 2; size -= 1) {
+        const previous = output.slice(output.length - size).join(' ');
+        const current = words.slice(i, i + size).join(' ');
+        if (previous === current) {
+          i += size - 1;
+          repeated = true;
+          break;
+        }
+      }
+
+      if (!repeated) output.push(words[i]);
     }
-    // 첫 번째 시도명부터 시작, 두 번째 시도명 직전까지만 사용 (중복 방지)
-    const startIdx = matches[0].index;
-    let roadAddr = matches.length > 1
-      ? addr.slice(startIdx, matches[1].index).trim()
-      : addr.slice(startIdx);
-    roadAddr = roadAddr
-      .replace(/\s+\d+층\b.*/g, '')
-      .replace(/\s+B\d+\b.*/g, '')
-      .replace(/\s+\d+호\b.*/g, '')
+
+    return output.join(' ').trim();
+  };
+
+  // 전달받은 주소 또는 기본 주소 사용
+  const fullAddress = normalizeMapText(address || '서울시 중구 소공로 119');
+  const cleanedVenueName = normalizeMapText(venueName);
+
+  // 도로명주소만 추출한다. 예: "부산 해운대구 센텀1로 17 단독홀" -> "센텀1로 17"
+  const extractRoadAddress = (addr) => {
+    const withoutDetail = addr
+      .replace(/\s+\d+\s*층.*$/g, '')
+      .replace(/\s+B\d+\b.*$/g, '')
+      .replace(/\s+\d+\s*호.*$/g, '')
       .replace(/\s{2,}/g, ' ')
       .trim();
-    return roadAddr;
+
+    const roadMatch = withoutDetail.match(/([가-힣A-Za-z0-9·.-]+(?:로|길)\s*\d+(?:-\d+)?)/);
+    if (roadMatch) return roadMatch[1].replace(/\s{2,}/g, ' ').trim();
+
+    return withoutDetail;
   };
 
   const cleanedAddress = extractRoadAddress(fullAddress);
   const searchQuery = encodeURIComponent(cleanedAddress);
-  // 지도 임베드에는 전체 주소 사용 (venueName 포함)
-  const embedQuery = encodeURIComponent(venueName ? `${venueName} ${cleanedAddress}` : cleanedAddress);
+  const venueLooksLikeAddress = /(서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충북|충남|전북|전남|경북|경남|제주|로\b|길\b|\d)/.test(cleanedVenueName);
+  const shouldUseVenueName =
+    cleanedVenueName
+    && !venueLooksLikeAddress
+    && !cleanedAddress.includes(cleanedVenueName);
+  const embedSearchText = shouldUseVenueName
+    ? `${cleanedVenueName} ${cleanedAddress}`.trim()
+    : cleanedAddress;
+  const embedQuery = encodeURIComponent(embedSearchText);
   
   // Google Maps Embed API URL (정확한 위치 표시)
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -36,8 +74,8 @@ const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }
   
   // API key 문제 시 fallback URL 사용
   const mapUrl = apiKey
-    ? `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${embedQuery}&zoom=16&maptype=roadmap&language=ko&region=KR`
-    : `https://www.google.com/maps?q=${embedQuery}&output=embed&hl=ko`;
+    ? `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${embedQuery}&zoom=15&maptype=roadmap&language=ko&region=KR`
+    : `https://www.google.com/maps?q=${embedQuery}&output=embed&hl=ko&z=15`;
 
   const openMap = (appUrl, fallbackUrl) => {
     const startedAt = Date.now();
@@ -111,7 +149,7 @@ const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }
         borderRadius: '15px',
         overflow: 'hidden',
         boxShadow: '0 5px 15px rgba(0, 0, 0, 0.1)',
-        marginBottom: '16px'
+        marginBottom: showDirections ? '16px' : 0
       }}>
         <iframe
           width="100%"
@@ -125,12 +163,13 @@ const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }
           title="Location Map"
           onError={(e) => {
             // fallback으로 일반 Google Maps URL 사용
-            e.target.src = `https://www.google.com/maps?q=${searchQuery}&output=embed&hl=ko`;
+            e.target.src = `https://www.google.com/maps?q=${searchQuery}&output=embed&hl=ko&z=15`;
           }}
         />
       </div>
       
       {/* 지도 앱 연결 버튼들 */}
+      {showDirections && (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
 
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -149,6 +188,7 @@ const GoogleMapEmbed = ({ address, venueName, width = "100%", height = "300px" }
         </div>
 
       </div>
+      )}
     </div>
   );
 };

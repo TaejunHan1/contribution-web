@@ -9,7 +9,7 @@
   "display": "standalone",
   "orientation": "portrait-primary",
 
-  "theme_color": "#3182F6",
+  "theme_color": "#111111",
   "background_color": "#FFFFFF",
 
   "categories": ["productivity", "social", "finance"],
@@ -19,27 +19,27 @@
 
   "icons": [
     {
-      "src": "/next.svg",
+      "src": "/jeongdamlogo.png",
       "sizes": "72x72",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/vercel.svg",
+      "src": "/jeongdamlogo.png",
       "sizes": "96x96",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/next.svg",
+      "src": "/jeongdamlogo.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/vercel.svg",
+      "src": "/jeongdamlogo.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ],
@@ -52,7 +52,7 @@
       "url": "/?action=scan",
       "icons": [
         {
-          "src": "/next.svg",
+          "src": "/jeongdamlogo.png",
           "sizes": "96x96"
         }
       ]
@@ -64,7 +64,7 @@
       "url": "/?action=direct",
       "icons": [
         {
-          "src": "/vercel.svg",
+          "src": "/jeongdamlogo.png",
           "sizes": "96x96"
         }
       ]

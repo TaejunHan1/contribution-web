@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import GuestbookModal from '../GuestbookModal';
 import EditGuestbookModal from '../EditGuestbookModal';
+import GoogleMapEmbed from '../MapComponent';
 import styles from './CinemaTemplate.module.css';
 
 // ══════════════════════════════════════════════════════
@@ -722,15 +723,12 @@ const CinemaTemplate = ({ eventData = {}, categorizedImages = {}, allowMessages 
             {locName && <div className={styles.locName}>{locName}</div>}
             {locAddr && <div className={styles.locAddr}>{locAddr}</div>}
             <div className={styles.mapBox}>
-              <iframe
-                src={`https://www.google.com/maps?q=${encodeURIComponent(`${locName} ${locAddr}`.trim())}&output=embed&hl=ko`}
+              <GoogleMapEmbed
+                address={`${locName} ${locAddr}`.trim()}
+                venueName={locName}
                 width="100%"
-                height="200"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="위치 지도"
+                height="200px"
+                showDirections={false}
               />
             </div>
             <div className={styles.navRow}>

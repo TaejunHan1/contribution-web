@@ -1,8 +1,9 @@
 // components/WeddingIntroOverlay.js
 // 앱의 WeddingIntroSelectModal 도어 인트로를 웹 CSS로 1:1 포팅
-import { useState, useEffect, useRef } from 'react';
+import { createContext, useContext, useState, useEffect, useRef } from 'react';
 
 const SERIF = '"Playfair Display", Georgia, "Noto Serif KR", serif';
+const IntroOptionsContext = createContext({ isLargeTapHint: false });
 
 // ── 신랑 · 신부 이름 좌우 분리 레이아웃 ──
 // 문 이음새(가운데) 기준으로 신랑 우측정렬 / 신부 좌측정렬
@@ -26,6 +27,7 @@ function NamesRow({ groom, bride, color }) {
 
 // ── 터치 힌트 (애니메이션) ──
 function TapHint({ textColor, pillBg, visible }) {
+  const { isLargeTapHint } = useContext(IntroOptionsContext);
   const [pulse, setPulse] = useState(false);
   useEffect(() => {
     if (!visible) return;
@@ -36,16 +38,19 @@ function TapHint({ textColor, pillBg, visible }) {
   return (
     <div style={{
       marginTop: 20,
-      padding: '6px 14px',
+      padding: isLargeTapHint ? '10px 18px' : '6px 14px',
       backgroundColor: pillBg,
-      borderRadius: 20,
-      border: `0.5px solid ${textColor}`,
+      borderRadius: isLargeTapHint ? 999 : 20,
+      border: `${isLargeTapHint ? 1 : 0.5}px solid ${textColor}`,
       opacity: pulse ? 0.25 : 1,
       transform: `scale(${pulse ? 0.93 : 1})`,
       transition: 'opacity 850ms ease, transform 850ms ease',
+      boxShadow: isLargeTapHint ? '0 12px 28px rgba(0,0,0,0.18)' : undefined,
     }}>
       <span style={{
-        fontSize: 11, letterSpacing: 2.5, color: textColor,
+        fontSize: isLargeTapHint ? 14 : 11,
+        letterSpacing: isLargeTapHint ? 2.7 : 2.5,
+        color: textColor,
         fontWeight: '600', fontFamily: SERIF,
       }}>초대장 열기</span>
     </div>
@@ -475,6 +480,7 @@ export default function WeddingIntroOverlay({
   tapToOpen = false,
   groomName = '',
   brideName = '',
+  isLargeTapHint = false,
   onEnd,
 }) {
   // animPhase: 'idle' → 'sealOut' → 'doorsOut' → 'done'
@@ -522,22 +528,24 @@ export default function WeddingIntroOverlay({
   if (animPhase === 'done') return null;
 
   return (
-    <div
-      onClick={handleTap}
-      style={{
-        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-        zIndex: 99999, overflow: 'hidden',
-        cursor: tapToOpen && animPhase === 'idle' ? 'pointer' : 'default',
-        userSelect: 'none',
-      }}
-    >
-      <PanelComp side="left"  animPhase={animPhase} />
-      <PanelComp side="right" animPhase={animPhase} />
-      <SealComp
-        groom={groomName} bride={brideName}
-        tapToOpen={tapToOpen} animPhase={animPhase}
-        sealScale={sealScale}
-      />
-    </div>
+    <IntroOptionsContext.Provider value={{ isLargeTapHint }}>
+      <div
+        onClick={handleTap}
+        style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          zIndex: 99999, overflow: 'hidden',
+          cursor: tapToOpen && animPhase === 'idle' ? 'pointer' : 'default',
+          userSelect: 'none',
+        }}
+      >
+        <PanelComp side="left"  animPhase={animPhase} />
+        <PanelComp side="right" animPhase={animPhase} />
+        <SealComp
+          groom={groomName} bride={brideName}
+          tapToOpen={tapToOpen} animPhase={animPhase}
+          sealScale={sealScale}
+        />
+      </div>
+    </IntroOptionsContext.Provider>
   );
 }

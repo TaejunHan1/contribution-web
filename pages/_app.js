@@ -130,8 +130,9 @@ function MyApp({ Component, pageProps }) {
         />
 
         {/* 파비콘 */}
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="alternate icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.svg?v=jeongdam-20260602" type="image/svg+xml" />
+        <link rel="alternate icon" href="/jeongdamlogo.png?v=jeongdam-20260602" type="image/png" />
+        <link rel="apple-touch-icon" href="/jeongdamlogo.png?v=jeongdam-20260602" />
 
         {/* 기본 프리커넥트만 유지 */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />

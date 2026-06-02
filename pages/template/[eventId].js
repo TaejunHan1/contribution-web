@@ -584,6 +584,8 @@ export default function TemplatePage({
 
   const pageTitle = buildInvitationTitle(event);
   const pageDescription = buildInvitationDescription(event);
+  const isTaejunJiyeonInvitation =
+    event.public_slug === 'taejun-jiyeon' || invitationPath === '/w/taejun-jiyeon';
 
   return (
     <>
@@ -649,6 +651,7 @@ export default function TemplatePage({
           tapToOpen={event.additional_info.intro_effect.tapToOpen || false}
           groomName={event.groom_name || ''}
           brideName={event.bride_name || ''}
+          isLargeTapHint={isTaejunJiyeonInvitation}
           onEnd={() => setShowIntro(false)}
         />
       )}
