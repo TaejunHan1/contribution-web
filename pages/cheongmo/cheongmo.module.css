@@ -141,6 +141,11 @@
   width: 228px;
   height: 228px;
   margin: -6px auto -12px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: default;
+  font: inherit;
 }
 
 .tossInviteLottie::before {
@@ -2041,6 +2046,274 @@ button.tossSummaryRow:hover {
   color: #727d90;
   font-size: 15px;
   font-weight: 750;
+}
+
+.cheongmoAdminOverlay {
+  position: fixed;
+  z-index: 60;
+  inset: 0;
+  display: grid;
+  align-items: end;
+  background: rgba(25, 31, 40, 0.45);
+}
+
+.cheongmoAdminSheet {
+  position: relative;
+  display: grid;
+  gap: 18px;
+  width: min(100%, 430px);
+  max-height: min(86vh, 760px);
+  margin: 0 auto;
+  padding: 24px 22px max(22px, env(safe-area-inset-bottom));
+  overflow: auto;
+  border-radius: 28px 28px 0 0;
+  background: #ffffff;
+  box-shadow: 0 -24px 60px rgba(25, 31, 40, 0.22);
+}
+
+.cheongmoAdminClose {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: #f2f4f6;
+  color: #4e5968;
+  cursor: pointer;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.cheongmoAdminHeader {
+  display: grid;
+  gap: 7px;
+  padding-right: 44px;
+}
+
+.cheongmoAdminHeader span {
+  color: #3182f6;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.cheongmoAdminHeader h2 {
+  margin: 0;
+  color: #191f28;
+  font-size: 24px;
+  font-weight: 950;
+}
+
+.cheongmoAdminHeader p {
+  margin: 0;
+  color: #6b7684;
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1.55;
+}
+
+.cheongmoAdminAuth {
+  display: grid;
+  gap: 10px;
+}
+
+.cheongmoAdminAuth input {
+  height: 54px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 16px;
+  background: #f2f4f6;
+  color: #191f28;
+  font-size: 17px;
+  font-weight: 850;
+  outline: 0;
+}
+
+.cheongmoAdminAuth input:focus {
+  box-shadow: inset 0 0 0 2px #3182f6;
+}
+
+.cheongmoAdminAuth button {
+  height: 54px;
+  border: 0;
+  border-radius: 16px;
+  background: #3182f6;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.cheongmoAdminAuth button:disabled {
+  background: #cfd6df;
+  cursor: default;
+}
+
+.cheongmoAdminContent {
+  display: grid;
+  gap: 14px;
+}
+
+.cheongmoAdminSummary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 58px;
+  padding: 0 16px;
+  border-radius: 18px;
+  background: #edf5ff;
+}
+
+.cheongmoAdminSummary span {
+  color: #4e5968;
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.cheongmoAdminSummary strong {
+  color: #1b64da;
+  font-size: 22px;
+  font-weight: 950;
+}
+
+.cheongmoAdminCurrent {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px 10px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: #f7f9fc;
+}
+
+.cheongmoAdminCurrent span {
+  grid-column: 1 / -1;
+  color: #8b95a1;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.cheongmoAdminCurrent strong {
+  overflow: hidden;
+  color: #191f28;
+  font-size: 15px;
+  font-weight: 950;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cheongmoAdminCurrent em {
+  display: inline-grid;
+  min-height: 28px;
+  padding: 0 10px;
+  place-items: center;
+  border-radius: 999px;
+  background: #eaf4ff;
+  color: #3182f6;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.cheongmoAdminList {
+  display: grid;
+  gap: 10px;
+}
+
+.cheongmoAdminList > p {
+  margin: 0;
+  padding: 22px 0;
+  color: #8b95a1;
+  font-size: 15px;
+  font-weight: 750;
+  text-align: center;
+}
+
+.cheongmoAdminItem {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #edf0f3;
+  border-radius: 18px;
+  background: #ffffff;
+}
+
+.cheongmoAdminItemCurrent {
+  border-color: #b9d7ff;
+  background: #f7fbff;
+}
+
+.cheongmoAdminItem > div {
+  display: grid;
+  gap: 4px;
+}
+
+.cheongmoAdminItem strong {
+  color: #191f28;
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.cheongmoAdminItem span {
+  color: #8b95a1;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.cheongmoAdminItem dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 12px;
+  margin: 0;
+}
+
+.cheongmoAdminItem dl div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.cheongmoAdminItem dt,
+.cheongmoAdminItem dd {
+  margin: 0;
+}
+
+.cheongmoAdminItem dt {
+  color: #8b95a1;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.cheongmoAdminItem dd {
+  overflow: hidden;
+  color: #333d4b;
+  font-size: 13px;
+  font-weight: 850;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cheongmoAdminItem button {
+  display: grid;
+  height: 38px;
+  place-items: center;
+  border: 0;
+  border-radius: 13px;
+  background: #f2f4f6;
+  color: #3182f6;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.cheongmoAdminItemCurrent button {
+  color: #6b7684;
+  cursor: default;
 }
 
 .entryNameSheetForm {

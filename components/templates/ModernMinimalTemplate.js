@@ -212,8 +212,6 @@ const ModernMinimalTemplate = ({ eventData = {}, categorizedImages = {}, allowMe
   // 공유하기
   const handleShare = async () => {
     const shareData = {
-      title: '결혼식 초대장',
-      text: `${eventData.groom_name || '신랑'} ♥ ${eventData.bride_name || '신부'}\\n${dateInfo.full}\\n${eventData.location || ''}`,
       url: window.location.href
     };
 

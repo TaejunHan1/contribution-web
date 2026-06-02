@@ -410,10 +410,9 @@ export default function RunicRiftTemplate({
   const handleShare = async () => {
     if (typeof window === 'undefined') return;
     const url = window.location.href;
-    const title = `${groomName} & ${brideName} 결혼식 초대장`;
     if (navigator.share) {
       try {
-        await navigator.share({ title, url });
+        await navigator.share({ url });
         return;
       } catch (err) {
         if (err?.name === 'AbortError') return;

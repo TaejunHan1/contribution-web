@@ -624,12 +624,10 @@ export default function FuneralNoticeTemplate({ eventData = {}, categorizedImage
 
   const handleShare = async () => {
     const url = typeof window !== 'undefined' ? window.location.href : '';
-    const title = `故 ${deceasedName} 부고장`;
-    const text = `${title}\n${formatDate(eventData.death_date || eventData.deathDate) || ''}`.trim();
 
     try {
       if (navigator.share && url) {
-        await navigator.share({ title, text, url });
+        await navigator.share({ url });
         return;
       }
       if (navigator.clipboard && url) {

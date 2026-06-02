@@ -779,8 +779,6 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
     const brideName = eventData.bride_name || eventData.brideName || '';
     const url = typeof window !== 'undefined' ? window.location.href : '';
     const shareData = {
-      title: `${groomName} ♡ ${brideName} 결혼식 초대장`,
-      text: `${groomName} ♡ ${brideName}\n${dateInfo.full} ${ceremonyTimeDisplay}\n${eventData.location || ''}\n\n우리의 특별한 날에 초대합니다 🌸`,
       url,
     };
 

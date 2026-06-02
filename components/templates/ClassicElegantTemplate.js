@@ -591,10 +591,8 @@ const ClassicElegantTemplate = ({
   const handleShare = async () => {
     if (typeof window === 'undefined') return;
     const url = window.location.href;
-    const title = `${groomName || '신랑'} ♥ ${brideName || '신부'} 결혼식 초대장`;
-    const text = `${groomName || '신랑'} ♥ ${brideName || '신부'}의 결혼식 초대장입니다.${timeStr ? '\n' + timeStr : ''}\n${locName || ''}`;
     if (navigator.share) {
-      try { await navigator.share({ title, text, url }); return; }
+      try { await navigator.share({ url }); return; }
       catch (err) { if (err?.name === 'AbortError') return; }
     }
     try {

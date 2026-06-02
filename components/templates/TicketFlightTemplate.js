@@ -403,12 +403,10 @@ const TicketFlightTemplate = ({
   const handleShare = async () => {
     if (typeof window === 'undefined') return;
     const url = window.location.href;
-    const title = `${groomName} ♥ ${brideName} 결혼식 초대장`;
-    const text = `${groomName} ♥ ${brideName}의 결혼식 초대장입니다.${timeStr ? '\n' + timeStr : ''}\n${locName}`;
 
     // 1차: OS 공유창
     if (navigator.share) {
-      try { await navigator.share({ title, text, url }); return; }
+      try { await navigator.share({ url }); return; }
       catch (err) { if (err?.name === 'AbortError') return; }
     }
 

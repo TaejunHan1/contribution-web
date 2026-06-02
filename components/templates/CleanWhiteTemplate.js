@@ -678,8 +678,6 @@ const CleanWhiteTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
 
   const handleShare = async () => {
     const shareData = {
-      title: `${eventData.groom_name || '신랑'} ♡ ${eventData.bride_name || '신부'} 결혼식 초대장`,
-      text: `${eventData.groom_name || '신랑'} ♡ ${eventData.bride_name || '신부'}\n${dateInfo.full} ${ceremonyTime}\n${eventData.location || '웨딩홀'}`,
       url: window.location.href,
     };
     try {

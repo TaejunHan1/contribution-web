@@ -59,6 +59,7 @@ const koreanHolidays = {
 };
 
 const getStorageKey = slug => `cheongmo:entry:${slug}`;
+const getAdminStorageKey = () => 'cheongmo:admin-token';
 const getCheongmoApiUrl = slug =>
   `/api/cheongmo?slug=${encodeURIComponent(slug)}&_=${Date.now()}`;
 
@@ -215,6 +216,31 @@ const formatDeadlineLabel = value => {
   return `${getPart('month')}월 ${getPart('day')}일 (${getPart('weekday')})`;
 };
 
+const formatAdminDateTime = value => {
+  if (!value) return '없음';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '없음';
+  return new Intl.DateTimeFormat('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    month: 'numeric',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date);
+};
+
+const isAdminGatheringClosed = item => {
+  if (!item) return false;
+  if (item.status && item.status !== 'active') return true;
+  const deadline = item.voteDeadlineAt || item.vote_deadline_at;
+  if (!deadline) return false;
+  const time = new Date(deadline).getTime();
+  return Number.isFinite(time) && time < Date.now();
+};
+
+const getAdminStatusLabel = item =>
+  isAdminGatheringClosed(item) ? '마감' : '진행중';
+
 const getExpectedGuestCount = gathering => {
   if (!gathering) return 0;
   if (Number.isFinite(Number(gathering.expected_guest_count))) {
@@ -231,6 +257,14 @@ const getExpectedGuestCount = gathering => {
 
 const hasResponseContent = person =>
   Boolean(person?.availableDates?.length || person?.suggestedRegions?.length);
+
+const createAdminParticipant = () => ({
+  id: '__cheongmo_admin__',
+  guestName: '관리자',
+  availableDates: [],
+  suggestedRegions: [],
+  isAdminViewer: true,
+});
 
 const isPastDeadline = value => {
   if (!value) return false;
@@ -338,6 +372,11 @@ export default function CheongmoParticipantPage() {
   const [activeMonthIndex, setActiveMonthIndex] = useState(0);
   const [expandedTossPanel, setExpandedTossPanel] = useState('');
   const [closedBriefingOpen, setClosedBriefingOpen] = useState(false);
+  const [adminSheetOpen, setAdminSheetOpen] = useState(false);
+  const [adminPhone, setAdminPhone] = useState('');
+  const [adminLoading, setAdminLoading] = useState(false);
+  const [adminData, setAdminData] = useState(null);
+  const [isAdminViewer, setIsAdminViewer] = useState(false);
   const [entrySuccessSheetOpen, setEntrySuccessSheetOpen] = useState(false);
   const [entrySuccessPhase, setEntrySuccessPhase] = useState('success');
   const [saveSuccessSheetOpen, setSaveSuccessSheetOpen] = useState(false);
@@ -349,6 +388,8 @@ export default function CheongmoParticipantPage() {
   const roomRevealTimerRef = useRef(null);
   const saveSuccessTimerRef = useRef(null);
   const unsavedToastShownRef = useRef(false);
+  const adminTapCountRef = useRef(0);
+  const adminTapTimerRef = useRef(null);
   const inviteLottieRef = useRef(null);
   const closedLottieRef = useRef(null);
   const slugValue = typeof slug === 'string' ? slug : '';
@@ -410,6 +451,9 @@ export default function CheongmoParticipantPage() {
       }
       if (saveSuccessTimerRef.current) {
         clearTimeout(saveSuccessTimerRef.current);
+      }
+      if (adminTapTimerRef.current) {
+        clearTimeout(adminTapTimerRef.current);
       }
     },
     []
@@ -510,7 +554,7 @@ export default function CheongmoParticipantPage() {
     }
 
     throw new Error(result.error || '청모 정보를 불러오지 못했습니다.');
-  }, [slug, syncGatheringFromServer]);
+  }, [router.query.admin, slug, syncGatheringFromServer]);
 
   useEffect(() => {
     if (!slug) return;
@@ -557,6 +601,35 @@ export default function CheongmoParticipantPage() {
         }
 
         syncGatheringFromServer(result.data);
+        const adminToken =
+          typeof window !== 'undefined'
+            ? window.sessionStorage.getItem(getAdminStorageKey())
+            : '';
+        if (router.query.admin === '1' && adminToken) {
+          const adminResponse = await fetch('/api/cheongmo-admin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ adminToken }),
+          });
+          const adminResult = await adminResponse.json();
+          if (adminResponse.ok && adminResult.success) {
+            window.sessionStorage.setItem(
+              getAdminStorageKey(),
+              adminResult.data.adminToken
+            );
+            setAdminData(adminResult.data);
+            setIsAdminViewer(true);
+            setIsHostSession(false);
+            setIsEditingResponse(false);
+            setEntryToken('admin-view');
+            setParticipant(createAdminParticipant());
+            setGuestName('관리자');
+            setAvailableDates([]);
+            setRegionSuggestions([]);
+            return;
+          }
+          window.sessionStorage.removeItem(getAdminStorageKey());
+        }
         const saved = window.localStorage.getItem(getStorageKey(slug));
         if (saved) {
           const parsed = JSON.parse(saved);
@@ -930,6 +1003,13 @@ export default function CheongmoParticipantPage() {
     expectedGuestCount || Math.max(roomParticipantCount, 1);
   const roomTopDate = topDateCandidates[0] || null;
   const roomTopRegion = regionCandidates[0] || null;
+  const adminCurrentGathering = useMemo(
+    () =>
+      (adminData?.gatherings || []).find(
+        item => item.slug === gathering?.slug
+      ) || null,
+    [adminData, gathering]
+  );
   const hostLocationTitle =
     gathering?.venue_name ||
     gathering?.location_label ||
@@ -1472,6 +1552,58 @@ export default function CheongmoParticipantPage() {
     }
   };
 
+  const openHiddenAdmin = () => {
+    adminTapCountRef.current += 1;
+    if (adminTapTimerRef.current) {
+      clearTimeout(adminTapTimerRef.current);
+    }
+    adminTapTimerRef.current = setTimeout(() => {
+      adminTapCountRef.current = 0;
+    }, 1400);
+
+    if (adminTapCountRef.current < 5) return;
+    adminTapCountRef.current = 0;
+    setAdminSheetOpen(true);
+  };
+
+  const loadAdminGatherings = async () => {
+    const phone = normalizePhone(adminPhone);
+    if (!isKoreanMobilePhone(phone)) {
+      toast.error('휴대폰 번호를 확인해주세요.');
+      return;
+    }
+
+    try {
+      setAdminLoading(true);
+      const response = await fetch('/api/cheongmo-admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone }),
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || '관리자 정보를 불러오지 못했습니다.');
+      }
+      window.sessionStorage.setItem(
+        getAdminStorageKey(),
+        result.data.adminToken
+      );
+      setAdminData(result.data);
+      setIsAdminViewer(true);
+    } catch (error) {
+      setAdminData(null);
+      toast.error(error.message);
+    } finally {
+      setAdminLoading(false);
+    }
+  };
+
+  const openAdminGathering = targetSlug => {
+    if (!targetSlug) return;
+    setAdminSheetOpen(false);
+    router.push(`/cheongmo/${targetSlug}?admin=1`);
+  };
+
   if (loading) {
     return (
       <>
@@ -1536,28 +1668,34 @@ export default function CheongmoParticipantPage() {
                 <section className={styles.tossHeroBlock}>
                   <div className={styles.tossHeroCopy}>
                     <span className={styles.tossBlueLabel}>
-                      {isVotingClosed
-                        ? '투표 종료'
-                        : isEditingResponse
-                          ? '의견 수정 중'
-                          : '저장 완료'}
+                      {isAdminViewer
+                        ? '관리자 보기'
+                        : isVotingClosed
+                          ? '투표 종료'
+                          : isEditingResponse
+                            ? '의견 수정 중'
+                            : '저장 완료'}
                     </span>
                     <h1>
                       {participant.guestName}님,
                       <br />
-                      {isEditingResponse
-                        ? '가능한 일정을 알려주세요'
-                        : '일정이 모이고 있어요'}
+                      {isAdminViewer
+                        ? '모임 현황을 보고 있어요'
+                        : isEditingResponse
+                          ? '가능한 일정을 알려주세요'
+                          : '일정이 모이고 있어요'}
                     </h1>
                     <p>
                       {roomParticipantCount}명이 참여했어요. 가장 많이 고른
-                      날짜와 지역을 한눈에 보고 바로 수정할 수 있어요.
+                      날짜와 지역을 한눈에 볼 수 있어요.
                     </p>
                   </div>
-                  <div
+                  <button
                     className={styles.tossInviteLottie}
+                    type="button"
                     ref={inviteLottieRef}
-                    aria-hidden="true"
+                    aria-label="청모 초대장"
+                    onClick={openHiddenAdmin}
                   />
                 </section>
 
@@ -2182,7 +2320,17 @@ export default function CheongmoParticipantPage() {
                 )}
 
                 <div className={styles.tossBottomAction}>
-                  {isEditingHostDates ? (
+                  {isAdminViewer ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setAdminSheetOpen(true)}
+                      >
+                        관리자 목록 보기
+                      </button>
+                      <p>관리자 보기 모드라 참여자 집계에 포함되지 않아요.</p>
+                    </>
+                  ) : isEditingHostDates ? (
                     <>
                       <button
                         type="button"
@@ -3362,6 +3510,129 @@ export default function CheongmoParticipantPage() {
                 </div>
               )}
             </>
+          )}
+          {adminSheetOpen && participant && (
+            <div className={styles.cheongmoAdminOverlay} role="presentation">
+              <section
+                className={styles.cheongmoAdminSheet}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="cheongmo-admin-title"
+              >
+                <button
+                  className={styles.cheongmoAdminClose}
+                  type="button"
+                  aria-label="관리자 화면 닫기"
+                  onClick={() => {
+                    setAdminSheetOpen(false);
+                    setAdminPhone('');
+                    setAdminData(null);
+                  }}
+                >
+                  ×
+                </button>
+                <div className={styles.cheongmoAdminHeader}>
+                  <span>ADMIN</span>
+                  <h2 id="cheongmo-admin-title">청모 관리자</h2>
+                  <p>관리자 휴대폰 번호 확인 후 모임 목록을 볼 수 있어요.</p>
+                </div>
+
+                {!adminData ? (
+                  <div className={styles.cheongmoAdminAuth}>
+                    <input
+                      inputMode="numeric"
+                      value={adminPhone}
+                      onChange={event => setAdminPhone(event.target.value)}
+                      placeholder="휴대폰 번호"
+                    />
+                    <button
+                      type="button"
+                      disabled={adminLoading}
+                      onClick={loadAdminGatherings}
+                    >
+                      {adminLoading ? '확인 중' : '관리자 확인'}
+                    </button>
+                  </div>
+                ) : (
+                  <div className={styles.cheongmoAdminContent}>
+                    <div className={styles.cheongmoAdminSummary}>
+                      <span>총 모임</span>
+                      <strong>{adminData.totalCount}개</strong>
+                    </div>
+                    <div className={styles.cheongmoAdminCurrent}>
+                      <span>현재 보고 있는 청모</span>
+                      <strong>{gathering.title || gathering.slug}</strong>
+                      <em>
+                        {adminCurrentGathering
+                          ? getAdminStatusLabel(adminCurrentGathering)
+                          : isVotingClosed
+                            ? '마감'
+                            : '진행중'}
+                      </em>
+                    </div>
+                    <div className={styles.cheongmoAdminList}>
+                      {adminData.gatherings.length > 0 ? (
+                        adminData.gatherings.map(item => (
+                          <article
+                            className={`${styles.cheongmoAdminItem} ${
+                              item.slug === gathering.slug
+                                ? styles.cheongmoAdminItemCurrent
+                                : ''
+                            }`}
+                            key={item.id}
+                          >
+                            <div>
+                              <strong>{item.title || '제목 없음'}</strong>
+                              <span>
+                                /cheongmo/{item.slug} ·{' '}
+                                {getAdminStatusLabel(item)}
+                                {item.slug === gathering.slug ? ' · 현재' : ''}
+                              </span>
+                            </div>
+                            <dl>
+                              <div>
+                                <dt>주최자</dt>
+                                <dd>
+                                  {[item.hostName, item.partnerName]
+                                    .filter(Boolean)
+                                    .join(' · ') || '없음'}
+                                </dd>
+                              </div>
+                              <div>
+                                <dt>참여</dt>
+                                <dd>
+                                  {item.savedCount}/{item.participantCount}명
+                                </dd>
+                              </div>
+                              <div>
+                                <dt>생성</dt>
+                                <dd>{formatAdminDateTime(item.createdAt)}</dd>
+                              </div>
+                              <div>
+                                <dt>최근 응답</dt>
+                                <dd>
+                                  {formatAdminDateTime(item.lastResponseAt)}
+                                </dd>
+                              </div>
+                            </dl>
+                            <button
+                              type="button"
+                              onClick={() => openAdminGathering(item.slug)}
+                            >
+                              {item.slug === gathering.slug
+                                ? '보고 있음'
+                                : '열기'}
+                            </button>
+                          </article>
+                        ))
+                      ) : (
+                        <p>만들어진 청모가 없습니다.</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </section>
+            </div>
           )}
           {saveSuccessSheetOpen && participant && (
             <div className={styles.entrySuccessOverlay} role="presentation">

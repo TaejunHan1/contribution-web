@@ -519,13 +519,11 @@ const WarmOrangeTemplate = ({
   const handleShare = async () => {
     if (typeof window === 'undefined') return;
     const url = window.location.href;
-    const title = `${groomName || '신랑'} ♡ ${brideName || '신부'} 결혼식 초대장`;
-    const text = `${groomName || '신랑'} ♡ ${brideName || '신부'}의 결혼식 초대장이 도착했어요!\n${dateStr}${timeStr ? ' ' + timeStr : ''}\n${locName || ''}`;
 
     // Web Share API — 모바일 Safari/Chrome에서 OS 기본 공유창 (카톡/메시지/인스타 등)
     if (navigator.share) {
       try {
-        await navigator.share({ title, text, url });
+        await navigator.share({ url });
         return;
       } catch (err) {
         if (err && err.name === 'AbortError') return; // 유저가 취소

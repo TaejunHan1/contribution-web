@@ -78,8 +78,6 @@ const KoreanElegantTemplate = ({ eventData = {}, categorizedImages = {} }) => {
 
   const handleShare = async () => {
     const shareData = {
-      title: '모바일 청첩장',
-      text: `${eventData.groom_name} ♥ ${eventData.bride_name} 결혼식에 초대합니다!\n${dateInfo.full} ${ceremonyTime}\n${eventData.location}`,
       url: window.location.href
     };
 
