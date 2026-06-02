@@ -141,6 +141,20 @@ const removeDates = (dates, excludedDates) => {
   return Array.isArray(dates) ? dates.filter(date => !excluded.has(date)) : [];
 };
 
+const normalizeStringList = values =>
+  Array.isArray(values)
+    ? Array.from(
+        new Set(values.map(value => String(value || '').trim()).filter(Boolean))
+      ).sort()
+    : [];
+
+const areStringListsEqual = (left, right) => {
+  const leftList = normalizeStringList(left);
+  const rightList = normalizeStringList(right);
+  if (leftList.length !== rightList.length) return false;
+  return leftList.every((value, index) => value === rightList[index]);
+};
+
 const normalizeParticipantForMonths = (person, months) =>
   person
     ? {
@@ -334,6 +348,7 @@ export default function CheongmoParticipantPage() {
   const entryNameInputRef = useRef(null);
   const roomRevealTimerRef = useRef(null);
   const saveSuccessTimerRef = useRef(null);
+  const unsavedToastShownRef = useRef(false);
   const inviteLottieRef = useRef(null);
   const closedLottieRef = useRef(null);
   const slugValue = typeof slug === 'string' ? slug : '';
@@ -711,15 +726,17 @@ export default function CheongmoParticipantPage() {
     respondedCount >= expectedGuestCount;
   const isForcedClosedPreview = gathering?.slug === 'y2426hra';
   const isVotingClosed =
-    isForcedClosedPreview || isPasswordDeadlineClosed || isPhoneListVotingClosed;
+    isForcedClosedPreview ||
+    isPasswordDeadlineClosed ||
+    isPhoneListVotingClosed;
   const voteDeadlineLabel =
     gathering?.access_type === 'password'
       ? formatDeadlineLabel(gathering.vote_deadline_at)
       : '';
   const votingClosedMessage =
     isForcedClosedPreview || isPasswordDeadlineClosed
-    ? '투표 마감일이 지나 의견 수정이 종료됐어요.'
-    : '초대된 인원이 모두 투표해 의견 수정이 종료됐어요.';
+      ? '투표 마감일이 지나 의견 수정이 종료됐어요.'
+      : '초대된 인원이 모두 투표해 의견 수정이 종료됐어요.';
 
   useEffect(() => {
     if (participant && isVotingClosed) {
@@ -853,6 +870,47 @@ export default function CheongmoParticipantPage() {
       ),
     [gathering, hostUnavailableDates, visibleMonth]
   );
+  const currentResponseDates = useMemo(
+    () =>
+      filterDatesByMonths(
+        removeDates(availableDates, hostUnavailableDates),
+        gathering?.selected_months
+      ),
+    [availableDates, gathering, hostUnavailableDates]
+  );
+  const isResponseDirty = useMemo(() => {
+    if (!participant || !isEditingResponse) return false;
+    return (
+      !areStringListsEqual(currentResponseDates, participant.availableDates) ||
+      !areStringListsEqual(regionSuggestions, participant.suggestedRegions)
+    );
+  }, [currentResponseDates, isEditingResponse, participant, regionSuggestions]);
+
+  useEffect(() => {
+    if (!isResponseDirty) return undefined;
+
+    const handleBeforeUnload = event => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isResponseDirty]);
+
+  useEffect(() => {
+    if (!isEditingResponse || !isResponseDirty) {
+      unsavedToastShownRef.current = false;
+      return;
+    }
+    if (unsavedToastShownRef.current) return;
+
+    unsavedToastShownRef.current = true;
+    toast('선택했어요. 아래 저장 버튼을 눌러 반영해주세요.');
+  }, [isEditingResponse, isResponseDirty]);
+
   const topDateCandidates = useMemo(
     () =>
       eligibleDateLeaders.slice(0, 4).map((item, index) => ({
@@ -1248,10 +1306,7 @@ export default function CheongmoParticipantPage() {
     if (gathering.slug === 'sample') {
       const nextParticipant = {
         ...participant,
-        availableDates: filterDatesByMonths(
-          removeDates(availableDates, hostUnavailableDates),
-          gathering.selected_months
-        ),
+        availableDates: currentResponseDates,
         suggestedRegions: regionSuggestions,
       };
       setParticipant(nextParticipant);
@@ -1280,7 +1335,7 @@ export default function CheongmoParticipantPage() {
           entryToken,
           participantId: participant.id,
           guestName: participant.guestName,
-          availableDates: removeDates(availableDates, hostUnavailableDates),
+          availableDates: currentResponseDates,
           suggestedRegions: regionSuggestions,
         }),
       });
@@ -1742,6 +1797,13 @@ export default function CheongmoParticipantPage() {
                     </span>
                   </div>
 
+                  {isResponseDirty && (
+                    <div className={styles.unsavedResponseNotice}>
+                      <strong>저장 전 변경사항 있음</strong>
+                      <span>아래 버튼을 눌러야 모두에게 반영돼요.</span>
+                    </div>
+                  )}
+
                   {isHostSession && (
                     <div className={styles.hostDateControl}>
                       <div>
@@ -1914,7 +1976,9 @@ export default function CheongmoParticipantPage() {
                   <section className={styles.tossSection}>
                     <div className={styles.tossSectionTitle}>
                       <h2>지역</h2>
-                      <span>복수 선택 가능</span>
+                      <span>
+                        {isResponseDirty ? '저장 필요' : '복수 선택 가능'}
+                      </span>
                     </div>
 
                     <div className={styles.tossRegionInput}>
@@ -2142,13 +2206,24 @@ export default function CheongmoParticipantPage() {
                   ) : isEditingResponse ? (
                     <>
                       <button
+                        className={
+                          isResponseDirty ? styles.tossBottomActionDirty : ''
+                        }
                         type="button"
-                        disabled={submitting}
+                        disabled={submitting || !isResponseDirty}
                         onClick={saveCommunityResponse}
                       >
-                        {submitting ? '저장 중' : '내 의견 저장'}
+                        {submitting
+                          ? '저장 중'
+                          : isResponseDirty
+                            ? '변경사항 저장하기'
+                            : '저장할 변경 없음'}
                       </button>
-                      <p>저장하면 모두에게 바로 반영돼요.</p>
+                      <p>
+                        {isResponseDirty
+                          ? '저장해야 모두에게 반영돼요.'
+                          : '날짜나 지역을 바꾸면 저장 버튼이 켜져요.'}
+                      </p>
                     </>
                   ) : (
                     <>

@@ -702,6 +702,29 @@ button.tossSummaryRow:hover {
   color: #e5484d;
 }
 
+.unsavedResponseNotice {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid #d8e8ff;
+  border-radius: 18px;
+  background: #f0f7ff;
+  box-shadow: 0 8px 20px rgba(49, 130, 246, 0.08);
+}
+
+.unsavedResponseNotice strong {
+  color: #1b64da;
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.unsavedResponseNotice span {
+  color: #4e5968;
+  font-size: 13px;
+  font-weight: 750;
+}
+
 .hostDateControl {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -1332,6 +1355,11 @@ button.tossSummaryRow:hover {
   cursor: pointer;
   font-size: 17px;
   font-weight: 900;
+}
+
+.tossBottomAction button.tossBottomActionDirty {
+  background: #1b64da;
+  box-shadow: 0 12px 26px rgba(49, 130, 246, 0.28);
 }
 
 .tossBottomAction p {

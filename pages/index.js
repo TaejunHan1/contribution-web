@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import Link from 'next/link';
 import toast from 'react-hot-toast';
 
 const heroImage = '/landing/generated-main/jeongdam-main-hero.png';
@@ -88,16 +89,10 @@ export default function HomePage() {
             <a href="#service">서비스</a>
             <a href="#features">기능</a>
             <a href="#flow">흐름</a>
-            <a href="#contact">문의</a>
           </nav>
-          <a
-            className="navCta"
-            href={kakaoChannelUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            상담 문의
-          </a>
+          <Link className="navCta" href="/cheongmo" aria-label="청모 모임잡기로 이동">
+            <img src="/landing/cheongmo-header-cta.svg" alt="청모 일정잡기 친구 날짜 투표" />
+          </Link>
         </header>
 
         <section
@@ -411,14 +406,23 @@ export default function HomePage() {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          min-height: 40px;
-          padding: 0 18px;
-          color: #fff;
-          background: #183c2c;
-          border-radius: 999px;
-          font-size: 14px;
-          font-weight: 850;
+          width: 154px;
+          height: 44px;
           text-decoration: none;
+          transition:
+            transform 180ms ease,
+            filter 180ms ease;
+        }
+
+        .navCta:hover {
+          filter: drop-shadow(0 10px 20px rgba(49, 130, 246, 0.16));
+          transform: translateY(-1px);
+        }
+
+        .navCta img {
+          display: block;
+          width: 100%;
+          height: 100%;
         }
 
         .hero {
@@ -1155,9 +1159,8 @@ export default function HomePage() {
           }
 
           .navCta {
-            min-height: 38px;
-            padding: 0 14px;
-            font-size: 13px;
+            width: 132px;
+            height: 38px;
           }
 
           .hero {
