@@ -428,6 +428,47 @@
   color: #777;
   line-height: 1.5;
 }
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 18px 0 8px;
+}
+.pageButton {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #EAEAEA;
+  border-radius: 999px;
+  background: #FFFFFF;
+  color: #6F6255;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+.pageButton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.pageDots {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.pageDot {
+  width: 7px;
+  height: 7px;
+  border: 0;
+  border-radius: 999px;
+  background: #D8D0C7;
+  padding: 0;
+  cursor: pointer;
+}
+.pageDotActive {
+  width: 18px;
+  background: #8C7B65;
+}
 .parkingImageWrap {
   margin-top: 12px;
   border: 1px solid #EAEAEA;

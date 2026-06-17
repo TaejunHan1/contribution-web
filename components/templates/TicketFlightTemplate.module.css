@@ -600,14 +600,21 @@
 }
 .navBtn {
   flex: 1;
+  min-width: 0;
+  min-height: 42px;
   padding: 11px 0;
   border-radius: 8px;
   background: #fff;
   border: 1px solid #e5e8eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 13px;
+  line-height: 17px;
   font-weight: 600;
   color: #2d3436;
   letter-spacing: 0.2px;
+  white-space: nowrap;
   cursor: pointer;
   font-family: inherit;
 }
@@ -733,6 +740,46 @@
   line-height: 20px;
   margin: 0;
   white-space: pre-line;
+}
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 18px 0 8px;
+}
+.pageButton {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #dfe6e9;
+  border-radius: 999px;
+  background: #fff;
+  color: #1e3799;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+.pageButton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.pageDots {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.pageDot {
+  width: 7px;
+  height: 7px;
+  border: 0;
+  border-radius: 999px;
+  background: #c7d4de;
+  padding: 0;
+  cursor: pointer;
+}
+.pageDotActive {
+  width: 18px;
+  background: #ff7675;
 }
 .addReviewBtn {
   width: 100%;

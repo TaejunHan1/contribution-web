@@ -110,24 +110,39 @@ const GoogleMapEmbed = ({
   };
 
   const btnStyle = {
-    flex: 1,
+    flex: '1 1 0',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     gap: '8px',
-    padding: '14px 12px',
+    minWidth: 0,
+    minHeight: '48px',
+    padding: '12px 10px',
     backgroundColor: 'white',
     color: '#333',
     border: '1px solid #dee2e6',
     borderRadius: '12px',
-    fontSize: '14px',
+    fontSize: '13px',
+    lineHeight: '18px',
     fontWeight: '600',
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
     cursor: 'pointer',
     boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-    minWidth: 0,
+    whiteSpace: 'nowrap',
   };
-  const iconStyle = { width: '22px', height: '22px', objectFit: 'contain', borderRadius: '4px' };
+  const iconStyle = {
+    width: '22px',
+    height: '22px',
+    display: 'block',
+    flexShrink: 0,
+    objectFit: 'contain',
+    borderRadius: '4px'
+  };
+  const buttonLabelStyle = {
+    display: 'block',
+    lineHeight: '18px',
+    whiteSpace: 'nowrap',
+  };
   const kakaoIconStyle = {
     ...iconStyle,
     display: 'inline-flex',
@@ -172,18 +187,18 @@ const GoogleMapEmbed = ({
       {showDirections && (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
 
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'nowrap' }}>
           <button type="button" onClick={openNaverApp} style={btnStyle}>
             <img src="/naver.png" alt="네이버지도" style={iconStyle} />
-            <span>네이버지도</span>
+            <span style={buttonLabelStyle}>네이버지도</span>
           </button>
           <button type="button" onClick={openKakaoApp} style={btnStyle}>
             <span aria-hidden="true" style={kakaoIconStyle}>K</span>
-            <span>카카오맵</span>
+            <span style={buttonLabelStyle}>카카오맵</span>
           </button>
           <button type="button" onClick={openTmapApp} style={btnStyle}>
             <img src="/tmap.jpeg" alt="T맵" style={iconStyle} />
-            <span>T맵</span>
+            <span style={buttonLabelStyle}>T맵</span>
           </button>
         </div>
 

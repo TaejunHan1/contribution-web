@@ -20,6 +20,7 @@ const TicketFlightTemplate = dynamic(() => import('../../components/templates/Ti
 const CinemaTemplate = dynamic(() => import('../../components/templates/CinemaTemplate'), { ssr: false });
 const RunicRiftTemplate = dynamic(() => import('../../components/templates/RunicRiftTemplate'), { ssr: false });
 const PhotoBookTemplate = dynamic(() => import('../../components/templates/PhotoBookTemplate'), { ssr: false });
+const BlushEditorialTemplate = dynamic(() => import('../../components/templates/BlushEditorialTemplate'), { ssr: false });
 const FuneralNoticeTemplate = dynamic(() => import('../../components/templates/FuneralNoticeTemplate'), { ssr: false });
 const FallingPetals = dynamic(() => import('../../components/FallingPetals'), { ssr: false });
 const BackgroundMusicPlayer = dynamic(() => import('../../components/BackgroundMusicPlayer'), { ssr: false });
@@ -491,6 +492,16 @@ export default function TemplatePage({
         return renderWithPhotoFrame(<RunicRiftTemplate eventData={templateEvent} categorizedImages={categorizedImages} />);
       case 'photo-book':
         return renderWithPhotoFrame(<PhotoBookTemplate eventData={templateEvent} categorizedImages={categorizedImages} />);
+      case 'blush-editorial':
+        return renderWithPhotoFrame(
+          <BlushEditorialTemplate
+            eventData={templateEvent}
+            categorizedImages={categorizedImages}
+            allowMessages={templateEvent.allow_messages}
+            messageSettings={templateEvent.additional_info?.message_settings || {}}
+          />,
+          { usePortal: false }
+        );
       default:
         return renderWithPhotoFrame(<ModernTemplate eventData={templateEvent} />);
     }

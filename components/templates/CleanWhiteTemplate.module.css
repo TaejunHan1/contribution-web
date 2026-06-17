@@ -1018,6 +1018,8 @@
 
 .navBtn {
   flex: 1;
+  min-width: 0;
+  min-height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1026,10 +1028,17 @@
   border-radius: 14px;
   padding: 14px 0;
   font-size: 14px;
+  line-height: 18px;
   font-weight: 700;
   color: #4E5968;
   text-decoration: none;
+  white-space: nowrap;
   transition: background 0.2s;
+}
+
+.navBtn svg {
+  flex-shrink: 0;
+  display: block;
 }
 
 .navBtn:hover {

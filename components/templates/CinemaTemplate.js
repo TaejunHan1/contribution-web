@@ -193,6 +193,7 @@ const CinemaTemplate = ({ eventData = {}, categorizedImages = {}, allowMessages 
   const [editingMessage, setEditingMessage] = useState(null);
   const [guestMessages, setGuestMessages] = useState([]);
   const [hasWrittenGuestbook, setHasWrittenGuestbook] = useState(false);
+  const [messagePage, setMessagePage] = useState(0);
 
   // ── 이미지 뷰어 ──
   const [viewerImage, setViewerImage] = useState(null);
@@ -457,6 +458,16 @@ const CinemaTemplate = ({ eventData = {}, categorizedImages = {}, allowMessages 
   }, [guestMessages]);
 
   const displayMessages = useMemo(() => guestMessages.filter((m) => m.content?.trim()), [guestMessages]);
+  const messagesPerPage = 3;
+  const totalMessagePages = Math.max(1, Math.ceil(displayMessages.length / messagesPerPage));
+  const pagedMessages = displayMessages.slice(
+    messagePage * messagesPerPage,
+    (messagePage + 1) * messagesPerPage
+  );
+
+  useEffect(() => {
+    setMessagePage((page) => Math.min(page, totalMessagePages - 1));
+  }, [totalMessagePages]);
 
   const handleGuestbookSubmit = async (g) => {
     const newMsg = {
@@ -833,7 +844,7 @@ const CinemaTemplate = ({ eventData = {}, categorizedImages = {}, allowMessages 
               <div className={styles.sectionSubtitle}>관람평 남기기</div>
             </div>
             {displayMessages.length > 0 ? (
-              displayMessages.map((m) => (
+              pagedMessages.map((m) => (
                 <div key={m.id} className={styles.reviewItem}>
                   <div className={styles.reviewStars}>★★★★★</div>
                   <div className={styles.reviewText}>{m.content}</div>
@@ -845,6 +856,37 @@ const CinemaTemplate = ({ eventData = {}, categorizedImages = {}, allowMessages 
               ))
             ) : (
               <div className={styles.reviewEmpty}>아직 등록된 관람평이 없어요. 첫 관람평을 남겨주세요 🎬</div>
+            )}
+            {displayMessages.length > messagesPerPage && (
+              <div className={styles.pagination}>
+                <button
+                  type="button"
+                  className={styles.pageButton}
+                  onClick={() => setMessagePage((page) => Math.max(0, page - 1))}
+                  disabled={messagePage === 0}
+                >
+                  ‹
+                </button>
+                <div className={styles.pageDots}>
+                  {Array.from({ length: totalMessagePages }).map((_, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      className={`${styles.pageDot} ${messagePage === index ? styles.pageDotActive : ''}`}
+                      onClick={() => setMessagePage(index)}
+                      aria-label={`${index + 1}페이지`}
+                    />
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  className={styles.pageButton}
+                  onClick={() => setMessagePage((page) => Math.min(totalMessagePages - 1, page + 1))}
+                  disabled={messagePage === totalMessagePages - 1}
+                >
+                  ›
+                </button>
+              </div>
             )}
             <button
               type="button"

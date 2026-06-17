@@ -173,6 +173,7 @@ export default function PhotoBookTemplate({
   const [completionData, setCompletionData] = useState(null);
   const [myContribution, setMyContribution] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [messagePage, setMessagePage] = useState(0);
   const toastTimerRef = useRef(null);
 
   const ai = useMemo(() => getAdditionalInfo(eventData), [eventData]);
@@ -343,6 +344,16 @@ export default function PhotoBookTemplate({
   };
 
   const displayMessages = guestMessages.filter(message => message.content?.trim());
+  const messagesPerPage = 3;
+  const totalMessagePages = Math.max(1, Math.ceil(displayMessages.length / messagesPerPage));
+  const pagedMessages = displayMessages.slice(
+    messagePage * messagesPerPage,
+    (messagePage + 1) * messagesPerPage
+  );
+
+  useEffect(() => {
+    setMessagePage((page) => Math.min(page, totalMessagePages - 1));
+  }, [totalMessagePages]);
 
   return (
     <div className={styles.root}>
@@ -446,16 +457,47 @@ export default function PhotoBookTemplate({
 
         {shouldShowReviews ? (
           <Section label="Messages" title="축하 메시지">
-            <div className={styles.messageActions}>
-              <button type="button" onClick={() => setShowGuestbookModal(true)}>축하 메시지 남기기</button>
-            </div>
             <div className={styles.messages}>
-              {displayMessages.slice(0, 4).map(message => (
+              {pagedMessages.map(message => (
                 <article key={message.id} className={styles.messageCard}>
                   <strong>{message.from || message.guestName || '익명'}</strong>
                   <p>{message.content}</p>
                 </article>
               ))}
+            </div>
+            {displayMessages.length > messagesPerPage && (
+              <div className={styles.pagination}>
+                <button
+                  type="button"
+                  className={styles.pageButton}
+                  onClick={() => setMessagePage((page) => Math.max(0, page - 1))}
+                  disabled={messagePage === 0}
+                >
+                  ‹
+                </button>
+                <div className={styles.pageDots}>
+                  {Array.from({ length: totalMessagePages }).map((_, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      className={`${styles.pageDot} ${messagePage === index ? styles.pageDotActive : ''}`}
+                      onClick={() => setMessagePage(index)}
+                      aria-label={`${index + 1}페이지`}
+                    />
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  className={styles.pageButton}
+                  onClick={() => setMessagePage((page) => Math.min(totalMessagePages - 1, page + 1))}
+                  disabled={messagePage === totalMessagePages - 1}
+                >
+                  ›
+                </button>
+              </div>
+            )}
+            <div className={styles.messageActions}>
+              <button type="button" onClick={() => setShowGuestbookModal(true)}>축하 메시지 남기기</button>
             </div>
           </Section>
         ) : null}

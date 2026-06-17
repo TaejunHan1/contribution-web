@@ -2,7 +2,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './GuestbookModal.module.css';
 
-const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival, onBack }) => {
+const GuestbookModal = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  eventData,
+  eventId,
+  eventType,
+  groomName,
+  brideName,
+  onTriggerArrival,
+  onBack,
+}) => {
   // 모달 고유 ID 생성 (디버깅용)
   const modalId = useRef(Math.random().toString(36).substr(2, 9));
   
@@ -23,6 +34,10 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
   const [verificationId, setVerificationId] = useState(null);
   const [timer, setTimer] = useState(0);
   const [error, setError] = useState('');
+  const currentEventId = eventData?.id || eventId || null;
+  const currentEventType = eventData?.event_type || eventType || 'wedding';
+  const currentGroomName = eventData?.groomName || eventData?.groom_name || groomName || '민호';
+  const currentBrideName = eventData?.brideName || eventData?.bride_name || brideName || '하윤';
   
   const timerRef = useRef(null);
   
@@ -44,7 +59,7 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
   useEffect(() => {
     if (isOpen) {
       const verifiedPhone = localStorage.getItem('verifiedPhone');
-      if (verifiedPhone && eventData?.id) {
+      if (verifiedPhone && currentEventId) {
         // 인증된 번호가 있으면 기존 방명록 확인
         checkExistingGuestbook(verifiedPhone);
       }
@@ -60,10 +75,15 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
       setError('');
       setIsLoading(false);
     }
-  }, [isOpen]);
+  }, [isOpen, currentEventId]);
 
   // 기존 방명록 확인 함수
   const checkExistingGuestbook = async (phone) => {
+    if (!currentEventId) {
+      console.error('방명록 이벤트 ID 누락:', { eventData, eventId });
+      return;
+    }
+
     try {
       const response = await fetch('/api/check-guestbook-duplicate', {
         method: 'POST',
@@ -72,7 +92,7 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
         },
         body: JSON.stringify({
           phone: phone,
-          eventId: eventData.id
+          eventId: currentEventId
         }),
       });
 
@@ -165,6 +185,11 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
     setError('');
 
     try {
+      if (!currentEventId) {
+        setError('청첩장 정보를 불러오지 못했습니다. 새로고침 후 다시 시도해주세요.');
+        return;
+      }
+
       const verifiedPhone = `+82${phoneNumbers.slice(1)}`;
 
       // 먼저 중복 방명록 확인
@@ -175,7 +200,7 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
         },
         body: JSON.stringify({
           phone: verifiedPhone,
-          eventId: eventData?.id
+          eventId: currentEventId
         }),
       });
 
@@ -285,7 +310,7 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
                 },
                 body: JSON.stringify({
                   phone: verifiedPhone,
-                  eventId: eventData?.id
+                  eventId: currentEventId
                 }),
               });
 
@@ -413,7 +438,7 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
             verificationId,
             guestName: formData.guestName.trim(),
             message: formData.message.trim(),
-            eventId: eventData?.id || null
+            eventId: currentEventId
           }),
         });
 
@@ -648,13 +673,13 @@ const GuestbookModal = ({ isOpen, onClose, onSubmit, eventData, onTriggerArrival
                       <label className={styles.sheetLabel}>
                         {mode === 'edit'
                           ? '방명록 수정'
-                          : `${eventData.bride_name || '하윤'}님과 ${eventData.groom_name || '민호'}님에게 전하는 마음`}
+                          : `${currentBrideName}님과 ${currentGroomName}님에게 전하는 마음`}
                       </label>
                       <textarea
                         className={styles.sheetTextarea}
                         placeholder={mode === 'edit'
                           ? '방명록을 수정해주세요'
-                          : eventData?.event_type === 'funeral'
+                          : currentEventType === 'funeral'
                             ? '조문 메시지를 남겨주세요'
                             : '축하 메시지를 남겨주세요'}
                         value={formData.message}

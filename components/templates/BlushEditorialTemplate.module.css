@@ -1,0 +1,775 @@
+@font-face {
+  font-family: 'NanumBrushWeb';
+  src: url('/fonts/NanumBrushScript-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+.root {
+  min-height: 100vh;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  color: #202020;
+}
+
+.page {
+  width: min(100vw, 430px);
+  min-height: 100vh;
+  background: #171717;
+  overflow: hidden;
+}
+
+.hero {
+  background: #171717;
+  color: #f6f6f6;
+  text-align: center;
+  padding: calc(env(safe-area-inset-top, 0px) + 74px) 18px 78px;
+}
+
+.hero h1 {
+  margin: 0;
+  color: #f39aba;
+  font-family: 'Great Vibes', 'Dancing Script', cursive;
+  font-size: clamp(58px, 16vw, 70px);
+  line-height: 1.05;
+  font-weight: 400;
+}
+
+.enNames {
+  margin: 6px 0 0;
+  color: #f2f2f2;
+  font-family: Georgia, serif;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.laceStage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(calc(100vw - 38px), 370px);
+  aspect-ratio: 1;
+  margin: 58px auto 0;
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.lacePhoto {
+  position: absolute;
+  width: 52%;
+  height: 68%;
+  border-radius: 999px;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.laceFrame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.invitePink {
+  margin: 60px 0 0;
+  color: #f39aba;
+  font-family: Georgia, serif;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.heroInfo {
+  margin: 10px 0 0;
+  color: #f0f0f0;
+  font-size: 18px;
+  line-height: 25px;
+  font-weight: 600;
+}
+
+.paperWrap {
+  background: #171717;
+  padding: 0 20px 90px;
+}
+
+.letterPaper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 930 / 1691;
+  overflow: hidden;
+  background: #f8f7f3;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.36);
+}
+
+.letterPaperBg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.handMessage {
+  position: absolute;
+  top: 12.5%;
+  left: 11%;
+  right: 11%;
+  z-index: 3;
+  margin: 0;
+  color: #202020;
+  font-family: 'NanumBrushWeb', 'Nanum Brush Script', cursive;
+  font-size: clamp(18px, 5vw, 20px);
+  line-height: 1.65;
+  font-weight: 700;
+  text-align: center;
+  white-space: pre-line;
+}
+
+.letterLargePhoto,
+.letterSmallPhoto {
+  position: absolute;
+  z-index: 2;
+  border: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #ddd;
+}
+
+.letterLargePhoto {
+  left: 9.4%;
+  top: 54.8%;
+  width: 45.2%;
+  height: 33.4%;
+  transform: rotate(-6.2deg);
+}
+
+.letterSmallPhoto {
+  right: 10.5%;
+  top: 46.8%;
+  width: 28.4%;
+  height: 27.4%;
+  border-radius: 999px 999px 0 0;
+}
+
+.letterLargePhoto img,
+.letterSmallPhoto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.letterStamp {
+  position: absolute;
+  left: 53.8%;
+  top: 86.1%;
+  width: 29%;
+  height: 7.6%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(8deg);
+  color: #f39aba;
+  font-family: Georgia, serif;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.letterStamp span {
+  transform: translateX(3px);
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.letterStamp b {
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: 900;
+}
+
+.parents {
+  position: relative;
+  overflow: hidden;
+  background: #f7b8cc;
+  padding: 58px 0 68px;
+}
+
+.parentBgPhoto {
+  position: absolute;
+  object-fit: cover;
+}
+
+.parentBg0 { left: -88px; top: -28px; width: 76%; height: 28%; opacity: 0.34; transform: rotate(-9deg); }
+.parentBg1 { right: -76px; top: 120px; width: 62%; height: 26%; opacity: 0.32; transform: rotate(8deg); }
+.parentBg2 { left: -56px; top: 360px; width: 66%; height: 25%; opacity: 0.34; transform: rotate(6deg); }
+.parentBg3 { right: -64px; top: 560px; width: 70%; height: 28%; opacity: 0.32; transform: rotate(-7deg); }
+.parentBg4 { left: -92px; bottom: 510px; width: 68%; height: 24%; opacity: 0.32; transform: rotate(-4deg); }
+.parentBg5 { right: -82px; bottom: 330px; width: 66%; height: 25%; opacity: 0.34; transform: rotate(9deg); }
+.parentBg6 { left: -62px; bottom: 130px; width: 62%; height: 24%; opacity: 0.33; transform: rotate(7deg); }
+.parentBg7 { right: -54px; bottom: -36px; width: 64%; height: 24%; opacity: 0.33; transform: rotate(-6deg); }
+
+.parentPinkVeil,
+.parentWhiteWash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.parentPinkVeil { background: rgba(255, 139, 181, 0.34); }
+.parentWhiteWash { background: rgba(255, 255, 255, 0.24); }
+
+.parentBlock {
+  position: relative;
+  z-index: 2;
+  min-height: 760px;
+  padding: 0 34px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin-bottom: 42px;
+}
+
+.parentTitle {
+  margin: 0;
+  font-size: 19px;
+  line-height: 27px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.parentBlock h2 {
+  margin: 0 0 22px;
+  font-size: 22px;
+  line-height: 30px;
+  font-weight: 900;
+}
+
+.parentPhotoFrame {
+  width: 92%;
+  height: 280px;
+  border: 0;
+  background: #f8f7f3;
+  padding: 12px 12px 16px;
+  margin: 6px 0 0;
+  overflow: hidden;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
+}
+
+.parentPhotoFrame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.parentPhotoLeft {
+  align-self: flex-start;
+  transform: rotate(-3deg);
+}
+
+.parentPhotoRight {
+  align-self: flex-end;
+  transform: rotate(3deg);
+}
+
+.memoPaper {
+  position: relative;
+  width: 100%;
+  min-height: 360px;
+  margin-top: -8px;
+  padding: 36px 26px 30px;
+  overflow: hidden;
+  border: 1px solid rgba(26, 26, 26, 0.08);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+.memoLined { background: #fbfaef; }
+.memoGrid { background: #fafbf2; }
+.memoLeft { transform: rotate(-6deg); }
+.memoRight { transform: rotate(6deg); }
+
+.memoPaper p {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  color: #202020;
+  font-family: 'NanumBrushWeb', cursive;
+  font-size: 21px;
+  line-height: 34px;
+  font-weight: 900;
+  transform: rotate(-1deg);
+}
+
+.noteTexture {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.noteLine,
+.gridH,
+.gridV,
+.noteMarginLine {
+  position: absolute;
+  display: block;
+}
+
+.noteLine {
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(97, 146, 174, 0.24);
+}
+
+.noteMarginLine {
+  top: 0;
+  bottom: 0;
+  left: 34px;
+  width: 1px;
+  background: rgba(223, 114, 118, 0.25);
+}
+
+.gridV {
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(99, 157, 176, 0.2);
+}
+
+.gridH {
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(99, 157, 176, 0.2);
+}
+
+.noteSmudge {
+  position: absolute;
+  right: -48px;
+  bottom: -36px;
+  width: 170px;
+  height: 130px;
+  border-radius: 85px;
+  background: rgba(0, 0, 0, 0.025);
+  transform: rotate(-12deg);
+}
+
+.tapeLeft,
+.tapeRight {
+  position: absolute;
+  top: 34px;
+  width: 34px;
+  height: 78px;
+  z-index: 3;
+  opacity: 0.82;
+}
+
+.tapeLeft {
+  left: -13px;
+  background: #ffe188;
+  transform: rotate(2deg);
+}
+
+.tapeRight {
+  right: -13px;
+  top: 40px;
+  background: #aad2ff;
+  transform: rotate(-4deg);
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: #171717;
+}
+
+.gallery button {
+  aspect-ratio: 1;
+  border: 0;
+  padding: 0;
+  background: #111;
+  overflow: hidden;
+}
+
+.gallery img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.calendarSection {
+  position: relative;
+  overflow: hidden;
+  background: #f6c0d0;
+  padding: 48px 38px 56px;
+}
+
+.calendarDoodles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.92;
+  pointer-events: none;
+}
+
+.calendarPaper {
+  position: relative;
+  z-index: 2;
+}
+
+.calendarPaper h2 {
+  margin: 0;
+  font-family: Georgia, serif;
+  font-size: 26px;
+  line-height: 32px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.calendarPaper p {
+  margin: -2px 0 34px;
+  font-family: Georgia, serif;
+  font-size: 17px;
+  line-height: 21px;
+  font-style: italic;
+  font-weight: 900;
+  text-align: center;
+}
+
+.calendarHead,
+.calendarDays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.calendarHead {
+  margin-bottom: 18px;
+}
+
+.calendarHead span {
+  text-align: center;
+  font-family: Georgia, serif;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.calendarDays span {
+  height: 36px;
+  display: grid;
+  place-items: center;
+  font-family: Georgia, serif;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.calendarDays .selectedDay {
+  width: 31px;
+  height: 31px;
+  justify-self: center;
+  align-self: center;
+  border-radius: 999px;
+  background: #171717;
+  color: #fff;
+}
+
+.mapTitleSection {
+  background: #f8f7f3;
+  padding: 36px 0 28px;
+  text-align: center;
+}
+
+.mapTitleSection img {
+  width: min(58vw, 250px);
+  height: auto;
+}
+
+.location {
+  background: #f8f7f3;
+  padding-bottom: 44px;
+}
+
+.mapBox {
+  min-height: 0;
+  background: #ededed;
+}
+
+.mapBox > div {
+  width: 100%;
+}
+
+.addressRow {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 22px;
+  border-bottom: 1px solid rgba(25, 25, 25, 0.2);
+}
+
+.addressRow div {
+  flex: 1;
+}
+
+.addressRow h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.addressRow p {
+  margin: 0;
+  font-size: 17px;
+  line-height: 25px;
+}
+
+.addressRow button,
+.darkButton,
+.accountPerson button {
+  border: 0;
+  cursor: pointer;
+}
+
+.addressRow button {
+  border-radius: 28px;
+  background: #f6c0d0;
+  padding: 12px 20px;
+  color: #202020;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.accounts,
+.messages {
+  background: #f8f7f3;
+  padding: 48px 22px;
+}
+
+.accounts h2,
+.messages h2 {
+  margin: 0 0 24px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.accountGroup {
+  margin-bottom: 18px;
+}
+
+.accountHeader {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid #202020;
+  background: transparent;
+  padding: 0 0 8px;
+  display: flex;
+  justify-content: space-between;
+  color: #202020;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.accountHeader b {
+  color: #5e5658;
+  font-size: 13px;
+}
+
+.accountPerson {
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(25, 25, 25, 0.2);
+}
+
+.accountPerson strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 15px;
+}
+
+.accountPerson button,
+.accountPerson a {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  background: transparent;
+  color: #5e5658;
+  font-size: 13px;
+  line-height: 20px;
+  text-decoration: none;
+}
+
+.accountPerson em {
+  color: #202020;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.messageCard {
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(25, 25, 25, 0.2);
+}
+
+.messageCard strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.messageCard p,
+.emptyMessage {
+  margin: 0;
+  color: #5e5658;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.pagination {
+  margin-top: 18px;
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  align-items: center;
+}
+
+.pagination button {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 17px;
+  background: #171717;
+  color: #fff;
+}
+
+.darkButton {
+  width: 100%;
+  margin-top: 18px;
+  background: #171717;
+  padding: 14px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.share {
+  background: #f8f7f3;
+  padding: 0 32px 58px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.kakaoButton,
+.urlButton {
+  border: 0;
+  border-radius: 4px;
+  padding: 14px 28px;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.kakaoButton {
+  background: #ffea00;
+  color: #202020;
+}
+
+.urlButton {
+  background: #171717;
+  color: #fff;
+}
+
+.share p {
+  margin: 12px 0 0;
+  color: #858585;
+  font-size: 11px;
+}
+
+.viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.94);
+  display: grid;
+  place-items: center;
+}
+
+.viewer img {
+  max-width: 100vw;
+  max-height: 82vh;
+  object-fit: contain;
+}
+
+.viewerClose,
+.viewerNav {
+  position: fixed;
+  border: 0;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.18);
+  z-index: 1001;
+}
+
+.viewerClose {
+  top: calc(env(safe-area-inset-top, 0px) + 16px);
+  right: 18px;
+  border-radius: 18px;
+  padding: 8px 14px;
+}
+
+.viewerNav {
+  top: 50%;
+  width: 42px;
+  height: 60px;
+  font-size: 42px;
+  transform: translateY(-50%);
+}
+
+.viewerPrev { left: 12px; }
+.viewerNext { right: 12px; }
+
+.viewerCounter {
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 22px);
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  font-size: 13px;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 28px);
+  z-index: 1100;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.82);
+  color: #fff;
+  border-radius: 20px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+@media (max-width: 380px) {
+  .parentBlock {
+    padding: 0 26px;
+  }
+
+  .parentPhotoFrame {
+    height: 250px;
+  }
+
+  .memoPaper p {
+    font-size: 19px;
+    line-height: 32px;
+  }
+}

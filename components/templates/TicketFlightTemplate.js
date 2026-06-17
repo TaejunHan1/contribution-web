@@ -258,6 +258,7 @@ const TicketFlightTemplate = ({
   const [isEditMode, setIsEditMode] = useState(false);
   const [guestMessages, setGuestMessages] = useState([]);
   const [hasWrittenGuestbook, setHasWrittenGuestbook] = useState(false);
+  const [messagePage, setMessagePage] = useState(0);
   const arrivalModalCheckedRef = useRef(false);
 
   // ── 탑승 상태 ──
@@ -500,6 +501,16 @@ const TicketFlightTemplate = ({
   }, [guestMessages]);
 
   const displayMessages = useMemo(() => guestMessages.filter((m) => m.content?.trim()), [guestMessages]);
+  const messagesPerPage = 3;
+  const totalMessagePages = Math.max(1, Math.ceil(displayMessages.length / messagesPerPage));
+  const pagedMessages = displayMessages.slice(
+    messagePage * messagesPerPage,
+    (messagePage + 1) * messagesPerPage
+  );
+
+  useEffect(() => {
+    setMessagePage((page) => Math.min(page, totalMessagePages - 1));
+  }, [totalMessagePages]);
 
   // ── 모달 핸들러 ──
   const handleGuestbookSubmit = async (g) => {
@@ -748,7 +759,7 @@ const TicketFlightTemplate = ({
                     <p className={styles.emptyText}>아직 메시지가 없어요.<br />첫 번째 축하의 글을 남겨주세요.</p>
                   </div>
                 ) : (
-                  displayMessages.slice(0, 20).map((msg) => (
+                  pagedMessages.map((msg) => (
                     <div key={msg.id} className={styles.reviewCard}>
                       <div className={styles.reviewTop}>
                         <span className={styles.reviewName}>{msg.from}</span>
@@ -768,6 +779,37 @@ const TicketFlightTemplate = ({
                       <p className={styles.reviewText}>{msg.content}</p>
                     </div>
                   ))
+                )}
+                {displayMessages.length > messagesPerPage && (
+                  <div className={styles.pagination}>
+                    <button
+                      type="button"
+                      className={styles.pageButton}
+                      onClick={() => setMessagePage((page) => Math.max(0, page - 1))}
+                      disabled={messagePage === 0}
+                    >
+                      ‹
+                    </button>
+                    <div className={styles.pageDots}>
+                      {Array.from({ length: totalMessagePages }).map((_, index) => (
+                        <button
+                          key={index}
+                          type="button"
+                          className={`${styles.pageDot} ${messagePage === index ? styles.pageDotActive : ''}`}
+                          onClick={() => setMessagePage(index)}
+                          aria-label={`${index + 1}페이지`}
+                        />
+                      ))}
+                    </div>
+                    <button
+                      type="button"
+                      className={styles.pageButton}
+                      onClick={() => setMessagePage((page) => Math.min(totalMessagePages - 1, page + 1))}
+                      disabled={messagePage === totalMessagePages - 1}
+                    >
+                      ›
+                    </button>
+                  </div>
                 )}
                 {!hasWrittenGuestbook && (
                   <button

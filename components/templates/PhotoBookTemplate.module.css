@@ -482,37 +482,119 @@
 .messageActions {
   display: grid;
   gap: 10px;
+  margin-top: 18px;
 }
 
 .messageActions button {
-  min-height: 48px;
-  border: 0;
-  background: #24211e;
-  color: #fffdf9;
+  min-height: 52px;
+  border: 1px solid rgba(36, 33, 30, 0.14);
+  border-radius: 0;
+  background:
+    linear-gradient(135deg, rgba(255, 253, 249, 0.98), rgba(245, 238, 229, 0.98));
+  color: #24211e;
   font-weight: 800;
+  letter-spacing: 0.2px;
+  box-shadow: 0 10px 24px rgba(76, 58, 47, 0.1);
 }
 
 .messages {
   display: grid;
-  gap: 10px;
-  margin-top: 18px;
+  gap: 12px;
+  margin-top: 22px;
 }
 
 .messageCard {
-  padding: 16px;
+  position: relative;
+  padding: 19px 18px 18px 20px;
   text-align: left;
+  box-shadow: 0 12px 26px rgba(76, 58, 47, 0.08);
+  overflow: hidden;
+}
+
+.messageCard::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: #9c735e;
+  opacity: 0.62;
+}
+
+.messageCard::after {
+  content: 'Message';
+  position: absolute;
+  right: 14px;
+  top: 12px;
+  color: rgba(156, 115, 94, 0.18);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 18px;
+  font-style: italic;
 }
 
 .messageCard strong {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 10px;
+  border: 1px solid rgba(156, 115, 94, 0.2);
+  background: #f7f3ee;
   color: #24211e;
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .messageCard p {
-  margin: 6px 0 0;
+  position: relative;
+  z-index: 1;
+  margin: 12px 0 0;
+  color: #5f554c;
+  font-size: 14px;
+  line-height: 1.75;
+  word-break: keep-all;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 18px 0 0;
+}
+.pageButton {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(36, 33, 30, 0.16);
+  background: #fffdf9;
   color: #746b61;
-  font-size: 13px;
-  line-height: 1.6;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+.pageButton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.pageDots {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.pageDot {
+  width: 7px;
+  height: 7px;
+  border: 0;
+  border-radius: 999px;
+  background: #d7ccc2;
+  padding: 0;
+  cursor: pointer;
+}
+.pageDotActive {
+  width: 18px;
+  background: #9c735e;
 }
 
 .footer {

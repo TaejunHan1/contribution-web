@@ -600,14 +600,21 @@
 }
 .navBtn {
   flex: 1;
+  min-width: 0;
+  min-height: 42px;
   background: transparent;
   border: 1px solid #d4af37;
   padding: 10px 0;
   border-radius: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #d4af37;
   font-size: 12px;
+  line-height: 16px;
   letter-spacing: 1px;
   font-weight: 600;
+  white-space: nowrap;
   cursor: pointer;
   transition: background 0.2s;
 }
@@ -792,6 +799,46 @@
   text-align: center;
   font-size: 13px;
   margin-bottom: 12px;
+}
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 18px 0 12px;
+}
+.pageButton {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #3a3a3a;
+  border-radius: 999px;
+  background: #111;
+  color: #d4af37;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+.pageButton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.pageDots {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.pageDot {
+  width: 7px;
+  height: 7px;
+  border: 0;
+  border-radius: 999px;
+  background: #555;
+  padding: 0;
+  cursor: pointer;
+}
+.pageDotActive {
+  width: 18px;
+  background: #d4af37;
 }
 .gbWriteBtn {
   width: 100%;

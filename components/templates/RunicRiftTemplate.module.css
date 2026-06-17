@@ -441,6 +441,47 @@
   line-height: 1.6;
 }
 
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 16px 0 4px;
+}
+.pageButton {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(46, 41, 35, 0.18);
+  border-radius: 999px;
+  background: #fffaf2;
+  color: #2e2923;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+.pageButton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.pageDots {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.pageDot {
+  width: 7px;
+  height: 7px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(168, 139, 92, 0.32);
+  padding: 0;
+  cursor: pointer;
+}
+.pageDotActive {
+  width: 18px;
+  background: #a88b5c;
+}
+
 .hero {
   min-height: auto;
   padding: 0;
