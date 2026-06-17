@@ -24,6 +24,16 @@ const supabaseAdmin = supabaseUrl && supabaseServiceKey ? createClient(
   }
 ) : null;
 
+const parseJsonField = (value, fallback) => {
+  if (!value) return fallback;
+  if (typeof value === 'object') return value;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+};
+
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.setHeader('Pragma', 'no-cache');
@@ -87,25 +97,65 @@ export default async function handler(req, res) {
       status: eventData.status
     });
 
-    // 템플릿 표시용 필요한 데이터만 반환
+    const additionalInfo = parseJsonField(eventData.additional_info, {});
+    const imageUrls = parseJsonField(eventData.image_urls, []);
+    const familyRelations = parseJsonField(eventData.family_relations, []);
+    const presetAmounts = parseJsonField(eventData.preset_amounts, {});
+    const condolenceAccounts = parseJsonField(eventData.condolence_accounts, []);
+
+    // 템플릿 표시용 공개 데이터 반환
     const templateData = {
       id: eventData.id,
+      public_slug: eventData.public_slug,
       event_name: eventData.event_name,
       event_type: eventData.event_type,
       event_date: eventData.event_date,
       ceremony_time: eventData.ceremony_time,
+      reception_time: eventData.reception_time,
       location: eventData.location,
       detailed_address: eventData.detailed_address,
+      funeral_home: eventData.funeral_home,
       groom_name: eventData.groom_name,
       bride_name: eventData.bride_name,
+      groom_contact: eventData.groom_contact,
+      bride_contact: eventData.bride_contact,
       groom_father_name: eventData.groom_father_name,
       groom_mother_name: eventData.groom_mother_name,
       bride_father_name: eventData.bride_father_name,
       bride_mother_name: eventData.bride_mother_name,
       primary_contact: eventData.primary_contact,
       secondary_contact: eventData.secondary_contact,
+      family_relations: familyRelations,
+      preset_amounts: presetAmounts,
+      allow_messages: eventData.allow_messages,
+      message_placeholder: eventData.message_placeholder,
+      main_person_name: eventData.main_person_name,
+      dress_code: eventData.dress_code,
+      parking_info: eventData.parking_info,
+      love_temperature: eventData.love_temperature,
+      deceased_age: eventData.deceased_age,
+      birth_date: eventData.birth_date,
+      age_calculation_method: eventData.age_calculation_method,
+      death_date: eventData.death_date,
+      death_time: eventData.death_time,
+      deceased_gender: eventData.deceased_gender,
+      religious_rite: eventData.religious_rite,
+      funeral_method: eventData.funeral_method,
+      casket_date: eventData.casket_date,
+      casket_time: eventData.casket_time,
+      burial_date: eventData.burial_date,
+      burial_time: eventData.burial_time,
+      burial_location: eventData.burial_location,
+      secondary_burial_location: eventData.secondary_burial_location,
+      funeral_director: eventData.funeral_director,
+      visitation_type: eventData.visitation_type,
+      visitation_note: eventData.visitation_note,
+      parking_transport_info: eventData.parking_transport_info,
+      condolence_accounts: condolenceAccounts,
       custom_message: eventData.custom_message,
-      template_style: eventData.template_style
+      template_style: eventData.template_style,
+      image_urls: imageUrls,
+      additional_info: additionalInfo
     };
 
     res.status(200).json({ 

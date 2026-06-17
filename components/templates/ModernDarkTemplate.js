@@ -385,7 +385,7 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
   const defaultImages = {
     main: [
       'https://images.unsplash.com/photo-1519741497674-611481863552?w=400&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1465495976277-4387d4b0e4a6?w=400&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1520854221256-17451cc331bf?w=400&h=650&fit=crop',
       'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&h=650&fit=crop',
     ],
     gallery: [
@@ -719,16 +719,6 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
     } catch (error) {}
   };
 
-  const checkAndShowWelcomeChoice = () => {
-    if (arrivalModalCheckedRef.current || showWelcomeChoice) return false;
-    if (isFullscreen) return false; // 최대화(결혼식장 세팅) 모드에서는 모달 미표시
-    const arrivalKey = `arrival_checked_${eventData?.id}`;
-    if (typeof window !== 'undefined' && localStorage.getItem(arrivalKey)) return false;
-    arrivalModalCheckedRef.current = true;
-    setShowWelcomeChoice(true);
-    return true;
-  };
-
   const handleSelectGuestbook = () => {
     setUserChoice('guestbook');
     setShowWelcomeChoice(false);
@@ -835,9 +825,7 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
   };
 
   useEffect(() => {
-    if (arrivalModalCheckedRef.current) return;
-    const t = setTimeout(() => checkAndShowWelcomeChoice(), 1000);
-    return () => clearTimeout(t);
+    arrivalModalCheckedRef.current = true;
   }, []);
 
   return (
@@ -1393,10 +1381,10 @@ const ModernDarkTemplate = ({ eventData = {}, categorizedImages = {}, allowMessa
       )}
 
       {/* 모달들 */}
-      <WelcomeChoiceModal isOpen={showWelcomeChoice} onClose={() => setShowWelcomeChoice(false)} onSelectGuestbook={handleSelectGuestbook} onSelectContribution={handleSelectContribution} eventData={eventData} />
-      <GuestbookModal isOpen={showGuestbookModal} onClose={handleGuestbookModalClose} onSubmit={handleGuestbookSubmit} eventData={eventData} onTriggerArrival={handleTriggerArrival} onBack={() => { setShowGuestbookModal(false); setShowWelcomeChoice(true); }} />
+      <WelcomeChoiceModal isOpen={false} onClose={() => setShowWelcomeChoice(false)} onSelectGuestbook={handleSelectGuestbook} onSelectContribution={handleSelectContribution} eventData={eventData} />
+      <GuestbookModal isOpen={showGuestbookModal} onClose={handleGuestbookModalClose} onSubmit={handleGuestbookSubmit} eventData={eventData} onTriggerArrival={handleTriggerArrival} onBack={() => { setShowGuestbookModal(false); setShowWelcomeChoice(false); }} />
       <EditGuestbookModal isOpen={showEditModal} onClose={() => { setShowEditModal(false); setEditingMessage(null); }} message={editingMessage} eventData={eventData} onUpdate={handleEditUpdate} onDelete={handleEditDelete} />
-<ContributionModal isOpen={showContributionModal} onClose={() => { setShowContributionModal(false); setIsEditMode(false); }} onBack={!isEditMode ? () => { setShowContributionModal(false); setShowWelcomeChoice(true); } : undefined} onSubmit={handleContributionSubmit} eventData={eventData} editData={isEditMode ? myContribution : null} onVerifiedExisting={(c) => setMyContribution({ ...c, amount: c.contributionAmount })} />
+<ContributionModal isOpen={showContributionModal} onClose={() => { setShowContributionModal(false); setIsEditMode(false); }} onBack={!isEditMode ? () => { setShowContributionModal(false); setShowWelcomeChoice(false); } : undefined} onSubmit={handleContributionSubmit} eventData={eventData} editData={isEditMode ? myContribution : null} onVerifiedExisting={(c) => setMyContribution({ ...c, amount: c.contributionAmount })} />
       <CompletionModal isOpen={showCompletionModal} onClose={() => { setShowCompletionModal(false); setCompletionData(null); }} contributionData={completionData} eventData={eventData} />
 
       {/* 내 축의금 고정 섹션 */}

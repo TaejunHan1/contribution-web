@@ -6,6 +6,14 @@
 /* Pretendard 폰트 (토스에서 사용하는 폰트) */
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css');
 
+@font-face {
+  font-family: 'AAutoSignature';
+  src: url('/fonts/AAutoSignature.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* 토스 컬러 시스템 CSS 변수 */
 :root {
   /* 메인 컬러 */

@@ -21,6 +21,7 @@ const CinemaTemplate = dynamic(() => import('../../components/templates/CinemaTe
 const RunicRiftTemplate = dynamic(() => import('../../components/templates/RunicRiftTemplate'), { ssr: false });
 const PhotoBookTemplate = dynamic(() => import('../../components/templates/PhotoBookTemplate'), { ssr: false });
 const BlushEditorialTemplate = dynamic(() => import('../../components/templates/BlushEditorialTemplate'), { ssr: false });
+const YozmStyleTemplate = dynamic(() => import('../../components/templates/YozmStyleTemplate'), { ssr: false });
 const FuneralNoticeTemplate = dynamic(() => import('../../components/templates/FuneralNoticeTemplate'), { ssr: false });
 const FallingPetals = dynamic(() => import('../../components/FallingPetals'), { ssr: false });
 const BackgroundMusicPlayer = dynamic(() => import('../../components/BackgroundMusicPlayer'), { ssr: false });
@@ -95,6 +96,19 @@ const buildPublicUrl = (path = '') => {
 const buildOgImageUrl = (eventId, template) => buildPublicUrl(
   `/api/og?eventId=${encodeURIComponent(eventId)}&template=${encodeURIComponent(template)}&ogv=${OG_IMAGE_VERSION}`
 );
+
+const normalizeTemplateEvent = (event) => {
+  if (!event) return null;
+
+  return {
+    ...event,
+    additional_info: parseJsonField(event.additional_info, {}),
+    image_urls: parseJsonArrayItems(event.image_urls, []),
+    family_relations: parseJsonArrayItems(event.family_relations, []),
+    preset_amounts: parseJsonField(event.preset_amounts, {}),
+    condolence_accounts: parseJsonArrayItems(event.condolence_accounts, []),
+  };
+};
 
 // 템플릿 컴포넌트들 (나중에 구현)
 const ModernTemplate = ({ eventData }) => (
@@ -432,11 +446,22 @@ export default function TemplatePage({
     
     // 이미지 데이터 구성
     const categorizedImages = normalizeCategorizedImages(event.additional_info?.categorized_images || {});
+    const activeIntroId = event.additional_info?.intro_effect?.id;
+    const isIntroActive = Boolean(
+      event.event_type !== 'funeral'
+      && showIntro
+      && !BUILT_IN_INTRO_TEMPLATES.has(template)
+      && activeIntroId
+      && activeIntroId !== 'none'
+    );
     const templateEvent = {
       ...event,
+      introActive: isIntroActive,
+      disableWelcomeChoiceModal: true,
       additional_info: {
         ...(event.additional_info || {}),
         categorized_images: categorizedImages,
+        __intro_active: isIntroActive,
       },
     };
 
@@ -499,6 +524,15 @@ export default function TemplatePage({
             categorizedImages={categorizedImages}
             allowMessages={templateEvent.allow_messages}
             messageSettings={templateEvent.additional_info?.message_settings || {}}
+          />,
+          { usePortal: false }
+        );
+      case 'yozm-style':
+        return renderWithPhotoFrame(
+          <YozmStyleTemplate
+            eventData={templateEvent}
+            categorizedImages={categorizedImages}
+            allowMessages={templateEvent.allow_messages}
           />,
           { usePortal: false }
         );
@@ -755,7 +789,7 @@ export async function getServerSideProps(context) {
 
     return {
       props: {
-        serverEvent: null,
+        serverEvent: normalizeTemplateEvent(event),
         serverOgEvent,
         serverTemplate: serverTemplate || event.template_style || null,
         serverEventId: eventId,

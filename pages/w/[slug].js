@@ -7,6 +7,39 @@ const SLUG_LOOKUP_RETRY_DELAYS = [0, 120, 350];
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+const parseJsonField = (value, fallback) => {
+  if (!value) return fallback;
+  if (typeof value === 'object') return value;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+};
+
+const parseJsonArrayItems = (value, fallback = []) => {
+  const items = parseJsonField(value, fallback);
+  if (!Array.isArray(items)) return fallback;
+
+  return items.map((item) => {
+    if (typeof item !== 'string') return item;
+    return parseJsonField(item, item);
+  });
+};
+
+const normalizeTemplateEvent = (event) => {
+  if (!event) return null;
+
+  return {
+    ...event,
+    additional_info: parseJsonField(event.additional_info, {}),
+    image_urls: parseJsonArrayItems(event.image_urls, []),
+    family_relations: parseJsonArrayItems(event.family_relations, []),
+    preset_amounts: parseJsonField(event.preset_amounts, {}),
+    condolence_accounts: parseJsonArrayItems(event.condolence_accounts, []),
+  };
+};
+
 const fetchEventBySlug = async ({ supabaseUrl, supabaseKey, slug }) => {
   let lastError = null;
 
@@ -107,7 +140,7 @@ export async function getServerSideProps(context) {
 
     return {
       props: {
-        serverEvent: null,
+        serverEvent: normalizeTemplateEvent(event),
         serverOgEvent,
         serverTemplate: event.template_style || null,
         serverEventId: event.id,

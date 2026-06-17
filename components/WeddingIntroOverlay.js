@@ -1,9 +1,40 @@
 // components/WeddingIntroOverlay.js
 // 앱의 WeddingIntroSelectModal 도어 인트로를 웹 CSS로 1:1 포팅
 import { createContext, useContext, useState, useEffect, useRef } from 'react';
+import {
+  KOREAN_MARRIAGE_FILL_PATHS,
+  KOREAN_MARRIAGE_FILL_TRANSLATE,
+  KOREAN_MARRIAGE_MASK_STROKE_GROUPS,
+  KOREAN_MARRIAGE_MASK_TRANSLATE,
+  KOREAN_MARRIAGE_SCRIPT_COLOR,
+  KOREAN_MARRIAGE_SCRIPT_VIEWBOX,
+} from './introPaths/koreanMarriageScriptPaths';
+import {
+  WELCOME_WEDDING_DOT_COLOR,
+  WELCOME_WEDDING_DOT_FILL,
+  WELCOME_WEDDING_DOT_STROKE,
+  WELCOME_WEDDING_SCRIPT_COLOR,
+  WELCOME_WEDDING_SCRIPT_VIEWBOX,
+  WELCOME_WEDDING_STROKE_PATHS,
+} from './introPaths/welcomeWeddingScriptPaths';
+import {
+  INVITE_GUESTS_FILL_PATHS,
+  INVITE_GUESTS_FILL_TRANSLATE,
+  INVITE_GUESTS_MASK_STROKE_GROUPS,
+  INVITE_GUESTS_MASK_TRANSLATE,
+  INVITE_GUESTS_SCRIPT_COLOR,
+  INVITE_GUESTS_SCRIPT_VIEWBOX,
+} from './introPaths/inviteGuestsScriptPaths';
 
 const SERIF = '"Playfair Display", Georgia, "Noto Serif KR", serif';
 const IntroOptionsContext = createContext({ isLargeTapHint: false });
+const TEXT_INTRO_IDS = new Set([
+  'happily-script',
+  'korean-marriage-script',
+  'welcome-wedding-script',
+  'invite-guests-script',
+]);
+const TEXT_INTRO_AUTO_CLOSE_DELAY = 1050;
 
 // ── 신랑 · 신부 이름 좌우 분리 레이아웃 ──
 // 문 이음새(가운데) 기준으로 신랑 우측정렬 / 신부 좌측정렬
@@ -472,6 +503,485 @@ const DOOR_MAP = {
   curtain: { PanelComp: CurtainPanel, SealComp: CurtainSeal, sealDelay: 300 },
 };
 
+function useLockBodyScroll(active) {
+  useEffect(() => {
+    if (!active || typeof document === 'undefined') return undefined;
+    const originalOverflow = document.body.style.overflow;
+    const originalTouchAction = document.body.style.touchAction;
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.touchAction = originalTouchAction;
+    };
+  }, [active]);
+}
+
+function TextIntroTapHint({ ready }) {
+  if (!ready) return null;
+  return (
+    <div className="textIntroHintWrap" aria-hidden="true">
+      <div className="textIntroTapMark">
+        <span className="textIntroTapRing" />
+        <span className="textIntroTapDot" />
+      </div>
+      <div className="textIntroHintGuide">화면을 터치해 주세요</div>
+      <div className="textIntroHintPill">초대장 열기</div>
+    </div>
+  );
+}
+
+function MaskedStrokeFillText({
+  viewBox,
+  color,
+  fillPaths,
+  fillTranslate,
+  strokeGroups,
+  maskTranslate,
+  widthClass,
+  durationPerStroke = 42,
+  minStrokeDuration = 18,
+  maxStrokeDuration = 58,
+  strokeWidth = 7.5,
+  dashLength = 900,
+  maskId,
+}) {
+  let cursor = 0;
+  return (
+    <svg
+      className={`textIntroSvg ${widthClass}`}
+      viewBox={viewBox}
+      preserveAspectRatio="xMidYMid meet"
+      aria-hidden="true"
+    >
+      <defs>
+        <mask
+          id={maskId}
+          maskUnits="userSpaceOnUse"
+          x="-2000"
+          y="-2000"
+          width="4000"
+          height="4000"
+        >
+          <rect x="-2000" y="-2000" width="4000" height="4000" fill="black" />
+          <g transform={`translate(${maskTranslate.x} ${maskTranslate.y})`}>
+            {strokeGroups.map((group, groupIndex) => (
+              <g key={groupIndex}>
+                {group.map((d, strokeIndex) => {
+                  const duration = Math.min(
+                    maxStrokeDuration,
+                    Math.max(minStrokeDuration, d.length * durationPerStroke * 0.01)
+                  );
+                  const delay = cursor;
+                  cursor += duration;
+                  return (
+                    <path
+                      key={`${groupIndex}-${strokeIndex}`}
+                      d={d}
+                      fill="none"
+                      stroke="white"
+                      strokeWidth={strokeWidth}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeDasharray={dashLength}
+                      strokeDashoffset={dashLength}
+                      style={{
+                        animation: `textIntroDraw ${duration}ms linear ${delay}ms forwards`,
+                      }}
+                    />
+                  );
+                })}
+              </g>
+            ))}
+          </g>
+        </mask>
+      </defs>
+      <g mask={`url(#${maskId})`}>
+        <g transform={`translate(${fillTranslate.x} ${fillTranslate.y})`}>
+          {fillPaths.map((d, index) => (
+            <path key={index} d={d} fill={color} />
+          ))}
+        </g>
+      </g>
+    </svg>
+  );
+}
+
+function WelcomeStrokeText() {
+  let delay = 0;
+  return (
+    <svg
+      className="textIntroSvg textIntroWelcomeSvg"
+      viewBox={WELCOME_WEDDING_SCRIPT_VIEWBOX}
+      preserveAspectRatio="xMidYMid meet"
+      aria-hidden="true"
+    >
+      {WELCOME_WEDDING_STROKE_PATHS.map((item, index) => {
+        const duration = Math.min(1500, Math.max(640, item.len * 0.92));
+        const currentDelay = delay;
+        delay += 360;
+        return (
+          <path
+            key={index}
+            d={item.d}
+            transform={`translate(${item.tx} ${item.ty})`}
+            fill="none"
+            stroke={WELCOME_WEDDING_SCRIPT_COLOR}
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeDasharray={item.len}
+            strokeDashoffset={item.len}
+            style={{
+              animation: `textIntroDraw ${duration}ms cubic-bezier(.42,0,.58,1) ${currentDelay}ms forwards`,
+            }}
+          />
+        );
+      })}
+      <path
+        d={WELCOME_WEDDING_DOT_FILL.d}
+        transform={`translate(${WELCOME_WEDDING_DOT_FILL.tx} ${WELCOME_WEDDING_DOT_FILL.ty})`}
+        fill={WELCOME_WEDDING_DOT_COLOR}
+        opacity="0"
+        style={{
+          animation: `textIntroDot 160ms ease ${delay + 120}ms forwards`,
+        }}
+      />
+      <path
+        d={WELCOME_WEDDING_DOT_STROKE.d}
+        transform={`translate(${WELCOME_WEDDING_DOT_STROKE.tx} ${WELCOME_WEDDING_DOT_STROKE.ty})`}
+        fill="none"
+        stroke={WELCOME_WEDDING_SCRIPT_COLOR}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeDasharray={WELCOME_WEDDING_DOT_STROKE.len}
+        strokeDashoffset={WELCOME_WEDDING_DOT_STROKE.len}
+        style={{
+          animation: `textIntroDraw 180ms ease ${delay}ms forwards`,
+        }}
+      />
+    </svg>
+  );
+}
+
+function HappilyText() {
+  return (
+    <div className="textIntroHappilyBlock" aria-hidden="true">
+      <div className="textIntroHappilyLine textIntroHappilyOne">Happily</div>
+      <div className="textIntroHappilyLine textIntroHappilyTwo">ever after</div>
+    </div>
+  );
+}
+
+function InviteGuestsText({ maskId }) {
+  return (
+    <MaskedStrokeFillText
+      viewBox={INVITE_GUESTS_SCRIPT_VIEWBOX}
+      color={INVITE_GUESTS_SCRIPT_COLOR}
+      fillPaths={INVITE_GUESTS_FILL_PATHS}
+      fillTranslate={INVITE_GUESTS_FILL_TRANSLATE}
+      strokeGroups={INVITE_GUESTS_MASK_STROKE_GROUPS}
+      maskTranslate={INVITE_GUESTS_MASK_TRANSLATE}
+      widthClass="textIntroInviteSvg"
+      durationPerStroke={7}
+      minStrokeDuration={16}
+      maxStrokeDuration={46}
+      strokeWidth={7.5}
+      maskId={maskId}
+    />
+  );
+}
+
+function TextIntroOverlay({ introId, tapToOpen, onEnd }) {
+  const [ready, setReady] = useState(false);
+  const [closing, setClosing] = useState(false);
+  const [done, setDone] = useState(false);
+  const closeTimerRef = useRef(null);
+  const doneTimerRef = useRef(null);
+  const readyRef = useRef(false);
+  const closingRef = useRef(false);
+  const doneRef = useRef(false);
+  const maskIdRef = useRef(`textIntroMask-${Math.random().toString(36).slice(2)}`);
+  const readyDelay =
+    introId === 'welcome-wedding-script'
+      ? 4300
+      : introId === 'happily-script'
+        ? 4000
+        : introId === 'invite-guests-script'
+          ? 3400
+          : 3200;
+
+  useLockBodyScroll(!done);
+
+  const finishIntro = () => {
+    if (closingRef.current || doneRef.current) return;
+    closingRef.current = true;
+    setClosing(true);
+    doneTimerRef.current = setTimeout(() => {
+      doneRef.current = true;
+      setDone(true);
+      onEnd?.();
+    }, 520);
+  };
+
+  const close = () => {
+    if (!readyRef.current) return;
+    finishIntro();
+  };
+
+  useEffect(() => {
+    const readyTimer = setTimeout(() => {
+      readyRef.current = true;
+      setReady(true);
+      if (!tapToOpen) {
+        closeTimerRef.current = setTimeout(finishIntro, TEXT_INTRO_AUTO_CLOSE_DELAY);
+      }
+    }, readyDelay);
+
+    return () => {
+      clearTimeout(readyTimer);
+      clearTimeout(closeTimerRef.current);
+      clearTimeout(doneTimerRef.current);
+    };
+  }, []);
+
+  if (done) return null;
+
+  const content =
+    introId === 'happily-script' ? (
+      <HappilyText />
+    ) : introId === 'korean-marriage-script' ? (
+      <MaskedStrokeFillText
+        viewBox={KOREAN_MARRIAGE_SCRIPT_VIEWBOX}
+        color={KOREAN_MARRIAGE_SCRIPT_COLOR}
+        fillPaths={KOREAN_MARRIAGE_FILL_PATHS}
+        fillTranslate={KOREAN_MARRIAGE_FILL_TRANSLATE}
+        strokeGroups={KOREAN_MARRIAGE_MASK_STROKE_GROUPS}
+        maskTranslate={KOREAN_MARRIAGE_MASK_TRANSLATE}
+        widthClass="textIntroKoreanSvg"
+        durationPerStroke={9.5}
+        minStrokeDuration={20}
+        maxStrokeDuration={56}
+        maskId={`${maskIdRef.current}-korean`}
+      />
+    ) : introId === 'welcome-wedding-script' ? (
+      <WelcomeStrokeText />
+    ) : (
+      <InviteGuestsText maskId={`${maskIdRef.current}-invite`} />
+    );
+
+  return (
+    <div
+      className={`textIntroOverlay ${closing ? 'textIntroClosing' : ''}`}
+      onClick={ready ? close : undefined}
+      role={ready ? 'button' : undefined}
+      tabIndex={ready ? 0 : undefined}
+      onKeyDown={event => {
+        if (ready && (event.key === 'Enter' || event.key === ' ')) close();
+      }}
+    >
+      <div className="textIntroBackdrop" />
+      <div className="textIntroStage">{content}</div>
+      {tapToOpen && <TextIntroTapHint ready={ready} />}
+      <style jsx>{`
+        .textIntroOverlay {
+          position: fixed;
+          inset: 0;
+          z-index: 99999;
+          overflow: hidden;
+          user-select: none;
+          cursor: ${ready ? 'pointer' : 'default'};
+          touch-action: none;
+        }
+        .textIntroBackdrop {
+          position: absolute;
+          inset: 0;
+          background: #000;
+          opacity: 0;
+          animation: textIntroDimIn 520ms ease forwards;
+        }
+        .textIntroStage {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transform: translateY(-34px);
+          opacity: 0;
+          animation: textIntroContentIn 680ms ease 80ms forwards;
+          pointer-events: none;
+        }
+        .textIntroClosing .textIntroBackdrop {
+          animation: textIntroDimOut 520ms ease forwards;
+        }
+        .textIntroClosing .textIntroStage {
+          animation: textIntroContentOut 420ms ease forwards;
+        }
+        .textIntroSvg {
+          display: block;
+          overflow: visible;
+          filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.16));
+        }
+        .textIntroKoreanSvg {
+          width: min(70vw, 430px);
+          max-width: calc(100vw - 48px);
+        }
+        .textIntroWelcomeSvg {
+          width: min(82vw, 560px);
+          max-width: calc(100vw - 40px);
+        }
+        .textIntroInviteSvg {
+          width: min(74vw, 470px);
+          max-width: calc(100vw - 48px);
+        }
+        .textIntroHappilyBlock {
+          width: min(94vw, 760px);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          transform: rotate(-2deg);
+        }
+        .textIntroHappilyLine {
+          width: 100%;
+          text-align: center;
+          color: #d779d8;
+          font-family: AAutoSignature, "Snell Roundhand", "Apple Chancery", cursive;
+          font-size: clamp(58px, 14.5vw, 132px);
+          line-height: 0.92;
+          font-weight: 400;
+          white-space: nowrap;
+          overflow: hidden;
+          clip-path: inset(0 100% 0 0);
+          text-shadow: 0 1px 1px rgba(0, 0, 0, 0.18);
+        }
+        .textIntroHappilyOne {
+          animation: textIntroRevealLine 1700ms cubic-bezier(.2,.74,.2,1) 760ms forwards;
+        }
+        .textIntroHappilyTwo {
+          margin-top: clamp(-22px, -2vw, -10px);
+          animation: textIntroRevealLine 2100ms cubic-bezier(.2,.74,.2,1) 2550ms forwards;
+        }
+        @media (max-width: 430px) {
+          .textIntroHappilyLine {
+            font-size: clamp(48px, 15.4vw, 72px);
+          }
+          .textIntroKoreanSvg {
+            width: calc(100vw - 44px);
+          }
+          .textIntroInviteSvg {
+            width: calc(100vw - 34px);
+          }
+          .textIntroWelcomeSvg {
+            width: calc(100vw - 24px);
+          }
+        }
+      `}</style>
+      <style jsx global>{`
+        @keyframes textIntroDimIn {
+          from { opacity: 0; }
+          to { opacity: 0.58; }
+        }
+        @keyframes textIntroDimOut {
+          from { opacity: 0.58; }
+          to { opacity: 0; }
+        }
+        @keyframes textIntroContentIn {
+          from { opacity: 0; transform: translateY(-24px); }
+          to { opacity: 1; transform: translateY(-34px); }
+        }
+        @keyframes textIntroContentOut {
+          from { opacity: 1; }
+          to { opacity: 0; }
+        }
+        @keyframes textIntroDraw {
+          to { stroke-dashoffset: 0; }
+        }
+        @keyframes textIntroDot {
+          to { opacity: 1; }
+        }
+        @keyframes textIntroRevealLine {
+          to { clip-path: inset(0 0 0 0); }
+        }
+        .textIntroClosing .textIntroHintWrap {
+          animation: textIntroContentOut 420ms ease forwards;
+        }
+        .textIntroHintWrap {
+          position: fixed;
+          left: 50%;
+          bottom: max(62px, calc(env(safe-area-inset-bottom) + 44px));
+          z-index: 100000;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          width: min(240px, calc(100vw - 56px));
+          opacity: 0;
+          pointer-events: none;
+          transform: translateX(-50%);
+          animation: textIntroHintFloat 1240ms ease-in-out infinite;
+        }
+        .textIntroTapMark {
+          position: relative;
+          width: 38px;
+          height: 38px;
+          display: grid;
+          place-items: center;
+          margin-bottom: 9px;
+        }
+        .textIntroTapRing {
+          position: absolute;
+          inset: 0;
+          border-radius: 999px;
+          border: 1.5px solid rgba(255, 255, 255, 0.74);
+          background: rgba(255, 255, 255, 0.08);
+          box-shadow: 0 0 20px rgba(255, 255, 255, 0.14);
+        }
+        .textIntroTapDot {
+          width: 9px;
+          height: 9px;
+          border-radius: 999px;
+          background: #d779d8;
+          box-shadow: 0 0 12px rgba(215, 121, 216, 0.95);
+        }
+        .textIntroHintGuide {
+          margin-bottom: 10px;
+          color: rgba(255, 255, 255, 0.92);
+          font-size: 12px;
+          font-weight: 700;
+          line-height: 1.2;
+          letter-spacing: 0.4px;
+          text-align: center;
+          text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
+          white-space: nowrap;
+        }
+        .textIntroHintPill {
+          min-width: 118px;
+          padding: 10px 22px;
+          border-radius: 999px;
+          background: rgba(0, 0, 0, 0.72);
+          border: 1px solid rgba(255, 255, 255, 0.42);
+          color: #fff;
+          font-size: 13px;
+          font-weight: 800;
+          line-height: 1.2;
+          letter-spacing: 1.2px;
+          text-align: center;
+          box-shadow: 0 10px 24px rgba(0, 0, 0, 0.32);
+          backdrop-filter: blur(8px);
+        }
+        @keyframes textIntroHintPulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.38; transform: scale(0.96); }
+        }
+        @keyframes textIntroHintFloat {
+          0%, 100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+          50% { opacity: 0.42; transform: translateX(-50%) translateY(4px) scale(0.96); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
 // ══════════════════════════════════════════════════════
 // 메인 컴포넌트
 // ══════════════════════════════════════════════════════
@@ -483,10 +993,44 @@ export default function WeddingIntroOverlay({
   isLargeTapHint = false,
   onEnd,
 }) {
+  if (TEXT_INTRO_IDS.has(introId)) {
+    const textIntroTapToOpen = true;
+
+    return (
+      <TextIntroOverlay
+        introId={introId}
+        tapToOpen={textIntroTapToOpen}
+        onEnd={onEnd}
+      />
+    );
+  }
+
+  return (
+    <DoorIntroOverlay
+      introId={introId}
+      tapToOpen={tapToOpen}
+      groomName={groomName}
+      brideName={brideName}
+      isLargeTapHint={isLargeTapHint}
+      onEnd={onEnd}
+    />
+  );
+}
+
+function DoorIntroOverlay({
+  introId = 'grand',
+  tapToOpen = false,
+  groomName = '',
+  brideName = '',
+  isLargeTapHint = false,
+  onEnd,
+}) {
   // animPhase: 'idle' → 'sealOut' → 'doorsOut' → 'done'
   const [animPhase, setAnimPhase] = useState('idle');
   const [sealScale, setSealScale] = useState(1);
   const timerRef = useRef(null);
+
+  useLockBodyScroll(animPhase !== 'done');
 
   useEffect(() => {
     const update = () => {

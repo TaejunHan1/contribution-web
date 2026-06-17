@@ -9,8 +9,17 @@ const HIDDEN_WELCOME_EVENT_IDS = new Set([
 
 const WelcomeChoiceModal = ({ isOpen, onClose, onSelectGuestbook, onSelectContribution, eventData }) => {
   const [selectedOption, setSelectedOption] = useState('guestbook');
+  const additionalInfo = (() => {
+    if (!eventData?.additional_info) return {};
+    if (typeof eventData.additional_info === 'string') {
+      try { return JSON.parse(eventData.additional_info); } catch { return {}; }
+    }
+    return eventData.additional_info || {};
+  })();
 
   if (!isOpen) return null;
+  if (eventData?.disableWelcomeChoiceModal !== false) return null;
+  if (eventData?.introActive || additionalInfo.__intro_active) return null;
   if (HIDDEN_WELCOME_EVENT_IDS.has(eventData?.id || eventData?.event_id)) return null;
 
   const brideName = eventData?.bride_name || '하윤';

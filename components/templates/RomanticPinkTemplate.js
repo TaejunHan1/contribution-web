@@ -430,7 +430,7 @@ const RomanticPinkTemplate = ({ eventData = {}, categorizedImages = {}, allowMes
   const defaultImages = {
     main: [
       'https://images.unsplash.com/photo-1519741497674-611481863552?w=400&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1465495976277-4387d4b0e4a6?w=400&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1520854221256-17451cc331bf?w=400&h=650&fit=crop',
       'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&h=650&fit=crop',
     ],
     gallery: [
